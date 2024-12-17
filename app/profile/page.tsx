@@ -35,9 +35,37 @@ export default async function ProfilePage() {
     const avatarFile = formData.get('avatar') as File;
     if (avatarFile.size > 0) {
       try {
+        // First, get the current avatar URL from a fresh profile query
+        const { data: currentProfile } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+        
         // Generate new filename with random component
         const fileExt = avatarFile.name.split('.').pop();
         const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+
+        // If there's an existing avatar, delete it first
+        if (currentProfile?.avatar_url) {
+          const urlParts = currentProfile.avatar_url.split('/');
+          const oldFileName = urlParts[urlParts.length - 1];
+          
+          console.log('Attempting to delete:', oldFileName);
+          
+          // Delete old file
+          const { error: removeError } = await supabase
+            .storage
+            .from('avatars')
+            .remove([oldFileName]);
+
+          if (removeError) {
+            console.error('Error removing old avatar:', removeError.message);
+            throw removeError;
+          }
+          
+          console.log('Successfully deleted old avatar');
+        }
 
         // Upload new file
         const { data, error: uploadError } = await supabase
@@ -53,21 +81,10 @@ export default async function ProfilePage() {
           .from('avatars')
           .getPublicUrl(fileName);
 
-        // If there's an existing avatar, delete it
-        if (profile?.avatar_url) {
-          const oldFileName = profile.avatar_url.split('/').pop();
-          if (oldFileName) {
-            await supabase
-              .storage
-              .from('avatars')
-              .remove([oldFileName]);
-          }
-        }
-
         avatar_url = publicUrl;
 
       } catch (error) {
-        console.error('Upload error:', error);
+        console.error('Operation error:', error);
         throw error;
       }
     }
