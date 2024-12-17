@@ -8,41 +8,32 @@ import { redirect } from "next/navigation";
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
+  const first_name = formData.get("first_name")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  if (!email || !password) {
+  if (!email || !password || !first_name) {
     return encodedRedirect(
       "error",
       "/sign-up",
-      "Email and password are required",
+      "Email, password, and first name are required",
     );
   }
 
-  // First sign up the user
-  const { data: { user }, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
+      data: {
+        first_name: first_name
+      }
     },
   });
 
   if (error) {
     console.error(error.code + " " + error.message);
     return encodedRedirect("error", "/sign-up", error.message);
-  }
-
-  // If signup successful, create their profile record
-  if (user) {
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({ id: user.id });
-
-    if (profileError) {
-      console.error("Error creating profile:", profileError);
-      // We may want to handle this error differently
-    }
   }
 
   return encodedRedirect(
