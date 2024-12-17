@@ -35,47 +35,33 @@ export default async function ProfilePage() {
     const avatarFile = formData.get('avatar') as File;
     if (avatarFile.size > 0) {
       try {
-        // First, get the current avatar URL from a fresh profile query
+        // Get current profile to check for existing avatar
         const { data: currentProfile } = await supabase
           .from('profiles')
           .select('avatar_url')
           .eq('id', user.id)
           .single();
-        
-        // Generate new filename with random component
+
+        // Generate new filename
         const fileExt = avatarFile.name.split('.').pop();
         const fileName = `${user.id}-${Math.random()}.${fileExt}`;
 
-        // If there's an existing avatar, delete it first
+        // Delete old avatar if it exists
+        // Has to be done this way because upsert doesn't play nice for some reason (TODO)
         if (currentProfile?.avatar_url) {
-          const urlParts = currentProfile.avatar_url.split('/');
-          const oldFileName = urlParts[urlParts.length - 1];
-          
-          console.log('Attempting to delete:', oldFileName);
-          
-          // Delete old file
-          const { error: removeError } = await supabase
-            .storage
-            .from('avatars')
-            .remove([oldFileName]);
-
-          if (removeError) {
-            console.error('Error removing old avatar:', removeError.message);
-            throw removeError;
-          }
-          
-          console.log('Successfully deleted old avatar');
+          const oldFileName = currentProfile.avatar_url.split('/').pop();
+          await supabase.storage.from('avatars').remove([oldFileName]);
         }
 
-        // Upload new file
-        const { data, error: uploadError } = await supabase
+        // Upload new avatar
+        const { error: uploadError } = await supabase
           .storage
           .from('avatars')
           .upload(fileName, avatarFile);
 
         if (uploadError) throw uploadError;
 
-        // Get the new public URL
+        // Get public URL
         const { data: { publicUrl } } = supabase
           .storage
           .from('avatars')
@@ -84,7 +70,7 @@ export default async function ProfilePage() {
         avatar_url = publicUrl;
 
       } catch (error) {
-        console.error('Operation error:', error);
+        console.error('Avatar update failed:', error);
         throw error;
       }
     }
