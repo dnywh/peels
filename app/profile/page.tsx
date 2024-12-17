@@ -30,22 +30,32 @@ export default async function ProfilePage() {
     }
 
     const first_name = formData.get('first_name')?.toString();
-    const suburb = formData.get('suburb')?.toString();
-    const favorite_color = formData.get('favorite_color')?.toString();
+    console.log('Attempting to update profile with:', { 
+      userId: user.id, 
+      first_name 
+    });
 
-    await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .upsert({ 
         id: user.id, 
         first_name, 
-        suburb, 
-        favorite_color 
       })
-      .eq('id', user.id);
+      .eq('id', user.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating profile:', error);
+      // You might want to handle this error in the UI
+      throw error;
+    }
+
+    console.log('Profile updated successfully:', data);
 
     revalidatePath('/profile');
     revalidatePath('/notes');
-    redirect("/protected")
+    redirect("/protected");
   }
 
   return (

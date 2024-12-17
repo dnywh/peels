@@ -19,7 +19,8 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  // First sign up the user
+  const { data: { user }, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -30,13 +31,25 @@ export const signUpAction = async (formData: FormData) => {
   if (error) {
     console.error(error.code + " " + error.message);
     return encodedRedirect("error", "/sign-up", error.message);
-  } else {
-    return encodedRedirect(
-      "success",
-      "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link.",
-    );
   }
+
+  // If signup successful, create their profile record
+  if (user) {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({ id: user.id });
+
+    if (profileError) {
+      console.error("Error creating profile:", profileError);
+      // We may want to handle this error differently
+    }
+  }
+
+  return encodedRedirect(
+    "success",
+    "/sign-up",
+    "Thanks for signing up! Please check your email for a verification link.",
+  );
 };
 
 export const signInAction = async (formData: FormData) => {
