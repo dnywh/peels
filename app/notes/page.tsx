@@ -13,7 +13,11 @@ export default async function Page() {
     return redirect("/sign-in");
   }
 
-  const { data: notes } = await supabase.from("notes").select();
+  // Fetch both notes and profile data
+  const [{ data: notes }, { data: profile }] = await Promise.all([
+    supabase.from("notes").select().eq('user_id', user.id),
+    supabase.from("profiles").select().eq('id', user.id).single()
+  ]);
 
   async function addNote(formData: FormData) {
     'use server';
@@ -22,18 +26,26 @@ export default async function Page() {
     if (!title) return;
 
     const supabase = await createClient();
-    await supabase.from('notes').insert({ title });
+    await supabase.from('notes').insert({ 
+      title,
+      user_id: user?.id
+    });
     
-    revalidatePath('/notes');
+    revalidatePath('/notes'); // Refresh
   }
 
   return (
     <div>
+      <h1>
+        {profile?.first_name ? 
+          `${profile.first_name}'s Notes only` : 
+          'My Notes'}
+      </h1>
       <form action={addNote}>
         <input
           type="text"
           name="title"
-          placeholder="Enter your note..."
+          placeholder="Enter a new note..."
           className="border p-2 mr-2"
         />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
