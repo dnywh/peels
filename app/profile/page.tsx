@@ -29,39 +29,62 @@ export default async function ProfilePage() {
       return redirect("/sign-in");
     }
 
-    const first_name = formData.get('first_name')?.toString();
-    const favorite_color = formData.get('favorite_color')?.toString();
-    const suburb = formData.get('suburb')?.toString();
+    let avatar_url = profile?.avatar_url;
 
-    console.log('Attempting to update profile with:', { 
-      userId: user.id, 
-      first_name,
-      favorite_color,
-      suburb
-    });
+    // Handle image upload if a file was provided
+    const avatarFile = formData.get('avatar') as File;
+    if (avatarFile.size > 0) {
+      try {
+        // Generate new filename with random component
+        const fileExt = avatarFile.name.split('.').pop();
+        const fileName = `${user.id}-${Math.random()}.${fileExt}`;
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert({ 
-        id: user.id, 
-        first_name, 
-        favorite_color,
-        suburb
-      })
-      .eq('id', user.id)
-      .select()
-      .single();
+        // Upload new file
+        const { data, error: uploadError } = await supabase
+          .storage
+          .from('avatars')
+          .upload(fileName, avatarFile);
 
-    if (error) {
-      console.error('Error updating profile:', error);
-      // You might want to handle this error in the UI
-      throw error;
+        if (uploadError) throw uploadError;
+
+        // Get the new public URL
+        const { data: { publicUrl } } = supabase
+          .storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+        // If there's an existing avatar, delete it
+        if (profile?.avatar_url) {
+          const oldFileName = profile.avatar_url.split('/').pop();
+          if (oldFileName) {
+            await supabase
+              .storage
+              .from('avatars')
+              .remove([oldFileName]);
+          }
+        }
+
+        avatar_url = publicUrl;
+
+      } catch (error) {
+        console.error('Upload error:', error);
+        throw error;
+      }
     }
 
-    console.log('Profile updated successfully:', data);
+    // Update profile
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ 
+        first_name: formData.get('first_name')?.toString(),
+        avatar_url
+      })
+      .eq('id', user.id);
+
+    if (updateError) throw updateError;
 
     revalidatePath('/profile');
-    revalidatePath('/notes');
+    revalidatePath('/protected');
     redirect("/protected");
   }
 
@@ -69,6 +92,24 @@ export default async function ProfilePage() {
     <div className="max-w-md mx-auto mt-8">
       <h1 className="text-2xl mb-4">Edit Profile</h1>
       <form action={updateProfile}>
+        {/* Add avatar upload input */}
+        <div className="mb-4">
+          <label className="block mb-2">Profile Picture</label>
+          {profile?.avatar_url && (
+            <img 
+              src={profile.avatar_url} 
+              alt="Profile" 
+              className="w-20 h-20 rounded-full mb-2 object-cover"
+            />
+          )}
+          <input
+            type="file"
+            name="avatar"
+            accept="image/*"
+            className="border p-2 w-full"
+          />
+        </div>
+
         <div className="mb-4">
           <label className="block mb-2">First Name</label>
           <input
