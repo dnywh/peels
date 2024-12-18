@@ -145,3 +145,41 @@ export const signOutAction = async () => {
   await supabase.auth.signOut();
   return redirect("/sign-in");
 };
+
+export const deleteAccountAction = async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return redirect("/sign-in");
+  }
+
+  try {
+    console.log('Attempting to delete user:', user.id);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-account`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: user.id }),
+      }
+    );
+
+    const data = await response.json();
+    console.log('Response:', data);
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to delete account');
+    }
+
+    return redirect("/sign-in");
+  } catch (error) {
+    console.error('Delete account error:', error);
+    return encodedRedirect("error", "/profile", "Failed to delete account");
+  }
+};
