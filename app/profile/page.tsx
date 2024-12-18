@@ -79,8 +79,10 @@ export default async function ProfilePage() {
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ 
+          avatar_url,
         first_name: formData.get('first_name')?.toString(),
-        avatar_url
+        favorite_color: formData.get('favorite_color')?.toString(),
+        suburb: formData.get('suburb')?.toString(),
       })
       .eq('id', user.id);
 

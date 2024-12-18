@@ -20,7 +20,6 @@ export default async function ProtectedPage() {
     .eq("id", user.id)
     .single() : { data: null };
 
-  console.log('Initial profile:', profile);
 
   // If there's a profile with an avatar_url, get its public URL
   if (profile?.avatar_url) {
@@ -35,7 +34,6 @@ export default async function ProtectedPage() {
     profile.avatar_url = data.publicUrl;
   }
 
-  console.log('Final profile:', profile);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">

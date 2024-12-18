@@ -41,6 +41,12 @@ export default async function Signup(props: {
           />
           <Label htmlFor="first_name">First name</Label>
           <Input name="first_name" required />
+          <Label htmlFor="invite_code">Invite code</Label>
+          <Input
+            name="invite_code"
+            placeholder="Enter invite code"
+            required
+          />
           <SubmitButton formAction={signUpAction} pendingText="Signing up...">
             Sign up
           </SubmitButton>

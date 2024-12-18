@@ -9,6 +9,7 @@ export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const first_name = formData.get("first_name")?.toString();
+  const inviteCode = formData.get('invite_code');
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
@@ -16,7 +17,15 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/sign-up",
-      "Email, password, and first name are required",
+      "A first name, email, and password are required.",
+    );
+  }
+
+  if (inviteCode !== process.env.INVITE_CODE) {
+    return encodedRedirect(
+      "error",
+      "/sign-up",
+      "Sorry, that invite code is invalid.",
     );
   }
 
