@@ -152,12 +152,12 @@ export const deleteAccountAction = async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Verify user session is still valid before proceeding with account deletion
   if (!user) {
     return redirect("/sign-in");
   }
 
   try {
-    console.log('Attempting to delete user:', user.id);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-account`,
       {
@@ -170,14 +170,12 @@ export const deleteAccountAction = async () => {
       }
     );
 
-    const data = await response.json();
-    console.log('Response:', data);
-
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to delete account');
+      return encodedRedirect("error", "/profile", "Failed to delete account");
     }
 
-    return redirect("/sign-in");
+    await supabase.auth.signOut();
+    return encodedRedirect("success", "/sign-in", "Account successfully deleted");
   } catch (error) {
     console.error('Delete account error:', error);
     return encodedRedirect("error", "/profile", "Failed to delete account");

@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache"; // to refresh the page after adding a note
 import { deleteAccountAction } from "@/app/actions";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, DialogClose } from "@radix-ui/react-dialog";
+import { useState } from "react";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -150,14 +152,40 @@ export default async function ProfilePage() {
           Save Profile
         </button>
       </form>
-      <form action={deleteAccountAction} className="mt-4">
-        <button
-          type="submit"
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Delete Account
-        </button>
-      </form>
+      <Dialog>
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+          >
+            Delete Account
+          </button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogTitle>Delete Account</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete your account? This action cannot be undone.
+          </DialogDescription>
+          <div className="mt-4 flex gap-4">
+            <form action={deleteAccountAction}>
+              <button
+                type="submit"
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Yes, Delete My Account
+              </button>
+            </form>
+            <DialogClose asChild>
+              <button
+                type="button"
+                className="bg-gray-200 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
