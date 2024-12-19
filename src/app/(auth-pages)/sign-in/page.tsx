@@ -3,28 +3,16 @@ import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function Login(props: { 
-  searchParams: Promise<{
+  searchParams: { 
     next?: string;
     error?: string;
     success?: string;
-  }>
+  } 
 }) {
-
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Redirect authenticated users to profile
-  if (user) {
-    redirect('/profile');
-  }
-
-  
-  const searchParams = await props.searchParams;
+  const { next, error, success } = props.searchParams;
   
   return (
     <form className="flex-1 flex flex-col min-w-64">
@@ -53,12 +41,12 @@ export default async function Login(props: {
           placeholder="Your password"
           required
         />
-        {searchParams.next && <input type="hidden" name="next" value={searchParams.next} />}
+        {next && <input type="hidden" name="next" value={next} />}
         <SubmitButton pendingText="Signing In..." formAction={signInAction}>
           Sign in
         </SubmitButton>
-        <FormMessage message={searchParams} />
       </div>
+      <FormMessage message={{ error, success }} />
     </form>
   );
 }
