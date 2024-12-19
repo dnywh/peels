@@ -4,8 +4,13 @@ import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { usePathname } from 'next/navigation';
+
+// Routes where we want to show the auth UI
+const AUTH_ROUTES = ['/', '/terms', '/privacy'];
 
 export function NavAuth() {
+  const pathname = usePathname();
   const supabase = createClient();
   const [session, setSession] = useState<null | { user: { id: string } }>(null);
   const [profile, setProfile] = useState<{ first_name?: string } | null>(null);
@@ -43,6 +48,11 @@ export function NavAuth() {
 
     getProfile();
   }, [session]);
+
+  // Don't render anything on non-auth routes
+  if (!AUTH_ROUTES.includes(pathname)) {
+    return null;
+  }
 
   if (!session) {
     return (

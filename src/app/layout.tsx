@@ -5,7 +5,7 @@ import "./globals.css";
 import { Metadata } from 'next'
 import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site"
-import { NavWrapper } from "@/components/nav-wrapper";
+import { NavAuth } from "@/components/nav-auth";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
@@ -42,7 +42,7 @@ export default function RootLayout({
                       <Link href={"/profile"}>Profile</Link>
                     </div>
                   </div>
-                  <NavWrapper />
+                  <NavAuth />
                 </div>
               </nav>
               <div className="flex flex-col gap-20 max-w-5xl p-5">
