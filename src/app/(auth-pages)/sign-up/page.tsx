@@ -1,3 +1,5 @@
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 import { signUpAction } from "@/app/actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
@@ -14,6 +16,14 @@ export default async function Signup(props: {
     first_name?: string;
   }>;
 }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Redirect authenticated users to profile
+  if (user) {
+    redirect('/profile');
+  }
+
   const searchParams = await props.searchParams;
 
   return (

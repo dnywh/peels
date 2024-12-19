@@ -3,7 +3,9 @@ import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function Login(props: { 
   searchParams: Promise<{
@@ -12,6 +14,16 @@ export default async function Login(props: {
     success?: string;
   }>
 }) {
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Redirect authenticated users to profile
+  if (user) {
+    redirect('/profile');
+  }
+
+  
   const searchParams = await props.searchParams;
   
   return (
