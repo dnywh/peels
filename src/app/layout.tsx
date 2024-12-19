@@ -5,6 +5,7 @@ import "./globals.css";
 import { Metadata } from 'next'
 import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site"
+import { NavWrapper } from "@/components/nav-wrapper";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
@@ -13,7 +14,6 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  // ... other metadata
 }
 
 export default function RootLayout({
@@ -42,7 +42,7 @@ export default function RootLayout({
                       <Link href={"/profile"}>Profile</Link>
                     </div>
                   </div>
-          
+                  <NavWrapper />
                 </div>
               </nav>
               <div className="flex flex-col gap-20 max-w-5xl p-5">
