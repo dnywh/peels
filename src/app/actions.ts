@@ -13,20 +13,25 @@ export const signUpAction = async (formData: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
+  // Only preserve non-sensitive fields
+  const preservedData = new URLSearchParams();
+  if (email) preservedData.set("email", email);
+  if (first_name) preservedData.set("first_name", first_name);
+  
+  // Add error/success to the same URLSearchParams object
+  const redirectUrl = new URL("/sign-up", origin);
+  preservedData.forEach((value, key) => {
+    redirectUrl.searchParams.append(key, value);
+  });
+
   if (!email || !password || !first_name) {
-    return encodedRedirect(
-      "error",
-      "/sign-up",
-      "A first name, email, and password are required."
-    );
+    redirectUrl.searchParams.append("error", "A first name, email, and password are required.");
+    return redirect(redirectUrl.toString());
   }
 
   if (inviteCode !== process.env.INVITE_CODE) {
-    return encodedRedirect(
-      "error",
-      "/sign-up",
-      "Sorry, that invite code is invalid."
-    );
+    redirectUrl.searchParams.append("error", "Sorry, that invite code is invalid.");
+    return redirect(redirectUrl.toString());
   }
 
   // Check if user exists in auth.users
@@ -37,26 +42,20 @@ export const signUpAction = async (formData: FormData) => {
 
   if (authError) {
     console.error('Error checking email:', authError);
-    return encodedRedirect(
-      "error",
-      "/sign-up",
-      "Sorry, we couldn't process your request."
-    );
+    redirectUrl.searchParams.append("error", "Sorry, we couldn't process your request.");
+    return redirect(redirectUrl.toString());
   }
 
   if (existingAuthUser) {
-    return encodedRedirect(
-      "error",
-      "/sign-up",
-      "An account with this email already exists. Please sign in instead."
-    );
+    redirectUrl.searchParams.append("error", "An account with this email already exists. Please sign in instead.");
+    return redirect(redirectUrl.toString());
   }
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/callback?type=signup`,
       data: {
         first_name: first_name,
       },
@@ -65,14 +64,12 @@ export const signUpAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
+    redirectUrl.searchParams.append("error", error.message);
+    return redirect(redirectUrl.toString());
   }
 
-  return encodedRedirect(
-    "success",
-    "/sign-up",
-    "Thanks for signing up! Please check your email for a verification link."
-  );
+  redirectUrl.searchParams.append("success", "Thanks for signing up! Please check your email for a verification link.");
+  return redirect(redirectUrl.toString());
 };
 
 export const signInAction = async (formData: FormData) => {
