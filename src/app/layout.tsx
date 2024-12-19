@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     default: 'Peels',
     template: '%s | Your Site Name',
   },
-  description: 'Your site description',
+  description: 'Find a home for your food scraps, wherever you are.',
   // ... other metadata
 }
 
@@ -54,7 +54,7 @@ export default function RootLayout({
 
               {/* Shared footer  */}
               <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-              <div>© 2024–present Brown Pages</div>
+                <div>© 2024 {(metadata.title as { default: string }).default}</div>
                 {/* Possible TODO: Link for community guidelines, like Duolingo  */}
                 <Link href="terms">Terms</Link>
                 <Link href="privacy">Privacy</Link>
