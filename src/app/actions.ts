@@ -29,6 +29,29 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
+  // Check if user exists in auth.users
+  const { data: existingAuthUser, error: authError } = await supabase
+    .rpc('check_if_email_exists', {
+      email_to_check: email
+    });
+
+  if (authError) {
+    console.error('Error checking email:', authError);
+    return encodedRedirect(
+      "error",
+      "/sign-up",
+      "Sorry, we couldn't process your request."
+    );
+  }
+
+  if (existingAuthUser) {
+    return encodedRedirect(
+      "error",
+      "/sign-up",
+      "An account with this email already exists. Please sign in instead."
+    );
+  }
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -55,6 +78,7 @@ export const signUpAction = async (formData: FormData) => {
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const next = formData.get("next") as string;
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -66,7 +90,7 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  return redirect("/map");
+  return redirect(next || "/map");
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {

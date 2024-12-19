@@ -7,24 +7,29 @@ export async function GET(request: Request) {
   // https://supabase.com/docs/guides/auth/server-side/nextjs
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const type = requestUrl.searchParams.get("type");
   const origin = requestUrl.origin;
   // const redirectTo = requestUrl.searchParams.get("redirect_to")?.toString();
   const next = requestUrl.searchParams.get("next") || "/map";
 
   if (code) {
     const supabase = await createClient();
-    await supabase.auth.exchangeCodeForSession(code);
-  }
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    
+    // Debug log
+    console.log('Auth callback:', {
+      type,
+      code: code.slice(0, 6) + '...', // Log just the start of the code to check if it's a signup
+      userId: data?.user?.id
+    });
 
-  // if (redirectTo) {
-  //   return NextResponse.redirect(`${origin}${redirectTo}`);
-  // }
-
-    // New users from sign-up will have a special parameter
-    const isNewUser = requestUrl.searchParams.get("new_user") === "true";
-    if (isNewUser) {
+    // If this is a 'signup' verification, send to profile, otherwise go to next (map)
+    if (type === 'signup') {
+      console.log('Redirecting new signup to profile');
       return NextResponse.redirect(`${origin}/profile`);
     }
+  }
 
+  console.log('Redirecting to:', `${origin}${next}`);
   return NextResponse.redirect(`${origin}${next}`);
 }
