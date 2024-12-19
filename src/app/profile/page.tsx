@@ -12,7 +12,8 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return redirect("/sign-in");
+    // return redirect("/sign-in");
+    return <div>Please sign in to view your profile</div>;
   }
 
   const { data: profile } = await supabase
@@ -90,8 +91,7 @@ export default async function ProfilePage() {
     if (updateError) throw updateError;
 
     revalidatePath("/profile");
-    revalidatePath("/protected");
-    redirect("/protected");
+    redirect("/profile");
   }
 
   return (
