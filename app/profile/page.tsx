@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache"; // to refresh the page after adding a note
 import { deleteAccountAction } from "@/app/actions";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, DialogClose } from "@radix-ui/react-dialog";
-import { useState } from "react";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
