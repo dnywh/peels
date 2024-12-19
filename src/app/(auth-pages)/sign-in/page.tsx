@@ -12,7 +12,7 @@ export default async function Login(props: {
     success?: string;
   } 
 }) {
-  const { next, error, success } = props.searchParams;
+  const { next, error, success } = await props.searchParams;
   
   return (
     <form className="flex-1 flex flex-col min-w-64">
