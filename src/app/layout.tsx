@@ -1,4 +1,3 @@
-import DeployButton from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -8,15 +7,10 @@ import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
 import { Metadata } from 'next'
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+import { getBaseUrl } from "@/utils/url";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    new URL(defaultUrl)
-  ),
+  metadataBase: new URL(getBaseUrl()),
   title: {
     default: 'Peels',
     template: '%s | Your Site Name',

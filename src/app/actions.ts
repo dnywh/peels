@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getBaseUrl } from "@/utils/url";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -19,7 +20,7 @@ export const signUpAction = async (formData: FormData) => {
   if (first_name) preservedData.set("first_name", first_name);
   
   // Add error/success to the same URLSearchParams object
-  const redirectUrl = new URL("/sign-up", origin);
+  const redirectUrl = new URL("/sign-up", origin || getBaseUrl());
   preservedData.forEach((value, key) => {
     redirectUrl.searchParams.append(key, value);
   });
@@ -55,7 +56,7 @@ export const signUpAction = async (formData: FormData) => {
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?type=signup`,
+      emailRedirectTo: `${origin || getBaseUrl()}/auth/callback?type=signup`,
       data: {
         first_name: first_name,
       },
@@ -101,7 +102,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/reset-password`,
+    redirectTo: `${origin || getBaseUrl()}/auth/callback?redirect_to=/reset-password`,
   });
 
   if (error) {
