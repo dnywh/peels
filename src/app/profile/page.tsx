@@ -1,8 +1,11 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache"; // to refresh the page after adding a note
-import { deleteAccountAction } from "@/app/actions";
+import { deleteAccountAction, signOutAction } from "@/app/actions";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, DialogClose } from "@radix-ui/react-dialog";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import GuestActions from "@/components/guest-actions";
+import { Button } from "@/components/ui/button";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -12,8 +15,15 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    // return redirect("/sign-in");
-    return <div>Please sign in to view your profile</div>;
+    return (
+      <div className="flex-1 w-full flex flex-col gap-12">
+        <div className="w-full text-center">
+          <h1 className="text-2xl font-bold mb-4">Profile</h1>
+          <p>Set up a profile or map listing.</p>
+          <GuestActions />
+        </div>
+      </div>
+    );
   }
 
   const { data: profile } = await supabase
@@ -97,8 +107,16 @@ export default async function ProfilePage() {
   return (
     <div className="max-w-md mx-auto mt-8">
       <h1 className="text-2xl mb-4">Edit Profile</h1>
+      
+      <div className="mb-8">
+        <h2 className="text-lg mb-2">Preferences</h2>
+        <div className="flex items-center justify-between p-4 border rounded-lg">
+          <span>Theme</span>
+          <ThemeSwitcher />
+        </div>
+      </div>
+
       <form action={updateProfile}>
-        {/* Add avatar upload input */}
         <div className="mb-4">
           <label className="block mb-2">Profile Picture</label>
           {profile?.avatar_url && (
@@ -125,7 +143,7 @@ export default async function ProfilePage() {
             className="border p-2 w-full"
           />
         </div>
-        {/* Add more fields as needed */}
+
         <div className="mb-4">
           <label className="block mb-2">Favourite colour</label>
           <input
@@ -135,6 +153,7 @@ export default async function ProfilePage() {
             className="border p-2 w-full"
           />
         </div>
+
         <div className="mb-4">
           <label className="block mb-2">Suburb</label>
           <input
@@ -144,6 +163,7 @@ export default async function ProfilePage() {
             className="border p-2 w-full"
           />
         </div>
+
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -151,6 +171,13 @@ export default async function ProfilePage() {
           Save Profile
         </button>
       </form>
+
+      <form action={signOutAction}>
+        <Button type="submit" variant={"outline"}>
+          Sign out
+        </Button>
+      </form>
+
       <Dialog>
         <DialogTrigger asChild>
           <button

@@ -1,5 +1,5 @@
+import GuestActions from "@/components/guest-actions";
 import { createClient } from "@/utils/supabase/server";
-import Link from "next/link";
 
 export default async function ChatsPage() {
   const supabase = await createClient();
@@ -10,7 +10,8 @@ export default async function ChatsPage() {
       <div className="flex-1 w-full flex flex-col gap-12">
         <div className="w-full text-center">
           <h1 className="text-2xl font-bold mb-4">Messages</h1>
-          <p>Please <Link href="/sign-in" className="text-primary hover:underline">sign in</Link> to view your messages</p>
+          <p>Contact folks on Peels.</p>
+          <GuestActions />
         </div>
       </div>
     );

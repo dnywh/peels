@@ -1,3 +1,4 @@
+import GuestActions from "@/components/guest-actions";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function MapPage() {
@@ -13,6 +14,8 @@ export default async function MapPage() {
           <div>
             <h1>Discover People Near You</h1>
             <p>Sign in to connect with people in your area</p>
+            
+            <GuestActions />
           </div>
         )}
       </div>
