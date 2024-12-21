@@ -2,10 +2,18 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache"; // to refresh the page after adding a note
 import { deleteAccountAction, signOutAction } from "@/app/actions";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, DialogClose } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@radix-ui/react-dialog";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import GuestActions from "@/components/guest-actions";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -107,7 +115,7 @@ export default async function ProfilePage() {
   return (
     <div className="max-w-md mx-auto mt-8">
       <h1 className="text-2xl mb-4">Edit Profile</h1>
-      
+
       <div className="mb-8">
         <h2 className="text-lg mb-2">Preferences</h2>
         <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -178,6 +186,13 @@ export default async function ProfilePage() {
         </Button>
       </form>
 
+      <hr />
+      <Button variant={"outline"}>
+        <Link href="/new-listing">Add a listing</Link>
+      </Button>
+
+      <hr />
+
       <Dialog>
         <DialogTrigger asChild>
           <button
@@ -190,7 +205,8 @@ export default async function ProfilePage() {
         <DialogContent>
           <DialogTitle>Delete Account</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete your account? This action cannot be undone.
+            Are you sure you want to delete your account? This action cannot be
+            undone.
           </DialogDescription>
           <div className="mt-4 flex gap-4">
             <form action={deleteAccountAction}>
@@ -202,10 +218,7 @@ export default async function ProfilePage() {
               </button>
             </form>
             <DialogClose asChild>
-              <button
-                type="button"
-                className="bg-gray-200 px-4 py-2 rounded"
-              >
+              <button type="button" className="bg-gray-200 px-4 py-2 rounded">
                 Cancel
               </button>
             </DialogClose>
