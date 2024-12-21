@@ -4,11 +4,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import PeelsButton from '@/components/PeelsButton';
 import BackButton from '@/components/BackButton/BackButton';
+
+
 // TODO
 // 1. This page shouldn't be accessible by guests (signed out users)
 // 2. The button should route them to the the business form IF they select "My business donates food scraps"
 // 3. The button should ask another question if they select "I accept food scraps"
-// 4. In that #3 case, the next form's button should route them to the the personal form if they select "Home" or the commuity form if they select "Community place"
+// 4. In that #3 case, the next form's button should route them to the the residential form if they select "residential" or the commuity form if they select "Community place"
 
 
 function NewListingPage() {
@@ -16,47 +18,48 @@ function NewListingPage() {
     const searchParams = useSearchParams();
 
     // Initialize state from URL params
-    const [listingType, setListingType] = useState(searchParams.get('type') || '');
-    const [hostType, setHostType] = useState(searchParams.get('hostType') || '');
-    const [currentStep, setCurrentStep] = useState(Number(searchParams.get('step')) || 1);
+    const [listingType, setListingType] = useState('');
+    const [accepterType, setAccepterType] = useState('');
+    const [currentStep, setCurrentStep] = useState(1);
+
+    // Sync state with the URL params
+    useEffect(() => {
+        const nextStep = searchParams.get('step')
+        setCurrentStep(nextStep ? parseInt(nextStep) : 1)
+        if (!nextStep) {
+            setAccepterType('')
+        }
+    }, [searchParams])
 
     function handleListingTypeChange(event) {
         setListingType(event.target.value);
     }
 
-    function handleHostTypeChange(event) {
-        setHostType(event.target.value);
+    function handleAccepterTypeChange(event) {
+        setAccepterType(event.target.value);
     }
 
     function handleSubmit(event) {
         event.preventDefault();
         if (listingType === 'business') {
             router.push('/new-listing/business');
-        } else if (listingType === 'host' && currentStep === 1) {
+        } else if (listingType === 'accept' && currentStep === 1) {
             // Update URL with state when moving to step 2
-            router.push(`/new-listing?step=2&type=${listingType}`);
+            // router.push(`/new-listing?step=2&type=${listingType}`);
+            router.push('/new-listing?step=2');
             setCurrentStep(2);
         } else if (currentStep === 2) {
-            if (hostType === 'home') {
-                router.push('/new-listing/personal');
-            } else if (hostType === 'community') {
+            if (accepterType === 'residential') {
+                router.push('/new-listing/residential');
+            } else if (accepterType === 'community') {
                 router.push('/new-listing/community');
             }
         }
     }
 
-    // Handle back button for step 2
-    const handleBack = () => {
-        if (currentStep === 2) {
-            router.push('/new-listing'); // Go back to step 1
-            setCurrentStep(1);
-            setHostType('');
-        }
-    };
-
     return (
         <>
-            <BackButton onClick={currentStep === 2 ? handleBack : undefined} />
+            <BackButton />
 
             <h1>Add a listing</h1>
 
@@ -69,8 +72,8 @@ function NewListingPage() {
                                 <input
                                     type="radio"
                                     name="listingType"
-                                    value="host"
-                                    checked={listingType === 'host'}
+                                    value="accept"
+                                    checked={listingType === 'accept'}
                                     onChange={handleListingTypeChange}
                                 />
                                 <span className="text-lg font-medium">I accept food scraps</span>
@@ -102,25 +105,25 @@ function NewListingPage() {
                             <label>
                                 <input
                                     type="radio"
-                                    name="hostType"
-                                    value="home"
-                                    checked={hostType === 'home'}
-                                    onChange={handleHostTypeChange}
+                                    name="accepterType"
+                                    value="residential"
+                                    checked={accepterType === 'residential'}
+                                    onChange={handleAccepterTypeChange}
                                 />
                                 <span className="text-lg font-medium">At my home</span>
-                                <span className="text-sm text-muted-foreground">I'll accept scraps at my residential address</span>
+                                <span className="text-sm text-muted-foreground">I accept scraps at my residential address</span>
                             </label>
 
                             <label>
                                 <input
                                     type="radio"
-                                    name="hostType"
+                                    name="accepterType"
                                     value="community"
-                                    checked={hostType === 'community'}
-                                    onChange={handleHostTypeChange}
+                                    checked={accepterType === 'community'}
+                                    onChange={handleAccepterTypeChange}
                                 />
                                 <span className="text-lg font-medium">At a community place</span>
-                                <span className="text-sm text-muted-foreground">I manage a community garden or similar location</span>
+                                <span className="text-sm text-muted-foreground">I manage a community garden or similar</span>
                             </label>
                         </div>
                         <PeelsButton type="submit">

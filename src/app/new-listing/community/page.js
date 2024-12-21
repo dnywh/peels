@@ -1,14 +1,14 @@
 import React from "react";
 import BackButton from "@/components/BackButton";
 
-function BusinessListingFormPage() {
+function CommunityListingFormPage() {
 
     return (
         <main>
             <BackButton />
-            <h2>Add a new business listing form</h2>
+            <h2>Add a new community listing form</h2>
         </main>
     );
 }
 
-export default BusinessListingFormPage;
+export default CommunityListingFormPage;
