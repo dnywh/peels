@@ -5,7 +5,7 @@ your-project/
 ├── public/                 # Static assets
 ├── src/                    # Next.js source code
 ├── supabase/              # Supabase specific code
-│   └── functions/         
+│   └── functions/
 │       └── delete-account/
 │           └── index.ts      # Your edge function
 ├── components.json          # shadcn/ui config
@@ -15,6 +15,31 @@ your-project/
 ├── tsconfig.json
 ├── package.json
 └── README.md
+```
+
+## Gating
+
+I use src/middleware.ts to handle rerouting signed-out users from protected pages to the sign-in page.
+
+Pages that show conditional rendering based on whether the user is signed-in or not still need the Supabase client. But at least that will only get pinged for signed-in users (since the middleware catches and redirects guest users early). For example:
+
+```ts
+export default async function ExamplePage() {
+   import { createClient } from "@/utils/supabase/server";
+
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return (
+      <p>Something for signed out users</p>
+    );
+  }
+
+ return (<p>Something for signed in users</p>)
 ```
 
 ---
