@@ -1,4 +1,5 @@
 'use client';
+import { Suspense } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -13,7 +14,7 @@ import BackButton from '@/components/BackButton/BackButton';
 // 4. In that #3 case, the next form's button should route them to the the residential form if they select "residential" or the commuity form if they select "Community place"
 
 
-function NewListingPage() {
+function NewListingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -131,6 +132,14 @@ function NewListingPage() {
                 </>
             )}
         </>
+    );
+}
+
+function NewListingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <NewListingContent />
+        </Suspense>
     );
 }
 
