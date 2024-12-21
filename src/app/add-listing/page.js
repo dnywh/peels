@@ -110,7 +110,7 @@ function NewListingContent() {
                                     onChange={handleAccepterTypeChange}
                                 />
                                 <span className="text-lg font-medium">At my home</span>
-                                <span className="text-sm text-muted-foreground">I accept scraps at my residential address</span>
+                                <span className="text-sm text-muted-foreground">I accept scraps at a residential address</span>
                             </label>
 
                             <label>
