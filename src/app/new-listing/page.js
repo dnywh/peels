@@ -42,17 +42,15 @@ function NewListingPage() {
     function handleSubmit(event) {
         event.preventDefault();
         if (listingType === 'business') {
-            router.push('/new-listing/business');
+            router.push(`/new-listing/form?type=${listingType}`);
         } else if (listingType === 'accept' && currentStep === 1) {
-            // Update URL with state when moving to step 2
-            // router.push(`/new-listing?step=2&type=${listingType}`);
             router.push('/new-listing?step=2');
             setCurrentStep(2);
         } else if (currentStep === 2) {
             if (accepterType === 'residential') {
-                router.push('/new-listing/residential');
+                router.push(`/new-listing/form?type=${accepterType}`);
             } else if (accepterType === 'community') {
-                router.push('/new-listing/community');
+                router.push(`/new-listing/form?type=${accepterType}`);
             }
         }
     }
