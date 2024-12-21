@@ -187,9 +187,8 @@ export default async function ProfilePage() {
       </form>
 
       <hr />
-      <Button variant={"outline"}>
-        <Link href="/new-listing">Add a listing</Link>
-      </Button>
+
+      <Link href="/add-listing">Add a listing</Link>
 
       <hr />
 
