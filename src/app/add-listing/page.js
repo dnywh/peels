@@ -42,6 +42,8 @@ function NewListingContent() {
 
     function handleSubmit(event) {
         event.preventDefault();
+
+        // Navigate to appropriate form
         if (listingType === 'business') {
             router.push(`/add-listing/form?type=${listingType}`);
         } else if (listingType === 'accept' && currentStep === 1) {

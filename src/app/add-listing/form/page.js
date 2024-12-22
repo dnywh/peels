@@ -1,11 +1,14 @@
 'use client'
 
 import React, { Suspense, useState } from "react";
+import { createClient } from '@/utils/supabase/client'
+
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { useSearchParams } from 'next/navigation'
 import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
+// import { error } from "console";
 
 function NewListingFormContent() {
     const searchParams = useSearchParams()
@@ -13,7 +16,9 @@ function NewListingFormContent() {
 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-    const [address, setAddress] = useState('')
+    // const [address, setAddress] = useState('')
+    const [latitude, setLatitude] = useState(0)
+    const [longitude, setLongitude] = useState(0)
     const [acceptedItems, setAcceptedItems] = useState('')
     const [rejectedItems, setRejectedItems] = useState('')
     const [photos, setPhotos] = useState([])
@@ -21,9 +26,63 @@ function NewListingFormContent() {
     const [visibility, setVisibility] = useState(true)
     const [legal, setLegal] = useState(false)
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault()
-        console.log('Form submitted with: ', { name }, { description }, { photos })
+        // TODO: clear form
+        // TODO: submit to database
+        // console.log('Form submitting with: ', { name }, { description }, { photos })
+        try {
+            const supabase = createClient()
+            // Get current user
+            const { data: { user } } = await supabase.auth.getUser()
+            // if (userError) throw userError
+
+            // Prepare the listing data
+            const listingData = {
+                user_id: user.id,
+                type: listingType,
+                name,
+                description,
+                location: `POINT(${longitude} ${latitude})`,
+                accepted_items: acceptedItems ? [acceptedItems] : [],
+                rejected_items: rejectedItems ? [rejectedItems] : [],
+                photos: photos ? [photos] : [],
+                links: links ? [links] : [],
+                visibility: visibility
+            }
+
+            // Insert the listing into the database
+            const { data, error } = await supabase
+                .from('listings')
+                .insert(listingData)
+                .select()
+                .single()
+
+            if (error) throw error
+
+            // Clear form and show success
+            console.log('Listing created:', data)
+            // Reset form
+            setName('')
+            setDescription('')
+            // setAddress('')
+            setAcceptedItems('')
+            setRejectedItems('')
+            setPhotos([])
+            setLinks([])
+            setVisibility(true)
+            setLegal(false)
+
+            // TODO: redirect to listings page and show success toast
+
+        } catch (error) {
+            console.error('Error creating listing:', error)
+        }
+
+
+
+
+
     }
 
     return (
@@ -46,14 +105,32 @@ function NewListingFormContent() {
                         onChange={(event) => setName(event.target.value)}
                     />
 
-                    <label htmlFor="address">Address</label>
+                    {/* <label htmlFor="address">Address</label>
                     <input id="address"
                         required={true}
                         type="text"
                         placeholder="Your community’s address"
                         value={address}
                         onChange={(event) => setAddress(event.target.value)}
+                    /> */}
+
+                    <label htmlFor="longitude">Longitude</label>
+                    <input id="longitude"
+                        required={true}
+                        type="number"
+                        value={longitude}
+                        onChange={(event) => setLongitude(event.target.value)}
                     />
+
+                    <label htmlFor="latitude">Latitude</label>
+                    <input id="latitude"
+                        required={true}
+                        type="number"
+                        value={latitude}
+                        onChange={(event) => setLatitude(event.target.value)}
+                    />
+
+
 
                     <label htmlFor="description">Description <span>(optional)</span></label>
                     <textarea

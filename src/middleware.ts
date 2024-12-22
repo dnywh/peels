@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
   if (
     !user && (
       request.nextUrl.pathname === "/notes" ||
-      request.nextUrl.pathname === "/add-listing"
+      request.nextUrl.pathname.startsWith("/add-listing")
     )
   ) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
