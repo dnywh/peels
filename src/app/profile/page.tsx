@@ -40,6 +40,14 @@ export default async function ProfilePage() {
     .eq("id", user.id)
     .single();
 
+  // Get avatar URL if profile has avatar
+  if (profile?.avatar) {
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("avatars").getPublicUrl(profile.avatar);
+    profile.avatarUrl = publicUrl; // Add URL to profile object
+  }
+
   async function updateProfile(formData: FormData) {
     "use server";
 
@@ -52,7 +60,7 @@ export default async function ProfilePage() {
       return redirect("/sign-in");
     }
 
-    let avatar_url = profile?.avatar_url;
+    let avatar = profile?.avatar;
 
     // Handle image upload if a file was provided
     const avatarFile = formData.get("avatar") as File;
@@ -61,7 +69,7 @@ export default async function ProfilePage() {
         // Get current profile to check for existing avatar
         const { data: currentProfile } = await supabase
           .from("profiles")
-          .select("avatar_url")
+          .select("avatar")
           .eq("id", user.id)
           .single();
 
@@ -70,10 +78,10 @@ export default async function ProfilePage() {
         const fileName = `${user.id}-${Math.random()}.${fileExt}`;
 
         // Delete old avatar if it exists
-        // Has to be done this way because upsert doesn't play nice for some reason (TODO)
-        if (currentProfile?.avatar_url) {
-          const oldFileName = currentProfile.avatar_url.split("/").pop();
-          await supabase.storage.from("avatars").remove([oldFileName]);
+        if (currentProfile?.avatar) {
+          await supabase.storage
+            .from("avatars")
+            .remove([currentProfile.avatar]);
         }
 
         // Upload new avatar
@@ -83,12 +91,8 @@ export default async function ProfilePage() {
 
         if (uploadError) throw uploadError;
 
-        // Get public URL
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("avatars").getPublicUrl(fileName);
-
-        avatar_url = publicUrl;
+        // Store just the filename
+        avatar = fileName;
       } catch (error) {
         console.error("Avatar update failed:", error);
         throw error;
@@ -99,7 +103,7 @@ export default async function ProfilePage() {
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
-        avatar_url,
+        avatar,
         first_name: formData.get("first_name")?.toString(),
         favorite_color: formData.get("favorite_color")?.toString(),
         suburb: formData.get("suburb")?.toString(),
@@ -110,6 +114,15 @@ export default async function ProfilePage() {
 
     revalidatePath("/profile");
     redirect("/profile");
+  }
+
+  // Add helper function for getting avatar URL
+  async function getAvatarUrl(filename: string) {
+    const supabase = await createClient();
+    const {
+      data: { publicUrl },
+    } = await supabase.storage.from("avatars").getPublicUrl(filename);
+    return publicUrl;
   }
 
   return (
@@ -127,9 +140,9 @@ export default async function ProfilePage() {
       <form action={updateProfile}>
         <div className="mb-4">
           <label className="block mb-2">Profile Picture</label>
-          {profile?.avatar_url && (
+          {profile?.avatar && (
             <img
-              src={profile.avatar_url}
+              src={profile.avatarUrl}
               alt="Profile"
               style={{ width: "100px" }}
             />
