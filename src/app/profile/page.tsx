@@ -137,6 +137,8 @@ export default async function ProfilePage() {
         </div>
       </div>
 
+      <p>{user.email}</p>
+
       <form action={updateProfile}>
         <div className="mb-4">
           <label className="block mb-2">Profile Picture</label>
