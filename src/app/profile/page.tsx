@@ -131,7 +131,7 @@ export default async function ProfilePage() {
             <img
               src={profile.avatar_url}
               alt="Profile"
-              className="w-20 h-20 rounded-full mb-2 object-cover"
+              style={{ width: "100px" }}
             />
           )}
           <input
