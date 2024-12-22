@@ -13,7 +13,7 @@ import CheckboxUnit from "@/components/CheckboxUnit";
 
 // Initialize MapTiler client
 
-async function printLocation(longitude, latitude) {
+async function createLegibleLocation(longitude, latitude) {
     maptilerClient.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
     const result = await maptilerClient.geocoding.reverse([longitude, latitude]);
     // Helper function to find feature by place type
@@ -55,20 +55,6 @@ async function printLocation(longitude, latitude) {
     }
 }
 
-console.log(printLocation(-118.242766, 34.0536909))
-
-// async function printLocationTwo(latitude, longitude) {
-//     const pk = placekit(process.env.NEXT_PUBLIC_PLACEKIT_API_KEY)
-//     // pk.coordinates("48.873662, 2.295063").then(res => console.log(res))
-//     pk.search('42 avenue Champs-Élysées Paris').then((res) => {
-//         console.log(res.results);
-//     });
-// const result = await maptilerClient.geocoding.reverse([latitude, longitude])
-// console.log({ result })
-// console.log(`${result.features[0].place_name}`)
-// }
-
-// printLocationTwo(51.507351, -0.127758)
 
 async function uploadPhoto(file) {
     const supabase = createClient()
@@ -138,7 +124,6 @@ function NewListingFormContent() {
     const [description, setDescription] = useState('')
     const [latitude, setLatitude] = useState('')
     const [longitude, setLongitude] = useState('')
-    const [area, setArea] = useState('')
     const [acceptedItems, setAcceptedItems] = useState([''])
     const [rejectedItems, setRejectedItems] = useState([''])
     const [photos, setPhotos] = useState([])
@@ -217,21 +202,12 @@ function NewListingFormContent() {
 
     async function handleSubmit(event) {
         event.preventDefault()
-        // TODO: clear form
-        // TODO: submit to database
-        // console.log('Form submitting with: ', { name }, { description }, { photos })
         try {
             const supabase = createClient()
-            // Get current user
             const { data: { user } } = await supabase.auth.getUser()
-            // if (userError) throw userError
 
-
-
-
-            // Get location name using reverse geocoding
-            const geocodingResult = await maptilerClient.geocoding.reverse([longitude, latitude]);
-            console.log(geocodingResult)
+            // Get location_legible using your tested function
+            const locationLegible = await createLegibleLocation(longitude, latitude);
 
             // Prepare the listing data
             const listingData = {
@@ -240,13 +216,10 @@ function NewListingFormContent() {
                 avatar,
                 name,
                 description,
-                location_machine: `POINT(${latitude} ${longitude})`,
-                location_legible: `${area}`,
+                location_machine: `POINT(${longitude} ${latitude})`,
+                location_legible: locationLegible,
                 latitude,
                 longitude,
-                // accepted_items: acceptedItems ? [acceptedItems] : [],
-                // rejected_items: rejectedItems ? [rejectedItems] : [],
-                // Filter out rejected items:
                 accepted_items: acceptedItems.filter(item => item.trim() !== ''),
                 rejected_items: rejectedItems.filter(item => item.trim() !== ''),
                 photos,
@@ -271,7 +244,6 @@ function NewListingFormContent() {
             setDescription('')
             setLatitude('')
             setLongitude('')
-            setLocationLegible('')
             setAcceptedItems([''])
             setRejectedItems([''])
             setPhotos([])
@@ -284,11 +256,6 @@ function NewListingFormContent() {
         } catch (error) {
             console.error('Error creating listing:', error)
         }
-
-
-
-
-
     }
 
     return (
@@ -297,7 +264,7 @@ function NewListingFormContent() {
                 <BackButton />
                 <h1>List your {listingType}</h1>
                 <p>Description here.</p>
-                <PlaceKit apiKey="pk_by/6shEINm0Uu+sUOvnFaI7MUUr/EAd7+eS0o72qjzM=" />
+
             </header>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="avatar">Avatar <span>(optional)</span></label>
