@@ -7,37 +7,19 @@ export default async function MapPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Get all listings
-  const { data: listings, error: listingsError } = await supabase
+  const { data: listings, error } = await supabase
     .from('listings')
-    .select('*');
+    .select(`
+    *,
+    profiles (
+      first_name,
+      avatar
+    )
+  `)
 
-  // Get all profiles
-  const { data: profiles, error: profilesError } = await supabase
-    .from('profiles')
-    .select('id, first_name, avatar');
-
-  // Combine the data
-  const listingsWithProfiles = listings?.map(listing => ({
-    ...listing,
-    creator: profiles?.find(profile => profile.id === listing.user_id)
-  }));
-
-  console.log('Combined listings:', listingsWithProfiles);
-
-  // const { data: listings, error } = await supabase
-  //   .from("listings")
-  //   .select(`
-  //     *)
-  //   `)
-  // console.log(listings);
+  console.log(listings);
   // console.log(error);
 
-  // const { data: profiles, error: profilesError } = await supabase
-  //   .from("profiles")
-  //   .select('*')
-  // console.log(profiles);
-  // console.log(profilesError);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
@@ -45,11 +27,11 @@ export default async function MapPage() {
         {user ? (
           <div>
             <h2>Map interface for logged in users</h2>
-            {/* <ul>
+            <ul>
               {listings.map((listing) => (
-                <li key={listing.id}>{listing.name}</li>
+                <li key={listing.id}>{listing.name} by {listing.profiles.first_name}</li>
               ))}
-            </ul> */}
+            </ul>
           </div>
         ) : (
           <div>
