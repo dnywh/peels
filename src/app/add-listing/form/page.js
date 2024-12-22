@@ -3,12 +3,72 @@
 import React, { Suspense, useState } from "react";
 import { createClient } from '@/utils/supabase/client'
 
+import * as maptilerClient from '@maptiler/client';
+// import { PlaceKit } from '@placekit/autocomplete-react';
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { useSearchParams } from 'next/navigation'
 import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
-// import { error } from "console";
+
+// Initialize MapTiler client
+
+async function printLocation(longitude, latitude) {
+    maptilerClient.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+    const result = await maptilerClient.geocoding.reverse([longitude, latitude]);
+    // Helper function to find feature by place type
+    const findFeatureByType = (features, types) => {
+        return features.find(f => types.some(type => f.place_type?.includes(type)));
+    };
+
+    const features = result.features;
+    console.log(features)
+
+    if (!features || features.length === 0) {
+        return undefined;
+    }
+
+    // Look for features in order of specificity
+    const neighbourhood = findFeatureByType(features, ['neighbourhood']);
+    const place = findFeatureByType(features, ['place']);
+    const municipality = findFeatureByType(features, ['municipality']);
+    const region = findFeatureByType(features, ['region']);
+    const country = findFeatureByType(features, ['country']);
+    const marine = findFeatureByType(features, ['continental_marine']);
+
+    // Build location string based on available information
+    if (place && region) {
+        return `${place.text}, ${region.text}`;
+    } else if (municipality && region) {
+        return `${municipality.text}, ${region.text}`;
+    } else if (municipality) {
+        return municipality.text;
+    } else if (region) {
+        return region.text;
+    } else if (country) {
+        return country.text;
+    } else if (marine) {
+        return marine.text;
+    } else {
+        // Fallback to the most relevant feature's place name
+        return features[0].place_name || undefined;
+    }
+}
+
+console.log(printLocation(-118.242766, 34.0536909))
+
+// async function printLocationTwo(latitude, longitude) {
+//     const pk = placekit(process.env.NEXT_PUBLIC_PLACEKIT_API_KEY)
+//     // pk.coordinates("48.873662, 2.295063").then(res => console.log(res))
+//     pk.search('42 avenue Champs-Élysées Paris').then((res) => {
+//         console.log(res.results);
+//     });
+// const result = await maptilerClient.geocoding.reverse([latitude, longitude])
+// console.log({ result })
+// console.log(`${result.features[0].place_name}`)
+// }
+
+// printLocationTwo(51.507351, -0.127758)
 
 async function uploadPhoto(file) {
     const supabase = createClient()
@@ -76,9 +136,9 @@ function NewListingFormContent() {
     const [avatar, setAvatar] = useState('')
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-    // const [address, setAddress] = useState('')
     const [latitude, setLatitude] = useState('')
     const [longitude, setLongitude] = useState('')
+    const [area, setArea] = useState('')
     const [acceptedItems, setAcceptedItems] = useState([''])
     const [rejectedItems, setRejectedItems] = useState([''])
     const [photos, setPhotos] = useState([])
@@ -166,6 +226,13 @@ function NewListingFormContent() {
             const { data: { user } } = await supabase.auth.getUser()
             // if (userError) throw userError
 
+
+
+
+            // Get location name using reverse geocoding
+            const geocodingResult = await maptilerClient.geocoding.reverse([longitude, latitude]);
+            console.log(geocodingResult)
+
             // Prepare the listing data
             const listingData = {
                 user_id: user.id,
@@ -173,7 +240,10 @@ function NewListingFormContent() {
                 avatar,
                 name,
                 description,
-                location: `POINT(${longitude} ${latitude})`,
+                location_machine: `POINT(${latitude} ${longitude})`,
+                location_legible: `${area}`,
+                latitude,
+                longitude,
                 // accepted_items: acceptedItems ? [acceptedItems] : [],
                 // rejected_items: rejectedItems ? [rejectedItems] : [],
                 // Filter out rejected items:
@@ -199,9 +269,9 @@ function NewListingFormContent() {
             setName('')
             setAvatar('')
             setDescription('')
-            setLongitude('')
             setLatitude('')
-            // setAddress('')
+            setLongitude('')
+            setLocationLegible('')
             setAcceptedItems([''])
             setRejectedItems([''])
             setPhotos([])
@@ -227,6 +297,7 @@ function NewListingFormContent() {
                 <BackButton />
                 <h1>List your {listingType}</h1>
                 <p>Description here.</p>
+                <PlaceKit apiKey="pk_by/6shEINm0Uu+sUOvnFaI7MUUr/EAd7+eS0o72qjzM=" />
             </header>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="avatar">Avatar <span>(optional)</span></label>
@@ -267,6 +338,14 @@ function NewListingFormContent() {
                         onChange={(event) => setAddress(event.target.value)}
                     /> */}
 
+                    <label htmlFor="latitude">Latitude</label>
+                    <input id="latitude"
+                        required={true}
+                        type="number"
+                        value={latitude}
+                        onChange={(event) => setLatitude(event.target.value)}
+                    />
+
                     <label htmlFor="longitude">Longitude</label>
                     <input id="longitude"
                         required={true}
@@ -275,13 +354,7 @@ function NewListingFormContent() {
                         onChange={(event) => setLongitude(event.target.value)}
                     />
 
-                    <label htmlFor="latitude">Latitude</label>
-                    <input id="latitude"
-                        required={true}
-                        type="number"
-                        value={latitude}
-                        onChange={(event) => setLatitude(event.target.value)}
-                    />
+
 
 
 

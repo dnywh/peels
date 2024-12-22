@@ -64,7 +64,7 @@ export default async function MapPage() {
 
                   <h2>{listing.type === 'residential' ? listing.profiles.first_name : listing.name}</h2>
                   <p>{listing.type}</p>
-                  {/* <p>Location: {listing.get_latitude}, {listing.get_longitude}</p> */}
+                  <p>Location: {listing.latitude}, {listing.longitude}</p>
                   <p>Last active: TODO</p>
 
                   <button>Contact {listing.type === 'residential' ? listing.profiles.first_name : listing.name}</button>
@@ -73,7 +73,7 @@ export default async function MapPage() {
                   <p>{listing.description}</p>
 
                   <h3>Location</h3>
-                  <p>{listing.location}</p>
+                  <p>{listing.location_legible}</p>
 
                   {listing.accepted_items.length > 0 &&
                     <>
