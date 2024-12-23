@@ -24,7 +24,7 @@ export default function App() {
     return (
         <div>
             <Map
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '100%', height: '400px' }}
                 mapStyle={{
                     version: 8,
                     glyphs: 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
@@ -40,6 +40,7 @@ export default function App() {
                     layers: layers("protomaps", "light")
                 }}
                 // mapLib={maplibregl}
+                renderWorldCopies={true}
                 initialViewState={{
                     longitude: -122.4,
                     latitude: 37.8,
