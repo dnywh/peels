@@ -9,8 +9,8 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from 'protomaps-themes-base';
-import { publicIp } from 'public-ip';
 
+// TODO: Choose sensible defaults
 const initialViewState = {
     latitude: 40,
     longitude: -100,
@@ -19,12 +19,6 @@ const initialViewState = {
 
 export default function App() {
     const mapRef = useRef(null);
-    // const [viewState, setViewState] = useState({
-    //     longitude: -122.4,
-    //     latitude: 37.8,
-    //     zoom: 5
-    // });
-    // const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Initialize PMTiles protocol
@@ -34,22 +28,23 @@ export default function App() {
         // Get location from IP
         async function initializeLocation() {
             try {
-                // todo: see if there is location data already set from local storage, and return that first if so
-                const ip = await publicIp();
-                const response = await fetch(`http://ip-api.com/json/${ip}`);
+                const response = await fetch('https://freeipapi.com/api/json/', {
+                    signal: AbortSignal.timeout(3000) // 3 second timeout
+                });
+
+
+                if (!response.ok) throw new Error('IP lookup failed');
                 const data = await response.json();
 
-                if (data.status === 'success') {
-                    // setTimeout(() => mapRef.current?.flyTo({ center: [data.lon, data.lat], duration: 0 }), 1000);
-                    mapRef.current?.flyTo({ center: [data.lon, data.lat], duration: 0 });
-                    // TODO: store this location in local storage for future use in the same session/browser
-
+                if (data.latitude && data.longitude) {
+                    mapRef.current?.flyTo({
+                        center: [data.longitude, data.latitude],
+                        duration: 0
+                    });
                 }
             } catch (error) {
-                console.error('Error getting location:', error);
-                // Keep default viewState on error
-            } finally {
-                // setIsLoading(false);
+                // Fail silently - default view state will be used
+                console.warn('Could not determine location from IP');
             }
         }
 
@@ -60,10 +55,6 @@ export default function App() {
             maplibregl.removeProtocol("pmtiles");
         };
     }, []);
-
-    // if (isLoading) {
-    //     return <div>Loading map...</div>;
-    // }
 
     return (
         <div>
