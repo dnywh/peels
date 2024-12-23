@@ -13,7 +13,6 @@ import {
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import GuestActions from "@/components/guest-actions";
 import { Button } from "@/components/ui/button";
-import MapPin from "@/components/MapPin";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -117,18 +116,8 @@ export default async function ProfilePage() {
     redirect("/profile");
   }
 
-  // Add helper function for getting avatar URL
-  async function getAvatarUrl(filename: string) {
-    const supabase = await createClient();
-    const {
-      data: { publicUrl },
-    } = await supabase.storage.from("avatars").getPublicUrl(filename);
-    return publicUrl;
-  }
-
   return (
     <div className="max-w-md mx-auto mt-8">
-      <MapPin />
       <h1 className="text-2xl mb-4">Edit Profile</h1>
 
       <div className="mb-8">

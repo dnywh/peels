@@ -4,12 +4,12 @@ import React, { Suspense, useState, useEffect, useRef } from "react";
 import { createClient } from '@/utils/supabase/client'
 
 
-import * as maptilersdk from "@maptiler/sdk";
-import { config, geocoding } from '@maptiler/client';
-import { GeocodingControl } from "@maptiler/geocoding-control/react";
+// import * as maptilersdk from "@maptiler/sdk";
+// import { config, geocoding } from '@maptiler/client';
+// import { GeocodingControl } from "@maptiler/geocoding-control/react";
 // import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
-import "@maptiler/sdk/dist/maptiler-sdk.css";
-import "@maptiler/geocoding-control/style.css";
+// import "@maptiler/sdk/dist/maptiler-sdk.css";
+// import "@maptiler/geocoding-control/style.css";
 
 
 // import { PlaceKit } from '@placekit/autocomplete-react';
@@ -21,53 +21,53 @@ import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
 
 // Initialize MapTiler client
-maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
-console.log(maptilersdk.config.apiKey)
+// maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+// console.log(maptilersdk.config.apiKey)
 
 
 
 
-async function createLegibleLocation(longitude, latitude) {
-    config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
-    const result = await geocoding.reverse([longitude, latitude]);
-    // Helper function to find feature by place type
-    const findFeatureByType = (features, types) => {
-        return features.find(f => types.some(type => f.place_type?.includes(type)));
-    };
+// async function createLegibleLocation(longitude, latitude) {
+//     // config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+//     const result = await geocoding.reverse([longitude, latitude]);
+//     // Helper function to find feature by place type
+//     const findFeatureByType = (features, types) => {
+//         return features.find(f => types.some(type => f.place_type?.includes(type)));
+//     };
 
-    const features = result.features;
-    console.log(features)
+//     const features = result.features;
+//     console.log(features)
 
-    if (!features || features.length === 0) {
-        return undefined;
-    }
+//     if (!features || features.length === 0) {
+//         return undefined;
+//     }
 
-    // Look for features in order of specificity
-    const neighbourhood = findFeatureByType(features, ['neighbourhood']);
-    const place = findFeatureByType(features, ['place']);
-    const municipality = findFeatureByType(features, ['municipality']);
-    const region = findFeatureByType(features, ['region']);
-    const country = findFeatureByType(features, ['country']);
-    const marine = findFeatureByType(features, ['continental_marine']);
+//     // Look for features in order of specificity
+//     const neighbourhood = findFeatureByType(features, ['neighbourhood']);
+//     const place = findFeatureByType(features, ['place']);
+//     const municipality = findFeatureByType(features, ['municipality']);
+//     const region = findFeatureByType(features, ['region']);
+//     const country = findFeatureByType(features, ['country']);
+//     const marine = findFeatureByType(features, ['continental_marine']);
 
-    // Build location string based on available information
-    if (place && region) {
-        return `${place.text}, ${region.text}`;
-    } else if (municipality && region) {
-        return `${municipality.text}, ${region.text}`;
-    } else if (municipality) {
-        return municipality.text;
-    } else if (region) {
-        return region.text;
-    } else if (country) {
-        return country.text;
-    } else if (marine) {
-        return marine.text;
-    } else {
-        // Fallback to the most relevant feature's place name
-        return features[0].place_name || undefined;
-    }
-}
+//     // Build location string based on available information
+//     if (place && region) {
+//         return `${place.text}, ${region.text}`;
+//     } else if (municipality && region) {
+//         return `${municipality.text}, ${region.text}`;
+//     } else if (municipality) {
+//         return municipality.text;
+//     } else if (region) {
+//         return region.text;
+//     } else if (country) {
+//         return country.text;
+//     } else if (marine) {
+//         return marine.text;
+//     } else {
+//         // Fallback to the most relevant feature's place name
+//         return features[0].place_name || undefined;
+//     }
+// }
 
 
 async function uploadPhoto(file) {
@@ -151,57 +151,57 @@ function NewListingFormContent() {
     const [coordinates, setCoordinates] = useState(null);
 
     // Initialize geocoding control outside of map
-    useEffect(() => {
-        const gc = new GeocodingControl({
-            apiKey: process.env.NEXT_PUBLIC_MAPTILER_API_KEY,
-            limit: 5,
-            types: ["address"],
-            country: "us",
-            container: 'geocoding-container' // Add this div to your JSX
-        });
+    // useEffect(() => {
+    //     const gc = new GeocodingControl({
+    //         apiKey: process.env.NEXT_PUBLIC_MAPTILER_API_KEY,
+    //         limit: 5,
+    //         types: ["address"],
+    //         country: "us",
+    //         container: 'geocoding-container' // Add this div to your JSX
+    //     });
 
-        // Create a map instance for the geocoding control
-        const tempMap = new maptilersdk.Map({
-            container: 'geocoding-container',
-            style: maptilersdk.MapStyle.STREETS
-        });
+    //     // Create a map instance for the geocoding control
+    //     const tempMap = new maptilersdk.Map({
+    //         container: 'geocoding-container',
+    //         style: maptilersdk.MapStyle.STREETS
+    //     });
 
-        // Add the control to the map
-        tempMap.addControl(gc);
+    //     // Add the control to the map
+    //     tempMap.addControl(gc);
 
-        // Handle the selection result
-        gc.on('result', (e) => {
-            const { geometry } = e.feature;
-            setCoordinates(geometry.coordinates);
+    //     // Handle the selection result
+    //     gc.on('result', (e) => {
+    //         const { geometry } = e.feature;
+    //         setCoordinates(geometry.coordinates);
 
-            // Initialize or update preview map
-            if (!map) {
-                const newMap = new maptilersdk.Map({
-                    container: mapContainer.current,
-                    style: maptilersdk.MapStyle.STREETS,
-                    center: geometry.coordinates,
-                    zoom: 15,
-                    interactive: false
-                });
-                setMap(newMap);
+    //         // Initialize or update preview map
+    //         if (!map) {
+    //             const newMap = new maptilersdk.Map({
+    //                 container: mapContainer.current,
+    //                 style: maptilersdk.MapStyle.STREETS,
+    //                 center: geometry.coordinates,
+    //                 zoom: 15,
+    //                 interactive: false
+    //             });
+    //             setMap(newMap);
 
-                // Add marker
-                const newMarker = new maptilersdk.Marker()
-                    .setLngLat(geometry.coordinates)
-                    .addTo(newMap);
-                setMarker(newMarker);
-            } else {
-                // Update existing map and marker
-                map.setCenter(geometry.coordinates);
-                marker.setLngLat(geometry.coordinates);
-            }
-        });
+    //             // Add marker
+    //             const newMarker = new maptilersdk.Marker()
+    //                 .setLngLat(geometry.coordinates)
+    //                 .addTo(newMap);
+    //             setMarker(newMarker);
+    //         } else {
+    //             // Update existing map and marker
+    //             map.setCenter(geometry.coordinates);
+    //             marker.setLngLat(geometry.coordinates);
+    //         }
+    //     });
 
-        return () => {
-            if (map) map.remove();
-            if (tempMap) tempMap.remove();
-        };
-    }, [map, marker]);
+    //     return () => {
+    //         if (map) map.remove();
+    //         if (tempMap) tempMap.remove();
+    //     };
+    // }, [map, marker]);
 
     const handleAcceptedItemChange = (index, value) => {
         const newItems = [...acceptedItems]
@@ -279,7 +279,7 @@ function NewListingFormContent() {
             const { data: { user } } = await supabase.auth.getUser()
 
             // Get location_legible using your tested function
-            const locationLegible = await createLegibleLocation(longitude, latitude);
+            // const locationLegible = await createLegibleLocation(longitude, latitude);
 
             // Prepare the listing data
             const listingData = {
@@ -289,7 +289,7 @@ function NewListingFormContent() {
                 name,
                 description,
                 location_machine: `POINT(${longitude} ${latitude})`,
-                location_legible: locationLegible,
+                // location_legible: locationLegible,
                 latitude,
                 longitude,
                 accepted_items: acceptedItems.filter(item => item.trim() !== ''),
@@ -377,46 +377,24 @@ function NewListingFormContent() {
                         onChange={(event) => setAddress(event.target.value)}
                     /> */}
 
-                    <div>
-                        <h2>Location</h2>
 
-                        {/* Geocoding Control Container */}
-                        <div
-                            id="geocoding-container"
-                            className="mb-4"
-                            style={{ width: '100%', marginBottom: '1rem' }}
-                        />
 
-                        <p className="text-sm text-gray-600 mb-2">
-                            Your address is only used to determine the map pin location for your listing.
-                            It won't be stored or shared.
-                        </p>
+                    <label htmlFor="longitude">Longitude</label>
+                    <input
+                        id="longitude"
+                        type="number"
+                        value={longitude}
+                        onChange={(event) => setLongitude(event.target.value)}
+                    />
+                    <label htmlFor="latitude">Latitude</label>
+                    <input
+                        id="latitude"
+                        type="number"
+                        value={latitude}
+                        onChange={(event) => setLatitude(event.target.value)}
+                    />
 
-                        {/* Map Preview Container */}
-                        {coordinates && (
-                            <div
-                                ref={mapContainer}
-                                style={{
-                                    width: '100%',
-                                    height: '300px',
-                                    borderRadius: '8px',
-                                    marginBottom: '1rem'
-                                }}
-                            />
-                        )}
 
-                        {/* Hidden inputs for form submission */}
-                        <input
-                            type="hidden"
-                            name="latitude"
-                            value={coordinates ? coordinates[1] : ''}
-                        />
-                        <input
-                            type="hidden"
-                            name="longitude"
-                            value={coordinates ? coordinates[0] : ''}
-                        />
-                    </div>
 
                     <label htmlFor="description">Description <span>(optional)</span></label>
                     <textarea
