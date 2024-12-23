@@ -26,6 +26,10 @@ export default function App() {
         maplibregl.addProtocol("pmtiles", protocol.tile);
 
         // Get location from IP
+        // TODO: see if there is location data already set from local storage, and return that first if so
+        // Perhaps do this on the homepage/first page loaded and then use that data for the map
+        // And then store that data in local storage for future use in the same session/browser
+        // Consider using that as the default view state for the map for next time (by saving it to Supabase)
         async function initializeLocation() {
             try {
                 const response = await fetch('https://freeipapi.com/api/json/', {
@@ -39,7 +43,7 @@ export default function App() {
                 if (data.latitude && data.longitude) {
                     mapRef.current?.flyTo({
                         center: [data.longitude, data.latitude],
-                        duration: 0
+                        duration: 0 // No animation
                     });
                 }
             } catch (error) {
