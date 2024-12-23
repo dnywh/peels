@@ -13,6 +13,7 @@ import {
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import GuestActions from "@/components/guest-actions";
 import { Button } from "@/components/ui/button";
+import MapPin from "@/components/MapPin";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -127,6 +128,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-md mx-auto mt-8">
+      <MapPin />
       <h1 className="text-2xl mb-4">Edit Profile</h1>
 
       <div className="mb-8">

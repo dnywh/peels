@@ -1,14 +1,29 @@
 'use client';
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 // import "./styles.css";
-import Map from "react-map-gl";
+// import Map from "react-map-gl";
+import Map, { Marker, NavigationControl } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 
 import layers from 'protomaps-themes-base';
 
+import MapPin from '@/components/MapPin';
+// import {MarkerDragEvent, LngLat} from 'react-map-gl';
+
+const initialViewState = {
+    latitude: 40,
+    longitude: -100,
+    zoom: 3.5
+};
+
 export default function App() {
+    const [marker, setMarker] = useState({
+        latitude: 40,
+        longitude: -100
+    });
+
     useEffect(() => {
         let protocol = new Protocol();
         maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -17,11 +32,21 @@ export default function App() {
         };
     }, []);
 
+    const onMarkerDrag = useCallback((event) => {
+        setMarker({
+            longitude: event.lngLat.lng,
+            latitude: event.lngLat.lat
+        });
+
+        console.log(event.lngLat.lng, event.lngLat.lat)
+    }, []);
+
 
     return (
         <div className="App">
             <Map
-                style={{ width: 600, height: 400 }}
+                style={{ width: '100%', height: 400 }}
+                initialViewState={initialViewState}
                 mapStyle={{
                     version: 8,
                     glyphs: 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
@@ -35,10 +60,21 @@ export default function App() {
                         }
                     },
                     layers: layers("protomaps", "light")
-                }
-                }
-                mapLib={maplibregl}
-            />
+                }}
+            // mapLib={maplibregl}
+
+
+            >
+                <Marker
+                    longitude={marker.longitude}
+                    latitude={marker.latitude}
+                    anchor="bottom"
+                    draggable
+                    onDrag={onMarkerDrag}
+                >
+                    <MapPin />
+                </Marker>
+            </Map>
         </div>
     );
 }

@@ -1,10 +1,19 @@
 'use client'
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useEffect, useRef } from "react";
 import { createClient } from '@/utils/supabase/client'
 
-import * as maptilerClient from '@maptiler/client';
+
+import * as maptilersdk from "@maptiler/sdk";
+import { config, geocoding } from '@maptiler/client';
+import { GeocodingControl } from "@maptiler/geocoding-control/react";
+// import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
+import "@maptiler/sdk/dist/maptiler-sdk.css";
+import "@maptiler/geocoding-control/style.css";
+
+
 // import { PlaceKit } from '@placekit/autocomplete-react';
+
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { useSearchParams } from 'next/navigation'
@@ -12,10 +21,15 @@ import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
 
 // Initialize MapTiler client
+maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+console.log(maptilersdk.config.apiKey)
+
+
+
 
 async function createLegibleLocation(longitude, latitude) {
-    maptilerClient.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
-    const result = await maptilerClient.geocoding.reverse([longitude, latitude]);
+    config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+    const result = await geocoding.reverse([longitude, latitude]);
     // Helper function to find feature by place type
     const findFeatureByType = (features, types) => {
         return features.find(f => types.some(type => f.place_type?.includes(type)));
@@ -130,6 +144,64 @@ function NewListingFormContent() {
     const [links, setLinks] = useState([])
     const [visibility, setVisibility] = useState(true)
     const [legal, setLegal] = useState(false)
+
+    const mapContainer = useRef(null);
+    const [map, setMap] = useState(null);
+    const [marker, setMarker] = useState(null);
+    const [coordinates, setCoordinates] = useState(null);
+
+    // Initialize geocoding control outside of map
+    useEffect(() => {
+        const gc = new GeocodingControl({
+            apiKey: process.env.NEXT_PUBLIC_MAPTILER_API_KEY,
+            limit: 5,
+            types: ["address"],
+            country: "us",
+            container: 'geocoding-container' // Add this div to your JSX
+        });
+
+        // Create a map instance for the geocoding control
+        const tempMap = new maptilersdk.Map({
+            container: 'geocoding-container',
+            style: maptilersdk.MapStyle.STREETS
+        });
+
+        // Add the control to the map
+        tempMap.addControl(gc);
+
+        // Handle the selection result
+        gc.on('result', (e) => {
+            const { geometry } = e.feature;
+            setCoordinates(geometry.coordinates);
+
+            // Initialize or update preview map
+            if (!map) {
+                const newMap = new maptilersdk.Map({
+                    container: mapContainer.current,
+                    style: maptilersdk.MapStyle.STREETS,
+                    center: geometry.coordinates,
+                    zoom: 15,
+                    interactive: false
+                });
+                setMap(newMap);
+
+                // Add marker
+                const newMarker = new maptilersdk.Marker()
+                    .setLngLat(geometry.coordinates)
+                    .addTo(newMap);
+                setMarker(newMarker);
+            } else {
+                // Update existing map and marker
+                map.setCenter(geometry.coordinates);
+                marker.setLngLat(geometry.coordinates);
+            }
+        });
+
+        return () => {
+            if (map) map.remove();
+            if (tempMap) tempMap.remove();
+        };
+    }, [map, marker]);
 
     const handleAcceptedItemChange = (index, value) => {
         const newItems = [...acceptedItems]
@@ -305,25 +377,46 @@ function NewListingFormContent() {
                         onChange={(event) => setAddress(event.target.value)}
                     /> */}
 
-                    <label htmlFor="latitude">Latitude</label>
-                    <input id="latitude"
-                        required={true}
-                        type="number"
-                        value={latitude}
-                        onChange={(event) => setLatitude(event.target.value)}
-                    />
+                    <div>
+                        <h2>Location</h2>
 
-                    <label htmlFor="longitude">Longitude</label>
-                    <input id="longitude"
-                        required={true}
-                        type="number"
-                        value={longitude}
-                        onChange={(event) => setLongitude(event.target.value)}
-                    />
+                        {/* Geocoding Control Container */}
+                        <div
+                            id="geocoding-container"
+                            className="mb-4"
+                            style={{ width: '100%', marginBottom: '1rem' }}
+                        />
 
+                        <p className="text-sm text-gray-600 mb-2">
+                            Your address is only used to determine the map pin location for your listing.
+                            It won't be stored or shared.
+                        </p>
 
+                        {/* Map Preview Container */}
+                        {coordinates && (
+                            <div
+                                ref={mapContainer}
+                                style={{
+                                    width: '100%',
+                                    height: '300px',
+                                    borderRadius: '8px',
+                                    marginBottom: '1rem'
+                                }}
+                            />
+                        )}
 
-
+                        {/* Hidden inputs for form submission */}
+                        <input
+                            type="hidden"
+                            name="latitude"
+                            value={coordinates ? coordinates[1] : ''}
+                        />
+                        <input
+                            type="hidden"
+                            name="longitude"
+                            value={coordinates ? coordinates[0] : ''}
+                        />
+                    </div>
 
                     <label htmlFor="description">Description <span>(optional)</span></label>
                     <textarea
