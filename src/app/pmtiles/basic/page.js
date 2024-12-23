@@ -20,6 +20,7 @@ export default function App() {
         };
     }, []);
 
+    console.log("API Key:", process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY);
 
     return (
         <div>
