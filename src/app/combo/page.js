@@ -13,6 +13,8 @@ import layers from 'protomaps-themes-base';
 
 import MapPin from '@/components/MapPin';
 
+// TODO: See if MapTiler's Geolocation API is faster
+// https://docs.maptiler.com/client-js/geolocation/
 async function initializeLocation() {
     try {
         const response = await fetch('https://freeipapi.com/api/json/', {
@@ -37,6 +39,7 @@ async function initializeLocation() {
 // React component
 export default function Combo() {
     const mapRef = useRef(null);
+    const placekitRef = useRef(null);
     const [placekitClient, setPlacekitClient] = useState(null);
 
     const [countryCode, setCountryCode] = useState('');
@@ -74,7 +77,7 @@ export default function Combo() {
         setCountryCode(e.target.value);
         setMapShown(false);
         if (placekitClient) {
-            console.log('resetting placekitClient, removing map');
+            console.log(placekitClient, 'resetting placekitClient, removing map');
             placekitClient.clear();
         }
     }, [placekitClient]);
@@ -95,6 +98,9 @@ export default function Combo() {
                 longitude: item.lng,
                 zoom: 12
             };
+
+            // Blur the PlaceKit input
+            placekitRef.current?.blur();
 
             // Only update viewState now, no need for markerPosition
             if (!mapShown) {
@@ -127,6 +133,7 @@ export default function Combo() {
             </select>
 
             <PlaceKit
+                ref={placekitRef}
                 apiKey={process.env.NEXT_PUBLIC_PLACEKIT_API_KEY}
                 options={{
                     panel: {
@@ -174,6 +181,7 @@ export default function Combo() {
                     <Map
                         ref={mapRef}
                         initialViewState={viewState}
+                        // maxBounds={bounds}
                         style={{ width: 600, height: 400 }}
                         mapStyle={{
                             version: 8,
@@ -189,19 +197,6 @@ export default function Combo() {
                             },
                             layers: layers("protomaps", "light")
                         }}
-                    // mapLib={maplibregl}
-
-
-                    // scrollZoom={true}
-                    // doubleClickZoom={false}
-                    // boxZoom={false}
-                    // dragRotate={false}
-                    // dragPan={true}
-                    // keyboard={false}
-                    // interactive={false} // ALl of the above in one
-
-
-                    // maxBounds={bounds}
                     >
                         <Marker
                             draggable={true}
@@ -213,9 +208,7 @@ export default function Combo() {
                         >
                             <MapPin size={28} />
                         </Marker>
-                        {/* scrollZoom={false} */}
-                        {/* <NavigationControl showZoom={true} showCompass={false} /> */}
-
+                        <NavigationControl showZoom={true} showCompass={false} />
                     </Map>
                 </>
             )}
