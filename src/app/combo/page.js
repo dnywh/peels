@@ -37,18 +37,16 @@ async function initializeLocation() {
 // React component
 export default function Combo() {
     const mapRef = useRef(null);
+    const [placekitClient, setPlacekitClient] = useState(null);
 
     const [countryCode, setCountryCode] = useState('');
     const [mapShown, setMapShown] = useState(false);
-    const [markerPosition, setMarkerPosition] = useState({
-        longitude: -100,
-        latitude: 40
-    });
     const [viewState, setViewState] = useState({
-        latitude: 40,
-        longitude: -100,
+        latitude: 0,
+        longitude: 0,
         zoom: 3.5
     });
+    const [placeholderText, setPlaceholderText] = useState('Your address or nearby');
 
     // Auto-select dropdown country based on IP
     useEffect(() => {
@@ -72,6 +70,23 @@ export default function Combo() {
         };
     }, []);
 
+    const handleCountryChange = useCallback((e) => {
+        setCountryCode(e.target.value);
+        setMapShown(false);
+        if (placekitClient) {
+            console.log('resetting placekitClient, removing map');
+            placekitClient.clear();
+        }
+    }, [placekitClient]);
+
+    const handleDragStart = useCallback(() => {
+        if (placekitClient) {
+            console.log('clearing placekitClient');
+            setPlaceholderText('Custom location'); //TODO: use reverse geocoding to get something like "Suburb, City"
+            placekitClient.setValue('');
+        }
+    }, [placekitClient]);
+
     const handlePick = useCallback(
         (value, item) => {
             console.log(item.lat, item.lng);
@@ -81,12 +96,7 @@ export default function Combo() {
                 zoom: 12
             };
 
-            // Update both viewState and marker position
-            setMarkerPosition({
-                longitude: newLocation.longitude,
-                latitude: newLocation.latitude
-            });
-
+            // Only update viewState now, no need for markerPosition
             if (!mapShown) {
                 console.log('Map not yet shown. Setting viewState to', newLocation);
                 setViewState(newLocation);
@@ -97,6 +107,7 @@ export default function Combo() {
                     center: [newLocation.longitude, newLocation.latitude],
                     duration: 2800
                 });
+                setViewState(newLocation);
             }
         },
         [mapShown]
@@ -105,7 +116,10 @@ export default function Combo() {
     return (
         <>
             <p>Enter your address:</p>
-            <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)}>
+            <select
+                value={countryCode}
+                onChange={handleCountryChange}
+            >
                 <option disabled value=''>Select a country</option>
                 {countries.map((country) => (
                     <option key={country.code} value={country.code}>{country.name}</option>
@@ -114,10 +128,6 @@ export default function Combo() {
 
             <PlaceKit
                 apiKey={process.env.NEXT_PUBLIC_PLACEKIT_API_KEY}
-                // geolocation={true} // hide "ask geolocation" button
-                // className="your-custom-classes" // <div> wrapper custom classes
-
-                // PlaceKit Autocomplete JS options
                 options={{
                     panel: {
                         // className: 'panel-custom-class',
@@ -146,26 +156,14 @@ export default function Combo() {
                 }}
 
                 // event handlers (⚠️ use useCallback, see notes)
-                onClient={(client) => { }}
-                onOpen={() => { }}
-                onClose={() => { }}
-                onResults={(query, results) => { }}
-                // onPick={(value, item, index) => { }}
+                onClient={setPlacekitClient}
                 onPick={handlePick}
 
-                onError={(error) => { }}
-                onCountryChange={(item) => { }}
-                onDirty={(bool) => { }}
-                onEmpty={(bool) => { }}
-                onFreeForm={(bool) => { }}
-                onGeolocation={(bool, position) => { }}
-                onCountryMode={(bool) => { }}
-                onState={(state) => { }}
-
-            // other HTML input props get forwarded
-            // id="my-input"
-            // name="address"
-            // placeholder="Search places..."
+                // other HTML input props get forwarded
+                // id="my-input"
+                // name="address"
+                placeholder={placeholderText}
+            // placeholder="Your address or nearby"
             // disabled={true}
             // defaultValue="France"
             />
@@ -191,31 +189,32 @@ export default function Combo() {
                             },
                             layers: layers("protomaps", "light")
                         }}
-                        // mapLib={maplibregl}
+                    // mapLib={maplibregl}
 
 
-                        // scrollZoom={true}
-                        // doubleClickZoom={false}
-                        // boxZoom={false}
-                        // dragRotate={false}
-                        // dragPan={true}
-                        // keyboard={false}
-                        interactive={false} // ALl of the above in one
+                    // scrollZoom={true}
+                    // doubleClickZoom={false}
+                    // boxZoom={false}
+                    // dragRotate={false}
+                    // dragPan={true}
+                    // keyboard={false}
+                    // interactive={false} // ALl of the above in one
 
 
                     // maxBounds={bounds}
                     >
                         <Marker
                             draggable={true}
-                            longitude={markerPosition.longitude}
-                            latitude={markerPosition.latitude}
+                            longitude={viewState.longitude}
+                            latitude={viewState.latitude}
                             anchor="center"
+                            onDragStart={handleDragStart}
                             onClick={() => console.log("Tapped marker")}
                         >
                             <MapPin size={28} />
                         </Marker>
                         {/* scrollZoom={false} */}
-                        <NavigationControl showZoom={true} showCompass={false} />
+                        {/* <NavigationControl showZoom={true} showCompass={false} /> */}
 
                     </Map>
                 </>
