@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback, useRef } from "react";
+import { createClient } from "@/utils/supabase/client";
 import Map, {
   Marker,
   ScaleControl,
@@ -11,12 +11,27 @@ import Map, {
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
-
 import layers from "protomaps-themes-base";
-
 import MapPin from "@/components/MapPin";
 
-export default function MapRender({ listings }) {
+export default function MapRender({ listings, onBoundsChange, onMarkerClick }) {
+  const mapRef = useRef(null);
+
+  // Initial fetch when map loads
+  const handleMapLoad = useCallback(() => {
+    console.log("Map loaded");
+    const bounds = mapRef.current.getMap().getBounds();
+    console.log("Bounds:", bounds);
+    onBoundsChange(bounds);
+  }, [onBoundsChange]);
+
+  // Fetch on map move
+  const handleMapMove = useCallback(() => {
+    console.log("MAP MOVED");
+    const bounds = mapRef.current.getMap().getBounds();
+    onBoundsChange(bounds);
+  }, [onBoundsChange]);
+
   useEffect(() => {
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -27,6 +42,7 @@ export default function MapRender({ listings }) {
 
   return (
     <Map
+      ref={mapRef}
       style={{ width: "100%", height: "400px" }}
       mapStyle={{
         version: 8,
@@ -42,7 +58,6 @@ export default function MapRender({ listings }) {
         },
         layers: layers("protomaps", "light"),
       }}
-      // mapLib={maplibregl}
       renderWorldCopies={true}
       initialViewState={{
         longitude: 0,
@@ -50,6 +65,8 @@ export default function MapRender({ listings }) {
         zoom: 1,
       }}
       animationOptions={{ duration: 200 }}
+      onMoveEnd={handleMapMove}
+      onLoad={handleMapLoad}
     >
       {listings.map((listing) => (
         <Marker
@@ -57,7 +74,7 @@ export default function MapRender({ listings }) {
           longitude={listing.longitude}
           latitude={listing.latitude}
           anchor="center"
-          onClick={() => console.log("Tapped marker")}
+          onClick={() => onMarkerClick(listing.id)}
         >
           <MapPin size={28} />
         </Marker>

@@ -1,140 +1,68 @@
+"use client";
 import GuestActions from "@/components/guest-actions";
-import { createClient } from "@/utils/supabase/server";
-
-import Link from "next/link";
-
 import MapRender from "@/components/MapRender";
+import { useState, useCallback } from "react";
+import { fetchListingsInView } from "@/app/actions";
 
-export default async function MapPage() {
-  const markers = [];
+export default function MapPage() {
+  const [listings, setListings] = useState([]);
+  const [selectedListing, setSelectedListing] = useState(null);
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const handleBoundsChange = useCallback(async (bounds) => {
+    console.log('Bounds changed. Bounds being sent:', bounds, {
+      south: bounds._sw.lat,
+      west: bounds._sw.lng,
+      north: bounds._ne.lat,
+      east: bounds._ne.lng
+    });
 
-  const { data: listings, error } = await supabase
-    .from('listings')
-    .select(`
-    *,
-    profiles (
-      first_name,
-      avatar
-    )
-  `)
-    .eq('visibility', true)
+    const data = await fetchListingsInView(
+      bounds._sw.lat,
+      bounds._sw.lng,
+      bounds._ne.lat,
+      bounds._ne.lng
+    );
+    console.log("Data fetched:", data);
+    setListings(data);
+  }, []);
 
-  console.log(listings);
-  console.log(error);
+  const handleMarkerClick = async (listingId) => {
+    const { data, error } = await supabase
+      .from('listings')
+      .select(`
+        *,
+        profiles (
+          first_name,
+          avatar
+        )
+      `)
+      .eq('id', listingId)
+      .single();
 
-  function getListingAvatarUrl(filename) {
-    const { data: { publicUrl } } = supabase.storage
-      .from('listing_avatars')
-      .getPublicUrl(filename)
-    return publicUrl
-  }
+    if (error) {
+      console.error('Error fetching listing details:', error);
+      return;
+    }
 
-  function getUserAvatarUrl(filename) {
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filename)
-    return publicUrl
-  }
-
-  function getPhotoUrl(filename) {
-    const { data: { publicUrl } } = supabase.storage
-      .from('listing_photos')
-      .getPublicUrl(filename)
-    return publicUrl
-  }
+    setSelectedListing(data);
+  };
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
       <div className="w-full">
         <h1>Map</h1>
-        <MapRender listings={listings} />
-        {/* Logged out user stuff */}
-        {!user && <div>
-          <h2>Find a home for your food scraps, wherever you are.</h2>
-          <GuestActions />
-        </div>}
-        {/* Everything else here available for all users */}
-        <div>
-          <ul>
-            {listings.map((listing) => (
-              <li key={listing.id}>
-                {listing.avatar &&
-                  <>
-                    <img src={getListingAvatarUrl(listing.avatar)} alt={listing.profiles.first_name} style={{ width: '100px', height: '100px' }} />
-                  </>
-                }
-                {listing.profiles.avatar &&
-                  <>
-                    <img src={getUserAvatarUrl(listing.profiles.avatar)} alt={listing.profiles.first_name} style={{ width: '100px', height: '100px' }} />
-                  </>
-                }
-
-                <h2>{listing.type === 'residential' ? listing.profiles.first_name : listing.name}</h2>
-                <p>{listing.type}</p>
-                <p>Location: {listing.latitude}, {listing.longitude}</p>
-                <p>Last active: TODO</p>
-
-                <button>Contact {listing.type === 'residential' ? listing.profiles.first_name : listing.name}</button>
-
-                <h3>About</h3>
-                <p>{listing.description}</p>
-
-                <h3>Location</h3>
-                <p>{listing.location_legible}</p>
-
-                {listing.accepted_items.length > 0 &&
-                  <>
-                    <h3>Accepted</h3>
-                    <ul>
-                      {listing.accepted_items.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                }
-
-                {listing.rejected_items.length > 0 &&
-                  <>
-                    <h3>Not accepted</h3>
-                    <ul>
-                      {listing.rejected_items.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
-                    </ul>
-                  </>}
-
-                {listing.photos.length > 0 &&
-                  <>
-                    <h3>Photos</h3>
-                    <ul>
-                      {listing.photos.map((photo, index) => (
-                        <li key={index}><img src={getPhotoUrl(photo)} alt={`Photo ${index + 1}`} style={{ width: '100px', height: '100px' }} /></li>
-                      ))}
-                    </ul>
-                  </>
-                }
-
-                {listing.links.length > 0 &&
-                  <>
-                    <h3>Links</h3>
-                    <ul>
-                      {listing.links.map((link, index) => (
-                        <li key={index}><Link href={link} target="_blank">{link}</Link></li>
-                      ))}
-                    </ul>
-                  </>
-                }
-                <p>End of listing</p>
-              </li>
-            ))}
-          </ul>
+        <div className="flex">
+          <MapRender
+            listings={listings}
+            onBoundsChange={handleBoundsChange}
+            onMarkerClick={handleMarkerClick}
+          />
+          {selectedListing && (
+            <div className="w-1/3">
+              <pre>{JSON.stringify(selectedListing, null, 2)}</pre>
+            </div>
+          )}
         </div>
-
       </div>
     </div>
   );

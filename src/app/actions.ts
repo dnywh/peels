@@ -18,7 +18,7 @@ export const signUpAction = async (formData: FormData) => {
   const preservedData = new URLSearchParams();
   if (email) preservedData.set("email", email);
   if (first_name) preservedData.set("first_name", first_name);
-  
+
   // Add error/success to the same URLSearchParams object
   const redirectUrl = new URL("/sign-up", origin || getBaseUrl());
   preservedData.forEach((value, key) => {
@@ -26,29 +26,41 @@ export const signUpAction = async (formData: FormData) => {
   });
 
   if (!email || !password || !first_name) {
-    redirectUrl.searchParams.append("error", "A first name, email, and password are required.");
+    redirectUrl.searchParams.append(
+      "error",
+      "A first name, email, and password are required.",
+    );
     return redirect(redirectUrl.toString());
   }
 
   if (inviteCode !== process.env.INVITE_CODE) {
-    redirectUrl.searchParams.append("error", "Sorry, that invite code is invalid.");
+    redirectUrl.searchParams.append(
+      "error",
+      "Sorry, that invite code is invalid.",
+    );
     return redirect(redirectUrl.toString());
   }
 
   // Check if user exists in auth.users
   const { data: existingAuthUser, error: authError } = await supabase
-    .rpc('check_if_email_exists', {
-      email_to_check: email
+    .rpc("check_if_email_exists", {
+      email_to_check: email,
     });
 
   if (authError) {
-    console.error('Error checking email:', authError);
-    redirectUrl.searchParams.append("error", "Sorry, we couldn't process your request.");
+    console.error("Error checking email:", authError);
+    redirectUrl.searchParams.append(
+      "error",
+      "Sorry, we couldn't process your request.",
+    );
     return redirect(redirectUrl.toString());
   }
 
   if (existingAuthUser) {
-    redirectUrl.searchParams.append("error", "An account with this email already exists. Please sign in instead.");
+    redirectUrl.searchParams.append(
+      "error",
+      "An account with this email already exists. Please sign in instead.",
+    );
     return redirect(redirectUrl.toString());
   }
 
@@ -69,7 +81,10 @@ export const signUpAction = async (formData: FormData) => {
     return redirect(redirectUrl.toString());
   }
 
-  redirectUrl.searchParams.append("success", "Thanks for signing up! Please check your email for a verification link.");
+  redirectUrl.searchParams.append(
+    "success",
+    "Thanks for signing up! Please check your email for a verification link.",
+  );
   return redirect(redirectUrl.toString());
 };
 
@@ -102,7 +117,9 @@ export const forgotPasswordAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin || getBaseUrl()}/auth/callback?redirect_to=/reset-password`,
+    redirectTo: `${
+      origin || getBaseUrl()
+    }/auth/callback?redirect_to=/reset-password`,
   });
 
   if (error) {
@@ -110,7 +127,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Could not reset password"
+      "Could not reset password",
     );
   }
 
@@ -121,7 +138,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   return encodedRedirect(
     "success",
     "/forgot-password",
-    "Check your email for a link to reset your password."
+    "Check your email for a link to reset your password.",
   );
 };
 
@@ -135,7 +152,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Password and confirm password are required"
+      "Password and confirm password are required",
     );
   }
 
@@ -143,7 +160,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Passwords do not match"
+      "Passwords do not match",
     );
   }
 
@@ -155,7 +172,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Password update failed"
+      "Password update failed",
     );
   }
 
@@ -183,13 +200,14 @@ export const deleteAccountAction = async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-account`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
+          "Authorization":
+            `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ user_id: user.id }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -197,9 +215,46 @@ export const deleteAccountAction = async () => {
     }
 
     await supabase.auth.signOut();
-    return encodedRedirect("success", "/sign-in", "Account successfully deleted");
+    return encodedRedirect(
+      "success",
+      "/sign-in",
+      "Account successfully deleted",
+    );
   } catch (error) {
-    console.error('Delete account error:', error);
+    console.error("Delete account error:", error);
     return encodedRedirect("error", "/profile", "Failed to delete account");
   }
 };
+
+export async function fetchListingsInView(
+  south: number,
+  west: number,
+  north: number,
+  east: number,
+) {
+  const supabase = await createClient();
+
+  // Debug log
+  console.log("Calling RPC with params:", {
+    min_lat: south,
+    min_long: west,
+    max_lat: north,
+    max_long: east,
+  });
+
+  // Try sending as a single object instead
+  const { data, error } = await supabase.rpc("listings_in_view", {
+    min_lat: south,
+    min_long: west,
+    max_lat: north,
+    max_long: east,
+  });
+
+  if (error) {
+    console.error("Error fetching listings:", error);
+    console.error("Error details:", error.details);
+    return [];
+  }
+
+  return data || [];
+}
