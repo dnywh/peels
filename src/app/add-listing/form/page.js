@@ -139,7 +139,7 @@ function NewListingFormContent() {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
 
-    const [coordinates, setCoordinates] = useState(null);
+    const [coordinates, setCoordinates] = useState({ latitude: 0, longitude: 0 });
 
     const [acceptedItems, setAcceptedItems] = useState([''])
     const [rejectedItems, setRejectedItems] = useState([''])
@@ -257,7 +257,7 @@ function NewListingFormContent() {
             setName('')
             setAvatar('')
             setDescription('')
-            setCoordinates(null)
+            setCoordinates({ latitude: 0, longitude: 0 })
             setAcceptedItems([''])
             setRejectedItems([''])
             setPhotos([])
@@ -302,24 +302,28 @@ function NewListingFormContent() {
                 <div>
 
                     <h2>Basics</h2>
-                    <label htmlFor="name">Place name</label>
-                    <input
-                        id="name"
-                        required={true}
-                        type="text"
-                        placeholder="Your community’s name"
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                    />
+                    {listingType !== 'residential' && (
+                        <>
+                            <label htmlFor="name">Place name</label>
+                            <input
+                                id="name"
+                                required={true}
+                                type="text"
+                                placeholder="Your community’s name"
+                                value={name}
+                                onChange={(event) => setName(event.target.value)}
+                            />
+                        </>
+                    )}
 
 
                     <LocationSelect coordinates={coordinates} setCoordinates={setCoordinates} />
 
 
-                    <label htmlFor="description">Description <span>(optional)</span></label>
+                    <label htmlFor="description">Description{listingType === 'residential' ? <span>(optional)</span> : null}</label>
                     <textarea
                         id="description"
-                        required={true}
+                        required={listingType === 'residential' ? false : true}
                         placeholder="Description here"
                         value={description}
                         onChange={(event) => setDescription(event.target.value)}

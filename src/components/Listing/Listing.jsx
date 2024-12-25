@@ -1,7 +1,13 @@
+"use client";
+import { useState } from "react";
+
 import Link from "next/link";
+
 import StorageImage from "@/components/StorageImage";
+import Chat from "@/components/Chat";
 
 function Listing({ user, listing, setSelectedListing }) {
+  const [isChatOpen, setIsChatOpen] = useState(false);
   return (
     <div>
       <h2>Person viewing is {user ? user.email : "a guest"}</h2>
@@ -37,23 +43,36 @@ function Listing({ user, listing, setSelectedListing }) {
             : listing.name}
         </h2>
         <p>{listing.type}</p>
-        <p>
-          Location: {listing.latitude}, {listing.longitude}
-        </p>
         <p>Last active: TODO</p>
 
-        <button>
-          Contact{" "}
-          {listing.type === "residential"
-            ? listing.profiles.first_name
-            : listing.name}
-        </button>
+        <div>
+          {user ? (
+            <button onClick={() => setIsChatOpen(true)}>
+              Contact{" "}
+              {listing.type === "residential"
+                ? listing.profiles.first_name
+                : listing.name}
+            </button>
+          ) : (
+            // TODO: Dynamically change sign up page h1 to say "Sign up to contact hosts"
+            <Link href="/sign-up?type=contact-host">Contact host</Link>
+          )}
+          {/* Or button option: 'edit listing' */}
+          This is your listing!
+        </div>
 
-        <h3>About</h3>
-        <p>{listing.description}</p>
+        {isChatOpen && (
+          <Chat user={user} listing={listing} setIsChatOpen={setIsChatOpen} />
+        )}
 
-        <h3>Location</h3>
-        <p>{listing.location_legible}</p>
+        {listing.description && (
+          <>
+            <h3>About</h3>
+            <p>{listing.description}</p>
+          </>
+        )}
+
+        {/* <h3>Location</h3> */}
 
         {listing.accepted_items.length > 0 && (
           <>
@@ -112,13 +131,6 @@ function Listing({ user, listing, setSelectedListing }) {
         <h3>Raw data</h3>
         <pre>{JSON.stringify(listing, null, 2)}</pre>
       </div>
-
-      {user ? (
-        <button>Contact {listing.name}</button>
-      ) : (
-        // TODO: Dynamically change sign up page h1 to say "Sign up to contact hosts"
-        <Link href="/sign-up?type=contact-host">Contact host</Link>
-      )}
     </div>
   );
 }

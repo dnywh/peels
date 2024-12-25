@@ -65,7 +65,7 @@ export default function LocationSelect({ coordinates, setCoordinates }) {
   const [countryCode, setCountryCode] = useState("");
   const [mapShown, setMapShown] = useState(false);
   const [placeholderText, setPlaceholderText] = useState(
-    "Your address or nearby"
+    "Your street or nearby"
   );
 
   // Auto-select dropdown country based on IP
@@ -236,6 +236,12 @@ export default function LocationSelect({ coordinates, setCoordinates }) {
             </Marker>
             <NavigationControl showZoom={true} showCompass={false} />
           </Map>
+          {/* TODO: Make the following conditionally show for individual hosts only */}
+          {/* Marker should show this visually, like Airbnb */}
+          <p>
+            Your location will be roughened to a 100m radius for your privacy.
+            That makes it People will need to ask you for your address.
+          </p>
         </>
       )}
     </>
