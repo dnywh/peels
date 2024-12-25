@@ -36,7 +36,7 @@ export default function Map() {
             <div className="geocoding">
                 <GeocodingControl apiKey={API_KEY} mapController={mapController} />
             </div>
-            <div ref={mapContainer} className="map" />
+            <div ref={mapContainer} className="map" style={{ width: '100%', height: '500px' }} />
         </div>
     );
 }

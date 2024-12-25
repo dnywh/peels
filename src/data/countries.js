@@ -48,10 +48,6 @@ export const countries = [
         "code": "AW"
     },
     {
-        "name": "Asia/Pacific Region",
-        "code": "AP"
-    },
-    {
         "name": "Australia",
         "code": "AU"
     },
