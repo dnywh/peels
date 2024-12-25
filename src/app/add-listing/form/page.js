@@ -235,8 +235,6 @@ function NewListingFormContent() {
                 name,
                 description,
                 location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
-                latitude: coordinates.latitude,
-                longitude: coordinates.longitude,
                 accepted_items: acceptedItems.filter(item => item.trim() !== ''),
                 rejected_items: rejectedItems.filter(item => item.trim() !== ''),
                 photos,

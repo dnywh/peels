@@ -16,7 +16,8 @@ function Listing({ user, listing, setSelectedListing }) {
       {user ? (
         <button>Contact {listing.name}</button>
       ) : (
-        <Link href="/sign-up">Contact host</Link>
+        // TODO: Dynamically change sign up page h1 to say "Sign up to contact hosts"
+        <Link href="/sign-up?type=contact-host">Contact host</Link>
       )}
     </div>
   );

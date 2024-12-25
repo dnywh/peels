@@ -129,7 +129,6 @@ export default function LocationSelect({ coordinates, setCoordinates }) {
       };
 
       // Blur the input
-      // placekitRef.current?.blur(); TODO
       inputRef.current.blur();
 
       // Only update coordinates now, no need for markerPosition
@@ -171,6 +170,7 @@ export default function LocationSelect({ coordinates, setCoordinates }) {
         ))}
       </select>
 
+      {/* TODO: Reuse MapSearch component */}
       <GeocodingControl
         id="autocomplete" // Doesn't work out of the box
         ref={inputRef}

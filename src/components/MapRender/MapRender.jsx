@@ -8,19 +8,24 @@ import Map, {
   AttributionControl,
   GeolocateControl,
 } from "react-map-gl/maplibre";
+
 import maplibregl from "maplibre-gl";
+import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
 import "maplibre-gl/dist/maplibre-gl.css";
+
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import MapPin from "@/components/MapPin";
 
 export default function MapRender({
+  mapRef,
   listings,
   onBoundsChange,
   onMapClick,
   onMarkerClick,
+  onSearchPick,
+  setMapController,
 }) {
-  const mapRef = useRef(null);
   // Initial fetch when map loads
   const handleMapLoad = useCallback(() => {
     console.log("Map loaded");
@@ -43,10 +48,20 @@ export default function MapRender({
   useEffect(() => {
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
+
     return () => {
       maplibregl.removeProtocol("pmtiles");
     };
   }, []);
+
+  // Set mapController to set relationship between MapSearch and MapRender
+  // Can't get this to work, perhaps delete all mapController and createMapLibreGlMapController code if I can't get it working
+
+  // useEffect(() => {
+  //   if (mapRef.current) return; // stops map from intializing more than once
+
+  //   setMapController(createMapLibreGlMapController(mapRef.current, maplibregl));
+  // }, [onBoundsChange]);
 
   return (
     <Map

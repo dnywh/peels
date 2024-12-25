@@ -33,6 +33,21 @@ async function basicCallToBuildCustomComponentAround() {
 basicCallToBuildCustomComponentAround()
 
 
+async function checkIfLocationIsInWater(longitude, latitude) {
+    try {
+        const response = await fetch(`https://api.maptiler.com/geocoding/${longitude},${latitude}.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`);
+        if (!response.ok) throw new Error('API request failed');
+        const data = await response.json();
+        console.log('Is location in water?', data.features.some(feature => feature.place_type.includes('continental_marine')) ? 'Yes' : 'No', data.features)
+        return Response.json(data);
+    } catch (error) {
+        return Response.json({ error: error.message }, { status: 500 });
+    }
+}
+
+checkIfLocationIsInWater(151.52358953278724, -33.10796959832275)
+
+
 
 // TODO: See if MapTiler's Geolocation API is faster
 // https://docs.maptiler.com/client-js/geolocation/
