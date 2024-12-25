@@ -46,6 +46,14 @@ export default function MapPageClient({ user }) {
 
   const handleMarkerClick = async (listingId) => {
     console.log("Marker clicked");
+
+    // Turned off, too distracting
+    // mapRef.current?.flyTo({
+    //   center: [selectedListing.longitude, selectedListing.latitude],
+    //   duration: 2800,
+    //   zoom: 5, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
+    // });
+
     const { data, error } = await supabase
       .from("listings")
       .select(
