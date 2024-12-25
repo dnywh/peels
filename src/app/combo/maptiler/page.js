@@ -16,14 +16,11 @@ import layers from 'protomaps-themes-base';
 
 import MapPin from '@/components/MapPin';
 
-// TODO: test this in browser before removing
 // TODO: use this to build a custom component around the core geocoding API, using my nice own components for input and dropdown
 // https://docs.maptiler.com/cloud/api/geocoding/
 async function basicCallToBuildCustomComponentAround() {
     try {
-        const response = await fetch(`https://api.maptiler.com/geocoding/Zurich.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`, {
-
-        });
+        const response = await fetch(`https://api.maptiler.com/geocoding/Zurich.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`);
         if (!response.ok) throw new Error('API request failed');
         const data = await response.json();
         console.log(data.query, data.features)

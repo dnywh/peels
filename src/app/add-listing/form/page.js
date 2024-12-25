@@ -3,6 +3,8 @@
 import React, { Suspense, useState, useEffect, useRef } from "react";
 import { createClient } from '@/utils/supabase/client'
 
+import LocationSelect from "@/components/LocationSelect";
+
 
 // import * as maptilersdk from "@maptiler/sdk";
 // import { config, geocoding } from '@maptiler/client';
@@ -150,59 +152,6 @@ function NewListingFormContent() {
     const [marker, setMarker] = useState(null);
     const [coordinates, setCoordinates] = useState(null);
 
-    // Initialize geocoding control outside of map
-    // useEffect(() => {
-    //     const gc = new GeocodingControl({
-    //         apiKey: process.env.NEXT_PUBLIC_MAPTILER_API_KEY,
-    //         limit: 5,
-    //         types: ["address"],
-    //         country: "us",
-    //         container: 'geocoding-container' // Add this div to your JSX
-    //     });
-
-    //     // Create a map instance for the geocoding control
-    //     const tempMap = new maptilersdk.Map({
-    //         container: 'geocoding-container',
-    //         style: maptilersdk.MapStyle.STREETS
-    //     });
-
-    //     // Add the control to the map
-    //     tempMap.addControl(gc);
-
-    //     // Handle the selection result
-    //     gc.on('result', (e) => {
-    //         const { geometry } = e.feature;
-    //         setCoordinates(geometry.coordinates);
-
-    //         // Initialize or update preview map
-    //         if (!map) {
-    //             const newMap = new maptilersdk.Map({
-    //                 container: mapContainer.current,
-    //                 style: maptilersdk.MapStyle.STREETS,
-    //                 center: geometry.coordinates,
-    //                 zoom: 15,
-    //                 interactive: false
-    //             });
-    //             setMap(newMap);
-
-    //             // Add marker
-    //             const newMarker = new maptilersdk.Marker()
-    //                 .setLngLat(geometry.coordinates)
-    //                 .addTo(newMap);
-    //             setMarker(newMarker);
-    //         } else {
-    //             // Update existing map and marker
-    //             map.setCenter(geometry.coordinates);
-    //             marker.setLngLat(geometry.coordinates);
-    //         }
-    //     });
-
-    //     return () => {
-    //         if (map) map.remove();
-    //         if (tempMap) tempMap.remove();
-    //     };
-    // }, [map, marker]);
-
     const handleAcceptedItemChange = (index, value) => {
         const newItems = [...acceptedItems]
         newItems[index] = value
@@ -337,6 +286,7 @@ function NewListingFormContent() {
                 <h1>List your {listingType}</h1>
                 <p>Description here.</p>
 
+
             </header>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="avatar">Avatar <span>(optional)</span></label>
@@ -357,6 +307,7 @@ function NewListingFormContent() {
                 )}
 
                 <div>
+
                     <h2>Basics</h2>
                     <label htmlFor="name">Place name</label>
                     <input
@@ -377,9 +328,10 @@ function NewListingFormContent() {
                         onChange={(event) => setAddress(event.target.value)}
                     /> */}
 
+                    <LocationSelect />
 
 
-                    <label htmlFor="longitude">Longitude</label>
+                    {/* <label htmlFor="longitude">Longitude</label>
                     <input
                         id="longitude"
                         type="number"
@@ -392,7 +344,7 @@ function NewListingFormContent() {
                         type="number"
                         value={latitude}
                         onChange={(event) => setLatitude(event.target.value)}
-                    />
+                    /> */}
 
 
 
