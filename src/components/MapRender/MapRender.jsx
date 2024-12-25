@@ -21,31 +21,24 @@ export default function MapRender({
   onMarkerClick,
 }) {
   const mapRef = useRef(null);
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
   // Initial fetch when map loads
   const handleMapLoad = useCallback(() => {
     console.log("Map loaded");
-    setIsMapLoaded(true);
+
     const bounds = mapRef.current.getMap().getBounds();
     console.log("Bounds:", bounds);
     onBoundsChange(bounds);
   }, [onBoundsChange]);
 
   // Fetch on map move
-  // TODO: Being called when user navigates to a different page and therefore causing an error as getMap() is null. This should be ignored map.
   const handleMapMove = useCallback(() => {
-    if (!isMapLoaded || !mapRef.current) return; // Add check for mapRef.current
+    if (!mapRef.current) return; // Add check for mapRef.current so this isn't called when user navigates to a different page.
     console.log("MAP MOVED");
     const map = mapRef.current.getMap();
     if (!map) return; // Add safety check for map object
     const bounds = map.getBounds();
     onBoundsChange(bounds);
-  }, [onBoundsChange, isMapLoaded]);
-
-  const handleMapRemove = useCallback(() => {
-    console.log("MAP REMOVED");
-    setIsMapLoaded(false);
-  }, []);
+  }, [onBoundsChange]);
 
   useEffect(() => {
     let protocol = new Protocol();
@@ -54,13 +47,6 @@ export default function MapRender({
       maplibregl.removeProtocol("pmtiles");
     };
   }, []);
-
-  useEffect(() => {
-    // Cleanup function to reset the map loaded state on unmount
-    return () => {
-      handleMapRemove(); // Call the remove handler
-    };
-  }, [handleMapRemove]);
 
   return (
     <Map
@@ -89,8 +75,6 @@ export default function MapRender({
       animationOptions={{ duration: 200 }}
       onMoveEnd={handleMapMove}
       onLoad={handleMapLoad}
-      onIdle={console.log("IDLE")}
-      onRemove={handleMapRemove}
       onClick={onMapClick}
     >
       {listings.map((listing) => (
