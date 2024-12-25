@@ -138,8 +138,9 @@ function NewListingFormContent() {
     const [avatar, setAvatar] = useState('')
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-    const [latitude, setLatitude] = useState('')
-    const [longitude, setLongitude] = useState('')
+
+    const [coordinates, setCoordinates] = useState(null);
+
     const [acceptedItems, setAcceptedItems] = useState([''])
     const [rejectedItems, setRejectedItems] = useState([''])
     const [photos, setPhotos] = useState([])
@@ -147,10 +148,6 @@ function NewListingFormContent() {
     const [visibility, setVisibility] = useState(true)
     const [legal, setLegal] = useState(false)
 
-    const mapContainer = useRef(null);
-    const [map, setMap] = useState(null);
-    const [marker, setMarker] = useState(null);
-    const [coordinates, setCoordinates] = useState(null);
 
     const handleAcceptedItemChange = (index, value) => {
         const newItems = [...acceptedItems]
@@ -237,10 +234,10 @@ function NewListingFormContent() {
                 avatar,
                 name,
                 description,
-                location_machine: `POINT(${longitude} ${latitude})`,
+                location_machine: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
                 // location_legible: locationLegible,
-                latitude,
-                longitude,
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
                 accepted_items: acceptedItems.filter(item => item.trim() !== ''),
                 rejected_items: rejectedItems.filter(item => item.trim() !== ''),
                 photos,
@@ -263,8 +260,7 @@ function NewListingFormContent() {
             setName('')
             setAvatar('')
             setDescription('')
-            setLatitude('')
-            setLongitude('')
+            setCoordinates(null)
             setAcceptedItems([''])
             setRejectedItems([''])
             setPhotos([])
@@ -319,33 +315,8 @@ function NewListingFormContent() {
                         onChange={(event) => setName(event.target.value)}
                     />
 
-                    {/* <label htmlFor="address">Address</label>
-                    <input id="address"
-                        required={true}
-                        type="text"
-                        placeholder="Your community’s address"
-                        value={address}
-                        onChange={(event) => setAddress(event.target.value)}
-                    /> */}
 
-                    <LocationSelect />
-
-
-                    {/* <label htmlFor="longitude">Longitude</label>
-                    <input
-                        id="longitude"
-                        type="number"
-                        value={longitude}
-                        onChange={(event) => setLongitude(event.target.value)}
-                    />
-                    <label htmlFor="latitude">Latitude</label>
-                    <input
-                        id="latitude"
-                        type="number"
-                        value={latitude}
-                        onChange={(event) => setLatitude(event.target.value)}
-                    /> */}
-
+                    <LocationSelect coordinates={coordinates} setCoordinates={setCoordinates} />
 
 
                     <label htmlFor="description">Description <span>(optional)</span></label>

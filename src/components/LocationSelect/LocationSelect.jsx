@@ -57,17 +57,13 @@ async function initializeLocation() {
 }
 
 // React component
-export default function LocationSelect() {
+export default function LocationSelect({ coordinates, setCoordinates }) {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   // const [placekitClient, setPlacekitClient] = useState(null);
 
   const [countryCode, setCountryCode] = useState("");
   const [mapShown, setMapShown] = useState(false);
-  const [coordinates, setCoordinates] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
   const [placeholderText, setPlaceholderText] = useState(
     "Your address or nearby"
   );
