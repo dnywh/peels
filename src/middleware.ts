@@ -3,7 +3,6 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
-
   // Create a Supabase client configured to use cookies
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,6 +37,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
+  console.log("user", user);
   return response;
 }
 

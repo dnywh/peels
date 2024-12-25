@@ -14,7 +14,12 @@ import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import MapPin from "@/components/MapPin";
 
-export default function MapRender({ listings, onBoundsChange, onMarkerClick }) {
+export default function MapRender({
+  listings,
+  onBoundsChange,
+  onMapClick,
+  onMarkerClick,
+}) {
   const mapRef = useRef(null);
 
   // Initial fetch when map loads
@@ -67,6 +72,7 @@ export default function MapRender({ listings, onBoundsChange, onMarkerClick }) {
       animationOptions={{ duration: 200 }}
       onMoveEnd={handleMapMove}
       onLoad={handleMapLoad}
+      onClick={onMapClick}
     >
       {listings.map((listing) => (
         <Marker
