@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 
 import { createClient } from "@/utils/supabase/client";
+import { testEmailAction } from "@/app/actions";
 
 export default function Chat({ user, listing, setIsChatOpen }) {
   const [message, setMessage] = useState("");
@@ -94,6 +95,8 @@ export default function Chat({ user, listing, setIsChatOpen }) {
     }
 
     // If successful, clear message and reload messages
+    await testEmailAction();
+    console.log("Message sent successfully");
     setMessage("");
     loadMessages(threadId);
   }

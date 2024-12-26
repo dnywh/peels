@@ -185,6 +185,14 @@ export const signOutAction = async () => {
   return redirect("/");
 };
 
+// TODO: Should this action instead be triggered by a webhook? I.e. by Supabase when a table is updated
+// See https://www.youtube.com/watch?v=Qf7XvL1fjvo
+export const testEmailAction = async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.functions.invoke("resend");
+  console.log(data, error);
+};
+
 export const deleteAccountAction = async () => {
   let redirectPath: string | null = null;
 
