@@ -46,6 +46,12 @@ function Listing({ user, listing, setSelectedListing }) {
         <p>Last active: TODO</p>
 
         <div>
+          <p>
+            {listing.user_id === user.id
+              ? "This is your own listing, show button to edit instead of chat"
+              : "Not your listing, show button to chat"}
+          </p>
+
           {user ? (
             <button onClick={() => setIsChatOpen(true)}>
               Contact{" "}
@@ -57,8 +63,6 @@ function Listing({ user, listing, setSelectedListing }) {
             // TODO: Dynamically change sign up page h1 to say "Sign up to contact hosts"
             <Link href="/sign-up?type=contact-host">Contact host</Link>
           )}
-          {/* Or button option: 'edit listing' */}
-          This is your listing!
         </div>
 
         {isChatOpen && (

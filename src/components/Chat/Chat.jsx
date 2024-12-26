@@ -1,18 +1,114 @@
+"use client";
 import { useState } from "react";
 
-function Chat({ user, listing, setIsChatOpen }) {
-  const [message, setMessage] = useState("");
+import { createClient } from "@/utils/supabase/client";
 
-  const handleSubmit = (e) => {
+export default function Chat({ user, listing, setIsChatOpen }) {
+  const [message, setMessage] = useState("");
+  const [threadId, setThreadId] = useState(null);
+  const [messages, setMessages] = useState([]);
+
+  const supabase = createClient();
+
+  async function initializeChat() {
+    // Get existing thread only (don't create new one)
+    const { data: thread, error } = await supabase
+      .from("chat_threads")
+      .select("id")
+      .match({
+        listing_id: listing.id,
+        initiator_id: user.id,
+        owner_id: listing.user_id,
+      })
+      .maybeSingle();
+
+    if (thread) {
+      console.log("Thread exists, loading it");
+      setThreadId(thread.id);
+      loadMessages(thread.id);
+    }
+
+    return thread;
+  }
+
+  async function loadMessages(threadId) {
+    const { data: messages } = await supabase
+      .from("chat_messages")
+      .select("*")
+      .eq("thread_id", threadId)
+      .order("created_at", { ascending: true });
+
+    setMessages(messages || []);
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log(`Sending following message to ${listing.name}: ${message}`);
-  };
+
+    if (!message.trim()) {
+      console.log("Message is empty");
+      return;
+    }
+
+    // If no threadId, create thread first
+    if (!threadId) {
+      const { data: newThread, error } = await supabase
+        .from("chat_threads")
+        .insert({
+          listing_id: listing.id,
+          initiator_id: user.id,
+          owner_id: listing.user_id,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating thread:", error);
+        return;
+      }
+
+      setThreadId(newThread.id);
+      // Use the new threadId for the message
+      await sendMessage(newThread.id);
+    } else {
+      await sendMessage(threadId);
+    }
+  }
+
+  async function sendMessage(threadId) {
+    const { error } = await supabase.from("chat_messages").insert({
+      thread_id: threadId,
+      sender_id: user.id,
+      content: message.trim(),
+    });
+
+    if (error) {
+      console.error("Error sending message:", error);
+      return;
+    }
+
+    // If successful, clear message and reload messages
+    setMessage("");
+    loadMessages(threadId);
+  }
 
   return (
     <div>
       <button onClick={() => setIsChatOpen(false)}>Close chat</button>
-      <p>User viewing {user.email}</p>
-      <p>About to message {listing.name}</p>
+      <p>User viewing is {user.id}</p>
+      <p>
+        About to message {listing.name}, owned by {listing.user_id}
+      </p>
+
+      <div>
+        <h3>Messages container</h3>
+
+        {messages.map((message) => (
+          <div key={message.id}>
+            <p>{message.content}</p>
+            <small>{new Date(message.created_at).toLocaleString()}</small>
+          </div>
+        ))}
+      </div>
 
       <form onSubmit={handleSubmit}>
         <textarea
@@ -25,5 +121,3 @@ function Chat({ user, listing, setIsChatOpen }) {
     </div>
   );
 }
-
-export default Chat;
