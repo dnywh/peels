@@ -186,12 +186,13 @@ export const signOutAction = async () => {
 };
 
 export const deleteAccountAction = async () => {
+  let redirectPath: string | null = null;
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Verify user session is still valid before proceeding with account deletion
   if (!user) {
     return redirect("/sign-in");
   }
@@ -210,19 +211,26 @@ export const deleteAccountAction = async () => {
       },
     );
 
-    if (!response.ok) {
-      return encodedRedirect("error", "/profile", "Failed to delete account");
-    }
+    console.log("Response status:", response.status);
+    console.log("Response ok:", response.ok);
 
-    await supabase.auth.signOut();
-    return encodedRedirect(
-      "success",
-      "/sign-in",
-      "Account successfully deleted",
-    );
+    const data = await response.json();
+    console.log("Response data:", data);
+
+    redirectPath = `/sign-in?success=Account successfully deleted`;
+
+    // if (!response.ok) {
+    //   console.error("Delete account failed:", data);
+    //   redirectPath = `/profile?error=Failed to delete account`
+    // }
   } catch (error) {
     console.error("Delete account error:", error);
-    return encodedRedirect("error", "/profile", "Failed to delete account");
+    redirectPath = `/profile?error=Error whilst deleting account`;
+  } finally {
+    await supabase.auth.signOut();
+    if (redirectPath) {
+      return redirect(redirectPath);
+    }
   }
 };
 

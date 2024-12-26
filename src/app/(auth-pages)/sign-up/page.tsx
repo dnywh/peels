@@ -23,24 +23,27 @@ export default async function Signup(props: {
           <h1 className="text-2xl font-medium">Sign up</h1>
           <p className="text-sm text text-foreground">
             Already have an account?{" "}
-            <Link className="text-primary font-medium underline" href="/sign-in">
+            <Link
+              className="text-primary font-medium underline"
+              href="/sign-in"
+            >
               Sign in
             </Link>
           </p>
           <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
             <Label htmlFor="first_name">First name</Label>
-            <Input 
-              name="first_name" 
-              placeholder="Your first name" 
-              required 
+            <Input
+              name="first_name"
+              placeholder="Your first name"
+              required
               defaultValue={searchParams.first_name}
             />
             <Label htmlFor="email">Email</Label>
-            <Input 
-              type="email" 
-              name="email" 
-              placeholder="you@example.com" 
-              required 
+            <Input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              required
               defaultValue={searchParams.email}
             />
             <Label htmlFor="password">Password</Label>
@@ -52,11 +55,7 @@ export default async function Signup(props: {
               required
             />
             <Label htmlFor="invite_code">Invite code</Label>
-            <Input
-              name="invite_code"
-              placeholder="Your invite code"
-              required
-            />
+            <Input name="invite_code" placeholder="Your invite code" required />
             <SubmitButton formAction={signUpAction} pendingText="Signing up...">
               Sign up
             </SubmitButton>
@@ -64,7 +63,7 @@ export default async function Signup(props: {
         </form>
         <FormMessage message={searchParams} />
       </div>
-      <SmtpMessage />
+      {/* <SmtpMessage /> */}
     </>
   );
 }
