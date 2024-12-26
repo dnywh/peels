@@ -229,7 +229,7 @@ function NewListingFormContent() {
 
             // Prepare the listing data
             const listingData = {
-                user_id: user.id,
+                owner_id: user.id,
                 type: listingType,
                 avatar,
                 name,

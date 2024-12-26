@@ -47,7 +47,7 @@ function Listing({ user, listing, setSelectedListing }) {
 
         <div>
           <p>
-            {listing.user_id === user.id
+            {user && listing.owner_id === user.id
               ? "This is your own listing, show button to edit instead of chat"
               : "Not your listing, show button to chat"}
           </p>

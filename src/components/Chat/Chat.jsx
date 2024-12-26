@@ -22,7 +22,7 @@ export default function Chat({ user, listing, setIsChatOpen }) {
       .match({
         listing_id: listing.id,
         initiator_id: user.id,
-        owner_id: listing.user_id,
+        owner_id: listing.owner_id,
       })
       .maybeSingle();
 
@@ -66,7 +66,7 @@ export default function Chat({ user, listing, setIsChatOpen }) {
         .insert({
           listing_id: listing.id,
           initiator_id: user.id,
-          owner_id: listing.user_id,
+          owner_id: listing.owner_id,
         })
         .select()
         .single();
@@ -103,7 +103,7 @@ export default function Chat({ user, listing, setIsChatOpen }) {
       <button onClick={() => setIsChatOpen(false)}>Close chat</button>
       <p>User viewing is {user.id}</p>
       <p>
-        About to message {listing.name}, owned by {listing.user_id}
+        About to message {listing.name}, owned by {listing.owner_id}
       </p>
 
       <div>
