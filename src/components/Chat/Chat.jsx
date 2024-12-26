@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 
@@ -9,6 +9,10 @@ export default function Chat({ user, listing, setIsChatOpen }) {
   const [messages, setMessages] = useState([]);
 
   const supabase = createClient();
+
+  useEffect(() => {
+    initializeChat();
+  }, [listing.id, user.id]);
 
   async function initializeChat() {
     // Get existing thread only (don't create new one)
@@ -49,8 +53,14 @@ export default function Chat({ user, listing, setIsChatOpen }) {
       return;
     }
 
-    // If no threadId, create thread first
-    if (!threadId) {
+    // First check if thread exists
+    const existingThread = await initializeChat();
+
+    if (existingThread) {
+      // Use existing thread
+      await sendMessage(existingThread.id);
+    } else {
+      // Create new thread if none exists
       const { data: newThread, error } = await supabase
         .from("chat_threads")
         .insert({
@@ -67,10 +77,7 @@ export default function Chat({ user, listing, setIsChatOpen }) {
       }
 
       setThreadId(newThread.id);
-      // Use the new threadId for the message
       await sendMessage(newThread.id);
-    } else {
-      await sendMessage(threadId);
     }
   }
 
