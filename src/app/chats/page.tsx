@@ -8,9 +8,9 @@ export default async function ChatsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Get threads with messages (using our new view) and listing info
+  // Get threads with messages and listing info
   const { data: threads, error } = await supabase
-    .from("chat_threads")
+    .from("chat_threads_with_participants")
     .select(
       `
       *,
@@ -32,46 +32,5 @@ export default async function ChatsPage() {
     return null;
   }
 
-  console.log("Threads from server:", threads);
-
-  const userIds = threads.reduce((acc, thread) => {
-    acc.add(thread.initiator_id);
-    acc.add(thread.owner_id);
-    return acc;
-  }, new Set());
-
-  console.log("User IDs from server:", userIds);
-
-  const { data: profiles, error: profilesError } = await supabase
-    .from("profiles")
-    .select("id, first_name")
-    .in("id", Array.from(userIds));
-
-  if (profilesError) {
-    console.error("Error fetching profiles:", profilesError);
-    return null;
-  }
-
-  // Create a map for easy profile lookup
-  const profilesMap = Object.fromEntries(
-    profiles.map((profile) => [profile.id, profile])
-  );
-
-  console.log("Profiles from server:", profiles, profilesMap);
-
-  if (!user) {
-    return (
-      <div className="flex-1 w-full flex flex-col gap-12">
-        <div className="w-full text-center">
-          <h1 className="text-2xl font-bold mb-4">Messages</h1>
-          <p>Contact folks on Peels.</p>
-          <GuestActions />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <ChatPageClient user={user} threads={threads} profilesMap={profilesMap} />
-  );
+  return <ChatPageClient user={user} threads={threads} />;
 }

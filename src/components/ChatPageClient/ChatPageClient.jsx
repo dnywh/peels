@@ -4,23 +4,26 @@ import Chat from "@/components/Chat";
 
 // import { createClient } from "@/utils/supabase/server";
 
-export default function ChatPageClient({ user, threads, profilesMap }) {
+export default function ChatPageClient({ user, threads }) {
   const [selectedThread, setSelectedThread] = useState(null);
 
   return (
     <div className="chat-page-layout">
       <div className="threads-sidebar">
         {threads.map((thread) => {
-          const otherPersonId =
+          const otherPersonName =
             thread.initiator_id === user.id
-              ? thread.owner_id
-              : thread.initiator_id;
-          const otherPerson = profilesMap[otherPersonId];
+              ? thread.owner_first_name
+              : thread.initiator_first_name;
+
           const displayName =
             thread.listing?.type !== "residential" &&
-            thread.owner_id === otherPersonId
-              ? `${otherPerson.first_name}, ${thread.listing.name}`
-              : otherPerson.first_name;
+            thread.owner_id ===
+              (thread.initiator_id === user.id
+                ? thread.owner_id
+                : thread.initiator_id)
+              ? `${otherPersonName}, ${thread.listing.name}`
+              : otherPersonName;
 
           return (
             <div
