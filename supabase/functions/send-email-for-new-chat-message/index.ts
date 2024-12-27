@@ -91,8 +91,7 @@ const handler = async (_request: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from:
-          `${senderNameTodo} via Peels <${record.thread_id}-reply@peels.app>`,
+        from: `Peels <team@peels.app>`,
         to: [recipientEmail],
         subject: `${senderNameTodo} just messaged you`,
         html: emailContent,
@@ -137,7 +136,6 @@ function generateEmailContent(
   <p>${messageContent}</p>
   <p>You can reply to this message by clicking the link below:</p>
   <p><a href="https://peels.app/chats/${threadId}">Reply in app</a></p>
-  <p>Or reply by email to ${threadId}-reply@peels.app</p>
   <hr/>
   <footer>
   Peels
