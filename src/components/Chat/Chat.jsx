@@ -13,20 +13,11 @@ export default function Chat({
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
   const [messages, setMessages] = useState(existingThread?.chat_messages || []);
-
   const supabase = createClient();
 
-  useEffect(() => {
-    // Remove the automatic thread initialization
-    // if (!threadId && !existingThread) {
-    //   initializeChat();
-    // }
-  }, [listing?.id, user.id]);
-
-  // Update contents if existingThread changes (i.e. if I select a different thread)
+  // Update contents if existingThread changes
   useEffect(() => {
     if (existingThread) {
-      // console.log("existingThread changed:", existingThread.listing_slug);
       setThreadId(existingThread.id);
       setMessages(existingThread.chat_messages || []);
     }
@@ -34,13 +25,11 @@ export default function Chat({
 
   async function initializeChat() {
     try {
-      console.log("Initializing chat with:", {
+      console.log("Initializing chat:", {
         listing_id: listing?.id,
         initiator_id: user?.id,
-        owner_id: listing?.owner_id,
       });
 
-      // Get existing thread only (don't create new one)
       const { data: thread, error } = await supabase
         .from("chat_threads")
         .select("id")
@@ -51,20 +40,14 @@ export default function Chat({
         })
         .maybeSingle();
 
-      if (error) {
-        console.error("Error checking for existing chat:", error);
-        return null;
-      }
+      if (error) throw error;
 
       if (thread) {
-        console.log("Thread exists, loading it");
         setThreadId(thread.id);
         loadMessages(thread.id);
         return thread;
       }
 
-      // Create new thread
-      console.log("Creating new thread...");
       const { data: newThread, error: createError } = await supabase
         .from("chat_threads")
         .upsert(
@@ -81,12 +64,8 @@ export default function Chat({
         .select()
         .maybeSingle();
 
-      if (createError) {
-        console.error("Error creating new thread:", createError);
-        return null;
-      }
+      if (createError) throw createError;
 
-      console.log("New thread created:", newThread);
       setThreadId(newThread.id);
       return newThread;
     } catch (error) {
@@ -96,46 +75,34 @@ export default function Chat({
   }
 
   async function loadMessages(threadId) {
-    const { data: messages } = await supabase
+    const { data: messages, error } = await supabase
       .from("chat_messages_with_senders")
       .select()
       .eq("thread_id", threadId)
       .order("created_at", { ascending: true });
 
+    if (error) {
+      console.error("Error loading messages:", error);
+      return;
+    }
+
     setMessages(messages || []);
   }
 
-  // console.log("Messages:", messages);
-
   async function handleSubmit(e) {
-    console.log("handleSubmit called...");
-
     e.preventDefault();
 
-    try {
-      if (!message.trim()) {
-        console.log("Message is empty");
-        return;
-      }
+    if (!message.trim()) return;
 
-      // If we have an existing thread, use it directly
+    try {
       if (threadId) {
-        console.log("Sending message to existing thread...");
         await sendMessage(threadId);
         return;
       }
 
-      console.log("No existing thread, attempting to initialize...");
-      // Only try to initialize/create thread if we don't have one
-      const existingOrNewThread = await initializeChat();
-      console.log("Initialize chat result:", existingOrNewThread);
-
-      if (existingOrNewThread) {
-        console.log("Sending message to new thread...");
-        await sendMessage(existingOrNewThread.id);
-      } else {
-        console.log("No thread was created or found");
-        // You might want to handle this case - perhaps create a new thread here
+      const thread = await initializeChat();
+      if (thread) {
+        await sendMessage(thread.id);
       }
     } catch (error) {
       console.error("Error in handleSubmit:", error);
@@ -143,8 +110,7 @@ export default function Chat({
   }
 
   async function sendMessage(threadId) {
-    console.log("sendMessage called...");
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("chat_messages")
       .insert({
         thread_id: threadId,
@@ -153,16 +119,12 @@ export default function Chat({
       })
       .select();
 
-    console.log("Send message response:", { data, error });
-
     if (error) {
       console.error("Error sending message:", error);
       return;
     }
 
-    // Was successful
-    // Email triggered by Supabase webhook, which in turn triggers the resend edge function
-    // If successful, clear message and reload messages
+    // Message sent, clear message and reload messages
     console.log("Message sent:", message);
     setMessage("");
     loadMessages(threadId);
@@ -173,11 +135,6 @@ export default function Chat({
       {setIsChatOpen && (
         <button onClick={() => setIsChatOpen(false)}>Close chat</button>
       )}
-
-      {/* <h3>Chat</h3> */}
-      {/* <p>Listing is {listing}</p> */}
-      {/* <pre>{JSON.stringify(listing, null, 2)}</pre> */}
-      {/* {thread} */}
 
       <div className="messages-container">
         {messages.map((message) => (
