@@ -8,6 +8,54 @@ export default async function ChatsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // First, get the threads with messages and listing info
+  const { data: threads, error } = await supabase
+    .from("chat_threads")
+    .select(
+      `
+      *,
+      chat_messages (*),
+      listing:listings (
+        name,
+        type
+      )
+    `
+    )
+    .or(`initiator_id.eq.${user.id},owner_id.eq.${user.id}`)
+    .order("created_at", { foreignTable: "chat_messages", ascending: true });
+
+  if (error) {
+    console.error("Error fetching chat threads:", error);
+    return null;
+  }
+
+  console.log("Threads from server:", threads);
+
+  const userIds = threads.reduce((acc, thread) => {
+    acc.add(thread.initiator_id);
+    acc.add(thread.owner_id);
+    return acc;
+  }, new Set());
+
+  console.log("User IDs from server:", userIds);
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, first_name")
+    .in("id", Array.from(userIds));
+
+  if (profilesError) {
+    console.error("Error fetching profiles:", profilesError);
+    return null;
+  }
+
+  // Create a map for easy profile lookup
+  const profilesMap = Object.fromEntries(
+    profiles.map((profile) => [profile.id, profile])
+  );
+
+  console.log("Profiles from server:", profiles, profilesMap);
+
   if (!user) {
     return (
       <div className="flex-1 w-full flex flex-col gap-12">
@@ -20,5 +68,7 @@ export default async function ChatsPage() {
     );
   }
 
-  return <ChatPageClient user={user} />;
+  return (
+    <ChatPageClient user={user} threads={threads} profilesMap={profilesMap} />
+  );
 }

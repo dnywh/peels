@@ -3,16 +3,23 @@ import { useState, useEffect } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 
-export default function Chat({ user, listing, setIsChatOpen }) {
+export default function Chat({
+  user,
+  listing,
+  setIsChatOpen,
+  existingThread = null,
+}) {
   const [message, setMessage] = useState("");
-  const [threadId, setThreadId] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [threadId, setThreadId] = useState(existingThread?.id || null);
+  const [messages, setMessages] = useState(existingThread?.chat_messages || []);
 
   const supabase = createClient();
 
   useEffect(() => {
-    initializeChat();
-  }, [listing.id, user.id]);
+    if (!threadId && !existingThread) {
+      initializeChat();
+    }
+  }, [listing?.id, user.id]);
 
   async function initializeChat() {
     // Get existing thread only (don't create new one)
@@ -53,32 +60,16 @@ export default function Chat({ user, listing, setIsChatOpen }) {
       return;
     }
 
-    // First check if thread exists
-    const existingThread = await initializeChat();
+    // If we have an existing thread, use it directly
+    if (threadId) {
+      await sendMessage(threadId);
+      return;
+    }
 
-    if (existingThread) {
-      // Use existing thread
-      await sendMessage(existingThread.id);
-    } else {
-      // Create new thread if none exists
-      const { data: nextThread, error } = await supabase
-        .from("chat_threads")
-        .insert({
-          listing_id: listing.id,
-          initiator_id: user.id,
-          owner_id: listing.owner_id,
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Error creating thread:", error);
-        return;
-      }
-
-      setThreadId(nextThread.id);
-      console.log("New thread created:", nextThread);
-      await sendMessage(nextThread.id);
+    // Only try to initialize/create thread if we don't have one
+    const existingOrNewThread = await initializeChat();
+    if (existingOrNewThread) {
+      await sendMessage(existingOrNewThread.id);
     }
   }
 
@@ -109,17 +100,16 @@ export default function Chat({ user, listing, setIsChatOpen }) {
 
   return (
     <div>
-      <button onClick={() => setIsChatOpen(false)}>Close chat</button>
-      <p>User viewing is {user.id}</p>
-      <p>
-        About to message {listing.name}, owned by {listing.owner_id}
-      </p>
+      {setIsChatOpen && (
+        <button onClick={() => setIsChatOpen(false)}>Close chat</button>
+      )}
 
-      <div>
-        <h3>Messages container</h3>
-
+      <div className="messages-container">
         {messages.map((message) => (
-          <div key={message.id}>
+          <div
+            key={message.id}
+            className={message.sender_id === user.id ? "sent" : "received"}
+          >
             <p>{message.content}</p>
             <small>{new Date(message.created_at).toLocaleString()}</small>
           </div>
@@ -128,7 +118,7 @@ export default function Chat({ user, listing, setIsChatOpen }) {
 
       <form onSubmit={handleSubmit}>
         <textarea
-          placeholder={`Send a message to ${listing.name}...`}
+          placeholder={`Send a message...`}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
