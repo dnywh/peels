@@ -1,9 +1,12 @@
 import GuestActions from "@/components/guest-actions";
 import { createClient } from "@/utils/supabase/server";
+import ChatPageClient from "@/components/ChatPageClient";
 
 export default async function ChatsPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return (
@@ -17,13 +20,5 @@ export default async function ChatsPage() {
     );
   }
 
-  return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <h1 className="text-2xl font-bold mb-4">Your Messages</h1>
-        {/* Chat interface will go here */}
-        <p>Logged in user.</p>
-      </div>
-    </div>
-  );
-} 
+  return <ChatPageClient user={user} />;
+}
