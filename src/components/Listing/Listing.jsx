@@ -45,6 +45,8 @@ function Listing({ user, listing, setSelectedListing }) {
         <p>{listing.type}</p>
         <p>Last active: TODO</p>
 
+        <p>Permalink: {listing.slug}</p>
+
         <div>
           <p>
             {user && listing.owner_id === user.id

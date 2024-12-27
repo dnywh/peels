@@ -25,6 +25,8 @@ export default function ChatPageClient({ user, threads }) {
               ? `${otherPersonName}, ${thread.listing.name}`
               : otherPersonName;
 
+          // console.log(thread.listing_slug);
+
           return (
             <div
               key={thread.id}
@@ -48,14 +50,17 @@ export default function ChatPageClient({ user, threads }) {
 
       <div className="chat-window">
         {selectedThread && (
-          <Chat
-            user={user}
-            listing={selectedThread.listing}
-            existingThread={{
-              ...selectedThread,
-              chat_messages: selectedThread.chat_messages_with_senders,
-            }}
-          />
+          <>
+            <p>Listing: {selectedThread.listing_slug}</p>
+            <Chat
+              user={user}
+              listing={selectedThread.listing}
+              existingThread={{
+                ...selectedThread,
+                chat_messages: selectedThread.chat_messages_with_senders,
+              }}
+            />
+          </>
         )}
       </div>
     </div>

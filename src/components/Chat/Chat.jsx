@@ -25,6 +25,7 @@ export default function Chat({
   // Update contents if existingThread changes (i.e. if I select a different thread)
   useEffect(() => {
     if (existingThread) {
+      // console.log("existingThread changed:", existingThread.listing_slug);
       setThreadId(existingThread.id);
       setMessages(existingThread.chat_messages || []);
     }
@@ -171,6 +172,11 @@ export default function Chat({
       {setIsChatOpen && (
         <button onClick={() => setIsChatOpen(false)}>Close chat</button>
       )}
+
+      {/* <h3>Chat</h3> */}
+      {/* <p>Listing is {listing}</p> */}
+      {/* <pre>{JSON.stringify(listing, null, 2)}</pre> */}
+      {/* {thread} */}
 
       <div className="messages-container">
         {messages.map((message) => (
