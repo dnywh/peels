@@ -1,12 +1,30 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Chat from "@/components/Chat";
 import StorageImage from "@/components/StorageImage";
 
 // import { createClient } from "@/utils/supabase/server";
 
 export default function ChatPageClient({ user, threads }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [selectedThread, setSelectedThread] = useState(null);
+
+  useEffect(() => {
+    const threadId = pathname.split("/").pop();
+    if (threadId && threadId !== "chats") {
+      const thread = threads.find((t) => t.id === threadId);
+      if (thread) {
+        setSelectedThread(thread);
+      }
+    }
+  }, [pathname, threads]);
+
+  const handleThreadSelect = (thread) => {
+    setSelectedThread(thread);
+    router.push(`/chats/${thread.id}`);
+  };
 
   return (
     <div className="chat-page-layout">
@@ -31,8 +49,8 @@ export default function ChatPageClient({ user, threads }) {
           return (
             <div
               key={thread.id}
-              className={`thread-preview ${selectedThread?.id === thread.id ? "selected" : ""}`}
-              onClick={() => setSelectedThread(thread)}
+              className={`"thread-preview" ${selectedThread?.id === thread.id ? "selected" : ""}`}
+              onClick={() => handleThreadSelect(thread)}
             >
               <h3>{displayName}</h3>
               {thread.chat_messages_with_senders?.length > 0 && (
