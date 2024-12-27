@@ -53,14 +53,17 @@ function Listing({ user, listing, setSelectedListing }) {
           </p>
 
           {user ? (
-            <button onClick={() => setIsChatOpen(true)}>
-              Contact{" "}
-              {listing.type === "residential"
-                ? listing.profiles.first_name
-                : listing.name}
-            </button>
+            listing.owner_id === user.id ? (
+              <Link href="/edit-listing">Edit listing</Link>
+            ) : (
+              <button onClick={() => setIsChatOpen(true)}>
+                Contact{" "}
+                {listing.type === "residential"
+                  ? listing.profiles.first_name
+                  : listing.name}
+              </button>
+            )
           ) : (
-            // TODO: Dynamically change sign up page h1 to say "Sign up to contact hosts"
             <Link href="/sign-up?type=contact-host">Contact host</Link>
           )}
         </div>

@@ -65,11 +65,17 @@ export default function Chat({
       console.log("Creating new thread...");
       const { data: newThread, error: createError } = await supabase
         .from("chat_threads")
-        .insert({
-          listing_id: listing.id,
-          initiator_id: user.id,
-          owner_id: listing.owner_id,
-        })
+        .upsert(
+          {
+            listing_id: listing.id,
+            initiator_id: user.id,
+            owner_id: listing.owner_id,
+          },
+          {
+            onConflict: "listing_id,initiator_id,owner_id",
+            ignoreDuplicates: true,
+          }
+        )
         .select()
         .single();
 
