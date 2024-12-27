@@ -8,6 +8,16 @@ export default async function ChatsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    return (
+      <div>
+        <h1>Chats</h1>
+        <p>Please sign in to view your chats.</p>
+        <GuestActions />
+      </div>
+    );
+  }
+
   // Get threads with messages and listing info
   const { data: threads, error } = await supabase
     .from("chat_threads_with_participants")
@@ -21,7 +31,7 @@ export default async function ChatsPage() {
       )
     `
     )
-    .or(`initiator_id.eq.${user.id},owner_id.eq.${user.id}`)
+    .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`)
     .order("created_at", {
       foreignTable: "chat_messages_with_senders",
       ascending: true,
