@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Chat from "@/components/Chat";
+import StorageImage from "@/components/StorageImage";
 
 // import { createClient } from "@/utils/supabase/server";
 
@@ -51,7 +52,15 @@ export default function ChatPageClient({ user, threads }) {
       <div className="chat-window">
         {selectedThread && (
           <>
-            <p>Listing: {selectedThread.listing_slug}</p>
+            <p>Listing slug: {selectedThread.listing_slug}</p>
+            <p>Listing name: {selectedThread.listing_name}</p>
+            <p>Listing image: {selectedThread.listing_avatar}</p>
+            <StorageImage
+              bucket="listing_avatars"
+              filename={selectedThread.listing_avatar}
+              alt={selectedThread.listing_name}
+              style={{ width: "100px", height: "100px" }}
+            />
             <Chat
               user={user}
               listing={selectedThread.listing}
