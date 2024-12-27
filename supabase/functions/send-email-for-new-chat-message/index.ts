@@ -29,38 +29,41 @@ const handler = async (_request: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // 3. Add error handling for database queries
-    const { data: threadData, error: threadError } = await supabase
-      .from("chat_threads")
-      .select("*")
-      .eq("id", record.thread_id)
+    const { data: messageData, error: messageError } = await supabase
+      .from("chat_messages_with_senders")
+      .select("*, thread:chat_threads_with_participants!thread_id(*)")
+      .eq("id", record.id)
       .single();
 
-    if (threadError || !threadData) {
-      throw new Error(`Failed to fetch thread data: ${threadError?.message}`);
+    if (messageError || !messageData) {
+      throw new Error(`Failed to fetch message data: ${messageError?.message}`);
     }
 
-    console.log("Thread Data:", threadData);
+    console.log("Message Data:", messageData);
+
+    // Use the sender name from our view
+    const senderName = messageData.sender_first_name;
+    console.log("Sender Name:", senderName);
+
+    const senderAvatarUrl = messageData.sender_avatar
+      ? `${supabaseUrl}/storage/v1/object/public/avatars/${messageData.sender_avatar}`
+      : null;
+    console.log("Sender Avatar URL:", senderAvatarUrl);
+
+    const listingUrl =
+      `https://peels.app/listings/${messageData.thread.listing_slug}`;
+    console.log("Listing URL:", listingUrl);
 
     // Determine recipient_id (the user who isn't the sender)
-    const recipientId = threadData.initiator_id === record.sender_id
-      ? threadData.owner_id
-      : threadData.initiator_id;
+    const recipientId = messageData.thread.initiator_id === record.sender_id
+      ? messageData.thread.owner_id
+      : messageData.thread.initiator_id;
 
     console.log("Sender ID from chat_messages:", record.sender_id);
     console.log("Recipient ID from chat_threads:", recipientId);
     console.log("Message:", record.content);
 
-    // Get sender's name from the profiles table
-    const { data: senderData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", record.sender_id)
-      .single();
-
-    const senderName = senderData?.first_name;
-    console.log("Sender Name:", senderName);
-
-    // Do auth admin query to get recipient email
+    // Do auth admin query to get recipient email (keeping this pattern for security)
     const { data: recipientData, error: recipientError } = await supabase.auth
       .admin.getUserById(recipientId);
     console.log("Recipient data:", recipientData);
@@ -73,14 +76,14 @@ const handler = async (_request: Request): Promise<Response> => {
       ?.first_name;
     console.log("Recipient Name from Metadata:", recipientNameFromMetadata);
 
-    const senderNameTodo = senderName;
-
     // 4. Consolidate email template into a separate function
     const emailContent = generateEmailContent({
-      senderName: senderNameTodo,
+      senderName,
       recipientName: recipientNameFromMetadata,
       messageContent: record.content,
       threadId: record.thread_id,
+      listingUrl,
+      senderAvatarUrl,
     });
 
     // 5. Add error handling for the email send
@@ -93,7 +96,7 @@ const handler = async (_request: Request): Promise<Response> => {
       body: JSON.stringify({
         from: `Peels <team@peels.app>`,
         to: [recipientEmail],
-        subject: `${senderNameTodo} just messaged you`,
+        subject: `${senderName} just messaged you`,
         html: emailContent,
       }),
     });
@@ -123,19 +126,35 @@ const handler = async (_request: Request): Promise<Response> => {
 
 // Helper function for email template
 function generateEmailContent(
-  { senderName, recipientName, messageContent, threadId }: {
+  {
+    senderName,
+    recipientName,
+    messageContent,
+    threadId,
+    senderAvatarUrl,
+    listingUrl,
+  }: {
     senderName: string;
     recipientName: string;
     messageContent: string;
     threadId: string;
+    senderAvatarUrl: string | null;
+    listingUrl: string;
   },
 ) {
+  // TODO: Only show listing URL if the recipient is NOT the owner of the listing
   return `<header>Peels</header>
     <h1>New message from ${senderName}</h1>
     <p>Hi ${recipientName}, you've received a new message from ${senderName}:</p>
-  <p>${messageContent}</p>
-  <p>You can reply to this message by clicking the link below:</p>
+    ${
+    senderAvatarUrl
+      ? `<img src="${senderAvatarUrl}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%;" />`
+      : ""
+  }
+    <p>${messageContent}</p>
+    <p>You can reply to this message by clicking the link below:</p>
   <p><a href="https://peels.app/chats/${threadId}">Reply in app</a></p>
+  <p><a href="${listingUrl}">View listing</a></p>
   <hr/>
   <footer>
   Peels

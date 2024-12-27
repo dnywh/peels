@@ -17,9 +17,10 @@ export default function Chat({
   const supabase = createClient();
 
   useEffect(() => {
-    if (!threadId && !existingThread) {
-      initializeChat();
-    }
+    // Remove the automatic thread initialization
+    // if (!threadId && !existingThread) {
+    //   initializeChat();
+    // }
   }, [listing?.id, user.id]);
 
   // Update contents if existingThread changes (i.e. if I select a different thread)
@@ -51,7 +52,7 @@ export default function Chat({
         .maybeSingle();
 
       if (error) {
-        console.error("Error initializing chat:", error);
+        console.error("Error checking for existing chat:", error);
         return null;
       }
 
@@ -62,7 +63,7 @@ export default function Chat({
         return thread;
       }
 
-      // Create new thread if one doesn't exist
+      // Create new thread
       console.log("Creating new thread...");
       const { data: newThread, error: createError } = await supabase
         .from("chat_threads")
@@ -78,7 +79,7 @@ export default function Chat({
           }
         )
         .select()
-        .single();
+        .maybeSingle();
 
       if (createError) {
         console.error("Error creating new thread:", createError);
