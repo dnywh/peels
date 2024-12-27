@@ -62,7 +62,7 @@ export default function Chat({ user, listing, setIsChatOpen }) {
       await sendMessage(existingThread.id);
     } else {
       // Create new thread if none exists
-      const { data: newThread, error } = await supabase
+      const { data: nextThread, error } = await supabase
         .from("chat_threads")
         .insert({
           listing_id: listing.id,
@@ -77,26 +77,33 @@ export default function Chat({ user, listing, setIsChatOpen }) {
         return;
       }
 
-      setThreadId(newThread.id);
-      await sendMessage(newThread.id);
+      setThreadId(nextThread.id);
+      console.log("New thread created:", nextThread);
+      await sendMessage(nextThread.id);
     }
   }
 
   async function sendMessage(threadId) {
-    const { error } = await supabase.from("chat_messages").insert({
-      thread_id: threadId,
-      sender_id: user.id,
-      content: message.trim(),
-    });
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .insert({
+        thread_id: threadId,
+        sender_id: user.id,
+        content: message.trim(),
+      })
+      .select();
+
+    console.log("Send message response:", { data, error });
 
     if (error) {
       console.error("Error sending message:", error);
       return;
     }
 
+    // Was successful
+    // Email triggered by Supabase webhook, which in turn triggers the resend edge function
     // If successful, clear message and reload messages
-    await testEmailAction();
-    console.log("Message sent successfully");
+    console.log("Message sent:", message);
     setMessage("");
     loadMessages(threadId);
   }
