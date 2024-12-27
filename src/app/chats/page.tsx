@@ -8,13 +8,13 @@ export default async function ChatsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // First, get the threads with messages and listing info
+  // Get threads with messages (using our new view) and listing info
   const { data: threads, error } = await supabase
     .from("chat_threads")
     .select(
       `
       *,
-      chat_messages (*),
+      chat_messages_with_senders (*),
       listing:listings (
         name,
         type
@@ -22,7 +22,10 @@ export default async function ChatsPage() {
     `
     )
     .or(`initiator_id.eq.${user.id},owner_id.eq.${user.id}`)
-    .order("created_at", { foreignTable: "chat_messages", ascending: true });
+    .order("created_at", {
+      foreignTable: "chat_messages_with_senders",
+      ascending: true,
+    });
 
   if (error) {
     console.error("Error fetching chat threads:", error);

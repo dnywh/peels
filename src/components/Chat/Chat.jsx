@@ -44,13 +44,15 @@ export default function Chat({
 
   async function loadMessages(threadId) {
     const { data: messages } = await supabase
-      .from("chat_messages")
-      .select("*")
+      .from("chat_messages_with_senders")
+      .select()
       .eq("thread_id", threadId)
       .order("created_at", { ascending: true });
 
     setMessages(messages || []);
   }
+
+  console.log("Messages:", messages);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -111,7 +113,12 @@ export default function Chat({
             className={message.sender_id === user.id ? "sent" : "received"}
           >
             <p>{message.content}</p>
-            <small>{new Date(message.created_at).toLocaleString()}</small>
+            <p>
+              <small>Sent by {message.sender_first_name}</small>
+            </p>
+            <p>
+              <small>{new Date(message.created_at).toLocaleString()}</small>
+            </p>
           </div>
         ))}
       </div>

@@ -29,11 +29,12 @@ export default function ChatPageClient({ user, threads, profilesMap }) {
               onClick={() => setSelectedThread(thread)}
             >
               <h3>{displayName}</h3>
-              {thread.chat_messages.length > 0 && (
+              {thread.chat_messages_with_senders?.length > 0 && (
                 <p className="last-message">
                   {
-                    thread.chat_messages[thread.chat_messages.length - 1]
-                      .content
+                    thread.chat_messages_with_senders[
+                      thread.chat_messages_with_senders.length - 1
+                    ].content
                   }
                 </p>
               )}
@@ -47,7 +48,10 @@ export default function ChatPageClient({ user, threads, profilesMap }) {
           <Chat
             user={user}
             listing={selectedThread.listing}
-            existingThread={selectedThread}
+            existingThread={{
+              ...selectedThread,
+              chat_messages: selectedThread.chat_messages_with_senders,
+            }}
           />
         )}
       </div>
