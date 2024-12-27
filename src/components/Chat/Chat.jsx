@@ -21,25 +21,69 @@ export default function Chat({
     }
   }, [listing?.id, user.id]);
 
-  async function initializeChat() {
-    // Get existing thread only (don't create new one)
-    const { data: thread, error } = await supabase
-      .from("chat_threads")
-      .select("id")
-      .match({
-        listing_id: listing.id,
-        initiator_id: user.id,
-        owner_id: listing.owner_id,
-      })
-      .maybeSingle();
-
-    if (thread) {
-      console.log("Thread exists, loading it");
-      setThreadId(thread.id);
-      loadMessages(thread.id);
+  // Update contents if existingThread changes (i.e. if I select a different thread)
+  useEffect(() => {
+    if (existingThread) {
+      setThreadId(existingThread.id);
+      setMessages(existingThread.chat_messages || []);
     }
+  }, [existingThread]);
 
-    return thread;
+  async function initializeChat() {
+    try {
+      console.log("Initializing chat with:", {
+        listing_id: listing?.id,
+        initiator_id: user?.id,
+        owner_id: listing?.owner_id,
+      });
+
+      // Get existing thread only (don't create new one)
+      const { data: thread, error } = await supabase
+        .from("chat_threads")
+        .select("id")
+        .match({
+          listing_id: listing.id,
+          initiator_id: user.id,
+          owner_id: listing.owner_id,
+        })
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error initializing chat:", error);
+        return null;
+      }
+
+      if (thread) {
+        console.log("Thread exists, loading it");
+        setThreadId(thread.id);
+        loadMessages(thread.id);
+        return thread;
+      }
+
+      // Create new thread if one doesn't exist
+      console.log("Creating new thread...");
+      const { data: newThread, error: createError } = await supabase
+        .from("chat_threads")
+        .insert({
+          listing_id: listing.id,
+          initiator_id: user.id,
+          owner_id: listing.owner_id,
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error("Error creating new thread:", createError);
+        return null;
+      }
+
+      console.log("New thread created:", newThread);
+      setThreadId(newThread.id);
+      return newThread;
+    } catch (error) {
+      console.error("Error in initializeChat:", error);
+      return null;
+    }
   }
 
   async function loadMessages(threadId) {
@@ -52,30 +96,45 @@ export default function Chat({
     setMessages(messages || []);
   }
 
-  console.log("Messages:", messages);
+  // console.log("Messages:", messages);
 
   async function handleSubmit(e) {
+    console.log("handleSubmit called...");
+
     e.preventDefault();
 
-    if (!message.trim()) {
-      console.log("Message is empty");
-      return;
-    }
+    try {
+      if (!message.trim()) {
+        console.log("Message is empty");
+        return;
+      }
 
-    // If we have an existing thread, use it directly
-    if (threadId) {
-      await sendMessage(threadId);
-      return;
-    }
+      // If we have an existing thread, use it directly
+      if (threadId) {
+        console.log("Sending message to existing thread...");
+        await sendMessage(threadId);
+        return;
+      }
 
-    // Only try to initialize/create thread if we don't have one
-    const existingOrNewThread = await initializeChat();
-    if (existingOrNewThread) {
-      await sendMessage(existingOrNewThread.id);
+      console.log("No existing thread, attempting to initialize...");
+      // Only try to initialize/create thread if we don't have one
+      const existingOrNewThread = await initializeChat();
+      console.log("Initialize chat result:", existingOrNewThread);
+
+      if (existingOrNewThread) {
+        console.log("Sending message to new thread...");
+        await sendMessage(existingOrNewThread.id);
+      } else {
+        console.log("No thread was created or found");
+        // You might want to handle this case - perhaps create a new thread here
+      }
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
     }
   }
 
   async function sendMessage(threadId) {
+    console.log("sendMessage called...");
     const { data, error } = await supabase
       .from("chat_messages")
       .insert({
