@@ -19,6 +19,7 @@ import MapPin from "@/components/MapPin";
 export default function MapRender({
   mapRef,
   listings,
+  selectedListing,
   onBoundsChange,
   onMapClick,
   onMarkerClick,
@@ -131,7 +132,7 @@ export default function MapRender({
           anchor="center"
           onClick={() => onMarkerClick(listing.id)}
         >
-          <MapPin size={28} />
+          <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
         </Marker>
       ))}
       <GeolocateControl

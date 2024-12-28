@@ -141,6 +141,7 @@ export default function MapPageClient({ user }) {
           <MapRender
             mapRef={mapRef}
             listings={listings}
+            selectedListing={selectedListing}
             onBoundsChange={handleBoundsChange}
             onMapClick={handleMapClick}
             onMarkerClick={handleMarkerClick}
