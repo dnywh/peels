@@ -20,7 +20,7 @@ export default function MapPageClient({ user, initialListingSlug }) {
   const supabase = useMemo(() => createClient(), []);
 
   // Memoize listings to prevent unnecessary re-renders
-  const [listings, setListings] = useState([]);
+  const [mapListings, setMapListings] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
 
   // Derive current slug from URL
@@ -85,8 +85,8 @@ export default function MapPageClient({ user, initialListingSlug }) {
       bounds._ne.lat,
       bounds._ne.lng
     );
-    console.log("Fetched listings:", data); // Debug log to see what fields we're getting
-    setListings((prev) => {
+    console.log("Fetched map listings:", data); // Debug log to see what fields we're getting
+    setMapListings((prev) => {
       // Only update if data has changed
       if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
       return data;
@@ -95,7 +95,7 @@ export default function MapPageClient({ user, initialListingSlug }) {
 
   const handleMarkerClick = useCallback(
     async (listingId) => {
-      console.log("Finding listing with ID:", listingId);
+      console.log("Finding full listing from map listing with ID:", listingId);
 
       const { data, error } = await supabase
         .from("listings")
@@ -160,7 +160,7 @@ export default function MapPageClient({ user, initialListingSlug }) {
 
           <MapRender
             mapRef={mapRef}
-            listings={listings}
+            mapListings={mapListings}
             selectedListing={selectedListing}
             onBoundsChange={handleBoundsChange}
             // onMapClick={handleMapClick}

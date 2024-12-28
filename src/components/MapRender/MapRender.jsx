@@ -16,7 +16,7 @@ import MapPin from "@/components/MapPin";
 // Memoize the MapRender component
 const MapRender = memo(function MapRender({
   mapRef,
-  listings,
+  mapListings,
   selectedListing,
   onBoundsChange,
   onMapClick,
@@ -116,18 +116,21 @@ const MapRender = memo(function MapRender({
       onLoad={handleMapLoad}
       onClick={onMapClick}
     >
-      {listings.map((listing) => (
+      {mapListings.map((mapListing) => (
         <Marker
-          key={listing.id}
-          longitude={listing.longitude}
-          latitude={listing.latitude}
+          key={mapListing.id}
+          longitude={mapListing.longitude}
+          latitude={mapListing.latitude}
           anchor="center"
           onClick={(e) => {
             e.originalEvent.stopPropagation(); // Prevent map click from interfering with marker click
-            onMarkerClick(listing.id);
+            onMarkerClick(mapListing.id);
           }}
         >
-          <MapPin size={28} isSelected={selectedListing?.id === listing.id} />
+          <MapPin
+            size={28}
+            isSelected={selectedListing?.id === mapListing.id}
+          />
         </Marker>
       ))}
       <GeolocateControl
