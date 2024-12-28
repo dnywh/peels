@@ -13,6 +13,8 @@ import GuestActions from "@/components/GuestActions";
 
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
+  const mapRef = useRef(null);
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
@@ -21,8 +23,6 @@ export default function MapPageClient({ user }) {
   const [selectedListing, setSelectedListing] = useState(null);
   // Set mapController to set relationship between MapSearch and MapRender
   const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
-
-  const mapRef = useRef(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -101,15 +101,16 @@ export default function MapPageClient({ user }) {
       console.error("Error fetching listing details:", error);
       return;
     }
+    console.log("Selected listing", data);
 
     setSelectedListing(data);
     // Update URL without full page reload
     router.push(`/map?listing=${data.slug}`, { scroll: false });
   };
 
-  const handleMapClick = (event) => {
+  const handleMapClick = () => {
     // Since we're stopping propagation on marker clicks,
-    // this will only fire when clicking the actual map
+    // this will only fire when clicking the actual map, not a marker on the map
     if (selectedListing) {
       handleCloseListing();
     }
