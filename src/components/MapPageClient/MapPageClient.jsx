@@ -74,6 +74,11 @@ export default function MapPageClient({ user }) {
   }, []);
 
   const handleMarkerClick = async (listingId) => {
+    // If the clicked marker is already selected, do nothing and return early
+    if (selectedListing?.id === listingId) {
+      return;
+    }
+
     const { data, error } = await supabase
       .from("listings")
       .select(
@@ -99,7 +104,11 @@ export default function MapPageClient({ user }) {
   };
 
   const handleMapClick = (event) => {
-    console.log("Map clicked", event);
+    // Since we're stopping propagation on marker clicks,
+    // this will only fire when clicking the actual map
+    if (selectedListing) {
+      handleCloseListing();
+    }
   };
 
   const handleSearchPick = useCallback((event) => {
@@ -126,6 +135,7 @@ export default function MapPageClient({ user }) {
   }, []);
 
   const handleCloseListing = () => {
+    console.log("Closing listing");
     setSelectedListing(null);
     // Remove listing param from URL
     router.push("/map", { scroll: false });

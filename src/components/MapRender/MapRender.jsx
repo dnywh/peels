@@ -130,7 +130,10 @@ export default function MapRender({
           longitude={listing.longitude}
           latitude={listing.latitude}
           anchor="center"
-          onClick={() => onMarkerClick(listing.id)}
+          onClick={(event) => {
+            event.originalEvent.stopPropagation();
+            onMarkerClick(listing.id);
+          }}
         >
           <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
         </Marker>
