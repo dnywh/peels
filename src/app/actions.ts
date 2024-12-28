@@ -244,15 +244,6 @@ export async function fetchListingsInView(
 ) {
   const supabase = await createClient();
 
-  // Debug log
-  // console.log("Calling RPC with params:", {
-  //   min_lat: south,
-  //   min_long: west,
-  //   max_lat: north,
-  //   max_long: east,
-  // });
-
-  // Try sending as a single object instead
   const { data, error } = await supabase.rpc("listings_in_view", {
     min_lat: south,
     min_long: west,
@@ -266,5 +257,6 @@ export async function fetchListingsInView(
     return [];
   }
 
+  console.log("Listings from RPC:", data); // Debug what fields we're getting
   return data || [];
 }

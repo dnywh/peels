@@ -1,13 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 import Link from "next/link";
 
 import StorageImage from "@/components/StorageImage";
 import ChatWindow from "@/components/ChatWindow";
 
-function Listing({ user, listing, setSelectedListing }) {
+// Memoize the Listing component
+const Listing = memo(function Listing({ user, listing, setSelectedListing }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
+
   return (
     <div>
       <h2>Person viewing is {user ? user.email : "a guest"}</h2>
@@ -146,6 +148,8 @@ function Listing({ user, listing, setSelectedListing }) {
       </div>
     </div>
   );
-}
+});
+
+Listing.displayName = "Listing";
 
 export default Listing;

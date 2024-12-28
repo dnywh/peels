@@ -1,7 +1,6 @@
 "use client";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-
 import { createClient } from "@/utils/supabase/client";
 
 import { fetchListingsInView } from "@/app/actions";
@@ -13,109 +12,117 @@ import GuestActions from "@/components/GuestActions";
 
 // export default async function MapPage() {
 export default function MapPageClient({ user, initialListingSlug }) {
-  const supabase = createClient();
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
-  // console.log("User", user);
-  // console.log("User", user);
-
-  const [listings, setListings] = useState([]);
-  const [selectedListing, setSelectedListing] = useState(null);
-  // Set mapController to set relationship between MapSearch and MapRender
-  const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
-
-  const mapRef = useRef(null);
-
   const router = useRouter();
   const pathname = usePathname();
+  const mapRef = useRef(null);
 
-  // Fetch initial listing if slug exists
+  // Memoize Supabase client
+  const supabase = useMemo(() => createClient(), []);
+
+  // Memoize listings to prevent unnecessary re-renders
+  const [listings, setListings] = useState([]);
+  const [selectedListing, setSelectedListing] = useState(null);
+
+  // Derive current slug from URL
+  const currentSlug = useMemo(() => {
+    const slug = pathname.split("/").pop();
+    return slug === "map" ? null : slug;
+  }, [pathname]);
+
+  // Handle URL-based listing selection
   useEffect(() => {
-    if (initialListingSlug) {
-      fetchListingBySlug(initialListingSlug);
-    }
-  }, [initialListingSlug]);
-
-  const fetchListingBySlug = async (slug) => {
-    const { data, error } = await supabase
-      .from("listings")
-      .select(
+    async function fetchListingBySlug(slug) {
+      const { data, error } = await supabase
+        .from("listings")
+        .select(
+          `
+          *,
+          profiles (
+            first_name,
+            avatar
+          )
         `
-        *,
-        profiles (
-          first_name,
-          avatar
         )
-      `
-      )
-      .eq("slug", slug)
-      .single();
+        .eq("slug", slug)
+        .single();
 
-    if (error) {
-      console.error("Error fetching listing details:", error);
-      return;
+      if (error) {
+        console.error("Error fetching listing by slug:", error);
+        return;
+      }
+
+      setSelectedListing(data);
     }
 
-    setSelectedListing(data);
-  };
+    if (currentSlug) {
+      fetchListingBySlug(currentSlug);
+    } else {
+      setSelectedListing(null);
+    }
+  }, [currentSlug, supabase]);
+
+  const handleListingSelect = useCallback(
+    (listing) => {
+      if (!listing) {
+        router.push("/map");
+        setSelectedListing(null);
+        return;
+      }
+
+      console.log("Selecting listing:", listing);
+      if (listing.slug && listing.slug !== currentSlug) {
+        setSelectedListing(listing); // Set the listing first
+        router.push(`/map/${listing.slug}`);
+      }
+    },
+    [router, currentSlug]
+  );
 
   const handleBoundsChange = useCallback(async (bounds) => {
-    console.log("Bounds changed. Bounds being sent:", bounds, {
-      bottomLeftWest: bounds._sw.lat,
-      bottomLeftSouth: bounds._sw.lng,
-      topRightNorth: bounds._ne.lat,
-      topRightEast: bounds._ne.lng,
-    });
-
     const data = await fetchListingsInView(
       bounds._sw.lat,
       bounds._sw.lng,
       bounds._ne.lat,
       bounds._ne.lng
     );
-    console.log("Data fetched:", data);
-    setListings(data);
+    console.log("Fetched listings:", data); // Debug log to see what fields we're getting
+    setListings((prev) => {
+      // Only update if data has changed
+      if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
+      return data;
+    });
   }, []);
 
-  const handleListingSelect = useCallback(
-    (listing) => {
-      if (listing) {
-        router.push(`/map/${listing.slug}`, { scroll: false });
-      } else {
-        router.push("/map", { scroll: false });
-      }
-      setSelectedListing(listing);
-    },
-    [router]
-  );
+  const handleMarkerClick = useCallback(
+    async (listingId) => {
+      console.log("Finding listing with ID:", listingId);
 
-  const handleMarkerClick = async (listingId) => {
-    const { data, error } = await supabase
-      .from("listings")
-      .select(
-        `
+      const { data, error } = await supabase
+        .from("listings")
+        .select(
+          `
         *,
         profiles (
           first_name,
           avatar
         )
       `
-      )
-      .eq("id", listingId)
-      .single();
+        )
+        .eq("id", listingId)
+        .single();
 
-    if (error) {
-      console.error("Error fetching listing details:", error);
-      return;
-    }
+      if (error) {
+        console.error("Error fetching listing details:", error);
+        return;
+      }
 
-    handleListingSelect(data);
-  };
-
-  const handleMapClick = (event) => {
-    console.log("Map clicked", event);
-  };
+      console.log("Found full listing details:", data);
+      if (data?.slug) {
+        handleListingSelect(data);
+      }
+    },
+    [supabase, handleListingSelect]
+  );
 
   const handleSearchPick = useCallback((event) => {
     // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
@@ -140,21 +147,25 @@ export default function MapPageClient({ user, initialListingSlug }) {
     });
   }, []);
 
+  const handleMapClick = (event) => {
+    console.log("Map clicked", event);
+  };
+
   return (
     <div>
       <div>
         <h1>Map for {user ? user.email : "Guest"}</h1>
         <div>
-          <MapSearch onPick={handleSearchPick} mapController={mapController} />
+          <MapSearch onPick={handleSearchPick} />
 
           <MapRender
             mapRef={mapRef}
             listings={listings}
+            selectedListing={selectedListing}
             onBoundsChange={handleBoundsChange}
-            onMapClick={handleMapClick}
+            // onMapClick={handleMapClick}
             onMarkerClick={handleMarkerClick}
             onSearchPick={handleSearchPick}
-            setMapController={setMapController}
           />
         </div>
         <div>

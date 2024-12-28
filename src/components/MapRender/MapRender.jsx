@@ -1,13 +1,10 @@
 "use client";
-import { useEffect, useState, useCallback, useRef } from "react";
-
+import { useEffect, useCallback, memo } from "react";
 import Map, {
   Marker,
   NavigationControl,
-  AttributionControl,
   GeolocateControl,
 } from "react-map-gl/maplibre";
-
 import maplibregl from "maplibre-gl";
 import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -16,31 +13,26 @@ import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import MapPin from "@/components/MapPin";
 
-export default function MapRender({
+// Memoize the MapRender component
+const MapRender = memo(function MapRender({
   mapRef,
   listings,
+  selectedListing,
   onBoundsChange,
   onMapClick,
   onMarkerClick,
   onSearchPick,
   setMapController,
 }) {
-  // Initial fetch when map loads
+  console.log("MapRender rendered");
   const handleMapLoad = useCallback(() => {
-    console.log("Map loaded");
-
     const bounds = mapRef.current.getMap().getBounds();
-    console.log("Bounds:", bounds);
     onBoundsChange(bounds);
   }, [onBoundsChange]);
 
-  // Fetch on map move
   const handleMapMove = useCallback(() => {
-    if (!mapRef.current) return; // Add check for mapRef.current so this isn't called when user navigates to a different page.
-    console.log("MAP MOVED");
-    const map = mapRef.current.getMap();
-    if (!map) return; // Add safety check for map object
-    const bounds = map.getBounds();
+    if (!mapRef.current?.getMap()) return;
+    const bounds = mapRef.current.getMap().getBounds();
     onBoundsChange(bounds);
   }, [onBoundsChange]);
 
@@ -130,9 +122,12 @@ export default function MapRender({
           longitude={listing.longitude}
           latitude={listing.latitude}
           anchor="center"
-          onClick={() => onMarkerClick(listing.id)}
+          onClick={(e) => {
+            e.originalEvent.stopPropagation(); // Prevent map click from interfering with marker click
+            onMarkerClick(listing.id);
+          }}
         >
-          <MapPin size={28} />
+          <MapPin size={28} isSelected={selectedListing?.id === listing.id} />
         </Marker>
       ))}
       <GeolocateControl
@@ -142,4 +137,8 @@ export default function MapRender({
       <NavigationControl showZoom={true} showCompass={false} />
     </Map>
   );
-}
+});
+
+MapRender.displayName = "MapRender";
+
+export default MapRender;
