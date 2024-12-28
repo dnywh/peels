@@ -15,6 +15,8 @@ export default function Chat({
   const [messages, setMessages] = useState(existingThread?.chat_messages || []);
   const supabase = createClient();
 
+  console.log("Chat component rendering");
+
   // Update contents if existingThread changes
   useEffect(() => {
     if (existingThread) {
