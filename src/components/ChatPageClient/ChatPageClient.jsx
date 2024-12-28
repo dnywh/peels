@@ -1,10 +1,7 @@
 "use client";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
-import StorageImage from "@/components/StorageImage";
-
-// import { createClient } from "@/utils/supabase/server";
 
 export default function ChatPageClient({ user, initialThreads }) {
   const router = useRouter();
