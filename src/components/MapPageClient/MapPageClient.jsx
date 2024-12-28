@@ -1,5 +1,6 @@
 "use client";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/client";
 
@@ -12,12 +13,9 @@ import GuestActions from "@/components/GuestActions";
 
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const supabase = createClient();
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
-  // console.log("User", user);
-  // console.log("User", user);
 
   const [listings, setListings] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
@@ -25,6 +23,37 @@ export default function MapPageClient({ user }) {
   const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
 
   const mapRef = useRef(null);
+
+  // Load listing from URL param on mount
+  useEffect(() => {
+    const listingSlug = searchParams.get("listing");
+    if (listingSlug && !selectedListing) {
+      loadListingBySlug(listingSlug);
+    }
+  }, [searchParams]);
+
+  const loadListingBySlug = async (slug) => {
+    const { data, error } = await supabase
+      .from("listings")
+      .select(
+        `
+        *,
+        profiles (
+          first_name,
+          avatar
+        )
+      `
+      )
+      .eq("slug", slug)
+      .single();
+
+    if (error) {
+      console.error("Error fetching listing details:", error);
+      return;
+    }
+
+    setSelectedListing(data);
+  };
 
   const handleBoundsChange = useCallback(async (bounds) => {
     console.log("Bounds changed. Bounds being sent:", bounds, {
@@ -45,15 +74,6 @@ export default function MapPageClient({ user }) {
   }, []);
 
   const handleMarkerClick = async (listingId) => {
-    console.log("Marker clicked");
-
-    // Turned off, too distracting
-    // mapRef.current?.flyTo({
-    //   center: [selectedListing.longitude, selectedListing.latitude],
-    //   duration: 2800,
-    //   zoom: 5, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
-    // });
-
     const { data, error } = await supabase
       .from("listings")
       .select(
@@ -74,6 +94,8 @@ export default function MapPageClient({ user }) {
     }
 
     setSelectedListing(data);
+    // Update URL without full page reload
+    router.push(`/map?listing=${data.slug}`, { scroll: false });
   };
 
   const handleMapClick = (event) => {
@@ -103,6 +125,12 @@ export default function MapPageClient({ user }) {
     });
   }, []);
 
+  const handleCloseListing = () => {
+    setSelectedListing(null);
+    // Remove listing param from URL
+    router.push("/map", { scroll: false });
+  };
+
   return (
     <div>
       <div>
@@ -125,7 +153,7 @@ export default function MapPageClient({ user }) {
             <Listing
               user={user}
               listing={selectedListing}
-              setSelectedListing={setSelectedListing}
+              setSelectedListing={handleCloseListing}
             />
           ) : (
             <GuestActions />

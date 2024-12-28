@@ -10,14 +10,7 @@ function Listing({ user, listing, setSelectedListing }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
   return (
     <div>
-      <h2>Person viewing is {user ? user.email : "a guest"}</h2>
-      <button
-        onClick={() => {
-          setSelectedListing(null);
-        }}
-      >
-        Close
-      </button>
+      <button onClick={setSelectedListing}>Close</button>
 
       <div key={listing.id}>
         {listing.avatar && (
