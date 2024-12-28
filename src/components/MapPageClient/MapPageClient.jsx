@@ -8,7 +8,7 @@ import { fetchListingsInView } from "@/app/actions";
 import MapSearch from "@/components/MapSearch";
 import MapRender from "@/components/MapRender";
 import Listing from "@/components/Listing";
-import GuestActions from "@/components/guest-actions";
+import GuestActions from "@/components/GuestActions";
 
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
