@@ -113,6 +113,7 @@ export default function MapRender({
         layers: layers("protomaps", "light"),
       }}
       renderWorldCopies={true}
+      touchPitch={false}
       initialViewState={{
         longitude: 0,
         latitude: 0,
