@@ -1,4 +1,5 @@
 import StorageImage from "@/components/StorageImage";
+import { formatDate } from "@/utils/dateUtils";
 
 function ChatMessage({ direction, message }) {
   return (
@@ -16,7 +17,7 @@ function ChatMessage({ direction, message }) {
         <small>Sent by {message.sender_first_name}</small>
       </p>
       <p>
-        <small>{new Date(message.created_at).toLocaleString()}</small>
+        <small>{formatDate(message.created_at)}</small>
       </p>
     </div>
   );

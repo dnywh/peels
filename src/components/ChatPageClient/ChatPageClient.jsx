@@ -1,30 +1,39 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Chat from "@/components/Chat";
+import ChatWindow from "@/components/ChatWindow";
 import StorageImage from "@/components/StorageImage";
 
 // import { createClient } from "@/utils/supabase/server";
 
-export default function ChatPageClient({ user, threads }) {
+export default function ChatPageClient({ user, initialThreads }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [selectedThread, setSelectedThread] = useState(null);
 
-  useEffect(() => {
-    const threadId = pathname.split("/").pop();
-    if (threadId && threadId !== "chats") {
-      const thread = threads.find((t) => t.id === threadId);
-      if (thread) {
-        setSelectedThread(thread);
+  // Memoize threads to prevent unnecessary re-renders
+  const threads = useMemo(() => initialThreads, [initialThreads]);
+
+  // Memoize current thread ID from pathname
+  const currentThreadId = useMemo(() => {
+    const id = pathname.split("/").pop();
+    return id === "chats" ? null : id;
+  }, [pathname]);
+
+  // Memoize selected thread based on current ID
+  const selectedThread = useMemo(
+    () =>
+      currentThreadId ? threads.find((t) => t.id === currentThreadId) : null,
+    [currentThreadId, threads]
+  );
+
+  const handleThreadSelect = useCallback(
+    (thread) => {
+      if (thread.id !== currentThreadId) {
+        router.push(`/chats/${thread.id}`);
       }
-    }
-  }, [pathname, threads]);
-
-  const handleThreadSelect = (thread) => {
-    setSelectedThread(thread);
-    router.push(`/chats/${thread.id}`);
-  };
+    },
+    [currentThreadId, router]
+  );
 
   return (
     <div className="chat-page-layout">
@@ -44,12 +53,10 @@ export default function ChatPageClient({ user, threads }) {
               ? `${otherPersonName}, ${thread.listing.name}`
               : otherPersonName;
 
-          // console.log(thread.listing_slug);
-
           return (
             <div
               key={thread.id}
-              className={`"thread-preview" ${selectedThread?.id === thread.id ? "selected" : ""}`}
+              className={`thread-preview ${thread.id === currentThreadId ? "selected" : ""}`}
               onClick={() => handleThreadSelect(thread)}
             >
               <h3>{displayName}</h3>
@@ -69,25 +76,14 @@ export default function ChatPageClient({ user, threads }) {
 
       <div className="chat-window">
         {selectedThread && (
-          <>
-            <p>Listing slug: {selectedThread.listing_slug}</p>
-            <p>Listing name: {selectedThread.listing_name}</p>
-            <p>Listing image: {selectedThread.listing_avatar}</p>
-            <StorageImage
-              bucket="listing_avatars"
-              filename={selectedThread.listing_avatar}
-              alt={selectedThread.listing_name}
-              style={{ width: "100px", height: "100px" }}
-            />
-            <Chat
-              user={user}
-              listing={selectedThread.listing}
-              existingThread={{
-                ...selectedThread,
-                chat_messages: selectedThread.chat_messages_with_senders,
-              }}
-            />
-          </>
+          <ChatWindow
+            user={user}
+            listing={selectedThread.listing}
+            existingThread={{
+              ...selectedThread,
+              chat_messages: selectedThread.chat_messages_with_senders,
+            }}
+          />
         )}
       </div>
     </div>

@@ -1,29 +1,32 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useMemo } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
 
-export default function Chat({
+// Memoize the ChatWindow component
+const ChatWindow = memo(function ChatWindow({
   user,
   listing,
   setIsChatOpen,
   existingThread = null,
 }) {
+  // Move Supabase client creation outside of render
+  const supabase = useMemo(() => createClient(), []);
+
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
   const [messages, setMessages] = useState(existingThread?.chat_messages || []);
-  const supabase = createClient();
 
-  console.log("Chat component rendering");
+  console.log("Chat window component rendering");
 
-  // Update contents if existingThread changes
+  // Only update when existingThread actually changes
   useEffect(() => {
-    if (existingThread) {
+    if (existingThread && existingThread.id !== threadId) {
       setThreadId(existingThread.id);
       setMessages(existingThread.chat_messages || []);
     }
-  }, [existingThread]);
+  }, [existingThread, threadId]);
 
   async function initializeChat() {
     try {
@@ -132,6 +135,11 @@ export default function Chat({
     loadMessages(threadId);
   }
 
+  // Optimize the textarea onChange handler
+  const handleMessageChange = (e) => {
+    setMessage(e.target.value);
+  };
+
   return (
     <div>
       {setIsChatOpen && (
@@ -150,12 +158,17 @@ export default function Chat({
 
       <form onSubmit={handleSubmit}>
         <textarea
-          placeholder={`Send a message...`}
+          placeholder="Send a message..."
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleMessageChange}
         />
         <button type="submit">Send</button>
       </form>
     </div>
   );
-}
+});
+
+// Add display name for dev tools
+ChatWindow.displayName = "ChatWindow";
+
+export default ChatWindow;

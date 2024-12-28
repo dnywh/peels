@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import StorageImage from "@/components/StorageImage";
-import Chat from "@/components/Chat";
+import ChatWindow from "@/components/ChatWindow";
 
 function Listing({ user, listing, setSelectedListing }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -71,7 +71,11 @@ function Listing({ user, listing, setSelectedListing }) {
         </div>
 
         {isChatOpen && (
-          <Chat user={user} listing={listing} setIsChatOpen={setIsChatOpen} />
+          <ChatWindow
+            user={user}
+            listing={listing}
+            setIsChatOpen={setIsChatOpen}
+          />
         )}
 
         {listing.description && (
