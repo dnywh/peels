@@ -1,4 +1,4 @@
-import GuestActions from "@/components/guest-actions";
+import GuestActions from "@/components/GuestActions";
 import { createClient } from "@/utils/supabase/server";
 import ChatPageClient from "@/components/ChatPageClient";
 

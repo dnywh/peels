@@ -11,7 +11,7 @@ import {
   DialogClose,
 } from "@radix-ui/react-dialog";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import GuestActions from "@/components/guest-actions";
+import GuestActions from "@/components/GuestActions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
