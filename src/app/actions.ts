@@ -257,6 +257,5 @@ export async function fetchListingsInView(
     return [];
   }
 
-  console.log("Listings from RPC:", data); // Debug what fields we're getting
   return data || [];
 }

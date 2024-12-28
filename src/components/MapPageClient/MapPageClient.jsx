@@ -12,6 +12,7 @@ import GuestActions from "@/components/GuestActions";
 
 // export default async function MapPage() {
 export default function MapPageClient({ user, initialListingSlug }) {
+  console.log("MapPageClient rendered");
   const router = useRouter();
   const pathname = usePathname();
   const mapRef = useRef(null);

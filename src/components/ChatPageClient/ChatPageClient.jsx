@@ -4,6 +4,8 @@ import { useRouter, usePathname } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
 
 export default function ChatPageClient({ user, initialThreads }) {
+  console.log("ChatPageClient rendered");
+
   const router = useRouter();
   const pathname = usePathname();
 
