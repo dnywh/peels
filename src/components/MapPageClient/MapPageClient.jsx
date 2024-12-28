@@ -24,6 +24,8 @@ export default function MapPageClient({ user }) {
 
   const mapRef = useRef(null);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   // Load listing from URL param on mount
   useEffect(() => {
     const listingSlug = searchParams.get("listing");
@@ -56,6 +58,7 @@ export default function MapPageClient({ user }) {
   };
 
   const handleBoundsChange = useCallback(async (bounds) => {
+    setIsLoading(true);
     console.log("Bounds changed. Bounds being sent:", bounds, {
       bottomLeftWest: bounds._sw.lat,
       bottomLeftSouth: bounds._sw.lng,
@@ -71,6 +74,7 @@ export default function MapPageClient({ user }) {
     );
     console.log("Data fetched:", data);
     setListings(data);
+    setIsLoading(false);
   }, []);
 
   const handleMarkerClick = async (listingId) => {
@@ -153,6 +157,7 @@ export default function MapPageClient({ user }) {
             listings={listings}
             selectedListing={selectedListing}
             onBoundsChange={handleBoundsChange}
+            isLoading={isLoading}
             onMapClick={handleMapClick}
             onMarkerClick={handleMarkerClick}
             onSearchPick={handleSearchPick}

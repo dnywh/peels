@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
-
+import LoadingSpinner from "@/components/LoadingSpinner";
 import Map, {
   Marker,
   NavigationControl,
@@ -21,6 +21,7 @@ export default function MapRender({
   listings,
   selectedListing,
   onBoundsChange,
+  isLoading,
   onMapClick,
   onMarkerClick,
   onSearchPick,
@@ -96,53 +97,65 @@ export default function MapRender({
   // TODO: low-priority: IF location is active AND it leaves the bounding box (i.e. user has moved the map), add a button to recenter (and zoom) map on selected listing
 
   return (
-    <Map
-      ref={mapRef}
-      style={{ width: "100%", height: "400px" }}
-      mapStyle={{
-        version: 8,
-        glyphs:
-          "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-        sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-        sources: {
-          protomaps: {
-            type: "vector",
-            url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-            attribution: '<a href="https://protomaps.com">Protomaps</a>',
-          },
-        },
-        layers: layers("protomaps", "light"),
-      }}
-      renderWorldCopies={true}
-      initialViewState={{
-        longitude: 0,
-        latitude: 0,
-        zoom: 1,
-      }}
-      animationOptions={{ duration: 200 }}
-      onMoveEnd={handleMapMove}
-      onLoad={handleMapLoad}
-      onClick={onMapClick}
-    >
-      {listings.map((listing) => (
-        <Marker
-          key={listing.id}
-          longitude={listing.longitude}
-          latitude={listing.latitude}
-          anchor="center"
-          onClick={(event) => {
-            event.originalEvent.stopPropagation();
-            onMarkerClick(listing.id);
+    <>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "400px",
+          backgroundColor: "lightblue",
+        }}
+      >
+        {isLoading ? <LoadingSpinner /> : null}
+        <Map
+          ref={mapRef}
+          mapStyle={{
+            version: 8,
+            glyphs:
+              "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+            sprite:
+              "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+            sources: {
+              protomaps: {
+                type: "vector",
+                url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
+                attribution: '<a href="https://protomaps.com">Protomaps</a>',
+              },
+            },
+            layers: layers("protomaps", "light"),
           }}
+          renderWorldCopies={true}
+          initialViewState={{
+            longitude: 0,
+            latitude: 0,
+            zoom: 1,
+          }}
+          animationOptions={{ duration: 200 }}
+          onMoveEnd={handleMapMove}
+          onLoad={handleMapLoad}
+          onClick={onMapClick}
         >
-          <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
-        </Marker>
-      ))}
-      <GeolocateControl
-        showUserLocation={true}
-        animationOptions={{ duration: 100 }}
-      />
-      <NavigationControl showZoom={true} showCompass={false} />
-    </Map>
+          {listings.map((listing) => (
+            <Marker
+              key={listing.id}
+              longitude={listing.longitude}
+              latitude={listing.latitude}
+              anchor="center"
+              onClick={(event) => {
+                event.originalEvent.stopPropagation();
+                onMarkerClick(listing.id);
+              }}
+            >
+              <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
+            </Marker>
+          ))}
+          <GeolocateControl
+            showUserLocation={true}
+            animationOptions={{ duration: 100 }}
+          />
+          <NavigationControl showZoom={true} showCompass={false} />
+        </Map>
+      </div>
+    </>
   );
 }
