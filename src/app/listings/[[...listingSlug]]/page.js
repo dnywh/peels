@@ -1,8 +1,10 @@
-import GuestActions from "@/components/GuestActions";
+
 import { createClient } from "@/utils/supabase/server";
 import ListingsPageClient from "@/components/ListingsPageClient";
 
-export default async function ChatsPage() {
+
+
+export default async function ListingsPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -22,6 +24,7 @@ export default async function ChatsPage() {
         `
         )
 
-
-    return <ListingsPageClient user={user} initialListings={listings} />;
+    return (
+        <ListingsPageClient user={user} initialListings={listings} />
+    );
 }

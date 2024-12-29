@@ -5,43 +5,43 @@ import SimpleMap from "@/components/SimpleMap";
 import SimpleListing from "@/components/SimpleListing";
 
 // Create memoized component outside of ListingsPageClient
-const MemoizedSimpleMap = memo(SimpleMap);
+// const MemoizedSimpleMap = memo(SimpleMap);
 
 function ListingsPageClient({ user, initialListings }) {
   console.log("ListingsPageClient rendered");
-  const router = useRouter();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const pathname = usePathname();
 
-  // Memoize listings to prevent unnecessary re-renders
-  const listings = useMemo(() => initialListings, [initialListings]);
+  // // Memoize listings to prevent unnecessary re-renders
+  // const listings = useMemo(() => initialListings, [initialListings]);
 
-  // Memoize current listing slug from pathname
-  const currentListingSlug = useMemo(() => {
-    const slug = pathname.split("/").pop();
-    return slug === "listings" ? null : slug;
-  }, [pathname]);
+  // // Memoize current listing slug from pathname
+  // const currentListingSlug = useMemo(() => {
+  //   const slug = pathname.split("/").pop();
+  //   return slug === "listings" ? null : slug;
+  // }, [pathname]);
 
-  // Memoize selected listing based on current slug
-  const selectedListing = useMemo(
-    () =>
-      currentListingSlug
-        ? listings.find((l) => l.slug === currentListingSlug)
-        : null,
-    [currentListingSlug, listings]
-  );
+  // // Memoize selected listing based on current slug
+  // const selectedListing = useMemo(
+  //   () =>
+  //     currentListingSlug
+  //       ? listings.find((l) => l.slug === currentListingSlug)
+  //       : null,
+  //   [currentListingSlug, listings]
+  // );
 
-  const handleListingSelect = useCallback(
-    (listing) => {
-      if (listing.slug !== currentListingSlug) {
-        router.push(`/listings/${listing.slug}`);
-      }
-    },
-    [currentListingSlug, router]
-  );
+  // const handleListingSelect = useCallback(
+  //   (listing) => {
+  //     if (listing.slug !== currentListingSlug) {
+  //       router.push(`/listings/${listing.slug}`);
+  //     }
+  //   },
+  //   [currentListingSlug, router]
+  // );
 
   return (
     <>
-      <ul>
+      {/* <ul>
         {initialListings.map((listing) => (
           <li key={listing.id} onClick={() => handleListingSelect(listing)}>
             Listing: {listing.name}, {listing.slug}
@@ -61,7 +61,7 @@ function ListingsPageClient({ user, initialListings }) {
         )}
       </div>
 
-      <hr />
+      <hr /> */}
 
       <h2>Raw</h2>
       <pre>{JSON.stringify(initialListings, null, 2)}</pre>
