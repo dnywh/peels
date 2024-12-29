@@ -187,6 +187,13 @@ export const signOutAction = async () => {
   return redirect("/");
 };
 
+export const getLocationFromIP = async () => {
+  const response = await fetch("https://freeipapi.com/api/json/", {
+    signal: AbortSignal.timeout(3000),
+  });
+  return response.json();
+};
+
 export const deleteAccountAction = async () => {
   let redirectPath: string | null = null;
 

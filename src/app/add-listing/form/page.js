@@ -235,6 +235,10 @@ function NewListingFormContent() {
                 name,
                 description,
                 location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
+                // Temporarily store the coordinates as longitude and latitude floats in the database as well
+                // ...because I can't get the geometry type to convert to to long and lat dynamically if a user goes direct to a listing, e.g. http://localhost:3000/map?listing=9xvN9zxH0rzZ
+                longitude: coordinates.longitude,
+                latitude: coordinates.latitude,
                 accepted_items: acceptedItems.filter(item => item.trim() !== ''),
                 rejected_items: rejectedItems.filter(item => item.trim() !== ''),
                 photos,
