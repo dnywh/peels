@@ -30,22 +30,22 @@ function MapPin({
   selected = false,
   coarse = false,
   zoomLevel = null,
-  distance = 0,
+  distanceAcrossMapWidth = 0,
   mapWidth = 0,
 }) {
   // console.log("zoomLevel", zoomLevel);
-  const size = 2 ** (zoomLevel * 0.565);
+  const basicSize = 2 ** (zoomLevel * 0.565);
   // const size = 1000 / (1 + Math.exp(-10 * (zoomLevel - 10)));
   // const size = 100 * zoomLevel ** 0.5;
 
   // at 14 zoom level, size is 20
   //at 22 zoom level, size is 100
 
-  const km = 1;
-  const smartSize = (mapWidth / distance) * km;
+  const km = 0.5;
+  const smartSize = (mapWidth / distanceAcrossMapWidth) * km;
 
   // console.log("size", smartSize, "zoomLevel", zoomLevel);
-  // console.log(distance, mapWidth, { smartSize });
+  // console.log(distanceAcrossMapWidth, mapWidth, { smartSize });
 
   return (
     <div
