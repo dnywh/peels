@@ -15,6 +15,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import MapPin from "@/components/MapPin";
+import MapSearch from "@/components/MapSearch";
 
 export default function MapRender({
   mapRef,
@@ -27,6 +28,8 @@ export default function MapRender({
   onMarkerClick,
   onSearchPick,
   setMapController,
+  handleSearchPick,
+  mapController,
 }) {
   const isFirstLoad = useRef(true);
   const [lastKnownPosition, setLastKnownPosition] = useState(null);
@@ -161,6 +164,17 @@ export default function MapRender({
         }}
       >
         {isLoading ? <LoadingSpinner /> : null}
+        {/* Map search for small screens */}
+        <MapSearch
+          onPick={handleSearchPick}
+          mapController={mapController}
+          style={{
+            position: "absolute",
+            top: "1rem",
+            left: "1rem",
+            zIndex: 1,
+          }}
+        />
         {hasInitialPosition && (
           <>
             <Map

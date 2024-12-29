@@ -190,13 +190,6 @@ export default function MapPageClient({ user }) {
       <div>
         <h1>Map for {user ? user.email : "Guest"}</h1>
         <div>
-          {selectedListing ? null : (
-            <MapSearch
-              onPick={handleSearchPick}
-              mapController={mapController}
-            />
-          )}
-
           <MapRender
             mapRef={mapRef}
             listings={listings}
@@ -211,6 +204,17 @@ export default function MapPageClient({ user }) {
           />
         </div>
         <div>
+          <h2>Sidebar</h2>
+
+          {selectedListing ? null : (
+            <div>
+              Empty state
+              <MapSearch
+                onPick={handleSearchPick}
+                mapController={mapController}
+              />
+            </div>
+          )}
           {selectedListing ? (
             <Listing
               user={user}
