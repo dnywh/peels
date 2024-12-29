@@ -29,6 +29,9 @@ export default function MapRender({
   setMapController,
 }) {
   const isFirstLoad = useRef(true);
+  const [lastKnownPosition, setLastKnownPosition] = useState(null);
+  const hasInitialPosition =
+    selectedListing || initialCoordinates || lastKnownPosition;
 
   // Initial fetch when map loads
   const handleMapLoad = useCallback(() => {
@@ -100,6 +103,19 @@ export default function MapRender({
 
   // TODO: low-priority: IF location is active AND it leaves the bounding box (i.e. user has moved the map), add a button to recenter (and zoom) map on selected listing
 
+  // Update lastKnownPosition when we have a valid position
+  useEffect(() => {
+    if (selectedListing) {
+      setLastKnownPosition({
+        latitude: selectedListing.latitude,
+        longitude: selectedListing.longitude,
+        zoom: 12,
+      });
+    } else if (initialCoordinates && !lastKnownPosition) {
+      setLastKnownPosition(initialCoordinates);
+    }
+  }, [selectedListing, initialCoordinates]);
+
   return (
     <>
       <div
@@ -111,54 +127,66 @@ export default function MapRender({
         }}
       >
         {isLoading ? <LoadingSpinner /> : null}
-        <Map
-          ref={mapRef}
-          mapStyle={{
-            version: 8,
-            glyphs:
-              "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-            sprite:
-              "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-            sources: {
-              protomaps: {
-                type: "vector",
-                url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-                attribution: '<a href="https://protomaps.com">Protomaps</a>',
+        {hasInitialPosition && (
+          <Map
+            ref={mapRef}
+            mapStyle={{
+              version: 8,
+              glyphs:
+                "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+              sprite:
+                "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+              sources: {
+                protomaps: {
+                  type: "vector",
+                  url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
+                  attribution: '<a href="https://protomaps.com">Protomaps</a>',
+                },
               },
-            },
-            layers: layers("protomaps", "light"),
-          }}
-          renderWorldCopies={true}
-          initialViewState={{
-            longitude: initialCoordinates?.longitude || 0,
-            latitude: initialCoordinates?.latitude || 0,
-            zoom: initialCoordinates?.zoom || 1,
-          }}
-          animationOptions={{ duration: 200 }}
-          onMoveEnd={handleMapMove}
-          onLoad={handleMapLoad}
-          onClick={onMapClick}
-        >
-          {listings.map((listing) => (
-            <Marker
-              key={listing.id}
-              longitude={listing.longitude}
-              latitude={listing.latitude}
-              anchor="center"
-              onClick={(event) => {
-                event.originalEvent.stopPropagation();
-                onMarkerClick(listing.id);
-              }}
-            >
-              <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
-            </Marker>
-          ))}
-          <GeolocateControl
-            showUserLocation={true}
-            animationOptions={{ duration: 100 }}
-          />
-          <NavigationControl showZoom={true} showCompass={false} />
-        </Map>
+              layers: layers("protomaps", "light"),
+            }}
+            renderWorldCopies={true}
+            initialViewState={{
+              longitude:
+                selectedListing?.longitude ||
+                initialCoordinates?.longitude ||
+                lastKnownPosition?.longitude ||
+                0,
+              latitude:
+                selectedListing?.latitude ||
+                initialCoordinates?.latitude ||
+                lastKnownPosition?.latitude ||
+                0,
+              zoom: selectedListing
+                ? 12
+                : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
+            }}
+            animationOptions={{ duration: 200 }}
+            onMoveEnd={handleMapMove}
+            onLoad={handleMapLoad}
+            onClick={onMapClick}
+          >
+            {listings.map((listing) => (
+              <Marker
+                key={listing.id}
+                longitude={listing.longitude}
+                latitude={listing.latitude}
+                anchor="center"
+                onClick={(event) => {
+                  event.originalEvent.stopPropagation();
+                  onMarkerClick(listing.id);
+                }}
+              >
+                <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
+              </Marker>
+            ))}
+            <GeolocateControl
+              showUserLocation={true}
+              animationOptions={{ duration: 100 }}
+            />
+            <NavigationControl showZoom={true} showCompass={false} />
+          </Map>
+        )}
       </div>
     </>
   );
