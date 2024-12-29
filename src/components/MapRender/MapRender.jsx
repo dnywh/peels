@@ -30,6 +30,7 @@ export default function MapRender({
 }) {
   const isFirstLoad = useRef(true);
   const [lastKnownPosition, setLastKnownPosition] = useState(null);
+  const [isListingInView, setIsListingInView] = useState(true);
   const hasInitialPosition =
     selectedListing || initialCoordinates || lastKnownPosition;
 
@@ -59,7 +60,26 @@ export default function MapRender({
     if (!map) return; // Add safety check for map object
     const bounds = map.getBounds();
     onBoundsChange(bounds);
-  }, [onBoundsChange]);
+
+    // Check if selected listing is in view
+    if (selectedListing) {
+      const isInView = bounds.contains([
+        selectedListing.longitude,
+        selectedListing.latitude,
+      ]);
+      setIsListingInView(isInView);
+    }
+  }, [onBoundsChange, selectedListing]);
+
+  const handleFlyToListing = useCallback(() => {
+    if (!selectedListing || !mapRef.current) return;
+
+    mapRef.current.flyTo({
+      center: [selectedListing.longitude, selectedListing.latitude],
+      zoom: 12,
+      duration: 1500,
+    });
+  }, [selectedListing]);
 
   useEffect(() => {
     let protocol = new Protocol();
@@ -94,10 +114,8 @@ export default function MapRender({
 
   // Set mapController to set relationship between MapSearch and MapRender
   // Can't get this to work, perhaps delete all mapController and createMapLibreGlMapController code if I can't get it working
-
   // useEffect(() => {
   //   if (mapRef.current) return; // stops map from intializing more than once
-
   //   setMapController(createMapLibreGlMapController(mapRef.current, maplibregl));
   // }, [onBoundsChange]);
 
@@ -109,12 +127,28 @@ export default function MapRender({
       setLastKnownPosition({
         latitude: selectedListing.latitude,
         longitude: selectedListing.longitude,
-        zoom: 12,
+        // zoom: 12,
       });
     } else if (initialCoordinates && !lastKnownPosition) {
       setLastKnownPosition(initialCoordinates);
     }
   }, [selectedListing, initialCoordinates]);
+
+  // Check if listing is in view whenever the map moves or selectedListing changes
+  useEffect(() => {
+    if (!mapRef.current || !selectedListing) {
+      setIsListingInView(true);
+      return;
+    }
+
+    const bounds = mapRef.current.getMap().getBounds();
+    const isInView = bounds.contains([
+      selectedListing.longitude,
+      selectedListing.latitude,
+    ]);
+    console.log("isInView", isInView);
+    setIsListingInView(isInView);
+  }, [selectedListing]);
 
   return (
     <>
@@ -128,64 +162,88 @@ export default function MapRender({
       >
         {isLoading ? <LoadingSpinner /> : null}
         {hasInitialPosition && (
-          <Map
-            ref={mapRef}
-            mapStyle={{
-              version: 8,
-              glyphs:
-                "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-              sprite:
-                "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-              sources: {
-                protomaps: {
-                  type: "vector",
-                  url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-                  attribution: '<a href="https://protomaps.com">Protomaps</a>',
+          <>
+            <Map
+              ref={mapRef}
+              mapStyle={{
+                version: 8,
+                glyphs:
+                  "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+                sprite:
+                  "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+                sources: {
+                  protomaps: {
+                    type: "vector",
+                    url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
+                    attribution:
+                      '<a href="https://protomaps.com">Protomaps</a>',
+                  },
                 },
-              },
-              layers: layers("protomaps", "light"),
-            }}
-            renderWorldCopies={true}
-            initialViewState={{
-              longitude:
-                selectedListing?.longitude ||
-                initialCoordinates?.longitude ||
-                lastKnownPosition?.longitude ||
-                0,
-              latitude:
-                selectedListing?.latitude ||
-                initialCoordinates?.latitude ||
-                lastKnownPosition?.latitude ||
-                0,
-              zoom: selectedListing
-                ? 12
-                : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
-            }}
-            animationOptions={{ duration: 200 }}
-            onMoveEnd={handleMapMove}
-            onLoad={handleMapLoad}
-            onClick={onMapClick}
-          >
-            {listings.map((listing) => (
-              <Marker
-                key={listing.id}
-                longitude={listing.longitude}
-                latitude={listing.latitude}
-                anchor="center"
-                onClick={(event) => {
-                  event.originalEvent.stopPropagation();
-                  onMarkerClick(listing.id);
+                layers: layers("protomaps", "light"),
+              }}
+              renderWorldCopies={true}
+              initialViewState={{
+                longitude:
+                  selectedListing?.longitude ||
+                  initialCoordinates?.longitude ||
+                  lastKnownPosition?.longitude ||
+                  0,
+                latitude:
+                  selectedListing?.latitude ||
+                  initialCoordinates?.latitude ||
+                  lastKnownPosition?.latitude ||
+                  0,
+                zoom: selectedListing
+                  ? 12
+                  : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
+              }}
+              animationOptions={{ duration: 200 }}
+              onMoveEnd={handleMapMove}
+              onLoad={handleMapLoad}
+              onClick={onMapClick}
+            >
+              {listings.map((listing) => (
+                <Marker
+                  key={listing.id}
+                  longitude={listing.longitude}
+                  latitude={listing.latitude}
+                  anchor="center"
+                  onClick={(event) => {
+                    event.originalEvent.stopPropagation();
+                    onMarkerClick(listing.id);
+                  }}
+                >
+                  <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
+                </Marker>
+              ))}
+              <GeolocateControl
+                showUserLocation={true}
+                animationOptions={{ duration: 100 }}
+              />
+              <NavigationControl showZoom={true} showCompass={false} />
+            </Map>
+
+            {selectedListing && !isListingInView && (
+              <button
+                onClick={handleFlyToListing}
+                style={{
+                  position: "absolute",
+                  bottom: "20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  padding: "8px 16px",
+                  backgroundColor: "white",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  cursor: "pointer",
+                  zIndex: 1,
                 }}
               >
-                <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
-              </Marker>
-            ))}
-            <GeolocateControl
-              showUserLocation={true}
-              animationOptions={{ duration: 100 }}
-            />
-            <NavigationControl showZoom={true} showCompass={false} />
-          </Map>
+                Return to listing
+              </button>
+            )}
+          </>
         )}
       </div>
     </>

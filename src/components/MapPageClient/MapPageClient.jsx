@@ -174,7 +174,7 @@ export default function MapPageClient({ user }) {
     mapRef.current?.flyTo({
       center: [nextCoordinates.longitude, nextCoordinates.latitude],
       duration: 2800,
-      zoom: 5, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
+      zoom: 10, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
     });
   }, []);
 
