@@ -79,7 +79,7 @@ export default function MapRender({
 
     mapRef.current.flyTo({
       center: [selectedListing.longitude, selectedListing.latitude],
-      zoom: 12,
+      // zoom: 12,
       duration: 1500,
     });
   }, [selectedListing]);
