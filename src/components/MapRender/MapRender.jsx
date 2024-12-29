@@ -93,17 +93,38 @@ export default function MapRender({
 
   // TODO: low-priority: IF location is active AND it leaves the bounding box (i.e. user has moved the map), add a button to recenter (and zoom) map on selected listing
 
+  // Calculate initial view state based on available data
+  const getInitialViewState = () => {
+    if (selectedListing?.latitude && selectedListing?.longitude) {
+      return {
+        longitude: selectedListing.longitude,
+        latitude: selectedListing.latitude,
+        zoom: 12,
+      };
+    }
+    if (initialCoordinates) {
+      return {
+        longitude: initialCoordinates.longitude,
+        latitude: initialCoordinates.latitude,
+        zoom: initialCoordinates.zoom,
+      };
+    }
+    return null; // Return null if we don't have coordinates yet
+  };
+
+  const initialViewState = getInitialViewState();
+
   return (
-    <>
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "400px",
-          backgroundColor: "lightblue",
-        }}
-      >
-        {isLoading ? <LoadingSpinner /> : null}
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "400px",
+        backgroundColor: "lightblue",
+      }}
+    >
+      {isLoading ? <LoadingSpinner /> : null}
+      {initialViewState && ( // Only render map once we have coordinates
         <Map
           ref={mapRef}
           mapStyle={{
@@ -122,11 +143,7 @@ export default function MapRender({
             layers: layers("protomaps", "light"),
           }}
           renderWorldCopies={true}
-          initialViewState={{
-            longitude: initialCoordinates?.longitude || 0,
-            latitude: initialCoordinates?.latitude || 0,
-            zoom: initialCoordinates?.zoom || 1,
-          }}
+          initialViewState={initialViewState}
           animationOptions={{ duration: 200 }}
           onMoveEnd={handleMapMove}
           onLoad={handleMapLoad}
@@ -152,7 +169,7 @@ export default function MapRender({
           />
           <NavigationControl showZoom={true} showCompass={false} />
         </Map>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
