@@ -28,6 +28,11 @@ export default function MapRender({
   onSearchPick,
   setMapController,
 }) {
+  const isFirstLoad = useRef(true);
+  const [lastKnownPosition, setLastKnownPosition] = useState(null);
+  const hasInitialPosition =
+    selectedListing || initialCoordinates || lastKnownPosition;
+
   // Initial fetch when map loads
   const handleMapLoad = useCallback(() => {
     console.log("Map loaded");
@@ -60,27 +65,32 @@ export default function MapRender({
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
-    // If there's a selected listing, center on it
-    if (selectedListing?.latitude && selectedListing?.longitude) {
-      mapRef.current?.flyTo({
-        center: [selectedListing.longitude, selectedListing.latitude],
-        zoom: 12,
-        duration: 0,
-      });
-    }
-    // If there are initial coordinates from IP, use those
-    else if (initialCoordinates) {
-      mapRef.current?.flyTo({
-        center: [initialCoordinates.longitude, initialCoordinates.latitude],
-        zoom: initialCoordinates.zoom,
-        duration: 0,
-      });
+    // Only handle initial positioning on first load
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+
+      // If there's a selected listing in URL, center on it
+      if (selectedListing?.latitude && selectedListing?.longitude) {
+        mapRef.current?.flyTo({
+          center: [selectedListing.longitude, selectedListing.latitude],
+          zoom: 12,
+          duration: 0,
+        });
+      }
+      // If no listing but we have IP coordinates, use those
+      else if (initialCoordinates) {
+        mapRef.current?.flyTo({
+          center: [initialCoordinates.longitude, initialCoordinates.latitude],
+          zoom: initialCoordinates.zoom,
+          duration: 0,
+        });
+      }
     }
 
     return () => {
       maplibregl.removeProtocol("pmtiles");
     };
-  }, []); // Empty dependency array since we only want this on mount
+  }, []); // Empty dependency array as before
 
   // Set mapController to set relationship between MapSearch and MapRender
   // Can't get this to work, perhaps delete all mapController and createMapLibreGlMapController code if I can't get it working
@@ -93,83 +103,91 @@ export default function MapRender({
 
   // TODO: low-priority: IF location is active AND it leaves the bounding box (i.e. user has moved the map), add a button to recenter (and zoom) map on selected listing
 
-  // Calculate initial view state based on available data
-  const getInitialViewState = () => {
-    if (selectedListing?.latitude && selectedListing?.longitude) {
-      return {
-        longitude: selectedListing.longitude,
+  // Update lastKnownPosition when we have a valid position
+  useEffect(() => {
+    if (selectedListing) {
+      setLastKnownPosition({
         latitude: selectedListing.latitude,
+        longitude: selectedListing.longitude,
         zoom: 12,
-      };
+      });
+    } else if (initialCoordinates && !lastKnownPosition) {
+      setLastKnownPosition(initialCoordinates);
     }
-    if (initialCoordinates) {
-      return {
-        longitude: initialCoordinates.longitude,
-        latitude: initialCoordinates.latitude,
-        zoom: initialCoordinates.zoom,
-      };
-    }
-    return null; // Return null if we don't have coordinates yet
-  };
-
-  const initialViewState = getInitialViewState();
+  }, [selectedListing, initialCoordinates]);
 
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "400px",
-        backgroundColor: "lightblue",
-      }}
-    >
-      {isLoading ? <LoadingSpinner /> : null}
-      {initialViewState && ( // Only render map once we have coordinates
-        <Map
-          ref={mapRef}
-          mapStyle={{
-            version: 8,
-            glyphs:
-              "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-            sprite:
-              "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-            sources: {
-              protomaps: {
-                type: "vector",
-                url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-                attribution: '<a href="https://protomaps.com">Protomaps</a>',
+    <>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "400px",
+          backgroundColor: "lightblue",
+        }}
+      >
+        {isLoading ? <LoadingSpinner /> : null}
+        {hasInitialPosition && (
+          <Map
+            ref={mapRef}
+            mapStyle={{
+              version: 8,
+              glyphs:
+                "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+              sprite:
+                "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+              sources: {
+                protomaps: {
+                  type: "vector",
+                  url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
+                  attribution: '<a href="https://protomaps.com">Protomaps</a>',
+                },
               },
-            },
-            layers: layers("protomaps", "light"),
-          }}
-          renderWorldCopies={true}
-          initialViewState={initialViewState}
-          animationOptions={{ duration: 200 }}
-          onMoveEnd={handleMapMove}
-          onLoad={handleMapLoad}
-          onClick={onMapClick}
-        >
-          {listings.map((listing) => (
-            <Marker
-              key={listing.id}
-              longitude={listing.longitude}
-              latitude={listing.latitude}
-              anchor="center"
-              onClick={(event) => {
-                event.originalEvent.stopPropagation();
-                onMarkerClick(listing.id);
-              }}
-            >
-              <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
-            </Marker>
-          ))}
-          <GeolocateControl
-            showUserLocation={true}
-            animationOptions={{ duration: 100 }}
-          />
-          <NavigationControl showZoom={true} showCompass={false} />
-        </Map>
-      )}
-    </div>
+              layers: layers("protomaps", "light"),
+            }}
+            renderWorldCopies={true}
+            initialViewState={{
+              longitude:
+                selectedListing?.longitude ||
+                initialCoordinates?.longitude ||
+                lastKnownPosition?.longitude ||
+                0,
+              latitude:
+                selectedListing?.latitude ||
+                initialCoordinates?.latitude ||
+                lastKnownPosition?.latitude ||
+                0,
+              zoom: selectedListing
+                ? 12
+                : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
+            }}
+            animationOptions={{ duration: 200 }}
+            onMoveEnd={handleMapMove}
+            onLoad={handleMapLoad}
+            onClick={onMapClick}
+          >
+            {listings.map((listing) => (
+              <Marker
+                key={listing.id}
+                longitude={listing.longitude}
+                latitude={listing.latitude}
+                anchor="center"
+                onClick={(event) => {
+                  event.originalEvent.stopPropagation();
+                  onMarkerClick(listing.id);
+                }}
+              >
+                <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
+              </Marker>
+            ))}
+            <GeolocateControl
+              showUserLocation={true}
+              animationOptions={{ duration: 100 }}
+            />
+            <NavigationControl showZoom={true} showCompass={false} />
+          </Map>
+        )}
+      </div>
+    </>
   );
 }

@@ -30,10 +30,13 @@ export default function MapPageClient({ user }) {
   // Load listing from URL param on mount
   useEffect(() => {
     const listingSlug = searchParams.get("listing");
-    if (listingSlug && !selectedListing) {
+    if (listingSlug) {
       loadListingBySlug(listingSlug);
+    } else {
+      // Clear selected listing if no slug in URL
+      setSelectedListing(null);
     }
-  }, [searchParams]);
+  }, [searchParams]); // This will run when the URL changes
 
   // Add this new effect to handle initial location
   useEffect(() => {
@@ -46,6 +49,7 @@ export default function MapPageClient({ user }) {
       // And then store that data in local storage for future use in the same session/browser
       // Consider using that as the default view state for the map for next time (by saving it to Supabase)
       async function initializeLocation() {
+        console.log("No listing slug. Initializing location");
         try {
           const response = await fetch("https://freeipapi.com/api/json/", {
             signal: AbortSignal.timeout(3000),
