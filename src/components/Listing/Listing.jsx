@@ -35,8 +35,7 @@ const Listing = memo(function Listing({
     listingName = "Private Host";
   }
 
-  // Fetch on map move
-  const handleMapMove = useCallback(() => {
+  function getDistance() {
     // Gives me negative numbers:
     // console.log(
 
@@ -89,24 +88,31 @@ const Listing = memo(function Listing({
     //   )
     // );
 
-    // setDistance(
-    //   turfDistance(
-    //     [northWestCorner.lat, northWestCorner.lng],
-    //     [bounds._ne.lat, bounds._ne.lng]
-    //   )
-    // );
     setDistance(
       turfDistance(
-        [topLeftCorner.lat, topLeftCorner.lng],
-        [topRightCorner.lat, topRightCorner.lng]
+        [northWestCorner.lat, northWestCorner.lng],
+        [bounds._ne.lat, bounds._ne.lng]
       )
     );
+    // setDistance(
+    //   turfDistance(
+    //     [topLeftCorner.lat, topLeftCorner.lng],
+    //     [topRightCorner.lat, topRightCorner.lng]
+    //   )
+    // );
+  }
+
+  // Fetch on map move
+  const handleMapMove = useCallback(() => {
+    console.log("MAP MOVED");
+    getDistance();
   }, []);
 
   const handleMapResize = useCallback(() => {
-    // console.log("MAP RESIZED");
+    console.log("MAP RESIZED");
     // console.log(mapRef.current.getMap().getContainer().clientWidth);
     setMapWidth(mapRef.current.getMap().getContainer().clientWidth);
+    getDistance();
   }, []);
 
   return (
