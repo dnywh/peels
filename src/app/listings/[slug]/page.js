@@ -4,10 +4,12 @@ import { notFound } from 'next/navigation'
 export default async function Post({ params }) {
     const supabase = await createClient();
 
+    const { slug } = await params;  // Awaiting params to access slug
+
     const { data } = await supabase
         .from('listings')
         .select()
-        .match({ slug: params.slug })
+        .match({ slug })  // Use slug to match the listing
         .single()
 
     console.log("listing", data);
