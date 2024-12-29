@@ -51,7 +51,7 @@ const handler = async (_request: Request): Promise<Response> => {
     console.log("Sender Avatar URL:", senderAvatarUrl);
 
     const listingUrl =
-      `https://peels.app/map?listing=${messageData.thread.listing_slug}`;
+      `https://peels.app/listings/${messageData.thread.listing_slug}`;
     console.log("Listing URL:", listingUrl);
 
     // Determine recipient_id (the user who isn't the sender)
