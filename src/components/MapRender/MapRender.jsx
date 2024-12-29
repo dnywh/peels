@@ -28,6 +28,8 @@ export default function MapRender({
   onSearchPick,
   setMapController,
 }) {
+  const isFirstLoad = useRef(true);
+
   // Initial fetch when map loads
   const handleMapLoad = useCallback(() => {
     console.log("Map loaded");
@@ -60,27 +62,32 @@ export default function MapRender({
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
-    // If there's a selected listing, center on it
-    if (selectedListing?.latitude && selectedListing?.longitude) {
-      mapRef.current?.flyTo({
-        center: [selectedListing.longitude, selectedListing.latitude],
-        zoom: 12,
-        duration: 0,
-      });
-    }
-    // If there are initial coordinates from IP, use those
-    else if (initialCoordinates) {
-      mapRef.current?.flyTo({
-        center: [initialCoordinates.longitude, initialCoordinates.latitude],
-        zoom: initialCoordinates.zoom,
-        duration: 0,
-      });
+    // Only handle initial positioning on first load
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+
+      // If there's a selected listing in URL, center on it
+      if (selectedListing?.latitude && selectedListing?.longitude) {
+        mapRef.current?.flyTo({
+          center: [selectedListing.longitude, selectedListing.latitude],
+          zoom: 12,
+          duration: 0,
+        });
+      }
+      // If no listing but we have IP coordinates, use those
+      else if (initialCoordinates) {
+        mapRef.current?.flyTo({
+          center: [initialCoordinates.longitude, initialCoordinates.latitude],
+          zoom: initialCoordinates.zoom,
+          duration: 0,
+        });
+      }
     }
 
     return () => {
       maplibregl.removeProtocol("pmtiles");
     };
-  }, []); // Empty dependency array since we only want this on mount
+  }, []); // Empty dependency array as before
 
   // Set mapController to set relationship between MapSearch and MapRender
   // Can't get this to work, perhaps delete all mapController and createMapLibreGlMapController code if I can't get it working
