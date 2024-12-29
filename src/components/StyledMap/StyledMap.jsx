@@ -1,26 +1,25 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
-import Map from "react-map-gl";
-import { Protocol } from "pmtiles";
+import Map from "react-map-gl/maplibre";
+
 import maplibregl from "maplibre-gl";
 // import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 
 function StyledMap({ children, ...props }) {
   useEffect(() => {
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
-    console.log("StyledMap mounted");
-
     return () => {
       maplibregl.removeProtocol("pmtiles");
     };
   }, []);
+
   return (
     <Map
-      {...props}
       mapStyle={{
         version: 8,
         glyphs:
@@ -36,7 +35,7 @@ function StyledMap({ children, ...props }) {
         layers: layers("protomaps", "light"),
       }}
       renderWorldCopies={true}
-      animationOptions={{ duration: 200 }}
+      {...props}
     >
       {children}
     </Map>

@@ -2,10 +2,12 @@
 import { useState, memo } from "react";
 
 import Link from "next/link";
+import { Marker, NavigationControl } from "react-map-gl/maplibre";
 
 import StorageImage from "@/components/StorageImage";
 import ChatWindow from "@/components/ChatWindow";
-
+import StyledMap from "@/components/StyledMap";
+import MapPin from "@/components/MapPin";
 // Memoize the Listing component
 const Listing = memo(function Listing({
   user,
@@ -90,11 +92,33 @@ const Listing = memo(function Listing({
         {!modal && (
           <>
             <h3>Location</h3>
-            <p>{listing.location}</p>
+            <StyledMap
+              style={{ height: "250px" }}
+              interactive={false}
+              initialViewState={{
+                longitude: listing.longitude,
+                latitude: listing.latitude,
+                zoom: 14,
+              }}
+            >
+              <Marker
+                longitude={listing.longitude}
+                latitude={listing.latitude}
+                anchor="center"
+              >
+                <MapPin
+                  selected={true}
+                  coarse={listing.type === "residential" ? true : false}
+                />
+              </Marker>
+              <NavigationControl showZoom={true} showCompass={false} />
+            </StyledMap>
             {listing.type === "residential" && (
-              <p>Contact host for the exact location.</p>
+              <p>Contact host for their exact location.</p>
             )}
-            <Link href={`/map?listing=${listing.slug}`}>View on map</Link>
+            <Link href={`/map?listing=${listing.slug}`}>
+              See nearby listings
+            </Link>
           </>
         )}
 

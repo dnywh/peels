@@ -16,15 +16,27 @@ const pinStyleSelected = {
   stroke: "none",
 };
 
-function MapPin({ selected = false }) {
+const pinStyleCoarse = {
+  backgroundColor: "rgba(0, 0, 255, 0.15)",
+  borderRadius: "50%",
+  width: "200px",
+  height: "200px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+function MapPin({ selected = false, coarse = false }) {
   return (
-    <svg
-      height={selected ? 30 : 20}
-      viewBox="0 0 24 24"
-      style={selected ? pinStyleSelected : pinStyleUnselected}
-    >
-      <path d={ICON} />
-    </svg>
+    <div style={coarse ? pinStyleCoarse : undefined}>
+      <svg
+        height={selected ? 30 : 20}
+        viewBox="0 0 24 24"
+        style={selected ? pinStyleSelected : pinStyleUnselected}
+      >
+        <path d={ICON} />
+      </svg>
+    </div>
   );
 }
 

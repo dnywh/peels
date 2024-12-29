@@ -229,6 +229,9 @@ export default function MapRender({
                 >
                   <MapPin
                     selected={selectedListing?.id === listing.id ? true : false}
+                    coarse={
+                      selectedListing?.type === "residential" ? true : false
+                    }
                   />
                 </Marker>
               ))}
