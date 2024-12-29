@@ -1,10 +1,13 @@
 "use client";
-import { useEffect, useCallback, memo } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import Map, {
   Marker,
   NavigationControl,
+  AttributionControl,
   GeolocateControl,
 } from "react-map-gl/maplibre";
+
 import maplibregl from "maplibre-gl";
 import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -12,136 +15,251 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import MapPin from "@/components/MapPin";
+import MapSearch from "@/components/MapSearch";
 
-// Memoize the MapRender component
-const MapRender = memo(function MapRender({
+export default function MapRender({
   mapRef,
-  mapListings,
+  listings,
   selectedListing,
+  initialCoordinates,
   onBoundsChange,
+  isLoading,
   onMapClick,
   onMarkerClick,
   onSearchPick,
   setMapController,
+  handleSearchPick,
+  mapController,
 }) {
-  console.log("MapRender rendered");
-  const handleMapLoad = useCallback(() => {
-    const bounds = mapRef.current.getMap().getBounds();
-    onBoundsChange(bounds);
-  }, [onBoundsChange]);
+  const isFirstLoad = useRef(true);
+  const [lastKnownPosition, setLastKnownPosition] = useState(null);
+  const [isListingInView, setIsListingInView] = useState(true);
+  const hasInitialPosition =
+    selectedListing || initialCoordinates || lastKnownPosition;
 
-  const handleMapMove = useCallback(() => {
-    if (!mapRef.current?.getMap()) return;
+  // Initial fetch when map loads
+  const handleMapLoad = useCallback(() => {
+    console.log("Map loaded");
+
+    // If there's a selected listing, center on it instead of using IP location
+    if (selectedListing?.latitude && selectedListing?.longitude) {
+      mapRef.current?.flyTo({
+        center: [selectedListing.longitude, selectedListing.latitude],
+        zoom: 12,
+        duration: 0,
+      });
+    }
+
     const bounds = mapRef.current.getMap().getBounds();
+    console.log("Bounds:", bounds);
     onBoundsChange(bounds);
-  }, [onBoundsChange]);
+  }, [onBoundsChange, selectedListing]);
+
+  // Fetch on map move
+  const handleMapMove = useCallback(() => {
+    if (!mapRef.current) return; // Add check for mapRef.current so this isn't called when user navigates to a different page.
+    console.log("MAP MOVED");
+    const map = mapRef.current.getMap();
+    if (!map) return; // Add safety check for map object
+    const bounds = map.getBounds();
+    onBoundsChange(bounds);
+
+    // Check if selected listing is in view
+    if (selectedListing) {
+      const isInView = bounds.contains([
+        selectedListing.longitude,
+        selectedListing.latitude,
+      ]);
+      setIsListingInView(isInView);
+    }
+  }, [onBoundsChange, selectedListing]);
+
+  const handleFlyToListing = useCallback(() => {
+    if (!selectedListing || !mapRef.current) return;
+
+    mapRef.current.flyTo({
+      center: [selectedListing.longitude, selectedListing.latitude],
+      zoom: 12,
+      duration: 1500,
+    });
+  }, [selectedListing]);
 
   useEffect(() => {
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
-    // Get location from IP
-    // TODO: Use MapTiler's API and compare which returns faster
-    // TODO: see if there is location data already set from local storage, and return that first if so
-    // Perhaps do this on the homepage/first page loaded and then use that data for the map
-    // And then store that data in local storage for future use in the same session/browser
-    // Consider using that as the default view state for the map for next time (by saving it to Supabase)
-    async function initializeLocation() {
-      try {
-        const response = await fetch("https://freeipapi.com/api/json/", {
-          signal: AbortSignal.timeout(3000), // 3 second timeout
+    // Only handle initial positioning on first load
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+
+      // If there's a selected listing in URL, center on it
+      if (selectedListing?.latitude && selectedListing?.longitude) {
+        mapRef.current?.flyTo({
+          center: [selectedListing.longitude, selectedListing.latitude],
+          zoom: 12,
+          duration: 0,
         });
-
-        if (!response.ok) throw new Error("IP lookup failed");
-        const data = await response.json();
-
-        if (data.latitude && data.longitude) {
-          mapRef.current?.flyTo({
-            center: [data.longitude, data.latitude],
-            zoom: 5,
-            duration: 0, // No animation
-          });
-        }
-      } catch (error) {
-        // Fail silently - default view state will be used
-        console.warn("Could not determine location from IP");
+      }
+      // If no listing but we have IP coordinates, use those
+      else if (initialCoordinates) {
+        mapRef.current?.flyTo({
+          center: [initialCoordinates.longitude, initialCoordinates.latitude],
+          zoom: initialCoordinates.zoom,
+          duration: 0,
+        });
       }
     }
-
-    initializeLocation();
 
     return () => {
       maplibregl.removeProtocol("pmtiles");
     };
-  }, []);
+  }, []); // Empty dependency array as before
 
   // Set mapController to set relationship between MapSearch and MapRender
   // Can't get this to work, perhaps delete all mapController and createMapLibreGlMapController code if I can't get it working
-
   // useEffect(() => {
   //   if (mapRef.current) return; // stops map from intializing more than once
-
   //   setMapController(createMapLibreGlMapController(mapRef.current, maplibregl));
   // }, [onBoundsChange]);
 
   // TODO: low-priority: IF location is active AND it leaves the bounding box (i.e. user has moved the map), add a button to recenter (and zoom) map on selected listing
 
+  // Update lastKnownPosition when we have a valid position
+  useEffect(() => {
+    if (selectedListing) {
+      setLastKnownPosition({
+        latitude: selectedListing.latitude,
+        longitude: selectedListing.longitude,
+        // zoom: 12,
+      });
+    } else if (initialCoordinates && !lastKnownPosition) {
+      setLastKnownPosition(initialCoordinates);
+    }
+  }, [selectedListing, initialCoordinates]);
+
+  // Check if listing is in view whenever the map moves or selectedListing changes
+  useEffect(() => {
+    if (!mapRef.current || !selectedListing) {
+      setIsListingInView(true);
+      return;
+    }
+
+    const bounds = mapRef.current.getMap().getBounds();
+    const isInView = bounds.contains([
+      selectedListing.longitude,
+      selectedListing.latitude,
+    ]);
+    console.log("isInView", isInView);
+    setIsListingInView(isInView);
+  }, [selectedListing]);
+
   return (
-    <Map
-      ref={mapRef}
-      style={{ width: "100%", height: "400px" }}
-      mapStyle={{
-        version: 8,
-        glyphs:
-          "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-        sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-        sources: {
-          protomaps: {
-            type: "vector",
-            url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-            attribution: '<a href="https://protomaps.com">Protomaps</a>',
-          },
-        },
-        layers: layers("protomaps", "light"),
-      }}
-      renderWorldCopies={true}
-      touchPitch={false}
-      initialViewState={{
-        longitude: 0,
-        latitude: 0,
-        zoom: 1,
-      }}
-      animationOptions={{ duration: 200 }}
-      onMoveEnd={handleMapMove}
-      onLoad={handleMapLoad}
-      onClick={onMapClick}
-    >
-      {mapListings.map((mapListing) => (
-        <Marker
-          key={mapListing.id}
-          longitude={mapListing.longitude}
-          latitude={mapListing.latitude}
-          anchor="center"
-          onClick={(e) => {
-            e.originalEvent.stopPropagation(); // Prevent map click from interfering with marker click
-            onMarkerClick(mapListing.id);
+    <>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "400px",
+          backgroundColor: "lightblue",
+        }}
+      >
+        {isLoading ? <LoadingSpinner /> : null}
+        {/* Map search for small screens */}
+        <MapSearch
+          onPick={handleSearchPick}
+          mapController={mapController}
+          style={{
+            position: "absolute",
+            top: "1rem",
+            left: "1rem",
+            zIndex: 1,
           }}
-        >
-          <MapPin
-            size={28}
-            isSelected={selectedListing?.id === mapListing.id}
-          />
-        </Marker>
-      ))}
-      <GeolocateControl
-        showUserLocation={true}
-        animationOptions={{ duration: 100 }}
-      />
-      <NavigationControl showZoom={true} showCompass={false} />
-    </Map>
+        />
+        {hasInitialPosition && (
+          <>
+            <Map
+              ref={mapRef}
+              mapStyle={{
+                version: 8,
+                glyphs:
+                  "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+                sprite:
+                  "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+                sources: {
+                  protomaps: {
+                    type: "vector",
+                    url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
+                    attribution:
+                      '<a href="https://protomaps.com">Protomaps</a>',
+                  },
+                },
+                layers: layers("protomaps", "light"),
+              }}
+              renderWorldCopies={true}
+              initialViewState={{
+                longitude:
+                  selectedListing?.longitude ||
+                  initialCoordinates?.longitude ||
+                  lastKnownPosition?.longitude ||
+                  0,
+                latitude:
+                  selectedListing?.latitude ||
+                  initialCoordinates?.latitude ||
+                  lastKnownPosition?.latitude ||
+                  0,
+                zoom: selectedListing
+                  ? 12
+                  : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
+              }}
+              animationOptions={{ duration: 200 }}
+              onMoveEnd={handleMapMove}
+              onLoad={handleMapLoad}
+              onClick={onMapClick}
+            >
+              {listings.map((listing) => (
+                <Marker
+                  key={listing.id}
+                  longitude={listing.longitude}
+                  latitude={listing.latitude}
+                  anchor="center"
+                  onClick={(event) => {
+                    event.originalEvent.stopPropagation();
+                    onMarkerClick(listing.id);
+                  }}
+                >
+                  <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
+                </Marker>
+              ))}
+              <GeolocateControl
+                showUserLocation={true}
+                animationOptions={{ duration: 100 }}
+              />
+              <NavigationControl showZoom={true} showCompass={false} />
+            </Map>
+
+            {selectedListing && !isListingInView && (
+              <button
+                onClick={handleFlyToListing}
+                style={{
+                  position: "absolute",
+                  bottom: "20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  padding: "8px 16px",
+                  backgroundColor: "white",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  cursor: "pointer",
+                  zIndex: 1,
+                }}
+              >
+                Return to listing
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
-});
-
-MapRender.displayName = "MapRender";
-
-export default MapRender;
+}

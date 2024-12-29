@@ -1,6 +1,7 @@
 "use client";
-import { useState, useCallback, useRef, useMemo, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
 import { createClient } from "@/utils/supabase/client";
 
 import { fetchListingsInView } from "@/app/actions";
@@ -11,119 +12,148 @@ import Listing from "@/components/Listing";
 import GuestActions from "@/components/GuestActions";
 
 // export default async function MapPage() {
-export default function MapPageClient({ user, initialListingSlug }) {
-  console.log("MapPageClient rendered");
-  const router = useRouter();
-  const pathname = usePathname();
+export default function MapPageClient({ user }) {
   const mapRef = useRef(null);
+  const [initialCoordinates, setInitialCoordinates] = useState(null);
 
-  // Memoize Supabase client
-  const supabase = useMemo(() => createClient(), []);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const supabase = createClient();
 
-  // Memoize listings to prevent unnecessary re-renders
-  const [mapListings, setMapListings] = useState([]);
+  const [listings, setListings] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
+  // Set mapController to set relationship between MapSearch and MapRender
+  const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
 
-  // Derive current slug from URL
-  const currentSlug = useMemo(() => {
-    const slug = pathname.split("/").pop();
-    return slug === "map" ? null : slug;
-  }, [pathname]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Handle URL-based listing selection
+  // Load listing from URL param on mount
   useEffect(() => {
-    async function fetchListingBySlug(slug) {
-      const { data, error } = await supabase
-        .from("listings")
-        .select(
-          `
-          *,
-          profiles (
-            first_name,
-            avatar
-          )
-        `
-        )
-        .eq("slug", slug)
-        .single();
-
-      if (error) {
-        console.error("Error fetching listing by slug:", error);
-        return;
-      }
-
-      setSelectedListing(data);
-    }
-
-    if (currentSlug) {
-      fetchListingBySlug(currentSlug);
+    const listingSlug = searchParams.get("listing");
+    if (listingSlug) {
+      loadListingBySlug(listingSlug);
     } else {
+      // Clear selected listing if no slug in URL
       setSelectedListing(null);
     }
-  }, [currentSlug, supabase]);
+  }, [searchParams]); // This will run when the URL changes
 
-  const handleListingSelect = useCallback(
-    (listing) => {
-      if (!listing) {
-        router.push("/map");
-        setSelectedListing(null);
-        return;
+  // Add this new effect to handle initial location
+  useEffect(() => {
+    const listingSlug = searchParams.get("listing");
+    if (!listingSlug) {
+      // Only fetch IP location if there's no listing in URL
+      // TODO: Use MapTiler's API and compare which returns faster
+      // TODO: see if there is location data already set from local storage, and return that first if so
+      // Perhaps do this on the homepage/first page loaded and then use that data for the map
+      // And then store that data in local storage for future use in the same session/browser
+      // Consider using that as the default view state for the map for next time (by saving it to Supabase)
+      async function initializeLocation() {
+        console.log("No listing slug. Initializing location");
+        try {
+          const response = await fetch("https://freeipapi.com/api/json/", {
+            signal: AbortSignal.timeout(3000),
+          });
+
+          if (!response.ok) throw new Error("IP lookup failed");
+          const data = await response.json();
+
+          if (data.latitude && data.longitude) {
+            setInitialCoordinates({
+              latitude: data.latitude,
+              longitude: data.longitude,
+              zoom: 5,
+            });
+          }
+        } catch (error) {
+          console.warn("Could not determine location from IP");
+        }
       }
+      initializeLocation();
+    }
+  }, []); // Run once on mount
 
-      console.log("Selecting listing:", listing);
-      if (listing.slug && listing.slug !== currentSlug) {
-        setSelectedListing(listing); // Set the listing first
-        router.push(`/map/${listing.slug}`);
-      }
-    },
-    [router, currentSlug]
-  );
-
-  const handleBoundsChange = useCallback(async (bounds) => {
-    const data = await fetchListingsInView(
-      bounds._sw.lat,
-      bounds._sw.lng,
-      bounds._ne.lat,
-      bounds._ne.lng
-    );
-    console.log("Fetched map listings:", data); // Debug log to see what fields we're getting
-    setMapListings((prev) => {
-      // Only update if data has changed
-      if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
-      return data;
-    });
-  }, []);
-
-  const handleMarkerClick = useCallback(
-    async (listingId) => {
-      console.log("Finding full listing from map listing with ID:", listingId);
-
-      const { data, error } = await supabase
-        .from("listings")
-        .select(
-          `
+  const loadListingBySlug = async (slug) => {
+    const { data, error } = await supabase
+      .from("listings")
+      .select(
+        `
         *,
         profiles (
           first_name,
           avatar
         )
       `
+      )
+      .eq("slug", slug)
+      .single();
+
+    if (error) {
+      console.error("Error fetching listing details:", error);
+      return;
+    }
+
+    setSelectedListing(data);
+  };
+
+  const handleBoundsChange = useCallback(async (bounds) => {
+    setIsLoading(true);
+    console.log("Bounds changed. Bounds being sent:", bounds, {
+      bottomLeftWest: bounds._sw.lat,
+      bottomLeftSouth: bounds._sw.lng,
+      topRightNorth: bounds._ne.lat,
+      topRightEast: bounds._ne.lng,
+    });
+
+    const data = await fetchListingsInView(
+      bounds._sw.lat,
+      bounds._sw.lng,
+      bounds._ne.lat,
+      bounds._ne.lng
+    );
+    console.log("Data fetched:", data);
+    setListings(data);
+    setIsLoading(false);
+  }, []);
+
+  const handleMarkerClick = async (listingId) => {
+    // If the clicked marker is already selected, do nothing and return early
+    if (selectedListing?.id === listingId) {
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("listings")
+      .select(
+        `
+        *,
+        profiles (
+          first_name,
+          avatar
         )
-        .eq("id", listingId)
-        .single();
+      `
+      )
+      .eq("id", listingId)
+      .single();
 
-      if (error) {
-        console.error("Error fetching listing details:", error);
-        return;
-      }
+    if (error) {
+      console.error("Error fetching listing details:", error);
+      return;
+    }
+    console.log("Selected listing", data);
 
-      console.log("Found full listing details:", data);
-      if (data?.slug) {
-        handleListingSelect(data);
-      }
-    },
-    [supabase, handleListingSelect]
-  );
+    setSelectedListing(data);
+    // Update URL without full page reload
+    router.push(`/map?listing=${data.slug}`, { scroll: false });
+  };
+
+  const handleMapClick = () => {
+    // Since we're stopping propagation on marker clicks,
+    // this will only fire when clicking the actual map, not a marker on the map
+    if (selectedListing) {
+      handleCloseListing();
+    }
+  };
 
   const handleSearchPick = useCallback((event) => {
     // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
@@ -144,12 +174,15 @@ export default function MapPageClient({ user, initialListingSlug }) {
     mapRef.current?.flyTo({
       center: [nextCoordinates.longitude, nextCoordinates.latitude],
       duration: 2800,
-      zoom: 5, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
+      zoom: 10, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
     });
   }, []);
 
-  const handleMapClick = (event) => {
-    console.log("Map clicked", event);
+  const handleCloseListing = () => {
+    console.log("Closing listing");
+    setSelectedListing(null);
+    // Remove listing param from URL
+    router.push("/map", { scroll: false });
   };
 
   return (
@@ -157,24 +190,36 @@ export default function MapPageClient({ user, initialListingSlug }) {
       <div>
         <h1>Map for {user ? user.email : "Guest"}</h1>
         <div>
-          <MapSearch onPick={handleSearchPick} />
-
           <MapRender
             mapRef={mapRef}
-            mapListings={mapListings}
+            listings={listings}
             selectedListing={selectedListing}
+            initialCoordinates={initialCoordinates}
             onBoundsChange={handleBoundsChange}
-            // onMapClick={handleMapClick}
+            isLoading={isLoading}
+            onMapClick={handleMapClick}
             onMarkerClick={handleMarkerClick}
             onSearchPick={handleSearchPick}
+            setMapController={setMapController}
           />
         </div>
         <div>
+          <h2>Sidebar</h2>
+
+          {selectedListing ? null : (
+            <div>
+              Empty state
+              <MapSearch
+                onPick={handleSearchPick}
+                mapController={mapController}
+              />
+            </div>
+          )}
           {selectedListing ? (
             <Listing
               user={user}
               listing={selectedListing}
-              setSelectedListing={handleListingSelect}
+              setSelectedListing={handleCloseListing}
             />
           ) : (
             <GuestActions />

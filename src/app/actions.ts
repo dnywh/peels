@@ -244,6 +244,7 @@ export async function fetchListingsInView(
 ) {
   const supabase = await createClient();
 
+  // Try sending as a single object instead
   const { data, error } = await supabase.rpc("listings_in_view", {
     min_lat: south,
     min_long: west,
