@@ -227,7 +227,9 @@ export default function MapRender({
                     onMarkerClick(listing.id);
                   }}
                 >
-                  <MapPin size={selectedListing?.id === listing.id ? 36 : 28} />
+                  <MapPin
+                    selected={selectedListing?.id === listing.id ? true : false}
+                  />
                 </Marker>
               ))}
               <GeolocateControl

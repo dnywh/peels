@@ -7,38 +7,45 @@ import StorageImage from "@/components/StorageImage";
 import ChatWindow from "@/components/ChatWindow";
 
 // Memoize the Listing component
-const Listing = memo(function Listing({ user, listing, setSelectedListing }) {
+const Listing = memo(function Listing({
+  user,
+  listing,
+  setSelectedListing,
+  modal,
+}) {
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // TODO: is this secure? Should this be done on the server or database?
+  let listingName =
+    listing.type === "residential" ? listing.profiles.first_name : listing.name;
+  if (!user && listing.type === "residential") {
+    listingName = "Private Host";
+  }
 
   return (
     <div>
       <button onClick={setSelectedListing}>Close</button>
 
       <div key={listing.id}>
-        {listing.avatar && (
-          <StorageImage
-            bucket="listing_avatars"
-            filename={listing.avatar}
-            alt={listing.profiles.first_name}
-            style={{ width: "100px", height: "100px" }}
-          />
-        )}
-        {listing.profiles.avatar && (
+        {listing.type === "residential" ? (
           <StorageImage
             bucket="avatars"
             filename={listing.profiles.avatar}
             alt={listing.profiles.first_name}
             style={{ width: "100px", height: "100px" }}
           />
+        ) : (
+          <StorageImage
+            bucket="listing_avatars"
+            filename={listing.avatar}
+            alt={listing.name}
+            style={{ width: "100px", height: "100px" }}
+          />
         )}
 
-        <h2>
-          {listing.type === "residential"
-            ? listing.profiles.first_name
-            : listing.name}
-        </h2>
+        <h2>{listingName}</h2>
         <p>{listing.type}</p>
-        <p>Last active: TODO</p>
+        {/* <p>Last active: TODO</p> */}
 
         <p>Permalink: {listing.slug}</p>
 
@@ -80,7 +87,16 @@ const Listing = memo(function Listing({ user, listing, setSelectedListing }) {
           </>
         )}
 
-        {/* <h3>Location</h3> */}
+        {!modal && (
+          <>
+            <h3>Location</h3>
+            <p>{listing.location}</p>
+            {listing.type === "residential" && (
+              <p>Contact host for the exact location.</p>
+            )}
+            <Link href={`/map?listing=${listing.slug}`}>View on map</Link>
+          </>
+        )}
 
         {listing.accepted_items.length > 0 && (
           <>
@@ -136,13 +152,12 @@ const Listing = memo(function Listing({ user, listing, setSelectedListing }) {
             </ul>
           </>
         )}
+        <Link href={`/listings/${listing.slug}`}>Permalink</Link>
         <h3>Raw data</h3>
         <pre>{JSON.stringify(listing, null, 2)}</pre>
       </div>
     </div>
   );
 });
-
-Listing.displayName = "Listing";
 
 export default Listing;

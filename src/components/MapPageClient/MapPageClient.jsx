@@ -220,6 +220,7 @@ export default function MapPageClient({ user }) {
               user={user}
               listing={selectedListing}
               setSelectedListing={handleCloseListing}
+              modal={true}
             />
           ) : (
             <GuestActions />
