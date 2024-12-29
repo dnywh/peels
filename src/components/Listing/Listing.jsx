@@ -1,13 +1,16 @@
 "use client";
-import { useState, memo } from "react";
+import { useState, memo, useEffect, useCallback, useRef } from "react";
 
 import Link from "next/link";
-import { Marker, NavigationControl } from "react-map-gl/maplibre";
+import { Marker, NavigationControl, ScaleControl } from "react-map-gl/maplibre";
 
 import StorageImage from "@/components/StorageImage";
 import ChatWindow from "@/components/ChatWindow";
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
+
+import turfDistance from "@turf/distance";
+
 // Memoize the Listing component
 const Listing = memo(function Listing({
   user,
@@ -15,14 +18,96 @@ const Listing = memo(function Listing({
   setSelectedListing,
   modal,
 }) {
+  const mapRef = useRef(null);
+  const [distance, setDistance] = useState(0);
+  const [mapWidth, setMapWidth] = useState(0);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [mapZoomLevel, setMapZoomLevel] = useState(null);
 
+  const initialZoomLevel = 14;
+  useEffect(() => {
+    setMapZoomLevel(initialZoomLevel);
+  }, []);
   // TODO: is this secure? Should this be done on the server or database?
   let listingName =
     listing.type === "residential" ? listing.profiles.first_name : listing.name;
   if (!user && listing.type === "residential") {
     listingName = "Private Host";
   }
+
+  // Fetch on map move
+  const handleMapMove = useCallback(() => {
+    // Gives me negative numbers:
+    // console.log(
+
+    if (!mapRef.current) return;
+    //   "Project latlng to pixel xy",
+    //   mapRef.current.getMap().project({ lng: 0, lat: 0 })
+    // );
+
+    const topLeftCorner = mapRef.current.getMap().unproject([0, 0]);
+    const topRightCorner = mapRef.current.getMap().unproject([mapWidth, 0]);
+
+    console.log(
+      "First two points",
+      mapRef.current.getMap().project({ lng: 0, lat: 0 }),
+      mapRef.current.getMap().project({ lng: 1, lat: 0 }),
+      "Last two points",
+      mapRef.current.getMap().project({ lng: 153, lat: -33 }),
+      mapRef.current.getMap().project({ lng: 154, lat: -33 })
+      // "Difference in Y values",
+      // mapRef.current.getMap().project({ lng: 154, lat: -33 }).y -
+      //   mapRef.current.getMap().project({ lng: 153, lat: -33 }).y
+    );
+
+    // console.log("Top left corner", topLeftCorner);
+    // console.log("Top right corner", topRightCorner);
+
+    // console.log(
+    //   "Unproject top-left pixel xy to latlng",
+    //   mapRef.current.getMap().project({ lng: 0, lat: 0 })
+    // );
+
+    const bounds = mapRef.current.getMap().getBounds();
+
+    const northWestCorner = {
+      lng: bounds._sw.lng,
+      lat: bounds._ne.lat,
+    };
+
+    const newDistance = turfDistance(
+      [topLeftCorner.lng, topLeftCorner.lat],
+      [topRightCorner.lng, topRightCorner.lat]
+    );
+
+    // console.log("New distance", newDistance);
+    // console.log(
+    //   "Distance:",
+    //   turfDistance(
+    //     [northWestCorner.lat, northWestCorner.lng],
+    //     [bounds._ne.lat, bounds._ne.lng]
+    //   )
+    // );
+
+    // setDistance(
+    //   turfDistance(
+    //     [northWestCorner.lat, northWestCorner.lng],
+    //     [bounds._ne.lat, bounds._ne.lng]
+    //   )
+    // );
+    setDistance(
+      turfDistance(
+        [topLeftCorner.lat, topLeftCorner.lng],
+        [topRightCorner.lat, topRightCorner.lng]
+      )
+    );
+  }, []);
+
+  const handleMapResize = useCallback(() => {
+    // console.log("MAP RESIZED");
+    // console.log(mapRef.current.getMap().getContainer().clientWidth);
+    setMapWidth(mapRef.current.getMap().getContainer().clientWidth);
+  }, []);
 
   return (
     <div>
@@ -93,13 +178,21 @@ const Listing = memo(function Listing({
           <>
             <h3>Location</h3>
             <StyledMap
-              style={{ height: "250px" }}
-              interactive={false}
+              ref={mapRef}
+              style={{ height: "320px" }}
+              // interactive={false}
               initialViewState={{
                 longitude: listing.longitude,
                 latitude: listing.latitude,
-                zoom: 14,
+                zoom: initialZoomLevel,
               }}
+              onZoom={(event) => {
+                // console.log("box zoom end", event);
+                setMapZoomLevel(event.viewState.zoom);
+              }}
+              onLoad={handleMapResize}
+              onMove={handleMapMove}
+              onResize={handleMapResize}
             >
               <Marker
                 longitude={listing.longitude}
@@ -109,9 +202,17 @@ const Listing = memo(function Listing({
                 <MapPin
                   selected={true}
                   coarse={listing.type === "residential" ? true : false}
+                  zoomLevel={mapZoomLevel}
+                  distance={distance}
+                  mapWidth={mapWidth}
                 />
               </Marker>
-              <NavigationControl showZoom={true} showCompass={false} />
+              <NavigationControl
+                showZoom={true}
+                showCompass={true}
+                showAttribution={false}
+              />
+              <ScaleControl />
             </StyledMap>
             {listing.type === "residential" && (
               <p>Contact host for their exact location.</p>
@@ -119,6 +220,26 @@ const Listing = memo(function Listing({
             <Link href={`/map?listing=${listing.slug}`}>
               See nearby listings
             </Link>
+          </>
+        )}
+        {listing.type === "residential" ? (
+          <p>Contact host for their exact location.</p>
+        ) : (
+          <>
+            <a
+              href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
+                listing.name
+              )}`}
+              target="_blank"
+            >
+              Apple Maps
+            </a>
+            <a
+              href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
+              target="_blank"
+            >
+              Google Maps
+            </a>
           </>
         )}
 

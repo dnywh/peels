@@ -19,16 +19,46 @@ const pinStyleSelected = {
 const pinStyleCoarse = {
   backgroundColor: "rgba(0, 0, 255, 0.15)",
   borderRadius: "50%",
-  width: "200px",
-  height: "200px",
+  // width: "200px",
+  // height: "200px",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
 };
 
-function MapPin({ selected = false, coarse = false }) {
+function MapPin({
+  selected = false,
+  coarse = false,
+  zoomLevel = null,
+  distance = 0,
+  mapWidth = 0,
+}) {
+  // console.log("zoomLevel", zoomLevel);
+  const size = 2 ** (zoomLevel * 0.565);
+  // const size = 1000 / (1 + Math.exp(-10 * (zoomLevel - 10)));
+  // const size = 100 * zoomLevel ** 0.5;
+
+  // at 14 zoom level, size is 20
+  //at 22 zoom level, size is 100
+
+  const km = 1;
+  const smartSize = (mapWidth / distance) * km;
+
+  // console.log("size", smartSize, "zoomLevel", zoomLevel);
+  // console.log(distance, mapWidth, { smartSize });
+
   return (
-    <div style={coarse ? pinStyleCoarse : undefined}>
+    <div
+      style={
+        coarse
+          ? {
+              ...pinStyleCoarse,
+              width: `${smartSize}px`,
+              height: `${smartSize}px`,
+            }
+          : undefined
+      }
+    >
       <svg
         height={selected ? 30 : 20}
         viewBox="0 0 24 24"
