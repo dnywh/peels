@@ -10,7 +10,7 @@ export default function ProfileRedirect() {
         if (pathname !== '/profile') return;
 
         // Use matchMedia instead of resize event
-        const mediaQuery = window.matchMedia('(min-width: 1024px)');
+        const mediaQuery = window.matchMedia('(min-width: 700px)');
 
         function handleViewportChange(e) {
             if (e.matches) { // is desktop
