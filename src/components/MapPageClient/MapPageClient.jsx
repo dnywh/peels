@@ -190,7 +190,12 @@ export default function MapPageClient({ user }) {
       <div>
         <h1>Map for {user ? user.email : "Guest"}</h1>
         <div>
-          <MapSearch onPick={handleSearchPick} mapController={mapController} />
+          {selectedListing ? null : (
+            <MapSearch
+              onPick={handleSearchPick}
+              mapController={mapController}
+            />
+          )}
 
           <MapRender
             mapRef={mapRef}
