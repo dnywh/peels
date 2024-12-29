@@ -34,11 +34,40 @@ export default async function ProfilePage() {
     );
   }
 
+  const { data: listings } = await supabase
+    .from("listings")
+    .select()
+    .eq("owner_id", user.id);
+
   const { data: profile } = await supabase
     .from("profiles")
     .select()
     .eq("id", user.id)
     .single();
+
+
+  // More efficient alternative: Join on client side:
+  //   const { data: userProfileAndListings, error } = await supabase
+  //   .from('profiles')
+  //   .select(`
+  //     *,
+  //     listings: listings (
+  //       id,
+  //       slug,
+  //       type,
+  //       name
+  //     )
+  //   `)
+  //   .eq('id', user.id)
+  //   .single();
+
+  // if (error) {
+  //   console.error("Error fetching user profile and listings:", error);
+  // }
+
+  // OR, even better, consider joining the tables on the Supabase side
+  // If your application frequently needs data from both tables together, consider restructuring your queries to fetch them in a single request. This can lead to better performance and a more efficient use of resources. However, if the data is rarely needed together or if the tables are large and complex, the current approach may still be valid.
+
 
   // Get avatar URL if profile has avatar
   if (profile?.avatar) {
@@ -48,7 +77,7 @@ export default async function ProfilePage() {
     profile.avatarUrl = publicUrl; // Add URL to profile object
   }
 
-  async function updateProfile(formData: FormData) {
+  async function updateProfile(formData) {
     "use server";
 
     const supabase = await createClient();
@@ -63,7 +92,7 @@ export default async function ProfilePage() {
     let avatar = profile?.avatar;
 
     // Handle image upload if a file was provided
-    const avatarFile = formData.get("avatar") as File;
+    const avatarFile = formData.get("avatar");
     if (avatarFile.size > 0) {
       try {
         // Get current profile to check for existing avatar
@@ -130,9 +159,54 @@ export default async function ProfilePage() {
 
       <p>{user.email}</p>
 
+      <div>
+        <h2>Listings</h2>
+        <ul>
+          {/* TODO: List all user's listings here */}
+          {listings.map(({ id, slug, type, name }) => (
+            <li key={id}>
+              <Link href={`/listings/${slug}`}>
+                <p>{type === "residential" ? profile.first_name : name}</p>
+                <p>{type}</p>
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link href="/add-listing">
+              <p>Add another listing to the map</p>
+              <small>Whether your a individual, community, or business, we’re always looking for new hosts.</small>
+            </Link>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h2>Settings</h2>
+        <ul>
+          <li>
+            <Link href="/profile/account">
+              <p>Account</p>
+            </Link>
+          </li>
+          <li>
+            <Link href="/profile/appearance">
+              <p>Appearance</p>
+            </Link>
+          </li>
+          <li>
+            <Link href="/profile/notifications">
+              <p>Notifications</p>
+            </Link>
+          </li>
+        </ul>
+      </div>
+
+
+      <hr />
+
       <form action={updateProfile}>
-        <div className="mb-4">
-          <label className="block mb-2">Profile Picture</label>
+        <div>
+          <label>Profile Picture</label>
           {profile?.avatar && (
             <img
               src={profile.avatarUrl}
@@ -148,8 +222,8 @@ export default async function ProfilePage() {
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block mb-2">First Name</label>
+        <div>
+          <label>First Name</label>
           <input
             type="text"
             name="first_name"
@@ -180,7 +254,7 @@ export default async function ProfilePage() {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+
         >
           Save Profile
         </button>
@@ -194,9 +268,8 @@ export default async function ProfilePage() {
 
       <hr />
 
-      <Link href="/add-listing">Add a listing</Link>
 
-      <hr />
+
 
       <Dialog>
         <DialogTrigger asChild>

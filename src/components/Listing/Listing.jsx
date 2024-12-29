@@ -86,7 +86,9 @@ const Listing = memo(function Listing({
 
   return (
     <div>
-      <button onClick={setSelectedListing}>Close</button>
+      {setSelectedListing && (
+        <button onClick={setSelectedListing}>Close</button>
+      )}
 
       <div key={listing.id}>
         {listing.type === "residential" ? (
@@ -155,7 +157,7 @@ const Listing = memo(function Listing({
             <StyledMap
               ref={mapRef}
               style={{ height: "320px" }}
-              // interactive={false}
+              interactive={false}
               initialViewState={{
                 longitude: listing.longitude,
                 latitude: listing.latitude,
@@ -184,8 +186,8 @@ const Listing = memo(function Listing({
               </Marker>
               <NavigationControl
                 showZoom={true}
-                showCompass={true}
-                showAttribution={false}
+                showCompass={false}
+                // showAttribution={false}
               />
             </StyledMap>
             {listing.type === "residential" && (
