@@ -1,23 +1,45 @@
 'use client'; // Needed for styled-jsx
-// import { usePathname } from 'next/navigation';
-// import Link from 'next/link';
-
+import { usePathname } from 'next/navigation';
 import ProfileRedirect from './profile-redirect';
 
 export default function ProfileLayout({ children }) {
+    const pathname = usePathname();
+
     return (
-        <div style={{ padding: '1rem' }}>
+        <div className="max-w-5xl mx-auto p-4">
             <ProfileRedirect />
 
-            <nav style={{ marginBottom: '1rem' }}>
-                <ul>
-                    <li><a href="/profile/account">Account</a></li>
-                    <li><a href="/profile/appearance">Appearance</a></li>
-                    <li><a href="/profile/notifications">Notifications</a></li>
-                </ul>
-            </nav>
+            <div className="flex flex-col lg:flex-row gap-8">
+                <nav className="w-full lg:w-64 flex-shrink-0">
+                    <ul className="flex flex-col gap-2">
+                        {[
+                            { href: '/profile/account', label: 'Account' },
+                            { href: '/profile/appearance', label: 'Appearance' },
+                            { href: '/profile/notifications', label: 'Notifications' },
+                        ].map(({ href, label }) => (
+                            <li key={href}>
+                                <a
+                                    href={href}
+                                    className={`block p-2 rounded-lg transition-colors
+                                        ${pathname === href
+                                            ? 'bg-secondary'
+                                            : 'hover:bg-secondary/50'
+                                        }`}
+                                    style={{
+                                        backgroundColor: pathname === href ? 'lightgray' : undefined,
+                                    }}
+                                >
+                                    {label}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
 
-            {children}
+                <main className="flex-1">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

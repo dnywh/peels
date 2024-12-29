@@ -7,21 +7,23 @@ export default function ProfileRedirect() {
     const pathname = usePathname();
 
     useEffect(() => {
-        function handleResize() {
-            const isDesktop = window.innerWidth >= 1024;
-            const isRootProfilePath = pathname === '/profile';
+        if (pathname !== '/profile') return;
 
-            if (isDesktop && isRootProfilePath) {
+        // Use matchMedia instead of resize event
+        const mediaQuery = window.matchMedia('(min-width: 1024px)');
+
+        function handleViewportChange(e) {
+            if (e.matches) { // is desktop
                 router.push('/profile/account');
             }
         }
 
-        // Initial check
-        handleResize();
+        // Check initial viewport size
+        handleViewportChange(mediaQuery);
 
-        // Listen for resize events
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        // Listen for viewport changes
+        mediaQuery.addEventListener('change', handleViewportChange);
+        return () => mediaQuery.removeEventListener('change', handleViewportChange);
     }, [pathname, router]);
 
     return null;
