@@ -21,6 +21,10 @@ export default function ListingFormClient({ initialListing }) {
     initialListing ? initialListing.description : ""
   );
 
+  const [countryCode, setCountryCode] = useState(
+    initialListing ? initialListing.country_code : ""
+  );
+
   const [coordinates, setCoordinates] = useState(
     initialListing
       ? {
@@ -81,6 +85,7 @@ export default function ListingFormClient({ initialListing }) {
         // ...because I can't get the geometry type to convert to to long and lat dynamically if a user goes direct to a listing, e.g. http://localhost:3000/map?listing=9xvN9zxH0rzZ
         longitude: coordinates.longitude,
         latitude: coordinates.latitude,
+        country_code: countryCode,
         accepted_items: acceptedItems.filter((item) => item.trim() !== ""),
         rejected_items: rejectedItems.filter((item) => item.trim() !== ""),
         photos,
@@ -108,6 +113,7 @@ export default function ListingFormClient({ initialListing }) {
       //     setAvatar("");
       //     setDescription("");
       //     setCoordinates({ latitude: 0, longitude: 0 });
+      //     setCountryCode("");
       //     setAcceptedItems([""]);
       //     setRejectedItems([""]);
       //     setPhotos([]);
@@ -165,6 +171,8 @@ export default function ListingFormClient({ initialListing }) {
       <LocationSelect
         coordinates={coordinates}
         setCoordinates={setCoordinates}
+        countryCode={countryCode}
+        setCountryCode={setCountryCode}
       />
 
       <label htmlFor="description">

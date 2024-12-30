@@ -20,23 +20,22 @@ const ZOOM_LEVEL = 16;
 
 // TODO: use this to build a custom component around the core geocoding API, using my nice own components for input and dropdown
 // https://docs.maptiler.com/cloud/api/geocoding/
-async function basicCallToBuildCustomComponentAround() {
-  try {
-    const response = await fetch(
-      `https://api.maptiler.com/geocoding/Zurich.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`
-    );
-    if (!response.ok) throw new Error("API request failed");
-    const data = await response.json();
-    console.log(data.query, data.features);
-    return Response.json(data);
-  } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
-  }
-}
+// async function basicCallToBuildCustomComponentAround() {
+//   try {
+//     const response = await fetch(
+//       `https://api.maptiler.com/geocoding/Zurich.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`
+//     );
+//     if (!response.ok) throw new Error("API request failed");
+//     const data = await response.json();
+//     console.log(data.query, data.features);
+//     return Response.json(data);
+//   } catch (error) {
+//     return Response.json({ error: error.message }, { status: 500 });
+//   }
+// }
+// basicCallToBuildCustomComponentAround();
 
-basicCallToBuildCustomComponentAround();
-
-// TODO: See if MapTiler's Geolocation API is faster
+// TODO: See if MapTiler's Geolocation API is faster than my manual IP lookup below
 // https://docs.maptiler.com/client-js/geolocation/
 async function initializeLocation() {
   try {
@@ -57,26 +56,37 @@ async function initializeLocation() {
 }
 
 // React component
-export default function LocationSelect({ coordinates, setCoordinates }) {
+export default function LocationSelect({
+  coordinates,
+  setCoordinates,
+  countryCode,
+  setCountryCode,
+}) {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   // const [placekitClient, setPlacekitClient] = useState(null);
 
-  const [countryCode, setCountryCode] = useState(""); // TODO this needs to be saved in database to populate the edit state
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
     "Your street or nearby"
   );
 
-  // Auto-select dropdown country based on IP
-  useEffect(() => {
-    const fetchCountryCode = async () => {
-      const nextCountryCode = await initializeLocation(); // Await the promise
-      console.log("Automatically updated country to", nextCountryCode);
-      setCountryCode(nextCountryCode);
-    };
+  console.log("countryCode", countryCode);
 
-    fetchCountryCode(); // Call the async function
+  useEffect(() => {
+    if (!countryCode) {
+      // Auto-select dropdown country based on IP
+      const fetchCountryCode = async () => {
+        const nextCountryCode = await initializeLocation(); // Await the promise
+        console.log(
+          "No country code provided, automatically updated to:",
+          nextCountryCode
+        );
+        setCountryCode(nextCountryCode);
+      };
+
+      fetchCountryCode(); // Call the async function
+    }
   }, []);
 
   // Set up Protomap tiles protocol
@@ -160,7 +170,11 @@ export default function LocationSelect({ coordinates, setCoordinates }) {
       {coordinates && <p>Coordinates provided, show map</p>}
       <label htmlFor="country">Location</label>
       {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
-      <select id="country" value={countryCode} onChange={handleCountryChange}>
+      <select
+        id="country"
+        value={countryCode ? countryCode : undefined}
+        onChange={handleCountryChange}
+      >
         <option disabled value="">
           Select a country
         </option>
