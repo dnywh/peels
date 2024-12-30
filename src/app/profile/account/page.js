@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache"; // to refresh the page after adding a note
-import { deleteAccountAction, updateEmailAction } from "@/app/actions";
+import { deleteAccountAction, updateEmailAction, sendPasswordResetEmailAction } from "@/app/actions";
 import {
     Dialog,
     DialogContent,
@@ -129,6 +129,7 @@ export default async function ProfilePage() {
             })
             .eq("id", user.id);
 
+        // Handle email change
         if (formData.get("email_change") !== user.email) {
             console.log("email different, trigger change");
             const { data, error } = await supabase.auth.updateUser({
@@ -136,7 +137,8 @@ export default async function ProfilePage() {
             })
         }
 
-        // Catch password change
+        // Handle password change
+        // TODO: very against current password via RPC or send an email instead
         if (formData.get("password_change") !== user.password) {
             console.log("password different, trigger change");
             const { data, error } = await supabase.auth.updateUser({
@@ -151,6 +153,16 @@ export default async function ProfilePage() {
         // revalidatePath("/profile");
         // redirect("/profile");
     }
+
+    // async function resetPassword(formData) {
+    //     // const { data, error } = await supabase.auth
+    //     //     .resetPasswordForEmail(user.email)
+
+    //     // if (error) throw error;
+
+    //     console.log("Password reset email sent to", user.email);
+    // }
+
 
     return (
         <div>
@@ -235,8 +247,9 @@ export default async function ProfilePage() {
                     Save Profile
                 </button>
             </form>
-
-
+            <form action={sendPasswordResetEmailAction}>
+                <button type="submit">Reset password</button>
+            </form>
 
             <hr />
 

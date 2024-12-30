@@ -32,12 +32,28 @@ export async function middleware(request: NextRequest) {
     !user && (
       request.nextUrl.pathname.startsWith("/chats") ||
       request.nextUrl.pathname.startsWith("/add-listing") ||
-      request.nextUrl.pathname.startsWith("/profile")
+      request.nextUrl.pathname.startsWith("/profile") ||
+      request.nextUrl.pathname.startsWith("/reset-password")
     )
   ) {
     return NextResponse.redirect(
       new URL(
         `/sign-in?from=${request.nextUrl.pathname.slice(1)}`,
+        request.url,
+      ),
+    );
+  }
+
+  // Redirect authenticated users away from guest pages
+  if (
+    user && (
+      request.nextUrl.pathname.startsWith("/forgot-password") ||
+      request.nextUrl.pathname.startsWith("/sign-in")
+    )
+  ) {
+    return NextResponse.redirect(
+      new URL(
+        `/profile?from=${request.nextUrl.pathname.slice(1)}`,
         request.url,
       ),
     );
