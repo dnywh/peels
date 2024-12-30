@@ -139,7 +139,7 @@ function NewListingFormContent() {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
 
-    const [coordinates, setCoordinates] = useState({ latitude: 0, longitude: 0 });
+    const [coordinates, setCoordinates] = useState(null);
 
     const [acceptedItems, setAcceptedItems] = useState([''])
     const [rejectedItems, setRejectedItems] = useState([''])

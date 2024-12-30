@@ -8,11 +8,12 @@ export default function ProfileListings({ listings }) {
     <div>
       <h2>Listings</h2>
       <ul>
-        {listings.map(({ id, slug, type, name }) => (
+        {listings.map(({ id, slug, type, name, visibility }) => (
           <li key={id}>
             <Link href={`/profile/listings/${slug}`}>
               <p>{type === "residential" ? name : name}</p>
               <p>{type}</p>
+              {!visibility && <p>hidden</p>}
             </Link>
           </li>
         ))}

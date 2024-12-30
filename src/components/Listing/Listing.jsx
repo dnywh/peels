@@ -122,7 +122,9 @@ const Listing = memo(function Listing({
 
           {user ? (
             listing.owner_id === user.id ? (
-              <Link href="/edit-listing">Edit listing</Link>
+              <Link href={`/profile/listings/${listing.slug}`}>
+                Edit listing
+              </Link>
             ) : (
               <button onClick={() => setIsChatOpen(true)}>
                 Contact{" "}

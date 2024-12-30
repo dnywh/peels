@@ -62,8 +62,8 @@ export default function LocationSelect({ coordinates, setCoordinates }) {
   const inputRef = useRef(null);
   // const [placekitClient, setPlacekitClient] = useState(null);
 
-  const [countryCode, setCountryCode] = useState("");
-  const [mapShown, setMapShown] = useState(false);
+  const [countryCode, setCountryCode] = useState(""); // TODO this needs to be saved in database to populate the edit state
+  const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
     "Your street or nearby"
   );
@@ -157,6 +157,7 @@ export default function LocationSelect({ coordinates, setCoordinates }) {
 
   return (
     <>
+      {coordinates && <p>Coordinates provided, show map</p>}
       <label htmlFor="country">Location</label>
       {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
       <select id="country" value={countryCode} onChange={handleCountryChange}>
