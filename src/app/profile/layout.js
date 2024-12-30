@@ -7,7 +7,7 @@ import { signOutAction } from "@/app/actions";
 
 export default function ProfileLayout({ children }) {
     return (
-        <div className="max-w-5xl mx-auto p-4">
+        <div>
             <ProfileRedirect />
 
             <div>
@@ -32,7 +32,7 @@ export default function ProfileLayout({ children }) {
 
                 <hr />
 
-                <main className="flex-1">
+                <main>
                     {children}
                 </main>
             </div>
