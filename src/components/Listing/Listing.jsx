@@ -18,9 +18,9 @@ const Listing = memo(function Listing({
   setSelectedListing,
   modal,
 }) {
-  const mapRef = useRef(null);
-  const [distanceAcrossMapWidth, setDistanceAcrossMapWidth] = useState(0);
-  const [mapWidth, setMapWidth] = useState(0);
+  // const mapRef = useRef(null);
+  // const [distanceAcrossMapWidth, setDistanceAcrossMapWidth] = useState(0);
+  // const [mapWidth, setMapWidth] = useState(0);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [mapZoomLevel, setMapZoomLevel] = useState(null);
 
@@ -35,54 +35,54 @@ const Listing = memo(function Listing({
     listingName = "Private Host";
   }
 
-  function getDistance() {
-    console.log("Map loaded or moved, getting distance across map width");
+  // function getDistance() {
+  //   console.log("Map loaded or moved, getting distance across map width");
 
-    if (!mapRef.current) return;
-    //   "Project latlng to pixel xy",
-    //   mapRef.current.getMap().project({ lng: 0, lat: 0 })
-    // );
+  //   if (!mapRef.current) return;
+  //   //   "Project latlng to pixel xy",
+  //   //   mapRef.current.getMap().project({ lng: 0, lat: 0 })
+  //   // );
 
-    const topLeftCorner = mapRef.current.getMap().unproject([0, 0]);
-    const topRightCorner = mapRef.current.getMap().unproject([mapWidth, 0]);
+  //   const topLeftCorner = mapRef.current.getMap().unproject([0, 0]);
+  //   const topRightCorner = mapRef.current.getMap().unproject([mapWidth, 0]);
 
-    console.log(
-      // "First two points",
-      // mapRef.current.getMap().project({ lng: 0, lat: 0 }),
-      // mapRef.current.getMap().project({ lng: 1, lat: 0 }),
-      // "Last two points",
-      // mapRef.current.getMap().project({ lng: 153, lat: -33 }),
-      // mapRef.current.getMap().project({ lng: 154, lat: -33 }),
-      "Difference in X values",
-      mapRef.current.getMap().project({ lng: 154, lat: -33 }).x -
-        mapRef.current.getMap().project({ lng: 153, lat: -33 }).x
-      // "Difference in Y values",
-      // mapRef.current.getMap().project({ lng: 154, lat: -33 }).y -
-      //   mapRef.current.getMap().project({ lng: 153, lat: -33 }).y
-    );
-    const bounds = mapRef.current.getMap().getBounds();
+  //   console.log(
+  //     // "First two points",
+  //     // mapRef.current.getMap().project({ lng: 0, lat: 0 }),
+  //     // mapRef.current.getMap().project({ lng: 1, lat: 0 }),
+  //     // "Last two points",
+  //     // mapRef.current.getMap().project({ lng: 153, lat: -33 }),
+  //     // mapRef.current.getMap().project({ lng: 154, lat: -33 }),
+  //     "Difference in X values",
+  //     mapRef.current.getMap().project({ lng: 154, lat: -33 }).x -
+  //       mapRef.current.getMap().project({ lng: 153, lat: -33 }).x
+  //     // "Difference in Y values",
+  //     // mapRef.current.getMap().project({ lng: 154, lat: -33 }).y -
+  //     //   mapRef.current.getMap().project({ lng: 153, lat: -33 }).y
+  //   );
+  //   const bounds = mapRef.current.getMap().getBounds();
 
-    const northWestCorner = {
-      lng: bounds._sw.lng,
-      lat: bounds._ne.lat,
-    };
+  //   const northWestCorner = {
+  //     lng: bounds._sw.lng,
+  //     lat: bounds._ne.lat,
+  //   };
 
-    const nextDistance = turfDistance(
-      [northWestCorner.lat, northWestCorner.lng],
-      [bounds._ne.lat, bounds._ne.lng]
-    );
-    setDistanceAcrossMapWidth(nextDistance);
-  }
+  //   const nextDistance = turfDistance(
+  //     [northWestCorner.lat, northWestCorner.lng],
+  //     [bounds._ne.lat, bounds._ne.lng]
+  //   );
+  //   setDistanceAcrossMapWidth(nextDistance);
+  // }
 
   // Fetch on map move
-  const handleMapMove = useCallback(() => {
-    getDistance();
-  }, []);
+  // const handleMapMove = useCallback(() => {
+  //   getDistance();
+  // }, []);
 
-  const handleMapResize = useCallback(() => {
-    setMapWidth(mapRef.current.getMap().getContainer().clientWidth);
-    getDistance();
-  }, []);
+  // const handleMapResize = useCallback(() => {
+  //   setMapWidth(mapRef.current.getMap().getContainer().clientWidth);
+  //   getDistance();
+  // }, []);
 
   return (
     <div>
@@ -159,7 +159,7 @@ const Listing = memo(function Listing({
           <>
             <h3>Location</h3>
             <StyledMap
-              ref={mapRef}
+              // ref={mapRef}
               style={{ height: "320px" }}
               interactive={false}
               initialViewState={{
@@ -167,32 +167,22 @@ const Listing = memo(function Listing({
                 latitude: listing.latitude,
                 zoom: initialZoomLevel,
               }}
-              onZoom={(event) => {
-                // console.log("box zoom end", event);
-                setMapZoomLevel(event.viewState.zoom);
-              }}
-              onLoad={handleMapResize}
-              onMove={handleMapMove}
-              onResize={handleMapResize}
+              // onZoom={(event) => {
+              //   // console.log("box zoom end", event);
+              //   setMapZoomLevel(event.viewState.zoom);
+              // }}
+              // onLoad={handleMapResize}
+              // onMove={handleMapMove}
+              // onResize={handleMapResize}
             >
               <Marker
                 longitude={listing.longitude}
                 latitude={listing.latitude}
                 anchor="center"
               >
-                <MapPin
-                  selected={true}
-                  coarse={listing.type === "residential" ? true : false}
-                  zoomLevel={mapZoomLevel}
-                  distanceAcrossMapWidth={distanceAcrossMapWidth}
-                  mapWidth={mapWidth}
-                />
+                <MapPin selected={true} />
               </Marker>
-              <NavigationControl
-                showZoom={true}
-                showCompass={false}
-                // showAttribution={false}
-              />
+              <NavigationControl showCompass={false} />
             </StyledMap>
             {listing.type === "residential" && (
               <p>Contact host for their exact location.</p>

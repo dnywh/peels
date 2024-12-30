@@ -9,10 +9,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 
-// import * as turfDistance from '@turf/distance'
-
-// console.log(turfDistance);
-
 function StyledMap({ children, ...props }) {
   useEffect(() => {
     let protocol = new Protocol();
