@@ -136,6 +136,16 @@ export default async function ProfilePage() {
             })
         }
 
+        // Catch password change
+        if (formData.get("password_change") !== user.password) {
+            console.log("password different, trigger change");
+            const { data, error } = await supabase.auth.updateUser({
+                password: formData.get("password_change")
+            })
+        }
+
+
+
         if (updateError) throw updateError;
 
         // revalidatePath("/profile");
@@ -161,6 +171,17 @@ export default async function ProfilePage() {
                     <input type="email" name="email_change" defaultValue={user.email} />
                     {/* TODO: show the below conditionally only after email_change triggered */}
                     <p>We just sent a email to new@email.address. Tap the link inside to confirm the change.</p>
+
+
+                    <label htmlFor="password_change">New password</label>
+                    <input
+                        type="password"
+                        name="password_change"
+                        placeholder="Your password"
+                        minLength={6}
+                        required
+                    />
+
                     <label>Profile Picture</label>
                     {profile?.avatar && (
                         <img

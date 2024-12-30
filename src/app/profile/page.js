@@ -1,7 +1,4 @@
 export default function ProfilePage() {
-  return (
-    <div>
-      <p>Please select a settings category from above</p>
-    </div>
-  );
+  // Nothing returned here. Either relies on layout for smaller breakpoints, or redirects to profile/account on larger
+  return;
 }
