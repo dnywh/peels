@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache"; // to refresh the page after adding a note
-import { deleteAccountAction } from "@/app/actions";
+import { deleteAccountAction, updateEmailAction } from "@/app/actions";
 import {
     Dialog,
     DialogContent,
@@ -12,6 +12,8 @@ import {
     DialogTrigger,
     DialogClose,
 } from "@radix-ui/react-dialog";
+
+import AccountForm from "@/components/AccountForm";
 
 import GuestActions from "@/components/GuestActions";
 import Link from "next/link";
@@ -63,6 +65,8 @@ export default async function ProfilePage() {
 
     async function updateProfile(formData) {
         "use server";
+
+        console.log("formData", formData);
 
         const supabase = await createClient();
         const {
@@ -123,10 +127,20 @@ export default async function ProfilePage() {
             })
             .eq("id", user.id);
 
+        if (formData.get("email_change") !== user.email) {
+            console.log("email different, trigger change");
+            const { data, error } = await supabase.auth.updateUser({
+                email: formData.get("email_change")
+            })
+        }
+
+        console.log("data", data);
+        console.log("error", error);
+
         if (updateError) throw updateError;
 
-        revalidatePath("/profile");
-        redirect("/profile");
+        // revalidatePath("/profile");
+        // redirect("/profile");
     }
 
     return (
@@ -134,10 +148,20 @@ export default async function ProfilePage() {
             <Link href="/profile">Back to profile (only shown on mobile)</Link>
             <h1>Account</h1>
 
-            <p>{user.email}</p>
+            {/* <form action={updateEmail}>
+                <button type="submit">Change email</button>
+            </form> */}
 
+            {/* Actions vs onSubmit */}
+            {/* https://www.reddit.com/r/nextjs/comments/19djmty/what_is_the_difference_between_action_vs_onsubmit/ */}
+            {/* https://www.youtube.com/watch?v=dDpZfOQBMaU */}
+            {/* Might just be good rule of thumb to keep actions in actions.ts */}
+            {/* Database 'actions' are more pure but I don't know how to show toasts, etc */}
             <form action={updateProfile}>
                 <div>
+                    <input type="email" name="email_change" defaultValue={user.email} />
+                    {/* TODO: show the below conditionally only after email_change triggered */}
+                    <p>Tap the link we just sent to your new email address. Until then, your email address will remain unchanged.</p>
                     <label>Profile Picture</label>
                     {profile?.avatar && (
                         <img
