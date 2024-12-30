@@ -10,7 +10,7 @@ export default function ProfileListings({ listings }) {
       <ul>
         {listings.map(({ id, slug, type, name }) => (
           <li key={id}>
-            <Link href={`/listings/${slug}`}>
+            <Link href={`/profile/listings/${slug}`}>
               <p>{type === "residential" ? name : name}</p>
               <p>{type}</p>
             </Link>

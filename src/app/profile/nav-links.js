@@ -9,8 +9,8 @@ export default function NavLinks() {
             <ul>
                 {[
                     { href: '/profile/account', label: 'Account' },
-                    { href: '/profile/appearance', label: 'Appearance' },
                     { href: '/profile/notifications', label: 'Notifications' },
+                    { href: '/profile/appearance', label: 'Appearance' },
                 ].map(({ href, label }) => (
                     <li key={href}>
                         <a

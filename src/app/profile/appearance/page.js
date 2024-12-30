@@ -1,8 +1,13 @@
+import { ThemeSwitcher } from "@/components/theme-switcher";
+
 export default function AppearancePage() {
     return (
         <div>
             <h1>Appearance</h1>
-            <p>Appearance settings here</p>
+            <div>
+                <span>Theme</span>
+                <ThemeSwitcher />
+            </div>
         </div>
     );
 }

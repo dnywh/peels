@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache"; // to refresh the page after adding a note
-import { deleteAccountAction, signOutAction } from "@/app/actions";
+import { deleteAccountAction } from "@/app/actions";
 import {
     Dialog,
     DialogContent,
@@ -12,9 +12,8 @@ import {
     DialogTrigger,
     DialogClose,
 } from "@radix-ui/react-dialog";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+
 import GuestActions from "@/components/GuestActions";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -143,26 +142,11 @@ export default async function ProfilePage() {
     }
 
     return (
-        <div className="max-w-md mx-auto mt-8">
+        <div>
             <Link href="/profile">Back to profile (only shown on mobile)</Link>
-            <h1 className="text-2xl mb-4">Account</h1>
-
-            <div className="mb-8">
-                <h2 className="text-lg mb-2">Preferences</h2>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <span>Theme</span>
-                    <ThemeSwitcher />
-                </div>
-            </div>
+            <h1>Account</h1>
 
             <p>{user.email}</p>
-
-
-
-
-
-
-            <hr />
 
             <form action={updateProfile}>
                 <div>
@@ -220,11 +204,7 @@ export default async function ProfilePage() {
                 </button>
             </form>
 
-            <form action={signOutAction}>
-                <Button type="submit" variant={"outline"}>
-                    Sign out
-                </Button>
-            </form>
+
 
             <hr />
 
@@ -237,7 +217,7 @@ export default async function ProfilePage() {
                         type="button"
                         className="bg-red-500 text-white px-4 py-2 rounded mt-4"
                     >
-                        Delete Account
+                        Delete my account
                     </button>
                 </DialogTrigger>
                 <DialogContent>
