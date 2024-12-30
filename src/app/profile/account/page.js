@@ -13,9 +13,6 @@ import {
     DialogClose,
 } from "@radix-ui/react-dialog";
 
-import AccountForm from "@/components/AccountForm";
-
-import GuestActions from "@/components/GuestActions";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -30,6 +27,11 @@ export default async function ProfilePage() {
         .select()
         .eq("id", user.id)
         .single();
+
+    const { data: listings } = await supabase
+        .from("listings")
+        .select()
+        .eq("owner_id", user.id)
 
 
     // More efficient alternative: Join on client side:
@@ -134,9 +136,6 @@ export default async function ProfilePage() {
             })
         }
 
-        console.log("data", data);
-        console.log("error", error);
-
         if (updateError) throw updateError;
 
         // revalidatePath("/profile");
@@ -161,7 +160,7 @@ export default async function ProfilePage() {
                 <div>
                     <input type="email" name="email_change" defaultValue={user.email} />
                     {/* TODO: show the below conditionally only after email_change triggered */}
-                    <p>Tap the link we just sent to your new email address. Until then, your email address will remain unchanged.</p>
+                    <p>We just sent a email to new@email.address. Tap the link inside to confirm the change.</p>
                     <label>Profile Picture</label>
                     {profile?.avatar && (
                         <img
@@ -234,10 +233,26 @@ export default async function ProfilePage() {
                 </DialogTrigger>
                 <DialogContent>
                     <DialogTitle>Delete Account</DialogTitle>
+                    <>
+                        Are you sure you want to delete your account?
+
+                        {listings?.length && listings.length > 0 && (
+                            <>
+                                {' '}Your {listings.length} listings will be deleted too:
+                                <ul>
+                                    {listings.map((listing) => (
+                                        <li key={listing.slug}>{listing.name}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                    </>
+
                     <DialogDescription>
-                        Are you sure you want to delete your account? This action cannot be
-                        undone.
+                        This action cannot be undone.
                     </DialogDescription>
+
+
                     <div className="mt-4 flex gap-4">
                         <form action={deleteAccountAction}>
                             <button

@@ -14,7 +14,7 @@ export default async function ProfileData() {
     .select()
     .eq("owner_id", user.id);
 
-  console.log("Profile data:", { user, listings });
+  //   console.log("Profile data:", { user, listings });
 
   // Pass the data down to client components
   return (
