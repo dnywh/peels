@@ -14,7 +14,9 @@ export default async function ChatsPage() {
             chat_messages_with_senders (*),
             listing:listings (
                 name,
-                type
+                type,
+                slug,
+                visibility
             )
         `)
         .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`);

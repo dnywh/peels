@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, memo, useMemo } from "react";
+import Link from "next/link";
 
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
@@ -18,7 +19,20 @@ const ChatWindow = memo(function ChatWindow({
   const [threadId, setThreadId] = useState(existingThread?.id || null);
   const [messages, setMessages] = useState(existingThread?.chat_messages || []);
 
+  const [listingIsOwnedByUser, setListingIsOwnedByUser] = useState(false);
+
   console.log("Chat window component rendering");
+
+  // Check if the listing is owned by the user
+  useEffect(() => {
+    if (existingThread && existingThread.owner_id !== user.id) {
+      setListingIsOwnedByUser(false);
+      console.log(listing);
+    } else {
+      console.log("Existing thread is owned by user");
+      setListingIsOwnedByUser(true);
+    }
+  }, []);
 
   // Only update when existingThread actually changes
   useEffect(() => {
@@ -50,6 +64,7 @@ const ChatWindow = memo(function ChatWindow({
       if (thread) {
         setThreadId(thread.id);
         loadMessages(thread.id);
+        console.log("Thread found:", thread);
         return thread;
       }
 
@@ -144,6 +159,10 @@ const ChatWindow = memo(function ChatWindow({
     <div>
       {setIsChatOpen && (
         <button onClick={() => setIsChatOpen(false)}>Close chat</button>
+      )}
+
+      {!listingIsOwnedByUser && (
+        <Link href={`/listings/${listing.slug}`}>View listing</Link>
       )}
 
       <div className="messages-container">
