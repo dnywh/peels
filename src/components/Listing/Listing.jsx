@@ -134,7 +134,9 @@ const Listing = memo(function Listing({
               </button>
             )
           ) : (
-            <Link href="/sign-up?type=contact-host">Contact host</Link>
+            <Link href={`/sign-up?from=listing&slug=${listing.slug}`}>
+              Contact host
+            </Link>
           )}
         </div>
 

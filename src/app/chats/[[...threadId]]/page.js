@@ -1,4 +1,3 @@
-import GuestActions from "@/components/GuestActions";
 import { createClient } from "@/utils/supabase/server";
 import ChatPageClient from "@/components/ChatPageClient";
 
@@ -7,10 +6,6 @@ export default async function ChatsPage() {
     const {
         data: { user },
     } = await supabase.auth.getUser();
-
-    if (!user) {
-        return <GuestActions />;
-    }
 
     const { data: threads } = await supabase
         .from("chat_threads_with_participants")

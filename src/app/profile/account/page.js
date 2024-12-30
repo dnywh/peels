@@ -23,18 +23,6 @@ export default async function ProfilePage() {
         data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-        return (
-            <div className="flex-1 w-full flex flex-col gap-12">
-                <div className="w-full text-center">
-                    <h1 className="text-2xl font-bold mb-4">Profile</h1>
-                    <p>Set up a profile or map listing.</p>
-                    <GuestActions />
-                </div>
-            </div>
-        );
-    }
-
     const { data: profile } = await supabase
         .from("profiles")
         .select()

@@ -27,14 +27,20 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   const { data: { user } } = await supabase.auth.getUser();
-
+  // Your existing middleware logic for other protected routes
   if (
     !user && (
-      request.nextUrl.pathname === "/notes" ||
-      request.nextUrl.pathname.startsWith("/add-listing")
+      request.nextUrl.pathname.startsWith("/chats") ||
+      request.nextUrl.pathname.startsWith("/add-listing") ||
+      request.nextUrl.pathname.startsWith("/profile")
     )
   ) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    return NextResponse.redirect(
+      new URL(
+        `/sign-in?from=${request.nextUrl.pathname.slice(1)}`,
+        request.url,
+      ),
+    );
   }
 
   // console.log("user", user);

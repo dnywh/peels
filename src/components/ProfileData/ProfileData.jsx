@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import ProfileListings from "../ProfileListings";
-
+import GuestActions from "../GuestActions";
 export default async function ProfileData() {
   const supabase = await createClient();
 
@@ -8,6 +8,7 @@ export default async function ProfileData() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
   const { data: listings } = await supabase
     .from("listings")
     .select()

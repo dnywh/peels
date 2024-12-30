@@ -11,15 +11,22 @@ export default async function Signup(props: {
     success?: string;
     email?: string;
     first_name?: string;
+    from?: string;
   }>;
 }) {
+  // TODO: How are these searchParams working without special Next.js magic?
+  // I could simplify my server -> client set up elsewhere if I just use this more seemingly 'native' way
   const searchParams = await props.searchParams;
+  console.log("searchParams", searchParams);
 
   return (
     <>
       <div className="flex flex-col min-w-64 max-w-64 mx-auto">
         <form className="flex flex-col">
-          <h1 className="text-2xl font-medium">Sign up</h1>
+          <h1 className="text-2xl font-medium">
+            Sign up {searchParams.from === "listing" && "to contact hosts"}
+          </h1>
+
           <p className="text-sm text text-foreground">
             Already have an account?{" "}
             <Link
