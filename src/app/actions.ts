@@ -152,11 +152,15 @@ export const sendPasswordResetEmailAction = async (formData: FormData) => {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user?.email) {
+    return encodedRedirect("error", "/sign-in", "User not found");
+  }
+
   const { data, error } = await supabase.auth
-    .resetPasswordForEmail(user.email, {
+    .resetPasswordForEmail(user?.email || "", {
       redirectTo: `${
         origin || getBaseUrl()
-      }/auth/callback?redirect_to=/reset-password`,
+      }/auth/callback?redirect_to=/reset-password-two`,
     });
 };
 
