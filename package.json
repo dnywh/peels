@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,6 +9,7 @@
   "dependencies": {
     "@maptiler/geocoding-control": "^2.0.1",
     "@maptiler/sdk": "^2.5.1",
+    "@pigment-css/react": "^0.0.29",
     "@placekit/autocomplete-react": "^2.2.2",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.4",
@@ -36,6 +38,7 @@
     "react-map-gl": "^7.1.8"
   },
   "devDependencies": {
+    "@pigment-css/nextjs-plugin": "^0.0.29",
     "@types/node": "22.9.0",
     "@types/react": "19.0.0",
     "@types/react-dom": "19.0.0",
@@ -47,6 +50,7 @@
   },
   "overrides": {
     "react": "$react",
-    "react-dom": "$react-dom"
+    "react-dom": "$react-dom",
+    "whatwg-url": "13.0.0"
   }
 }
