@@ -12,7 +12,7 @@ import MapPin from "@/components/MapPin";
 import turfDistance from "@turf/distance";
 
 // Memoize the Listing component
-const Listing = memo(function Listing({
+const ListingRead = memo(function Listing({
   user,
   listing,
   setSelectedListing,
@@ -275,4 +275,4 @@ const Listing = memo(function Listing({
   );
 });
 
-export default Listing;
+export default ListingRead;

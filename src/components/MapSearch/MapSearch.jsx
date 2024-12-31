@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { GeocodingControl } from "@maptiler/geocoding-control/react";
 import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
 
+// TODO: Add a 'required' prop for forms that require a location
 function MapSearch({ onPick, mapController, ...props }) {
   return (
     <div style={props.style}>

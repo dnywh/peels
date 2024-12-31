@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from 'next/navigation'
 
-import Listing from "@/components/Listing";
+import ListingRead from "@/components/ListingRead";
 
 export default async function Post({ params }) {
     const supabase = await createClient();
@@ -31,8 +31,6 @@ export default async function Post({ params }) {
     }
 
     return (
-        <>
-            <Listing user={user} listing={data} />
-        </>
+        <ListingRead user={user} listing={data} />
     )
 }

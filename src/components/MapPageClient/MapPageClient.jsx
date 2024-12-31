@@ -8,7 +8,7 @@ import { fetchListingsInView } from "@/app/actions";
 
 import MapSearch from "@/components/MapSearch";
 import MapRender from "@/components/MapRender";
-import Listing from "@/components/Listing";
+import ListingRead from "@/components/ListingRead";
 import GuestActions from "@/components/GuestActions";
 
 // export default async function MapPage() {
@@ -216,7 +216,7 @@ export default function MapPageClient({ user }) {
             </div>
           )}
           {selectedListing ? (
-            <Listing
+            <ListingRead
               user={user}
               listing={selectedListing}
               setSelectedListing={handleCloseListing}

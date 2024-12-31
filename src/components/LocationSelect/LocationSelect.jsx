@@ -157,10 +157,10 @@ export default function LocationSelect({
       {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
       <select
         id="country"
-        value={countryCode ? countryCode : undefined}
+        value={countryCode ? countryCode : "initial"}
         onChange={handleCountryChange}
       >
-        <option disabled value="">
+        <option disabled={true} value="initial">
           Select a country
         </option>
         {countries.map((country) => (
@@ -171,6 +171,8 @@ export default function LocationSelect({
       </select>
 
       {/* TODO: Reuse MapSearch component */}
+      {/* TODO: Add a 'required' prop for forms that require a location (doesn't work with GeocodingControl) */}
+      {/* TODO: Handle database error when user doesn't enter a location */}
       <GeocodingControl
         id="autocomplete" // Doesn't work out of the box
         ref={inputRef}

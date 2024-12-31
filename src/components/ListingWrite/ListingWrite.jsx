@@ -2,13 +2,126 @@
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import LocationSelect from "@/components/LocationSelect";
 import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
 
-export default function ListingFormClient({ initialListing }) {
+// Helper functions for database changes
+// Initialize MapTiler client
+// maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+// console.log(maptilersdk.config.apiKey)
+// async function createLegibleLocation(longitude, latitude) {
+//     // config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+//     const result = await geocoding.reverse([longitude, latitude]);
+//     // Helper function to find feature by place type
+//     const findFeatureByType = (features, types) => {
+//         return features.find(f => types.some(type => f.place_type?.includes(type)));
+//     };
+
+//     const features = result.features;
+//     console.log(features)
+
+//     if (!features || features.length === 0) {
+//         return undefined;
+//     }
+
+//     // Look for features in order of specificity
+//     const neighbourhood = findFeatureByType(features, ['neighbourhood']);
+//     const place = findFeatureByType(features, ['place']);
+//     const municipality = findFeatureByType(features, ['municipality']);
+//     const region = findFeatureByType(features, ['region']);
+//     const country = findFeatureByType(features, ['country']);
+//     const marine = findFeatureByType(features, ['continental_marine']);
+
+//     // Build location string based on available information
+//     if (place && region) {
+//         return `${place.text}, ${region.text}`;
+//     } else if (municipality && region) {
+//         return `${municipality.text}, ${region.text}`;
+//     } else if (municipality) {
+//         return municipality.text;
+//     } else if (region) {
+//         return region.text;
+//     } else if (country) {
+//         return country.text;
+//     } else if (marine) {
+//         return marine.text;
+//     } else {
+//         // Fallback to the most relevant feature's place name
+//         return features[0].place_name || undefined;
+//     }
+// }
+async function uploadPhoto(file) {
+  const supabase = createClient();
+
+  // Create a unique file name
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+
+  // Upload the file
+  const { data, error } = await supabase.storage
+    .from("listing_photos")
+    .upload(fileName, file);
+
+  if (error) throw error;
+
+  // Return just the filename instead of full URL
+  return fileName;
+}
+
+async function uploadAvatar(file) {
+  const supabase = createClient();
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+
+  const { data, error } = await supabase.storage
+    .from("listing_avatars")
+    .upload(fileName, file);
+
+  if (error) throw error;
+
+  return fileName;
+}
+
+// Add a helper function to get URLs when needed
+function getPhotoUrl(filename) {
+  const supabase = createClient();
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("listing_photos").getPublicUrl(filename);
+  return publicUrl;
+}
+
+function getAvatarUrl(filename) {
+  const supabase = createClient();
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("listing_avatars").getPublicUrl(filename);
+  return publicUrl;
+}
+
+async function deleteAvatar(filePath) {
+  const supabase = createClient();
+  const { error } = await supabase.storage
+    .from("listing_avatars")
+    .remove([filePath]);
+
+  if (error) throw error;
+}
+
+// React component
+export default function ListingWrite({ initialListing }) {
+  const searchParams = useSearchParams();
+  const listingTypeFromSearchParams =
+    searchParams.get("type") === "community" ||
+    searchParams.get("type") === "business"
+      ? searchParams.get("type")
+      : "residential";
+
   // TODO do we need this?
   //   const [listing, setListing] = useState(initialListing);
 
@@ -31,11 +144,11 @@ export default function ListingFormClient({ initialListing }) {
           latitude: initialListing.latitude,
           longitude: initialListing.longitude,
         }
-      : { latitude: 0, longitude: 0 }
+      : null
   );
 
   const [acceptedItems, setAcceptedItems] = useState(
-    initialListing ? initialListing.accepted_items : []
+    initialListing ? initialListing.accepted_items : [""]
   );
   const [rejectedItems, setRejectedItems] = useState(
     initialListing ? initialListing.rejected_items : []
@@ -55,7 +168,9 @@ export default function ListingFormClient({ initialListing }) {
   //   Populate hardcoded values
   const listingType = initialListing
     ? initialListing.type
-    : "TODO FROM SEARCH PARAMS";
+    : listingTypeFromSearchParams;
+
+  console.log("listingType", { listingType });
 
   // Form handling logic here
   async function handleSubmit(event) {
@@ -128,6 +243,51 @@ export default function ListingFormClient({ initialListing }) {
     }
   }
 
+  const handlePhotoChange = async (event) => {
+    const files = Array.from(event.target.files);
+    try {
+      const uploadPromises = files.map(uploadPhoto);
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setPhotos(uploadedUrls);
+    } catch (error) {
+      console.error("Error uploading photos:", error);
+      // Show error message to user
+    }
+  };
+
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        // If there's an existing avatar, delete it first
+        if (avatar) {
+          // Extract the file path from the URL
+          const existingFilePath = avatar.split("/").pop();
+          await deleteAvatar(existingFilePath);
+        }
+
+        const avatarUrl = await uploadAvatar(file);
+        setAvatar(avatarUrl);
+      } catch (error) {
+        console.error("Error handling avatar:", error);
+        // Show error message to user
+      }
+    }
+  };
+
+  const handleAvatarDelete = async () => {
+    if (avatar) {
+      try {
+        const filePath = avatar.split("/").pop();
+        await deleteAvatar(filePath);
+        setAvatar("");
+      } catch (error) {
+        console.error("Error deleting avatar:", error);
+        // Show error message to user
+      }
+    }
+  };
+
   //   Functions for adding and removing items
   const addAcceptedItem = () => {
     if (acceptedItems.length < 10) {
@@ -153,6 +313,29 @@ export default function ListingFormClient({ initialListing }) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <label htmlFor="avatar">
+        Avatar <span>(optional)</span>
+      </label>
+      <input
+        id="avatar"
+        type="file"
+        accept="image/*"
+        multiple={false}
+        onChange={handleAvatarChange}
+      />
+      {avatar && (
+        <div>
+          <img
+            src={getAvatarUrl(avatar)}
+            alt="Listing avatar"
+            style={{ width: "100px" }}
+          />
+          <button type="button" onClick={handleAvatarDelete}>
+            Remove avatar
+          </button>
+        </div>
+      )}
+
       <h2>Basics</h2>
       {listingType !== "residential" && (
         <>
@@ -161,13 +344,14 @@ export default function ListingFormClient({ initialListing }) {
             id="name"
             required={true}
             type="text"
-            placeholder="Your community’s name"
+            placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
         </>
       )}
 
+      {/* TODO: Handle database error when user doesn't enter a location */}
       <LocationSelect
         coordinates={coordinates}
         setCoordinates={setCoordinates}
@@ -177,7 +361,7 @@ export default function ListingFormClient({ initialListing }) {
 
       <label htmlFor="description">
         Description
-        {listingType === "residential" ? <span>(optional)</span> : null}
+        {listingType === "residential" ? <span>(optional)</span> : undefined}
       </label>
       <textarea
         id="description"
@@ -232,6 +416,48 @@ export default function ListingFormClient({ initialListing }) {
             Add another
           </button>
         )}
+      </div>
+
+      <div>
+        <h2>Media</h2>
+        <p>
+          Optionally show a bit more about your community project to Peels
+          members.
+        </p>
+
+        <label htmlFor="photos">
+          Additional photos <span>(optional)</span>
+        </label>
+        <input
+          id="photos"
+          type="file"
+          accept="image/*"
+          multiple={true}
+          onChange={handlePhotoChange}
+        />
+        {photos.length > 0 && (
+          <div>
+            {photos.map((filename, index) => (
+              <img
+                key={index}
+                src={getPhotoUrl(filename)}
+                alt={`Photo ${index + 1}`}
+                style={{ width: "100px" }}
+              />
+            ))}
+          </div>
+        )}
+
+        <label htmlFor="links">
+          Links <span>(optional)</span>
+        </label>
+        <input
+          id="link-1"
+          type="url"
+          placeholder="https://www.example.com"
+          value={links}
+          onChange={(event) => setLinks(event.target.value)}
+        />
       </div>
 
       {initialListing && (
