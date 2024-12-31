@@ -8,14 +8,15 @@ const StyledInput = styled(HeadlessInput)({
   marginTop: "0.5rem",
   // width: "100%",
   padding: "0.375rem 0.75rem",
-  borderRadius: "0.15rem",
-  background: "white",
+  // borderRadius: "0.15rem",
+  // borderRadius: theme.corners.unit * 0.5,
+  borderRadius: "0.25rem",
+  // background: "white",
   border: "1px solid lightgrey",
-  color: "white",
   fontSize: "0.875rem",
-  lineHeight: "1.25rem",
+  minHeight: "1.75rem",
 
-  focus: {
+  "&:focus-active": {
     outline: "none",
     outlineWidth: "20px",
     outlineOffset: "2px",

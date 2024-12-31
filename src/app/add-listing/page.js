@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import SubmitButton from '@/components/submit-button';
+import SubmitButton from '@/components/SubmitButton';
 import BackButton from '@/components/BackButton/BackButton';
 
 

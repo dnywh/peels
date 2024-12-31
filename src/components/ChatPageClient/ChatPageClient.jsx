@@ -2,6 +2,41 @@
 import { useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
+import { styled } from "@pigment-css/react";
+
+const ChatPageLayout = styled("div")({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "stretch",
+  gap: "2rem",
+  // backgroundColor: "blue",
+  height: "100vh",
+});
+
+const ThreadsSidebar = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch",
+  gap: "2rem",
+  // backgroundColor: "tomato",
+  minWidth: "16rem",
+  border: "1px solid grey",
+});
+
+const ChatWindowContainer = styled("div")({
+  // backgroundColor: "green",
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+});
+
+const ChatWindowEmptyState = styled("div")({
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+});
 
 export default function ChatPageClient({ user, initialThreads }) {
   console.log("ChatPageClient rendered");
@@ -35,8 +70,8 @@ export default function ChatPageClient({ user, initialThreads }) {
   );
 
   return (
-    <div className="chat-page-layout">
-      <div className="threads-sidebar">
+    <ChatPageLayout>
+      <ThreadsSidebar>
         {threads.map((thread) => {
           const otherPersonName =
             thread.initiator_id === user.id
@@ -71,10 +106,10 @@ export default function ChatPageClient({ user, initialThreads }) {
             </div>
           );
         })}
-      </div>
+      </ThreadsSidebar>
 
-      <div className="chat-window">
-        {selectedThread && (
+      <ChatWindowContainer>
+        {selectedThread ? (
           <ChatWindow
             user={user}
             listing={selectedThread.listing}
@@ -83,8 +118,10 @@ export default function ChatPageClient({ user, initialThreads }) {
               chat_messages: selectedThread.chat_messages_with_senders,
             }}
           />
+        ) : (
+          <ChatWindowEmptyState>No thread selected</ChatWindowEmptyState>
         )}
-      </div>
-    </div>
+      </ChatWindowContainer>
+    </ChatPageLayout>
   );
 }

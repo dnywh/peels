@@ -12,7 +12,7 @@ import {
     DialogTrigger,
     DialogClose,
 } from "@radix-ui/react-dialog";
-
+import BackButton from "@/components/BackButton";
 import Link from "next/link";
 
 export default async function ProfilePage({ searchParams }) {
@@ -175,7 +175,6 @@ export default async function ProfilePage({ searchParams }) {
             {message && <p>Message: {message}</p>}
             {error && <p>Error: {error}</p>}
 
-            <Link href="/profile">Back to profile (only shown on mobile)</Link>
             <h1>Account</h1>
 
             {/* <form action={updateEmail}>

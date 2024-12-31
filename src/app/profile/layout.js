@@ -3,27 +3,56 @@ import Link from 'next/link';
 
 import NavLinks from './nav-links';
 import ProfileRedirect from './profile-redirect';
+import BackButton from '@/components/BackButton';
 import { signOutAction } from "@/app/actions";
+import SubmitButton from '@/components/SubmitButton';
+import { styled } from "@pigment-css/react";
+
+const ProfilePageLayout = styled("div")({
+    display: "flex",
+    flexDirection: "row",
+    // alignItems: "stretch",
+    gap: "2rem",
+});
+
+const ProfileSidebarContainer = styled("div")({
+    display: "none",
+    '@media (min-width: 768px)': {
+        display: "block",
+    },
+});
+
+const ProfileSidebar = styled("div")({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: "2rem",
+    width: "16rem",
+    // backgroundColor: "tomato",
+    '@media (min-width: 768px)': {
+        position: "sticky",
+        top: 0,
+        border: "1px solid grey",
+    },
+});
 
 export default function ProfileLayout({ children }) {
     return (
-        <div>
+        <>
             <ProfileRedirect />
 
-            <div>
+            <ProfilePageLayout>
                 {/* TODO: This sidebar should be hidden via CSS on smaller breakpoint */}
-                <div>
-                    <hr />
-                    <h2>Settings</h2>
-                    <NavLinks />
+                <ProfileSidebarContainer>
+                    <ProfileSidebar>
+                        <h2>Settings</h2>
+                        <NavLinks />
 
-                    <ProfileData />
+                        <ProfileData />
 
-                    <div>
+
                         <form action={signOutAction}>
-                            <button type="submit">
-                                Sign out
-                            </button>
+                            <SubmitButton>Sign out</SubmitButton>
                         </form>
 
                         <nav>
@@ -31,19 +60,18 @@ export default function ProfileLayout({ children }) {
                             <Link href="/terms">Terms</Link>
                             <Link href="/privacy">Privacy</Link>
                         </nav>
-                    </div>
+                    </ProfileSidebar>
+                </ProfileSidebarContainer>
 
-                    {/* Main page content if relevant. Only renders if children */}
+                {/* Main page content if relevant. Only renders if children */}
+                {children && (
                     <main>
+                        <BackButton>Back (only on mobile)</BackButton>
                         {children}
                     </main>
-
-
-
-
-                </div>
-
-            </div>
-        </div>
+                )}
+            </ProfilePageLayout>
+        </>
     );
 }
+

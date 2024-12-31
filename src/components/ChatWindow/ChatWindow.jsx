@@ -4,7 +4,9 @@ import Link from "next/link";
 
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
-import SubmitButton from "@/components/submit-button";
+import ChatComposer from "@/components/ChatComposer";
+import { styled } from "@pigment-css/react";
+
 // Memoize the ChatWindow component
 const ChatWindow = memo(function ChatWindow({
   user,
@@ -175,14 +177,11 @@ const ChatWindow = memo(function ChatWindow({
         ))}
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <textarea
-          placeholder="Send a message..."
-          value={message}
-          onChange={handleMessageChange}
-        />
-        <SubmitButton>Send</SubmitButton>
-      </form>
+      <ChatComposer
+        onSubmit={handleSubmit}
+        message={message}
+        handleMessageChange={handleMessageChange}
+      />
     </div>
   );
 });

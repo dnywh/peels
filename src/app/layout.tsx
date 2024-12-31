@@ -11,11 +11,11 @@ import { NavWrapper } from "@/components/nav-wrapper";
 
 import { globalCss, css } from "@pigment-css/react";
 // Global styles:
-globalCss`
-  body {
-  background-color: #ffffff;
-  }
-`;
+// globalCss`
+//   body {
+//   background-color: #ffffff;
+//   }
+// `;
 // Template syntax:
 // const bodyBackground = css`
 //   background-color: red;

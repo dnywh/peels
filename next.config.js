@@ -12,6 +12,9 @@ export default withPigment(nextConfig, {
         spacing: {
             unit: 8,
         },
+        corners: {
+            unit: 8,
+        },
         typography: {
             fontFamily: "Inter, sans-serif",
         },
