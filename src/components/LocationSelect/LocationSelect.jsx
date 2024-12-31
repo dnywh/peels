@@ -66,23 +66,23 @@ export default function LocationSelect({
     "Your street or nearby"
   );
 
-  console.log("countryCode", countryCode);
-
   useEffect(() => {
     if (!countryCode) {
-      // Auto-select dropdown country based on IP
-      const fetchCountryCode = async () => {
-        const nextCountryCode = await initializeLocation(); // Await the promise
-        console.log(
-          "No country code provided, automatically updated to:",
-          nextCountryCode
-        );
-        setCountryCode(nextCountryCode);
-      };
-
-      fetchCountryCode(); // Call the async function
+      // No country code provided, automatically update to the user's country based on IP address
+      (async () => {
+        try {
+          const nextCountryCode = await initializeLocation();
+          console.log(
+            "No country code provided, automatically updating to:",
+            nextCountryCode
+          );
+          setCountryCode(nextCountryCode); // Ensure this is defined correctly
+        } catch (error) {
+          console.error("Error fetching country code:", error);
+        }
+      })(); // Immediately invoke the async function
     }
-  }, []);
+  }, [countryCode, setCountryCode]); // Added dependencies
 
   const handleCountryChange = useCallback((e) => {
     setCountryCode(e.target.value);

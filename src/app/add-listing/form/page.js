@@ -141,6 +141,8 @@ function NewListingFormContent() {
 
     const [coordinates, setCoordinates] = useState(null);
 
+    const [countryCode, setCountryCode] = useState(null);
+
     const [acceptedItems, setAcceptedItems] = useState([''])
     const [rejectedItems, setRejectedItems] = useState([''])
     const [photos, setPhotos] = useState([])
@@ -321,7 +323,7 @@ function NewListingFormContent() {
                     )}
 
 
-                    <LocationSelect coordinates={coordinates} setCoordinates={setCoordinates} />
+                    <LocationSelect coordinates={coordinates} setCoordinates={setCoordinates} countryCode={countryCode} setCountryCode={setCountryCode} />
 
 
                     <label htmlFor="description">Description{listingType === 'residential' ? <span>(optional)</span> : null}</label>
