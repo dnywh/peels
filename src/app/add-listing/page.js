@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import PeelsButton from '@/components/PeelsButton';
+import SubmitButton from '@/components/submit-button';
 import BackButton from '@/components/BackButton/BackButton';
 
 
@@ -93,9 +93,9 @@ function NewListingContent() {
                                 <span className="text-sm text-muted-foreground">Others can pick up spent coffee from your cafe, hops from your brewery, or similar.</span>
                             </label>
                         </div>
-                        <PeelsButton type="submit">
+                        <SubmitButton>
                             Continue
-                        </PeelsButton>
+                        </SubmitButton>
                     </form>
                 </>
             ) : (
@@ -127,9 +127,9 @@ function NewListingContent() {
                                 <span className="text-sm text-muted-foreground">I manage a community garden or similar</span>
                             </label>
                         </div>
-                        <PeelsButton type="submit">
+                        <SubmitButton>
                             Continue
-                        </PeelsButton>
+                        </SubmitButton>
                     </form>
                 </>
             )}

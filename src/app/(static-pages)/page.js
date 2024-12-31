@@ -2,8 +2,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 // import { createClient } from "@/utils/supabase/server";
-import PeelsButton from "@/components/PeelsButton";
-import TestButton from "@/components/TestButton";
 export default async function Index() {
   // const supabase = await createClient();
 
@@ -20,13 +18,6 @@ export default async function Index() {
   return (
     <main>
       <h2>Find a home for your food scraps,wherever you are.</h2>
-      <PeelsButton>PeelsButton</PeelsButton>
-      <TestButton variant="contained" color="primary">
-        Submit
-      </TestButton>
-      <TestButton variant="contained" color="secondary">
-        Other
-      </TestButton>
       <div>
         <Button asChild size="lg" variant={"default"}>
           <Link href="/map">Browse the map</Link>

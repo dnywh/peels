@@ -13,14 +13,14 @@ import { globalCss, css } from "@pigment-css/react";
 // Global styles:
 globalCss`
   body {
-  // text-decoration: underline;
+  background-color: #ffffff;
   }
 `;
 // Template syntax:
-const bodyBackground = css`
-  background-color: red;
-  color: white;
-`;
+// const bodyBackground = css`
+//   background-color: red;
+//   color: white;
+// `;
 // Object syntax
 // const bodyBackground = css({
 //   backgroundColor: "#f0f0f0",
@@ -51,29 +51,17 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main>
-            <div>
-              <nav>
-                <div>
-                  <div>
-                    <Link href={"/"}>{siteConfig.name}</Link>
-                    <div>
-                      <Link href={"/map"}>Map</Link>
-                      <Link href={"/chats"}>Chats</Link>
-                      <Link href={"/profile"}>Profile</Link>
-                    </div>
-                  </div>
-                  <NavWrapper />
-                </div>
-              </nav>
-              <div>{children}</div>
+            <nav>
+              <Link href={"/"}>{siteConfig.name}</Link>
 
-              {/* Shared footer  */}
-              <footer>
-                <div>© 2024 {siteConfig.name}</div>
-                <Link href={siteConfig.links.terms}>Terms</Link>
-                <Link href={siteConfig.links.privacy}>Privacy</Link>
-              </footer>
-            </div>
+              <Link href={"/map"}>Map</Link>
+              <Link href={"/chats"}>Chats</Link>
+              <Link href={"/profile"}>Profile</Link>
+
+              <NavWrapper />
+            </nav>
+
+            {children}
           </main>
         </ThemeProvider>
       </body>
