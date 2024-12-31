@@ -15,7 +15,12 @@ import {
 
 import Link from "next/link";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({ searchParams }) {
+
+    const message = (await searchParams)?.message
+    const error = (await searchParams)?.error
+    console.log(message, error);
+
     const supabase = await createClient();
 
     const {
@@ -166,6 +171,10 @@ export default async function ProfilePage() {
 
     return (
         <div>
+            {/* TODO: Show these search param at both profile and profile/account, depending on which is routed to*/}
+            {message && <p>Message: {message}</p>}
+            {error && <p>Error: {error}</p>}
+
             <Link href="/profile">Back to profile (only shown on mobile)</Link>
             <h1>Account</h1>
 

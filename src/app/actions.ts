@@ -217,10 +217,14 @@ export const deleteListingAction = async (slug: string) => {
       .delete()
       .eq("slug", slug);
     console.log({ listing });
+
+    // Redirect with a success message
+    return redirect(`/profile?message=Listing deleted successfully!`);
   } catch (error) {
     console.error("Error deleting listing:", error);
+    // Optionally, you can redirect with an error message
+    return redirect(`/profile?error=Failed to delete listing.`);
   }
-  return redirect("/profile");
 };
 
 export const deleteAccountAction = async () => {
