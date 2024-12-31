@@ -266,13 +266,13 @@ export default async function ProfilePage() {
                     </button>
                 </DialogTrigger>
                 <DialogContent>
-                    <DialogTitle>Delete Account</DialogTitle>
+                    <DialogTitle>Delete account</DialogTitle>
                     <>
                         Are you sure you want to delete your account?
 
                         {listings?.length && listings.length > 0 && (
                             <>
-                                {' '}Your {listings.length} listings will be deleted too:
+                                {' '}Your listing{listings.length > 1 ? 's' : ''} will also be deleted:
                                 <ul>
                                     {listings.map((listing) => (
                                         <li key={listing.slug}>{listing.name}</li>
@@ -293,12 +293,12 @@ export default async function ProfilePage() {
                                 type="submit"
                                 className="bg-red-500 text-white px-4 py-2 rounded"
                             >
-                                Yes, Delete My Account
+                                Yes, delete my account {listings.length > 0 && `and listings`}
                             </button>
                         </form>
                         <DialogClose asChild>
                             <button type="button" className="bg-gray-200 px-4 py-2 rounded">
-                                Cancel
+                                No, cancel
                             </button>
                         </DialogClose>
                     </div>

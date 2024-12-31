@@ -208,6 +208,21 @@ export const signOutAction = async () => {
   return redirect("/");
 };
 
+export const deleteListingAction = async (slug: string) => {
+  console.log({ slug });
+  const supabase = await createClient();
+  try {
+    const { data: listing } = await supabase
+      .from("listings")
+      .delete()
+      .eq("slug", slug);
+    console.log({ listing });
+  } catch (error) {
+    console.error("Error deleting listing:", error);
+  }
+  return redirect("/profile");
+};
+
 export const deleteAccountAction = async () => {
   let redirectPath: string | null = null;
 

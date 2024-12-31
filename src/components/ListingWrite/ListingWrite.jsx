@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 
+import { deleteListingAction } from "@/app/actions";
+
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -165,12 +167,13 @@ export default function ListingWrite({ initialListing }) {
   );
   const [legal, setLegal] = useState(true);
 
+  // Other states
+  const [isDeleting, setIsDeleting] = useState(false);
+
   //   Populate hardcoded values
   const listingType = initialListing
     ? initialListing.type
     : listingTypeFromSearchParams;
-
-  console.log("listingType", { listingType });
 
   // Form handling logic here
   async function handleSubmit(event) {
@@ -312,191 +315,232 @@ export default function ListingWrite({ initialListing }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="avatar">
-        Avatar <span>(optional)</span>
-      </label>
-      <input
-        id="avatar"
-        type="file"
-        accept="image/*"
-        multiple={false}
-        onChange={handleAvatarChange}
-      />
-      {avatar && (
-        <div>
-          <img
-            src={getAvatarUrl(avatar)}
-            alt="Listing avatar"
-            style={{ width: "100px" }}
-          />
-          <button type="button" onClick={handleAvatarDelete}>
-            Remove avatar
-          </button>
-        </div>
-      )}
-
-      <h2>Basics</h2>
-      {listingType !== "residential" && (
-        <>
-          <label htmlFor="name">Place name</label>
-          <input
-            id="name"
-            required={true}
-            type="text"
-            placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </>
-      )}
-
-      {/* TODO: Handle database error when user doesn't enter a location */}
-      <LocationSelect
-        coordinates={coordinates}
-        setCoordinates={setCoordinates}
-        countryCode={countryCode}
-        setCountryCode={setCountryCode}
-      />
-
-      <label htmlFor="description">
-        Description
-        {listingType === "residential" ? <span>(optional)</span> : undefined}
-      </label>
-      <textarea
-        id="description"
-        required={listingType === "residential" ? false : true}
-        placeholder="Description here"
-        value={description}
-        onChange={(event) => setDescription(event.target.value)}
-      />
-
-      <div>
-        <h2>Composting details</h2>
-        <p>
-          Be specific so people know exactly what should be avoided. Enter items
-          separately so it’s easier to read.
-        </p>
-
-        <label htmlFor="acceptedItems">What scraps do you accept?</label>
-        {acceptedItems.map((item, index) => (
-          <div key={`accepted-${index}`}>
-            <input
-              id={`acceptedItems-${index}`}
-              required={index === 0}
-              type="text"
-              placeholder="Something you accept (e.g. 'fruit rinds')"
-              value={item}
-              onChange={(e) => handleAcceptedItemChange(index, e.target.value)}
-            />
-          </div>
-        ))}
-        {acceptedItems.length < 10 && (
-          <button type="button" onClick={addAcceptedItem}>
-            Add another
-          </button>
-        )}
-
-        <label htmlFor="rejectedItems">
-          What scraps do you <em>not</em> accept? <span>(optional)</span>
-        </label>
-        {rejectedItems.map((item, index) => (
-          <div key={`rejected-${index}`}>
-            <input
-              id={`rejectedItems-${index}`}
-              type="text"
-              placeholder="Something you don't accept (e.g. 'meat')"
-              value={item}
-              onChange={(e) => handleRejectedItemChange(index, e.target.value)}
-            />
-          </div>
-        ))}
-        {rejectedItems.length < 10 && (
-          <button type="button" onClick={addRejectedItem}>
-            Add another
-          </button>
-        )}
-      </div>
-
-      <div>
-        <h2>Media</h2>
-        <p>
-          Optionally show a bit more about your community project to Peels
-          members.
-        </p>
-
-        <label htmlFor="photos">
-          Additional photos <span>(optional)</span>
+    <>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="avatar">
+          Avatar <span>(optional)</span>
         </label>
         <input
-          id="photos"
+          id="avatar"
           type="file"
           accept="image/*"
-          multiple={true}
-          onChange={handlePhotoChange}
+          multiple={false}
+          onChange={handleAvatarChange}
         />
-        {photos.length > 0 && (
+        {avatar && (
           <div>
-            {photos.map((filename, index) => (
-              <img
-                key={index}
-                src={getPhotoUrl(filename)}
-                alt={`Photo ${index + 1}`}
-                style={{ width: "100px" }}
-              />
-            ))}
+            <img
+              src={getAvatarUrl(avatar)}
+              alt="Listing avatar"
+              style={{ width: "100px" }}
+            />
+            <button type="button" onClick={handleAvatarDelete}>
+              Remove avatar
+            </button>
           </div>
         )}
 
-        <label htmlFor="links">
-          Links <span>(optional)</span>
-        </label>
-        <input
-          id="link-1"
-          type="url"
-          placeholder="https://www.example.com"
-          value={links}
-          onChange={(event) => setLinks(event.target.value)}
-        />
-      </div>
+        <h2>Basics</h2>
+        {listingType !== "residential" && (
+          <>
+            <label htmlFor="name">Place name</label>
+            <input
+              id="name"
+              required={true}
+              type="text"
+              placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+          </>
+        )}
 
-      {initialListing && (
+        {/* TODO: Handle database error when user doesn't enter a location */}
+        <LocationSelect
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          countryCode={countryCode}
+          setCountryCode={setCountryCode}
+        />
+
+        <label htmlFor="description">
+          Description
+          {listingType === "residential" ? <span>(optional)</span> : undefined}
+        </label>
+        <textarea
+          id="description"
+          required={listingType === "residential" ? false : true}
+          placeholder="Description here"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+
         <div>
-          <h2>Visibility</h2>
-          <p>Switch this off if you need to take a break from Peels.</p>
-          {/* onChange event is handled differently because Radix Switch provides a direct boolean value in its change handler. */}
-          <SwitchToggle
-            id="visibility"
-            label="Show on map"
-            checked={visibility}
-            onChange={(checked) => setVisibility(checked)}
+          <h2>Composting details</h2>
+          <p>
+            Be specific so people know exactly what should be avoided. Enter
+            items separately so it’s easier to read.
+          </p>
+
+          <label htmlFor="acceptedItems">What scraps do you accept?</label>
+          {acceptedItems.map((item, index) => (
+            <div key={`accepted-${index}`}>
+              <input
+                id={`acceptedItems-${index}`}
+                required={index === 0}
+                type="text"
+                placeholder="Something you accept (e.g. 'fruit rinds')"
+                value={item}
+                onChange={(e) =>
+                  handleAcceptedItemChange(index, e.target.value)
+                }
+              />
+            </div>
+          ))}
+          {acceptedItems.length < 10 && (
+            <button type="button" onClick={addAcceptedItem}>
+              Add another
+            </button>
+          )}
+
+          <label htmlFor="rejectedItems">
+            What scraps do you <em>not</em> accept? <span>(optional)</span>
+          </label>
+          {rejectedItems.map((item, index) => (
+            <div key={`rejected-${index}`}>
+              <input
+                id={`rejectedItems-${index}`}
+                type="text"
+                placeholder="Something you don't accept (e.g. 'meat')"
+                value={item}
+                onChange={(e) =>
+                  handleRejectedItemChange(index, e.target.value)
+                }
+              />
+            </div>
+          ))}
+          {rejectedItems.length < 10 && (
+            <button type="button" onClick={addRejectedItem}>
+              Add another
+            </button>
+          )}
+        </div>
+
+        <div>
+          <h2>Media</h2>
+          <p>
+            Optionally show a bit more about your community project to Peels
+            members.
+          </p>
+
+          <label htmlFor="photos">
+            Additional photos <span>(optional)</span>
+          </label>
+          <input
+            id="photos"
+            type="file"
+            accept="image/*"
+            multiple={true}
+            onChange={handlePhotoChange}
+          />
+          {photos.length > 0 && (
+            <div>
+              {photos.map((filename, index) => (
+                <img
+                  key={index}
+                  src={getPhotoUrl(filename)}
+                  alt={`Photo ${index + 1}`}
+                  style={{ width: "100px" }}
+                />
+              ))}
+            </div>
+          )}
+
+          <label htmlFor="links">
+            Links <span>(optional)</span>
+          </label>
+          <input
+            id="link-1"
+            type="url"
+            placeholder="https://www.example.com"
+            value={links}
+            onChange={(event) => setLinks(event.target.value)}
           />
         </div>
-      )}
 
+        {initialListing && (
+          <div>
+            <h2>Visibility</h2>
+            <p>Switch this off if you need to take a break from Peels.</p>
+            {/* onChange event is handled differently because Radix Switch provides a direct boolean value in its change handler. */}
+            <SwitchToggle
+              id="visibility"
+              label="Show on map"
+              checked={visibility}
+              onChange={(checked) => setVisibility(checked)}
+            />
+          </div>
+        )}
+
+        <div>
+          <CheckboxUnit
+            id="legal"
+            checked={legal}
+            required={true}
+            onChange={(event) => setLegal(event.target.checked)}
+          >
+            I have read and accept the Peels{" "}
+            <Link href="/terms-of-use" target="_blank">
+              {" "}
+              Terms of Use
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy-policy" target="_blank">
+              Privacy Policy
+            </Link>
+          </CheckboxUnit>
+        </div>
+
+        {/* More form fields */}
+        <button type="submit">
+          {initialListing ? "Save changes" : "Add listing"}
+        </button>
+      </form>
+      <hr />
       <div>
-        <CheckboxUnit
-          id="legal"
-          checked={legal}
-          required={true}
-          onChange={(event) => setLegal(event.target.checked)}
-        >
-          I have read and accept the Peels{" "}
-          <Link href="/terms-of-use" target="_blank">
-            {" "}
-            Terms of Use
-          </Link>{" "}
-          and{" "}
-          <Link href="/privacy-policy" target="_blank">
-            Privacy Policy
-          </Link>
-        </CheckboxUnit>
-      </div>
+        {/* TODO: warn if unsaved changes? */}
+        {initialListing && (
+          <>
+            <Link href={`/listings/${initialListing.slug}`}>View listing</Link>
+            <button type="button" onClick={() => setIsDeleting(true)}>
+              Delete listing
+            </button>
 
-      {/* More form fields */}
-      <button type="submit">
-        {initialListing ? "Save changes" : "Add listing"}
-      </button>
-    </form>
+            {isDeleting && (
+              <form
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  console.log(
+                    "Deleting listing with slug:",
+                    initialListing.slug
+                  );
+                  await deleteListingAction(initialListing.slug);
+                  setIsDeleting(false);
+                }}
+              >
+                <p>
+                  Are you sure you want to delete this listing? This action
+                  cannot be undone.
+                </p>
+                <button type="submit">Yes, delete my listing</button>
+                <button type="button" onClick={() => setIsDeleting(false)}>
+                  No, cancel
+                </button>
+              </form>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }

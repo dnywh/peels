@@ -29,9 +29,6 @@ export default async function EditListingPage({ params }) {
         <div>
             <h1>Edit Listing</h1>
             <ListingWrite initialListing={listing} />
-            <hr />
-            {/* TODO: warn if unsaved changes? */}
-            <Link href={`/listings/${slug}`}>View listing</Link>
         </div>
     );
 } 
