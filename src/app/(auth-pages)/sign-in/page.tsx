@@ -1,19 +1,19 @@
 import { signInAction } from "@/app/actions";
 import { FormMessage } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
+import SubmitButton from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
-export default async function Login(props: { 
-  searchParams: Promise<{ 
+export default async function Login(props: {
+  searchParams: Promise<{
     next?: string;
     error?: string;
     success?: string;
-  }> 
+  }>;
 }) {
   const searchParams = await props.searchParams;
-  
+
   return (
     <form className="flex-1 flex flex-col min-w-64">
       <h1 className="text-2xl font-medium">Sign in</h1>
@@ -41,12 +41,16 @@ export default async function Login(props: {
           placeholder="Your password"
           required
         />
-        {searchParams.next && <input type="hidden" name="next" value={searchParams.next} />}
+        {searchParams.next && (
+          <input type="hidden" name="next" value={searchParams.next} />
+        )}
         <SubmitButton pendingText="Signing In..." formAction={signInAction}>
           Sign in
         </SubmitButton>
       </div>
-      <FormMessage message={{ error: searchParams.error, success: searchParams.success }} />
+      <FormMessage
+        message={{ error: searchParams.error, success: searchParams.success }}
+      />
     </form>
   );
 }

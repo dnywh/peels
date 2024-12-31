@@ -8,7 +8,7 @@ type Props = ComponentProps<typeof Button> & {
   pendingText?: string;
 };
 
-export function SubmitButton({
+export default function SubmitButton({
   children,
   pendingText = "Submitting...",
   ...props

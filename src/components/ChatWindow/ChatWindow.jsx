@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
-import { SubmitButton } from "@/components/submit-button";
+import SubmitButton from "@/components/submit-button";
 // Memoize the ChatWindow component
 const ChatWindow = memo(function ChatWindow({
   user,
