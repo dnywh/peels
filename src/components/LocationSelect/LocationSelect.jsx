@@ -7,13 +7,14 @@ import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF 
 // import '@placekit/autocomplete-js/dist/placekit-autocomplete.css';
 import { countries } from "@/data/countries";
 
-import Map, { Marker, NavigationControl } from "react-map-gl/maplibre";
+import { Marker, NavigationControl } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 
 import layers from "protomaps-themes-base";
 
+import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
 
 const ZOOM_LEVEL = 16;
@@ -217,26 +218,11 @@ export default function LocationSelect({
       {mapShown && (
         <>
           {/* <p>Refine your pin location:</p> */}
-          <Map
+          <StyledMap
             ref={mapRef}
             initialViewState={{ ...coordinates, zoom: ZOOM_LEVEL }}
             // maxBounds={bounds}
-            style={{ width: 600, height: 400 }}
-            mapStyle={{
-              version: 8,
-              glyphs:
-                "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-              sprite:
-                "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-              sources: {
-                protomaps: {
-                  type: "vector",
-                  url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-                  attribution: '<a href="https://protomaps.com">Protomaps</a>',
-                },
-              },
-              layers: layers("protomaps", "light"),
-            }}
+            style={{ height: 200 }}
           >
             <Marker
               draggable={true}
@@ -250,7 +236,7 @@ export default function LocationSelect({
               <MapPin size={28} />
             </Marker>
             <NavigationControl showZoom={true} showCompass={false} />
-          </Map>
+          </StyledMap>
           {/* TODO: Make the following conditionally show for individual hosts only */}
           {/* Marker should show this visually, like Airbnb */}
           <p>
