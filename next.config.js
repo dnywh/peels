@@ -1,4 +1,6 @@
+import { withPigment } from "@pigment-css/nextjs-plugin";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {};
 
-module.exports = nextConfig;
+export default withPigment(nextConfig);

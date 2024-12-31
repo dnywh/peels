@@ -1,3 +1,45 @@
+/* https://github.com/brijeshb42/pigment-css-landing-page-demo/blob/main/src/app/globals.css */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  text-size-adjust: 100%;
+  color-scheme: light dark;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: "inherit";
+}
+
+strong,
+b {
+  font-weight: var(--typography-fontWeightBold);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  /* color: var(--palette-text-primary);
+  background-color: var(--palette-background-plain); */
+}
+
+/* body::backdrop {
+  background-color: var(--palette-background-default);
+} */
+
+/* .light {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+} */
+
+/* From Supabase Next starter */
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities;

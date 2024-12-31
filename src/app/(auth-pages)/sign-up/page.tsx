@@ -5,6 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
+import { styled } from "@pigment-css/react";
+
+const Form = styled("form")({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+  maxWidth: "40rem",
+});
+
 export default async function Signup(props: {
   searchParams: Promise<{
     error?: string;
@@ -21,22 +30,16 @@ export default async function Signup(props: {
 
   return (
     <>
-      <div className="flex flex-col min-w-64 max-w-64 mx-auto">
-        <form className="flex flex-col">
-          <h1 className="text-2xl font-medium">
+      <div>
+        <div>
+          <h1>
             Sign up {searchParams.from === "listing" && "to contact hosts"}
           </h1>
 
-          <p className="text-sm text text-foreground">
-            Already have an account?{" "}
-            <Link
-              className="text-primary font-medium underline"
-              href="/sign-in"
-            >
-              Sign in
-            </Link>
+          <p>
+            Already have an account? <Link href="/sign-in">Sign in</Link>
           </p>
-          <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+          <Form>
             <Label htmlFor="first_name">First name</Label>
             <Input
               name="first_name"
@@ -65,11 +68,10 @@ export default async function Signup(props: {
             <SubmitButton formAction={signUpAction} pendingText="Signing up...">
               Sign up
             </SubmitButton>
-          </div>
-        </form>
+          </Form>
+        </div>
         <FormMessage message={searchParams} />
       </div>
-      {/* <SmtpMessage /> */}
     </>
   );
 }

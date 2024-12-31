@@ -1,11 +1,31 @@
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
-import Link from "next/link";
+import "@pigment-css/react/styles.css";
 import "./globals.css";
-import { Metadata } from 'next'
+
+import Link from "next/link";
+import { Metadata } from "next";
 import { getBaseUrl } from "@/utils/url";
-import { siteConfig } from "@/config/site"
+import { siteConfig } from "@/config/site";
 import { NavWrapper } from "@/components/nav-wrapper";
+
+import { globalCss, css } from "@pigment-css/react";
+// Global styles:
+globalCss`
+  body {
+  // text-decoration: underline;
+  }
+`;
+// Template syntax:
+const bodyBackground = css`
+  background-color: red;
+  color: white;
+`;
+// Object syntax
+// const bodyBackground = css({
+//   backgroundColor: "#f0f0f0",
+//   color: "red",
+// });
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
@@ -14,7 +34,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-}
+};
 
 export default function RootLayout({
   children,
@@ -23,20 +43,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground">
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col gap-20 items-center">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex gap-5 items-center font-semibold">
+          <main>
+            <div>
+              <nav>
+                <div>
+                  <div>
                     <Link href={"/"}>{siteConfig.name}</Link>
-                    <div className="flex items-center gap-2">
+                    <div>
                       <Link href={"/map"}>Map</Link>
                       <Link href={"/chats"}>Chats</Link>
                       <Link href={"/profile"}>Profile</Link>
@@ -45,12 +65,10 @@ export default function RootLayout({
                   <NavWrapper />
                 </div>
               </nav>
-              <div className="flex flex-col gap-20 max-w-5xl p-5">
-                {children}
-              </div>
+              <div>{children}</div>
 
               {/* Shared footer  */}
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+              <footer>
                 <div>© 2024 {siteConfig.name}</div>
                 <Link href={siteConfig.links.terms}>Terms</Link>
                 <Link href={siteConfig.links.privacy}>Privacy</Link>
