@@ -121,7 +121,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${
       origin || getBaseUrl()
-    }/auth/callback?redirect_to=/reset-password`,
+    }/auth/callback?redirect_to=/reset-password-two`,
   });
 
   if (error) {
@@ -144,13 +144,34 @@ export const forgotPasswordAction = async (formData: FormData) => {
   );
 };
 
+// This action triggers the password reset email to be sent to the user
+export const sendPasswordResetEmailAction = async (formData: FormData) => {
+  // console.log("Sending password reset email");
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return encodedRedirect("error", "/sign-in", "User not found");
+  }
+
+  const { data, error } = await supabase.auth
+    .resetPasswordForEmail(user?.email || "", {
+      redirectTo: `${
+        origin || getBaseUrl()
+      }/auth/callback?redirect_to=/reset-password-two`,
+    });
+};
+
+// Whereas this action actually updates the user's password
 export const resetPasswordAction = async (formData: FormData) => {
   const supabase = await createClient();
 
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
+  const newPassword = formData.get("password") as string;
+  const confirmNewPassword = formData.get("confirmPassword") as string;
 
-  if (!password || !confirmPassword) {
+  if (!newPassword || !confirmNewPassword) {
     encodedRedirect(
       "error",
       "/reset-password",
@@ -158,7 +179,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     );
   }
 
-  if (password !== confirmPassword) {
+  if (newPassword !== confirmNewPassword) {
     encodedRedirect(
       "error",
       "/reset-password",
@@ -167,7 +188,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.updateUser({
-    password: password,
+    password: newPassword,
   });
 
   if (error) {
