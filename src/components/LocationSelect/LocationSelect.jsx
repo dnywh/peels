@@ -3,16 +3,11 @@ import { useCallback, useEffect, useState, useRef } from "react";
 
 import { GeocodingControl } from "@maptiler/geocoding-control/react";
 import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
-// import { PlaceKit } from '@placekit/autocomplete-react';
-// import '@placekit/autocomplete-js/dist/placekit-autocomplete.css';
+
 import { countries } from "@/data/countries";
 
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { Protocol } from "pmtiles";
-
-import layers from "protomaps-themes-base";
+// import "maplibre-gl/dist/maplibre-gl.css";
 
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
@@ -65,7 +60,6 @@ export default function LocationSelect({
 }) {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
-  // const [placekitClient, setPlacekitClient] = useState(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
@@ -88,16 +82,6 @@ export default function LocationSelect({
 
       fetchCountryCode(); // Call the async function
     }
-  }, []);
-
-  // Set up Protomap tiles protocol
-  useEffect(() => {
-    let protocol = new Protocol();
-    maplibregl.addProtocol("pmtiles", protocol.tile);
-
-    return () => {
-      maplibregl.removeProtocol("pmtiles");
-    };
   }, []);
 
   const handleCountryChange = useCallback((e) => {
@@ -222,7 +206,7 @@ export default function LocationSelect({
             ref={mapRef}
             initialViewState={{ ...coordinates, zoom: ZOOM_LEVEL }}
             // maxBounds={bounds}
-            style={{ height: 200 }}
+            style={{ height: 420 }}
           >
             <Marker
               draggable={true}
