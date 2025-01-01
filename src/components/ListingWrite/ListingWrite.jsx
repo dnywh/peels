@@ -295,7 +295,7 @@ export default function ListingWrite({ initialListing }) {
           initialAvatar={avatar}
           bucket="listing_avatars"
           entityId={initialListing?.slug}
-          onAvatarChange={(nextAvatar) => setAvatar(nextAvatar)}
+          onAvatarChange={(nextAvatar) => setAvatar(nextAvatar)} // Needed since there is no ID or slug to tie it to
         />
 
         <div>
