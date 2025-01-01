@@ -15,7 +15,7 @@ import {
 import BackButton from "@/components/BackButton";
 import Link from "next/link";
 
-import AvatarUploadView from "@/components/AvatarUploadView";
+import AvatarUploadWrapper from "@/components/AvatarUploadWrapper";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
@@ -73,28 +73,10 @@ export default async function ProfilePage({ searchParams }) {
     // If your application frequently needs data from both tables together, consider restructuring your queries to fetch them in a single request. This can lead to better performance and a more efficient use of resources. However, if the data is rarely needed together or if the tables are large and complex, the current approach may still be valid.
 
 
-    // Get avatar URL if profile has avatar
-    // if (profile?.avatar) {
-    //     const {
-    //         data: { publicUrl },
-    //     } = supabase.storage.from("avatars").getPublicUrl(profile.avatar);
-    //     profile.avatarUrl = publicUrl; // Add URL to profile object
-    // }
-
-    async function getAvatarUrl(filename) {
-        const supabase = await createClient();
-        const {
-            data: { publicUrl },
-        } = supabase.storage.from("avatars").getPublicUrl(filename);
-        return publicUrl;
-    }
-
-
-
     async function updateProfile(formData) {
         "use server";
 
-        console.log("formData", formData);
+        // console.log("formData", formData);
 
         const supabase = await createClient();
         const {
@@ -105,53 +87,13 @@ export default async function ProfilePage({ searchParams }) {
             return redirect("/sign-in");
         }
 
-        let avatar = profile?.avatar;
-
-        // Handle image upload if a file was provided
-        const avatarFile = formData.get("avatar");
-        if (avatarFile.size > 0) {
-            try {
-                // Get current profile to check for existing avatar
-                const { data: currentProfile } = await supabase
-                    .from("profiles")
-                    .select("avatar")
-                    .eq("id", user.id)
-                    .single();
-
-                // Generate new filename
-                const fileExt = avatarFile.name.split(".").pop();
-                const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-
-                // Delete old avatar if it exists
-                if (currentProfile?.avatar) {
-                    await supabase.storage
-                        .from("avatars")
-                        .remove([currentProfile.avatar]);
-                }
-
-                // Upload new avatar
-                const { error: uploadError } = await supabase.storage
-                    .from("avatars")
-                    .upload(fileName, avatarFile);
-
-                if (uploadError) throw uploadError;
-
-                // Store just the filename
-                avatar = fileName;
-            } catch (error) {
-                console.error("Avatar update failed:", error);
-                throw error;
-            }
-        }
+        // Avatar upload handled in AvatarUploadManager
 
         // Update profile
         const { error: updateError } = await supabase
             .from("profiles")
             .update({
-                avatar,
                 first_name: formData.get("first_name")?.toString(),
-                favorite_color: formData.get("favorite_color")?.toString(),
-                suburb: formData.get("suburb")?.toString(),
             })
             .eq("id", user.id);
 
@@ -165,14 +107,12 @@ export default async function ProfilePage({ searchParams }) {
 
         // Handle password change
         // TODO: very against current password via RPC or send an email instead
-        if (formData.get("password_change") !== user.password) {
+        if (formData.get("password_change") !== user.password && formData.get("password_change") !== "") {
             console.log("password different, trigger change");
             const { data, error } = await supabase.auth.updateUser({
                 password: formData.get("password_change")
             })
         }
-
-
 
         if (updateError) throw updateError;
 
@@ -208,49 +148,11 @@ export default async function ProfilePage({ searchParams }) {
             {/* Might just be good rule of thumb to keep actions in actions.ts */}
             {/* Database 'actions' are more pure but I don't know how to show toasts, etc */}
             <Form action={updateProfile}>
-                <Field>
-                    <Label htmlFor="email_change">Email</Label>
-                    <Input type="email" name="email_change" defaultValue={user.email} />
-
-                    {/* TODO: show the below conditionally only after email_change triggered */}
-                    <Description>We just sent a email to new@email.address. Tap the link inside to confirm the change.</Description>
-                </Field>
-
-                {/* <Field>
-                    <Label htmlFor="password_change">New password</Label>
-                    <Input
-                        type="password"
-                        name="password_change"
-                        placeholder="Your password"
-                        minLength={6}
-                        required
-                    />
-                </Field> */}
-
-                <AvatarUploadView
-                    avatar={profile?.avatar}
-                    getAvatarUrl={getAvatarUrl}
-                // onChange={handleAvatarChange}
-                // onDelete={handleAvatarDelete}
+                <AvatarUploadWrapper
+                    initialAvatar={profile?.avatar || ""}
+                    bucket="avatars"
+                    entityId={user.id}
                 />
-
-                <Field>
-                    <Label>Profile Picture</Label>
-                    {profile?.avatar && (
-                        <img
-                            src={profile.avatarUrl}
-                            alt="Profile"
-                            style={{ width: "100px" }}
-                        />
-                    )}
-                    <input
-                        type="file"
-                        name="avatar"
-                        accept="image/*"
-                        className="border p-2 w-full"
-                    />
-                </Field>
-
 
                 <Field>
                     <Label>First Name</Label>
@@ -261,6 +163,23 @@ export default async function ProfilePage({ searchParams }) {
                     />
                 </Field>
 
+                <Field>
+                    <Label htmlFor="email_change">Email</Label>
+                    <Input type="email" name="email_change" defaultValue={user.email} />
+
+                    {/* TODO: show the below conditionally only after email_change triggered */}
+                    <Description>We just sent a email to new@email.address. Tap the link inside to confirm the change.</Description>
+                </Field>
+
+                <Field>
+                    <Label htmlFor="password_change">New password</Label>
+                    <Input
+                        type="password"
+                        name="password_change"
+                        placeholder="Your password"
+                        minLength={6}
+                    />
+                </Field>
 
                 <SubmitButton>
                     Save changes

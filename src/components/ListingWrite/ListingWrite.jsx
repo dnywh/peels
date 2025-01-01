@@ -161,7 +161,7 @@ export default function ListingWrite({ initialListing }) {
   const [visibility, setVisibility] = useState(
     initialListing ? initialListing.visibility : true
   );
-  const [legal, setLegal] = useState(true);
+  const [legal, setLegal] = useState(initialListing ? true : false);
 
   // Other states
   const [isDeleting, setIsDeleting] = useState(false);
@@ -294,6 +294,7 @@ export default function ListingWrite({ initialListing }) {
         <AvatarUploadManager
           initialAvatar={avatar}
           bucket="listing_avatars"
+          entityId={initialListing?.slug}
           onAvatarChange={(nextAvatar) => setAvatar(nextAvatar)}
         />
 

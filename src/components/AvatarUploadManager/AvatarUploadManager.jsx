@@ -4,7 +4,12 @@ import { useState } from "react";
 import AvatarUploadView from "@/components/AvatarUploadView";
 import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/avatarUtils"; // Import the utility functions
 
-function AvatarUploadManager({ initialAvatar, onAvatarChange, bucket }) {
+function AvatarUploadManager({
+  initialAvatar,
+  onAvatarChange,
+  bucket,
+  entityId,
+}) {
   const [avatar, setAvatar] = useState(initialAvatar || "");
 
   const handleAvatarChange = async (event) => {
@@ -14,11 +19,11 @@ function AvatarUploadManager({ initialAvatar, onAvatarChange, bucket }) {
         // If there's an existing avatar, delete it first
         if (avatar) {
           const existingFilePath = avatar.split("/").pop();
-          await deleteAvatar(existingFilePath, bucket); // Specify the bucket
+          await deleteAvatar(existingFilePath, bucket, entityId);
         }
-        const avatarUrl = await uploadAvatar(file, bucket); // Specify the bucket
+        const avatarUrl = await uploadAvatar(file, bucket, entityId);
         setAvatar(avatarUrl);
-        onAvatarChange(avatarUrl); // Notify parent component
+        onAvatarChange(avatarUrl);
       } catch (error) {
         console.error("Error handling avatar:", error);
       }
@@ -29,7 +34,7 @@ function AvatarUploadManager({ initialAvatar, onAvatarChange, bucket }) {
     if (avatar) {
       try {
         const filePath = avatar.split("/").pop();
-        await deleteAvatar(filePath, bucket); // Specify the bucket
+        await deleteAvatar(filePath, bucket, entityId);
         setAvatar("");
         onAvatarChange(""); // Notify parent component
       } catch (error) {
