@@ -15,7 +15,7 @@ import {
 import BackButton from "@/components/BackButton";
 import Link from "next/link";
 
-import AvatarUploadWrapper from "@/components/AvatarUploadWrapper";
+import AvatarUploadManager from "@/components/AvatarUploadManager";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
@@ -148,7 +148,7 @@ export default async function ProfilePage({ searchParams }) {
             {/* Might just be good rule of thumb to keep actions in actions.ts */}
             {/* Database 'actions' are more pure but I don't know how to show toasts, etc */}
             <Form action={updateProfile}>
-                <AvatarUploadWrapper
+                <AvatarUploadManager
                     initialAvatar={profile?.avatar || ""}
                     bucket="avatars"
                     entityId={user.id}
