@@ -6,7 +6,7 @@ import ProfileRedirect from './profile-redirect';
 import BackButton from '@/components/BackButton';
 import { signOutAction } from "@/app/actions";
 import SubmitButton from '@/components/SubmitButton';
-import AvatarUploadWrapper from "@/components/AvatarUploadWrapper";
+import AvatarRead from '@/components/AvatarRead';
 
 import { styled } from "@pigment-css/react";
 
@@ -48,10 +48,7 @@ export default function ProfileLayout({ children }) {
                 <ProfileSidebarContainer>
                     <ProfileSidebar>
 
-                        {/* <AvatarUploadWrapper
-                            bucket="avatars"
-                            initialAvatar={profile?.avatar}
-                        /> */}
+                        <AvatarRead />
 
                         <h2>Settings</h2>
                         <NavLinks />
