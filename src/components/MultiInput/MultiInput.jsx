@@ -2,6 +2,7 @@
 import { useId } from "react";
 
 import Form from "@/components/Form";
+import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";

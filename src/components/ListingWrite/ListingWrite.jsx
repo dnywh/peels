@@ -13,7 +13,7 @@ import CheckboxUnit from "@/components/CheckboxUnit";
 
 import {
   // Field,
-  Fieldset,
+  // Fieldset,
   // Input,
   // Label,
   Legend,
@@ -22,13 +22,14 @@ import {
 } from "@headlessui/react";
 
 import Form from "@/components/Form";
+import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import TextArea from "@/components/TextArea";
-
+import MultiInput from "@/components/MultiInput";
 import { styled } from "@pigment-css/react";
 
 // Helper functions for database changes
@@ -407,53 +408,23 @@ export default function ListingWrite({ initialListing }) {
             items separately so it’s easier to read.
           </p>
 
-          <Fieldset>
-            <Field>
-              <Label htmlFor={`acceptedItems-${acceptedItems.length - 1}`}>
-                What scraps do you accept?
-              </Label>
-              {acceptedItems.map((item, index) => (
-                <Input
-                  key={`accepted-${index}`}
-                  id={`acceptedItems-${index}`}
-                  required={index === 0}
-                  type="text"
-                  placeholder={`Something you accept (e.g. 'fruit rinds')`}
-                  value={item}
-                  onChange={(e) =>
-                    handleAcceptedItemChange(index, e.target.value)
-                  }
-                />
-              ))}
-              {acceptedItems.length < 10 && (
-                <Button onClick={addAcceptedItem}>Add another</Button>
-              )}
-            </Field>
-          </Fieldset>
+          <MultiInput
+            label="What scraps do you accept?"
+            placeholder="Something you accept (e.g. 'fruit rinds')"
+            items={acceptedItems}
+            handleItemChange={handleAcceptedItemChange}
+            onClick={addAcceptedItem}
+            limit={10}
+          />
 
-          <Fieldset>
-            <Field>
-              <Label htmlFor="rejectedItems">
-                What scraps do you <em>not</em> accept? <span>(optional)</span>
-              </Label>
-              {rejectedItems.map((item, index) => (
-                <div key={`rejected-${index}`}>
-                  <input
-                    id={`rejectedItems-${index}`}
-                    type="text"
-                    placeholder="Something you don't accept (e.g. 'meat')"
-                    value={item}
-                    onChange={(e) =>
-                      handleRejectedItemChange(index, e.target.value)
-                    }
-                  />
-                </div>
-              ))}
-              {rejectedItems.length < 10 && (
-                <Button onClick={addRejectedItem}>Add another</Button>
-              )}
-            </Field>
-          </Fieldset>
+          <MultiInput
+            label="What scraps do you not accept?"
+            placeholder="Something you don't accept (e.g. 'meat')"
+            items={rejectedItems}
+            handleItemChange={handleRejectedItemChange}
+            onClick={addRejectedItem}
+            limit={10}
+          />
         </div>
 
         <div>
