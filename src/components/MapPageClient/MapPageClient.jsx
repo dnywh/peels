@@ -29,6 +29,8 @@ const StyledMapRender = styled("div")({
   flexDirection: "column",
   gap: "1rem",
   flex: 1,
+  borderRadius: "0.5rem",
+  overflow: "hidden",
 });
 
 const StyledSidebar = styled("div")({

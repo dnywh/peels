@@ -1,4 +1,5 @@
 export const facts = [
+    { fact: "We know more about outer space than we do about what's in Earth’s soil.", source: "" },
     { fact: "Approximately one-third of all food produced globally is wasted every year.", source: "1" },
     { fact: "Food waste contributes to about 8-10% of global greenhouse gas emissions.", source: "2" },
     { fact: "Composting food scraps can reduce landfill waste by up to 50%.", source: "3" },

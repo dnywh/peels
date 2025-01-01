@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 
-const StyledButtonLink = styled(Link)({
+const StyledLinkButton = styled(Link)({
   // Extend existing button styles
   display: "inline-block",
   padding: "0.5rem 1rem",
@@ -12,8 +12,8 @@ const StyledButtonLink = styled(Link)({
   textDecoration: "none",
 });
 
-function ButtonLink({ href, children }) {
-  return <StyledButtonLink href={href}>{children}</StyledButtonLink>;
+function LinkButton({ href, children }) {
+  return <StyledLinkButton href={href}>{children}</StyledLinkButton>;
 }
 
-export default ButtonLink;
+export default LinkButton;

@@ -1,13 +1,10 @@
-import ButtonLink from "@/components/ButtonLink";
-
-import SignInButton from "@/components/sign-in-button";
-import Button from "@/components/Button";
+import LinkButton from "@/components/LinkButton";
 
 export default function GuestActions() {
   return (
     <div>
-      <ButtonLink href="/sign-up">Get started</ButtonLink>
-      <ButtonLink href="/sign-in">Sign in</ButtonLink>
+      <LinkButton href="/sign-up">Get started</LinkButton>
+      <LinkButton href="/sign-in">Sign in</LinkButton>
     </div>
   );
 }

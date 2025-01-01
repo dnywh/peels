@@ -10,6 +10,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   fontSize: "1rem",
   // lineHeight: "1.25rem",
   minHeight: "2.75rem",
+  cursor: "pointer",
   // width: "100%", // TODO: Make this a prop (either take width of content or 100%)
 
   // background: theme.colors.primary,

@@ -8,6 +8,9 @@ import StorageImage from "@/components/StorageImage";
 import ChatWindow from "@/components/ChatWindow";
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
+import Button from "@/components/Button";
+import CloseButton from "@/components/CloseButton";
+import LinkButton from "@/components/LinkButton";
 
 import turfDistance from "@turf/distance";
 
@@ -86,9 +89,7 @@ const ListingRead = memo(function Listing({
 
   return (
     <div>
-      {setSelectedListing && (
-        <button onClick={setSelectedListing}>Close</button>
-      )}
+      {setSelectedListing && <CloseButton onClick={setSelectedListing} />}
 
       <div key={listing.id}>
         {listing.type === "residential" ? (
@@ -122,21 +123,21 @@ const ListingRead = memo(function Listing({
 
           {user ? (
             listing.owner_id === user.id ? (
-              <Link href={`/profile/listings/${listing.slug}`}>
+              <LinkButton href={`/profile/listings/${listing.slug}`}>
                 Edit listing
-              </Link>
+              </LinkButton>
             ) : (
-              <button onClick={() => setIsChatOpen(true)}>
+              <Button onClick={() => setIsChatOpen(true)}>
                 Contact{" "}
                 {listing.type === "residential"
                   ? listing.profiles.first_name
                   : listing.name}
-              </button>
+              </Button>
             )
           ) : (
-            <Link href={`/sign-up?from=listing&slug=${listing.slug}`}>
+            <LinkButton href={`/sign-up?from=listing&slug=${listing.slug}`}>
               Contact host
-            </Link>
+            </LinkButton>
           )}
         </div>
 

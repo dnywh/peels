@@ -19,7 +19,7 @@ import {
     // Field,
     Fieldset,
     // Input,
-    Label,
+    // Label,
     Legend,
     Select,
     Textarea,
@@ -27,6 +27,7 @@ import {
 
 import Form from "@/components/Form";
 import Field from "@/components/Field";
+import Label from "@/components/Label";
 import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";

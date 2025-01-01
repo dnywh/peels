@@ -16,7 +16,16 @@ const StyledTextarea = styled(HeadlessTextarea)({
 });
 
 function TextArea({ children, ...props }) {
-  return <StyledTextarea {...props}>{children}</StyledTextarea>;
+  return (
+    <StyledTextarea
+      autoCorrect="on"
+      spellCheck="true"
+      autoCapitalize="sentences"
+      {...props}
+    >
+      {children}
+    </StyledTextarea>
+  );
 }
 
 export default TextArea;

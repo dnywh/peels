@@ -11,6 +11,26 @@ import LocationSelect from "@/components/LocationSelect";
 import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
 
+import {
+  // Field,
+  Fieldset,
+  // Input,
+  // Label,
+  Legend,
+  Select,
+  // Textarea,
+} from "@headlessui/react";
+
+import Form from "@/components/Form";
+import Field from "@/components/Field";
+import Label from "@/components/Label";
+import Input from "@/components/Input";
+import SubmitButton from "@/components/SubmitButton";
+import Button from "@/components/Button";
+import TextArea from "@/components/TextArea";
+
+import { styled } from "@pigment-css/react";
+
 // Helper functions for database changes
 // Initialize MapTiler client
 // maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
@@ -211,7 +231,7 @@ export default function ListingWrite({ initialListing }) {
         visibility,
       };
 
-      console.log(listingData);
+      // console.log(listingData);
 
       // Insert the listing into the database
       const { data, error } = await supabase
@@ -316,35 +336,35 @@ export default function ListingWrite({ initialListing }) {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="avatar">
-          Avatar <span>(optional)</span>
-        </label>
-        <input
-          id="avatar"
-          type="file"
-          accept="image/*"
-          multiple={false}
-          onChange={handleAvatarChange}
-        />
-        {avatar && (
-          <div>
-            <img
-              src={getAvatarUrl(avatar)}
-              alt="Listing avatar"
-              style={{ width: "100px" }}
-            />
-            <button type="button" onClick={handleAvatarDelete}>
-              Remove avatar
-            </button>
-          </div>
-        )}
+      <Form onSubmit={handleSubmit}>
+        <Fieldset>
+          <Label htmlFor="avatar">
+            Avatar <span>(optional)</span>
+          </Label>
+          <Input
+            id="avatar"
+            type="file"
+            accept="image/*"
+            multiple={false}
+            onChange={handleAvatarChange}
+          />
+          {avatar && (
+            <div>
+              <img
+                src={getAvatarUrl(avatar)}
+                alt="Listing avatar"
+                style={{ width: "100px" }}
+              />
+              <Button onClick={handleAvatarDelete}>Remove avatar</Button>
+            </div>
+          )}
+        </Fieldset>
 
         <h2>Basics</h2>
         {listingType !== "residential" && (
-          <>
-            <label htmlFor="name">Place name</label>
-            <input
+          <Field>
+            <Label htmlFor="name">Place name</Label>
+            <Input
               id="name"
               required={true}
               type="text"
@@ -352,7 +372,7 @@ export default function ListingWrite({ initialListing }) {
               value={name}
               onChange={(event) => setName(event.target.value)}
             />
-          </>
+          </Field>
         )}
 
         {/* TODO: Handle database error when user doesn't enter a location */}
@@ -363,17 +383,22 @@ export default function ListingWrite({ initialListing }) {
           setCountryCode={setCountryCode}
         />
 
-        <label htmlFor="description">
-          Description
-          {listingType === "residential" ? <span>(optional)</span> : undefined}
-        </label>
-        <textarea
-          id="description"
-          required={listingType === "residential" ? false : true}
-          placeholder="Description here"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
+        <Field>
+          <Label htmlFor="description">
+            Description
+            {listingType === "residential" ? (
+              <span>(optional)</span>
+            ) : undefined}
+          </Label>
+          <TextArea
+            id="description"
+            rows={4}
+            required={listingType === "residential" ? false : true}
+            placeholder="Description here"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </Field>
 
         <div>
           <h2>Composting details</h2>
@@ -382,48 +407,53 @@ export default function ListingWrite({ initialListing }) {
             items separately so it’s easier to read.
           </p>
 
-          <label htmlFor="acceptedItems">What scraps do you accept?</label>
-          {acceptedItems.map((item, index) => (
-            <div key={`accepted-${index}`}>
-              <input
-                id={`acceptedItems-${index}`}
-                required={index === 0}
-                type="text"
-                placeholder="Something you accept (e.g. 'fruit rinds')"
-                value={item}
-                onChange={(e) =>
-                  handleAcceptedItemChange(index, e.target.value)
-                }
-              />
-            </div>
-          ))}
-          {acceptedItems.length < 10 && (
-            <button type="button" onClick={addAcceptedItem}>
-              Add another
-            </button>
-          )}
+          <Fieldset>
+            <Field>
+              <Label htmlFor={`acceptedItems-${acceptedItems.length - 1}`}>
+                What scraps do you accept?
+              </Label>
+              {acceptedItems.map((item, index) => (
+                <Input
+                  key={`accepted-${index}`}
+                  id={`acceptedItems-${index}`}
+                  required={index === 0}
+                  type="text"
+                  placeholder={`Something you accept (e.g. 'fruit rinds')`}
+                  value={item}
+                  onChange={(e) =>
+                    handleAcceptedItemChange(index, e.target.value)
+                  }
+                />
+              ))}
+              {acceptedItems.length < 10 && (
+                <Button onClick={addAcceptedItem}>Add another</Button>
+              )}
+            </Field>
+          </Fieldset>
 
-          <label htmlFor="rejectedItems">
-            What scraps do you <em>not</em> accept? <span>(optional)</span>
-          </label>
-          {rejectedItems.map((item, index) => (
-            <div key={`rejected-${index}`}>
-              <input
-                id={`rejectedItems-${index}`}
-                type="text"
-                placeholder="Something you don't accept (e.g. 'meat')"
-                value={item}
-                onChange={(e) =>
-                  handleRejectedItemChange(index, e.target.value)
-                }
-              />
-            </div>
-          ))}
-          {rejectedItems.length < 10 && (
-            <button type="button" onClick={addRejectedItem}>
-              Add another
-            </button>
-          )}
+          <Fieldset>
+            <Field>
+              <Label htmlFor="rejectedItems">
+                What scraps do you <em>not</em> accept? <span>(optional)</span>
+              </Label>
+              {rejectedItems.map((item, index) => (
+                <div key={`rejected-${index}`}>
+                  <input
+                    id={`rejectedItems-${index}`}
+                    type="text"
+                    placeholder="Something you don't accept (e.g. 'meat')"
+                    value={item}
+                    onChange={(e) =>
+                      handleRejectedItemChange(index, e.target.value)
+                    }
+                  />
+                </div>
+              ))}
+              {rejectedItems.length < 10 && (
+                <Button onClick={addRejectedItem}>Add another</Button>
+              )}
+            </Field>
+          </Fieldset>
         </div>
 
         <div>
@@ -505,8 +535,10 @@ export default function ListingWrite({ initialListing }) {
         <button type="submit">
           {initialListing ? "Save changes" : "Add listing"}
         </button>
-      </form>
+      </Form>
+
       <hr />
+
       <div>
         {/* TODO: warn if unsaved changes? */}
         {initialListing && (
