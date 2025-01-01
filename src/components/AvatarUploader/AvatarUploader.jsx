@@ -11,6 +11,16 @@ import Button from "@/components/Button";
 // import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Menu from "@/components/Menu";
 
+import { styled } from "@pigment-css/react";
+
+const StyledImg = styled("img")({
+  borderRadius: "50%",
+  border: "4px solid #e5e7eb",
+  width: "100px",
+  height: "100px",
+  objectFit: "cover",
+});
+
 function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
   // Hidden file input that we'll trigger programmatically
   const fileInputRef = useRef(null);
@@ -35,8 +45,12 @@ function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
         />
 
         <div>
-          <img
-            src={avatar ? getAvatarUrl(avatar) : "/path/to/default-avatar.png"}
+          <StyledImg
+            src={
+              avatar
+                ? getAvatarUrl(avatar)
+                : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
+            }
             alt="Avatar"
             style={{ width: "100px" }}
           />
