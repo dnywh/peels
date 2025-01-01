@@ -369,7 +369,6 @@ export default function ListingWrite({ initialListing }) {
       <Form onSubmit={handleSubmit}>
         <AvatarUploader
           avatar={avatar}
-          optional={true}
           getAvatarUrl={getAvatarUrl}
           onChange={handleAvatarChange}
           onDelete={handleAvatarDelete}
