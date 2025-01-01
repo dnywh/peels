@@ -142,6 +142,7 @@ async function deleteAvatar(filePath) {
 // React component
 export default function ListingWrite({ initialListing }) {
   const searchParams = useSearchParams();
+  // Is this being declared twice, once here and once in the parent?
   const listingTypeFromSearchParams =
     searchParams.get("type") === "community" ||
     searchParams.get("type") === "business"
@@ -179,12 +180,15 @@ export default function ListingWrite({ initialListing }) {
   const [rejectedItems, setRejectedItems] = useState(
     initialListing ? initialListing.rejected_items : []
   );
+  const [donatedItems, setDonatedItems] = useState(
+    initialListing ? initialListing.donated_items : [""]
+  );
 
   const [photos, setPhotos] = useState(
     initialListing ? initialListing.photos : []
   );
   const [links, setLinks] = useState(
-    initialListing ? initialListing.links : []
+    initialListing ? initialListing.links : [""]
   );
   const [visibility, setVisibility] = useState(
     initialListing ? initialListing.visibility : true
@@ -326,6 +330,11 @@ export default function ListingWrite({ initialListing }) {
     setRejectedItems([...rejectedItems, ""]);
     // }
   };
+  const addDonatedItem = () => {
+    // if (donatedItems.length < 10) {
+    setDonatedItems([...donatedItems, ""]);
+    // }
+  };
   const addLink = () => {
     // if (links.length < 3) {
     setLinks([...links, ""]);
@@ -341,6 +350,12 @@ export default function ListingWrite({ initialListing }) {
     const newItems = [...rejectedItems];
     newItems[index] = value;
     setRejectedItems(newItems);
+  };
+
+  const handleDonatedItemChange = (index, value) => {
+    const newItems = [...donatedItems];
+    newItems[index] = value;
+    setDonatedItems(newItems);
   };
 
   const handleLinksChange = (index, value) => {
@@ -384,51 +399,70 @@ export default function ListingWrite({ initialListing }) {
             setCountryCode={setCountryCode}
           />
 
-          <Field>
-            <Label htmlFor="description">
-              Description
-              {listingType === "residential" ? (
-                <span>(optional)</span>
-              ) : undefined}
-            </Label>
-            <Textarea
-              id="description"
-              rows={4}
-              maxLength={512}
-              required={listingType === "residential" ? false : true}
-              placeholder="Description here"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-          </Field>
+          {listingType === "business" ? (
+            <Field>
+              <Label htmlFor="description">
+                Donation and collection details
+              </Label>
+              <Textarea
+                id="description"
+                rows={4}
+                maxLength={512}
+                required={true}
+                placeholder="Your donation details"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </Field>
+          ) : (
+            <Field>
+              <Label htmlFor="description" required={false}>
+                Short description or instructions
+              </Label>
+              <Textarea
+                id="description"
+                rows={4}
+                maxLength={512}
+                required={false}
+                placeholder="Description here"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </Field>
+          )}
         </div>
 
-        <div>
-          <h2>Composting details</h2>
-          <p>
-            Be specific so people know exactly what should be avoided. Enter
-            items separately so it’s easier to read.
-          </p>
+        {listingType === "residential" ||
+          (listingType === "community" && (
+            <div>
+              <h2>Composting details</h2>
+              <p>
+                Be specific so people know exactly what should be avoided. Enter
+                items separately so it’s easier to read.
+              </p>
 
-          <MultiInput
-            label="What scraps do you accept?"
-            placeholder="Something you accept (e.g. 'fruit rinds')"
-            items={acceptedItems}
-            minRequired={1}
-            handleItemChange={handleAcceptedItemChange}
-            onClick={addAcceptedItem}
-            limit={10}
-          />
+              <MultiInput
+                label="What scraps do you accept?"
+                placeholder="Something you accept (e.g. ‘fruit rinds’)"
+                secondaryPlaceholder="Something else"
+                items={acceptedItems}
+                minRequired={1}
+                handleItemChange={handleAcceptedItemChange}
+                onClick={addAcceptedItem}
+                limit={6}
+              />
 
-          <MultiInput
-            label="What scraps do you not accept?"
-            placeholder="Something you don't accept (e.g. 'meat')"
-            items={rejectedItems}
-            handleItemChange={handleRejectedItemChange}
-            onClick={addRejectedItem}
-            limit={10}
-          />
-        </div>
+              <MultiInput
+                label="What scraps do you not accept?"
+                placeholder="Something you don’t accept (e.g. ‘meat’)"
+                secondaryPlaceholder="Something else"
+                items={rejectedItems}
+                handleItemChange={handleRejectedItemChange}
+                onClick={addRejectedItem}
+                limit={6}
+              />
+            </div>
+          ))}
 
         <div>
           <h2>Media</h2>
@@ -446,8 +480,9 @@ export default function ListingWrite({ initialListing }) {
           />
 
           <MultiInput
-            label="Links"
-            placeholder="https://www.example.com"
+            label="External links"
+            required={false}
+            placeholder="Your website or social media"
             items={links}
             handleItemChange={handleLinksChange}
             onClick={addLink}

@@ -11,8 +11,13 @@ import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
 import LinkButton from "@/components/LinkButton";
+import { styled } from "@pigment-css/react";
 
 import turfDistance from "@turf/distance";
+
+const StyledCallout = styled("aside")({
+  border: "1px solid grey",
+});
 
 // Memoize the Listing component
 const ListingRead = memo(function Listing({
@@ -112,9 +117,7 @@ const ListingRead = memo(function Listing({
         <p>{listing.type}</p>
         {/* <p>Last active: TODO</p> */}
 
-        <p>Permalink: {listing.slug}</p>
-
-        <div>
+        <StyledCallout>
           <p>
             {user && listing.owner_id === user.id
               ? "This is your own listing, show button to edit instead of chat"
@@ -139,7 +142,7 @@ const ListingRead = memo(function Listing({
               Contact host
             </LinkButton>
           )}
-        </div>
+        </StyledCallout>
 
         {isChatOpen && (
           <ChatWindow
@@ -151,7 +154,9 @@ const ListingRead = memo(function Listing({
 
         {listing.description && (
           <>
-            <h3>About</h3>
+            <h3>
+              {listing.type === "business" ? "Donation details" : "About"}
+            </h3>
             <p>{listing.description}</p>
           </>
         )}
@@ -269,8 +274,8 @@ const ListingRead = memo(function Listing({
           </>
         )}
         <Link href={`/listings/${listing.slug}`}>Permalink</Link>
-        <h3>Raw data</h3>
-        <pre>{JSON.stringify(listing, null, 2)}</pre>
+        {/* <h3>Raw data</h3>
+        <pre>{JSON.stringify(listing, null, 2)}</pre> */}
       </div>
     </div>
   );

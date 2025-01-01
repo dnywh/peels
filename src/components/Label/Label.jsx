@@ -5,6 +5,10 @@ const StyledLabel = styled(HeadlessLabel)({
   // color: "red",
 });
 
-export default function Label({ ...props }) {
-  return <StyledLabel {...props} />;
+export default function Label({ required = true, children, ...props }) {
+  return (
+    <StyledLabel {...props}>
+      {children} {!required && <span>(optional)</span>}
+    </StyledLabel>
+  );
 }

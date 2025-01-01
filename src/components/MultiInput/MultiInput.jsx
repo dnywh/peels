@@ -14,7 +14,8 @@ import { styled } from "@pigment-css/react";
 
 function MultiInput({
   label,
-  placeholder,
+  placeholder = undefined,
+  secondaryPlaceholder = placeholder,
   items,
   minRequired = 0,
   handleItemChange,
@@ -26,19 +27,28 @@ function MultiInput({
   return (
     <Fieldset>
       <Field>
-        <Label htmlFor={`${uniqueId}-${items.length - 1}`}>{label}</Label>
+        <Label
+          required={minRequired > 0}
+          htmlFor={`${uniqueId}-${items.length - 1}`}
+        >
+          {label}
+        </Label>
         {items.map((item, index) => (
           <Input
             key={`${uniqueId}-${index}`}
             id={`${uniqueId}-${index}`}
             required={index === 0 && minRequired === 1}
             type={type}
-            placeholder={placeholder}
+            placeholder={index === 0 ? placeholder : secondaryPlaceholder}
             value={item}
             onChange={(e) => handleItemChange(index, e.target.value)}
           />
         ))}
-        {items.length < limit && <Button onClick={onClick}>Add another</Button>}
+        {items.length < limit && (
+          <Button onClick={onClick}>
+            {items.length === 0 ? "Add" : "Add another"}
+          </Button>
+        )}
       </Field>
     </Fieldset>
   );
