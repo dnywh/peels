@@ -9,8 +9,24 @@ import { countries } from "@/data/countries";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 // import "maplibre-gl/dist/maplibre-gl.css";
 
+import Select from "@/components/Select";
+
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
+
+import Form from "@/components/Form";
+import Fieldset from "@/components/Fieldset";
+import Field from "@/components/Field";
+import Label from "@/components/Label";
+import Input from "@/components/Input";
+import SubmitButton from "@/components/SubmitButton";
+import Button from "@/components/Button";
+import Textarea from "@/components/Textarea";
+import MultiInput from "@/components/MultiInput";
+import AvatarUploader from "@/components/AvatarUploader";
+import PhotosUploader from "@/components/PhotosUploader";
+import LinkButton from "@/components/LinkButton";
+import { styled } from "@pigment-css/react";
 
 const ZOOM_LEVEL = 16;
 
@@ -151,55 +167,56 @@ export default function LocationSelect({
   );
 
   return (
-    <>
-      {coordinates && <p>Coordinates provided, show map</p>}
-      <label htmlFor="country">Location</label>
-      {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
-      <select
-        id="country"
-        value={countryCode ? countryCode : "initial"}
-        onChange={handleCountryChange}
-      >
-        <option disabled={true} value="initial">
-          Select a country
-        </option>
-        {countries.map((country) => (
-          <option key={country.code} value={country.code}>
-            {country.name}
+    <Fieldset>
+      <Field>
+        <Label htmlFor="country">Location</Label>
+        {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
+        <Select
+          id="country"
+          value={countryCode ? countryCode : "initial"}
+          onChange={handleCountryChange}
+        >
+          <option disabled={true} value="initial">
+            Select a country
           </option>
-        ))}
-      </select>
+          {countries.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.name}
+            </option>
+          ))}
+        </Select>
 
-      {/* TODO: Reuse MapSearch component */}
-      {/* TODO: Add a 'required' prop for forms that require a location (doesn't work with GeocodingControl) */}
-      {/* TODO: Handle database error when user doesn't enter a location */}
-      <GeocodingControl
-        id="autocomplete" // Doesn't work out of the box
-        ref={inputRef}
-        apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
-        country={countryCode}
-        // The below will be great for the map page where we don't want to bother with a country dropdown:
-        // Only applies if control is tied to a map. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
-        // proximity={[
-        //     // { type: "map-center", minZoom: 12 },
-        //     { type: "client-geolocation", minZoom: 8 },
-        //     // { type: "server-geolocation", minZoom: 8 },
-        // ]}
-        types={[
-          "address",
-          "place",
-          "neighbourhood",
-          "locality",
-          "municipal_district",
-          "municipality",
-        ]}
-        placeholder={placeholderText}
-        errorMessage="Error TODO"
-        noResultsMessage="No results. Keep typing or refine your search"
-        minLength={3}
-        showPlaceType={false}
-        onPick={handlePick}
-      />
+        {/* TODO: Reuse MapSearch component */}
+        {/* TODO: Add a 'required' prop for forms that require a location (doesn't work with GeocodingControl) */}
+        {/* TODO: Handle database error when user doesn't enter a location */}
+        <GeocodingControl
+          id="autocomplete" // Doesn't work out of the box
+          ref={inputRef}
+          apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
+          country={countryCode}
+          // The below will be great for the map page where we don't want to bother with a country dropdown:
+          // Only applies if control is tied to a map. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
+          // proximity={[
+          //     // { type: "map-center", minZoom: 12 },
+          //     { type: "client-geolocation", minZoom: 8 },
+          //     // { type: "server-geolocation", minZoom: 8 },
+          // ]}
+          types={[
+            "address",
+            "place",
+            "neighbourhood",
+            "locality",
+            "municipal_district",
+            "municipality",
+          ]}
+          placeholder={placeholderText}
+          errorMessage="Error TODO"
+          noResultsMessage="No results. Keep typing or refine your search"
+          minLength={3}
+          showPlaceType={false}
+          onPick={handlePick}
+        />
+      </Field>
 
       {mapShown && (
         <>
@@ -223,6 +240,9 @@ export default function LocationSelect({
             </Marker>
             <NavigationControl showZoom={true} showCompass={false} />
           </StyledMap>
+          {coordinates && (
+            <p>Coordinates provided, showing map automatically.</p>
+          )}
           {/* TODO: Make the following conditionally show for individual hosts only */}
           {/* Marker should show this visually, like Airbnb */}
           <p>
@@ -231,6 +251,6 @@ export default function LocationSelect({
           </p>
         </>
       )}
-    </>
+    </Fieldset>
   );
 }

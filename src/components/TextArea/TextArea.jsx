@@ -15,7 +15,7 @@ const StyledTextarea = styled(HeadlessTextarea)({
   },
 });
 
-function TextArea({ children, ...props }) {
+function Textarea({ children, ...props }) {
   return (
     <StyledTextarea
       autoCorrect="on"
@@ -28,4 +28,4 @@ function TextArea({ children, ...props }) {
   );
 }
 
-export default TextArea;
+export default Textarea;

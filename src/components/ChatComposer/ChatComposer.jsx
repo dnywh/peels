@@ -1,4 +1,4 @@
-import TextArea from "@/components/TextArea";
+import Textarea from "@/components/Textarea";
 import SubmitButton from "@/components/SubmitButton";
 import { styled } from "@pigment-css/react";
 
@@ -14,7 +14,7 @@ const ChatComposerForm = styled("form")({
 function ChatComposer({ onSubmit, message, handleMessageChange }) {
   return (
     <ChatComposerForm onSubmit={onSubmit}>
-      <TextArea
+      <Textarea
         placeholder="Send a message!..."
         value={message}
         onChange={handleMessageChange}

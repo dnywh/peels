@@ -28,8 +28,11 @@ import Label from "@/components/Label";
 import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
-import TextArea from "@/components/TextArea";
+import Textarea from "@/components/Textarea";
 import MultiInput from "@/components/MultiInput";
+import AvatarUploader from "@/components/AvatarUploader";
+import PhotosUploader from "@/components/PhotosUploader";
+import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
 
 // Helper functions for database changes
@@ -314,14 +317,19 @@ export default function ListingWrite({ initialListing }) {
 
   //   Functions for adding and removing items
   const addAcceptedItem = () => {
-    if (acceptedItems.length < 10) {
-      setAcceptedItems([...acceptedItems, ""]);
-    }
+    // if (acceptedItems.length < 10) {
+    setAcceptedItems([...acceptedItems, ""]);
+    // }
   };
   const addRejectedItem = () => {
-    if (rejectedItems.length < 10) {
-      setRejectedItems([...rejectedItems, ""]);
-    }
+    // if (rejectedItems.length < 10) {
+    setRejectedItems([...rejectedItems, ""]);
+    // }
+  };
+  const addLink = () => {
+    // if (links.length < 3) {
+    setLinks([...links, ""]);
+    // }
   };
   const handleAcceptedItemChange = (index, value) => {
     const newItems = [...acceptedItems];
@@ -335,71 +343,65 @@ export default function ListingWrite({ initialListing }) {
     setRejectedItems(newItems);
   };
 
+  const handleLinksChange = (index, value) => {
+    const newLinks = [...links];
+    newLinks[index] = value;
+    setLinks(newLinks);
+  };
+
   return (
     <>
       <Form onSubmit={handleSubmit}>
-        <Fieldset>
-          <Label htmlFor="avatar">
-            Avatar <span>(optional)</span>
-          </Label>
-          <Input
-            id="avatar"
-            type="file"
-            accept="image/*"
-            multiple={false}
-            onChange={handleAvatarChange}
-          />
-          {avatar && (
-            <div>
-              <img
-                src={getAvatarUrl(avatar)}
-                alt="Listing avatar"
-                style={{ width: "100px" }}
-              />
-              <Button onClick={handleAvatarDelete}>Remove avatar</Button>
-            </div>
-          )}
-        </Fieldset>
-
-        <h2>Basics</h2>
-        {listingType !== "residential" && (
-          <Field>
-            <Label htmlFor="name">Place name</Label>
-            <Input
-              id="name"
-              required={true}
-              type="text"
-              placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-          </Field>
-        )}
-
-        {/* TODO: Handle database error when user doesn't enter a location */}
-        <LocationSelect
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          countryCode={countryCode}
-          setCountryCode={setCountryCode}
+        <AvatarUploader
+          avatar={avatar}
+          optional={true}
+          getAvatarUrl={getAvatarUrl}
+          onChange={handleAvatarChange}
+          onDelete={handleAvatarDelete}
         />
 
-        <Field>
-          <Label htmlFor="description">
-            Description
-            {listingType === "residential" ? (
-              <span>(optional)</span>
-            ) : undefined}
-          </Label>
-          <TextArea
-            id="description"
-            rows={4}
-            required={listingType === "residential" ? false : true}
-            placeholder="Description here"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
+        <div>
+          <h2>Basics</h2>
+          {listingType !== "residential" && (
+            <Field>
+              <Label htmlFor="name">Place name</Label>
+              <Input
+                id="name"
+                required={true}
+                type="text"
+                placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+              />
+            </Field>
+          )}
+
+          {/* TODO: Handle database error when user doesn't enter a location */}
+          <LocationSelect
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            countryCode={countryCode}
+            setCountryCode={setCountryCode}
           />
-        </Field>
+
+          <Field>
+            <Label htmlFor="description">
+              Description
+              {listingType === "residential" ? (
+                <span>(optional)</span>
+              ) : undefined}
+            </Label>
+            <Textarea
+              id="description"
+              rows={4}
+              maxLength={512}
+              required={listingType === "residential" ? false : true}
+              placeholder="Description here"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+          </Field>
+        </div>
 
         <div>
           <h2>Composting details</h2>
@@ -412,6 +414,7 @@ export default function ListingWrite({ initialListing }) {
             label="What scraps do you accept?"
             placeholder="Something you accept (e.g. 'fruit rinds')"
             items={acceptedItems}
+            minRequired={1}
             handleItemChange={handleAcceptedItemChange}
             onClick={addAcceptedItem}
             limit={10}
@@ -434,38 +437,22 @@ export default function ListingWrite({ initialListing }) {
             members.
           </p>
 
-          <label htmlFor="photos">
-            Additional photos <span>(optional)</span>
-          </label>
-          <input
-            id="photos"
-            type="file"
-            accept="image/*"
-            multiple={true}
+          <PhotosUploader
+            title="Additional photos"
+            photos={photos}
+            optional={true}
             onChange={handlePhotoChange}
+            getPhotoUrl={getPhotoUrl}
           />
-          {photos.length > 0 && (
-            <div>
-              {photos.map((filename, index) => (
-                <img
-                  key={index}
-                  src={getPhotoUrl(filename)}
-                  alt={`Photo ${index + 1}`}
-                  style={{ width: "100px" }}
-                />
-              ))}
-            </div>
-          )}
 
-          <label htmlFor="links">
-            Links <span>(optional)</span>
-          </label>
-          <input
-            id="link-1"
-            type="url"
+          <MultiInput
+            label="Links"
             placeholder="https://www.example.com"
-            value={links}
-            onChange={(event) => setLinks(event.target.value)}
+            items={links}
+            handleItemChange={handleLinksChange}
+            onClick={addLink}
+            limit={3}
+            type="url"
           />
         </div>
 
@@ -503,9 +490,9 @@ export default function ListingWrite({ initialListing }) {
         </div>
 
         {/* More form fields */}
-        <button type="submit">
+        <SubmitButton>
           {initialListing ? "Save changes" : "Add listing"}
-        </button>
+        </SubmitButton>
       </Form>
 
       <hr />
@@ -514,13 +501,13 @@ export default function ListingWrite({ initialListing }) {
         {/* TODO: warn if unsaved changes? */}
         {initialListing && (
           <>
-            <Link href={`/listings/${initialListing.slug}`}>View listing</Link>
-            <button type="button" onClick={() => setIsDeleting(true)}>
-              Delete listing
-            </button>
+            <LinkButton href={`/listings/${initialListing.slug}`}>
+              View listing
+            </LinkButton>
+            <Button onClick={() => setIsDeleting(true)}>Delete listing</Button>
 
             {isDeleting && (
-              <form
+              <Form
                 onSubmit={async (event) => {
                   event.preventDefault();
                   console.log(
@@ -535,11 +522,9 @@ export default function ListingWrite({ initialListing }) {
                   Are you sure you want to delete this listing? This action
                   cannot be undone.
                 </p>
-                <button type="submit">Yes, delete my listing</button>
-                <button type="button" onClick={() => setIsDeleting(false)}>
-                  No, cancel
-                </button>
-              </form>
+                <SubmitButton>Yes, delete my listing</SubmitButton>
+                <Button onClick={() => setIsDeleting(false)}>No, cancel</Button>
+              </Form>
             )}
           </>
         )}

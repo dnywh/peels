@@ -23,7 +23,7 @@ export default async function EditListingPage({ params }) {
         return <div>Listing not found</div>;
     }
 
-    console.log("listing", listing);
+    // console.log("listing", listing);
 
     return (
         <div>
