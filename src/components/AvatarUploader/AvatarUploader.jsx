@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useRef } from "react";
 
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
@@ -13,20 +13,32 @@ import Menu from "@/components/Menu";
 
 import { styled } from "@pigment-css/react";
 
-const StyledImg = styled("img")({
+const StyledImgContainer = styled("div")({
+  position: "relative",
   borderRadius: "50%",
   border: "4px solid #e5e7eb",
   width: "100px",
   height: "100px",
+  overflow: "hidden",
+});
+
+const StyledImg = styled("img")({
   objectFit: "cover",
 });
 
 function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
   // Hidden file input that we'll trigger programmatically
   const fileInputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const handleFileSelect = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleUpload = async (event) => {
+    setLoading(true);
+    await onChange(event);
+    setLoading(false);
   };
 
   return (
@@ -40,20 +52,43 @@ function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
           type="file"
           accept="image/*"
           multiple={false}
-          onChange={onChange}
+          onChange={handleUpload}
           style={{ display: "none" }}
         />
 
         <div>
-          <StyledImg
-            src={
-              avatar
-                ? getAvatarUrl(avatar)
-                : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
-            }
-            alt="Avatar"
-            style={{ width: "100px" }}
-          />
+          <StyledImgContainer>
+            <StyledImg
+              src={
+                avatar
+                  ? getAvatarUrl(avatar)
+                  : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
+              }
+              alt="Avatar"
+              style={{ width: "100px" }}
+            />
+
+            {loading && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.5)", // 50% black overlay
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "white",
+                  fontSize: "20px",
+                  zIndex: 1, // Ensure overlay is above the image
+                }}
+              >
+                Loading...
+              </div>
+            )}
+          </StyledImgContainer>
 
           {!avatar ? (
             // Scenario 1: No avatar - show single "Add" button
