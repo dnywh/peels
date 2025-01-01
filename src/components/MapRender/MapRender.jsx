@@ -157,9 +157,9 @@ export default function MapRender({
     <>
       <div
         style={{
-          position: "relative",
+          // position: "relative",
           width: "100%",
-          height: "400px",
+          height: "100%",
           backgroundColor: "lightblue",
         }}
       >
@@ -170,7 +170,7 @@ export default function MapRender({
           mapController={mapController}
           style={{
             position: "absolute",
-            top: "1rem",
+            top: "2.5rem",
             left: "1rem",
             zIndex: 1,
           }}

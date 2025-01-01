@@ -15,6 +15,25 @@ import {
 import BackButton from "@/components/BackButton";
 import Link from "next/link";
 
+import {
+    // Field,
+    Fieldset,
+    // Input,
+    Label,
+    Legend,
+    Select,
+    Textarea,
+} from "@headlessui/react";
+
+import Form from "@/components/Form";
+import Field from "@/components/Field";
+import Input from "@/components/Input";
+import SubmitButton from "@/components/SubmitButton";
+import Button from "@/components/Button";
+import { styled } from "@pigment-css/react";
+
+
+
 export default async function ProfilePage({ searchParams }) {
 
     const message = (await searchParams)?.message
@@ -186,23 +205,28 @@ export default async function ProfilePage({ searchParams }) {
             {/* https://www.youtube.com/watch?v=dDpZfOQBMaU */}
             {/* Might just be good rule of thumb to keep actions in actions.ts */}
             {/* Database 'actions' are more pure but I don't know how to show toasts, etc */}
-            <form action={updateProfile}>
-                <div>
-                    <input type="email" name="email_change" defaultValue={user.email} />
+            <Form action={updateProfile}>
+                <Field>
+                    <Label htmlFor="email_change">Email</Label>
+                    <Input type="email" name="email_change" defaultValue={user.email} />
+
                     {/* TODO: show the below conditionally only after email_change triggered */}
-                    <p>We just sent a email to new@email.address. Tap the link inside to confirm the change.</p>
+                    <small>We just sent a email to new@email.address. Tap the link inside to confirm the change.</small>
+                </Field>
 
-
-                    <label htmlFor="password_change">New password</label>
-                    <input
+                {/* <Field>
+                    <Label htmlFor="password_change">New password</Label>
+                    <Input
                         type="password"
                         name="password_change"
                         placeholder="Your password"
                         minLength={6}
                         required
                     />
+                </Field> */}
 
-                    <label>Profile Picture</label>
+                <Field>
+                    <Label>Profile Picture</Label>
                     {profile?.avatar && (
                         <img
                             src={profile.avatarUrl}
@@ -216,62 +240,37 @@ export default async function ProfilePage({ searchParams }) {
                         accept="image/*"
                         className="border p-2 w-full"
                     />
-                </div>
+                </Field>
 
-                <div>
-                    <label>First Name</label>
-                    <input
+
+                <Field>
+                    <Label>First Name</Label>
+                    <Input
                         type="text"
                         name="first_name"
                         defaultValue={profile?.first_name || ""}
-                        className="border p-2 w-full"
                     />
-                </div>
+                </Field>
 
-                <div className="mb-4">
-                    <label className="block mb-2">Favourite colour</label>
-                    <input
-                        type="text"
-                        name="favorite_color"
-                        defaultValue={profile?.favorite_color || ""}
-                        className="border p-2 w-full"
-                    />
-                </div>
 
-                <div className="mb-4">
-                    <label className="block mb-2">Suburb</label>
-                    <input
-                        type="text"
-                        name="suburb"
-                        defaultValue={profile?.suburb || ""}
-                        className="border p-2 w-full"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-
-                >
-                    Save Profile
-                </button>
-            </form>
-            <form action={sendPasswordResetEmailAction}>
-                <button type="submit">Reset password</button>
-            </form>
+                <SubmitButton>
+                    Save changes
+                </SubmitButton>
+            </Form>
 
             <hr />
 
+            <Form action={sendPasswordResetEmailAction}>
+                <SubmitButton>Reset password</SubmitButton>
+            </Form>
 
 
 
             <Dialog>
                 <DialogTrigger asChild>
-                    <button
-                        type="button"
-                        className="bg-red-500 text-white px-4 py-2 rounded mt-4"
-                    >
-                        Delete my account
-                    </button>
+                    <Button>
+                        Delete account
+                    </Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogTitle>Delete account</DialogTitle>

@@ -15,18 +15,11 @@ import {
   Textarea,
 } from "@headlessui/react";
 
+import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Input from "@/components/Input";
 
 import { styled } from "@pigment-css/react";
-
-const Form = styled("form")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  width: "100%",
-  maxWidth: "40rem",
-});
 
 const Header = styled("header")({
   textAlign: "center",

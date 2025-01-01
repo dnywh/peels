@@ -11,6 +11,37 @@ import MapRender from "@/components/MapRender";
 import ListingRead from "@/components/ListingRead";
 import GuestActions from "@/components/GuestActions";
 
+import { facts } from "@/data/facts";
+
+import { styled } from "@pigment-css/react";
+
+const StyledMapPage = styled("div")({
+  // background: "red",
+  display: "flex",
+  flexDirection: "row",
+  gap: "2rem",
+  width: "100%",
+  height: "100vh",
+});
+
+const StyledMapRender = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+  flex: 1,
+});
+
+const StyledSidebar = styled("div")({
+  // background: "blue",
+  border: "1px solid grey",
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+  width: "20rem",
+  height: "100%",
+  overflow: "scroll",
+});
+
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
   const mapRef = useRef(null);
@@ -26,6 +57,15 @@ export default function MapPageClient({ user }) {
   const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const [randomFact, setRandomFact] = useState(null);
+
+  useEffect(() => {
+    // Only generate a random fact if there is NO selected listing, not when one is opened
+    if (!selectedListing) {
+      setRandomFact(facts[Math.floor(Math.random() * facts.length)]);
+    }
+  }, [selectedListing]);
 
   // Load listing from URL param on mount
   useEffect(() => {
@@ -186,47 +226,57 @@ export default function MapPageClient({ user }) {
   };
 
   return (
-    <div>
-      <div>
-        <h1>Map for {user ? user.email : "Guest"}</h1>
-        <div>
-          <MapRender
-            mapRef={mapRef}
-            listings={listings}
-            selectedListing={selectedListing}
-            initialCoordinates={initialCoordinates}
-            onBoundsChange={handleBoundsChange}
-            isLoading={isLoading}
-            onMapClick={handleMapClick}
-            onMarkerClick={handleMarkerClick}
-            onSearchPick={handleSearchPick}
-            setMapController={setMapController}
-          />
-        </div>
-        <div>
-          <h2>Sidebar</h2>
+    <StyledMapPage>
+      {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
+      <StyledMapRender>
+        <MapRender
+          mapRef={mapRef}
+          listings={listings}
+          selectedListing={selectedListing}
+          initialCoordinates={initialCoordinates}
+          onBoundsChange={handleBoundsChange}
+          isLoading={isLoading}
+          onMapClick={handleMapClick}
+          onMarkerClick={handleMarkerClick}
+          onSearchPick={handleSearchPick}
+          setMapController={setMapController}
+        />
+      </StyledMapRender>
 
-          {selectedListing ? null : (
-            <div>
-              Empty state
-              <MapSearch
-                onPick={handleSearchPick}
-                mapController={mapController}
-              />
-            </div>
-          )}
-          {selectedListing ? (
+      <StyledSidebar>
+        {selectedListing ? (
+          <>
             <ListingRead
               user={user}
               listing={selectedListing}
               setSelectedListing={handleCloseListing}
               modal={true}
             />
-          ) : (
-            <GuestActions />
-          )}
-        </div>
-      </div>
-    </div>
+          </>
+        ) : (
+          <>
+            <MapSearch
+              onPick={handleSearchPick}
+              mapController={mapController}
+            />
+            {user && randomFact && (
+              // TODO
+              // If user has sent >0 messages, show a fun composting fact
+              // Otherwise show the fundamentals (1, 2, 3) of Peels
+              <>
+                <p>{randomFact.fact}</p>
+                {randomFact.source && <p>Source: {randomFact.source}</p>}
+              </>
+            )}
+            {!user && (
+              <>
+                <h2>Find a home for your food scraps, wherever you are</h2>
+                <GuestActions />
+              </>
+            )}
+          </>
+        )}
+      </StyledSidebar>
+    </StyledMapPage>
   );
 }

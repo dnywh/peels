@@ -30,5 +30,9 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
 }));
 
 export default function Button({ children, ...props }) {
-  return <StyledButton {...props}>{children}</StyledButton>;
+  return (
+    <StyledButton type="button" {...props}>
+      {children}
+    </StyledButton>
+  );
 }

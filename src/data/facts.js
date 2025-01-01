@@ -1,0 +1,22 @@
+export const facts = [
+    { fact: "Approximately one-third of all food produced globally is wasted every year.", source: "1" },
+    { fact: "Food waste contributes to about 8-10% of global greenhouse gas emissions.", source: "2" },
+    { fact: "Composting food scraps can reduce landfill waste by up to 50%.", source: "3" },
+    { fact: "Banana peels, coffee grounds, and eggshells are composting superstars!", source: "4" },
+    { fact: "It takes about six months for compost to fully mature into nutrient-rich soil.", source: "" },
+    { fact: "Worms can eat their weight in food scraps every single day!", source: "5" },
+    { fact: "The first known compost pile dates back over 12,000 years to ancient Scotland.", source: "6" },
+    { fact: "Composting reduces methane emissions, a greenhouse gas 25 times more potent than CO2.", source: "7" },
+    { fact: "A backyard compost bin can reach temperatures of up to 160°F (70°C).", source: "8" },
+    { fact: "Compost can help soil retain water, reducing the need for irrigation by up to 70%.", source: "" },
+    { fact: "Americans waste about 40% of their food each year, worth roughly $165 billion.", source: "9" },
+    { fact: "One composting worm, called a red wiggler, can lay up to 100 cocoons in its lifetime.", source: "10" },
+    { fact: "Fruits and vegetables make up nearly 50% of all food wasted globally.", source: "11" },
+    { fact: "Adding shredded paper to compost helps balance nitrogen-rich food scraps.", source: "12" },
+    { fact: "Composting reduces the need for chemical fertilizers, which can harm the environment.", source: "" },
+    { fact: "Every pound of food waste composted saves about 3.8 pounds of greenhouse gases.", source: "13" },
+    { fact: "Some cities use compost to green public spaces and reduce urban heat islands.", source: "14" },
+    { fact: "Coffee grounds in compost help attract beneficial earthworms.", source: "15" },
+    { fact: "The nutrients in compost can last in soil for over a decade.", source: "16" },
+    { fact: "Compost piles work best when kept as moist as a wrung-out sponge!", source: "17" }
+];
