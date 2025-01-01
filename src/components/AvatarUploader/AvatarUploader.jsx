@@ -44,8 +44,6 @@ function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
   return (
     <Fieldset>
       <Field>
-        <Label htmlFor="avatar">Avatar</Label>
-
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -56,59 +54,57 @@ function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
           style={{ display: "none" }}
         />
 
-        <div>
-          <StyledImgContainer>
-            <StyledImg
-              src={
-                avatar
-                  ? getAvatarUrl(avatar)
-                  : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
-              }
-              alt="Avatar"
-              style={{ width: "100px" }}
-            />
+        <StyledImgContainer>
+          <StyledImg
+            src={
+              avatar
+                ? getAvatarUrl(avatar)
+                : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
+            }
+            alt="Avatar"
+            style={{ width: "100px" }}
+          />
 
-            {loading && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: "rgba(0, 0, 0, 0.5)", // 50% black overlay
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: "white",
-                  fontSize: "20px",
-                  zIndex: 1, // Ensure overlay is above the image
-                }}
-              >
-                Loading...
-              </div>
-            )}
-          </StyledImgContainer>
-
-          {!avatar ? (
-            // Scenario 1: No avatar - show single "Add" button
-            <Button onClick={handleFileSelect}>Add</Button>
-          ) : (
-            // Scenario 2 & 3: Has avatar - show menu with options
-            <Menu>
-              <Menu.Button as={Button}>Edit</Menu.Button>
-
-              <Menu.Items>
-                <Menu.Item>
-                  <button onClick={handleFileSelect}>Replace</button>
-                </Menu.Item>
-                <Menu.Item>
-                  <button onClick={onDelete}>Delete</button>
-                </Menu.Item>
-              </Menu.Items>
-            </Menu>
+          {loading && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)", // 50% black overlay
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+                fontSize: "20px",
+                zIndex: 1, // Ensure overlay is above the image
+              }}
+            >
+              Loading...
+            </div>
           )}
-        </div>
+        </StyledImgContainer>
+
+        {!avatar ? (
+          // Scenario 1: No avatar - show single "Add" button
+          <Button onClick={handleFileSelect}>Add</Button>
+        ) : (
+          // Scenario 2 & 3: Has avatar - show menu with options
+          <Menu>
+            <Menu.Button as={Button}>Edit</Menu.Button>
+
+            <Menu.Items>
+              <Menu.Item>
+                <button onClick={handleFileSelect}>Replace</button>
+              </Menu.Item>
+              <Menu.Item>
+                <button onClick={onDelete}>Delete</button>
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )}
       </Field>
     </Fieldset>
   );

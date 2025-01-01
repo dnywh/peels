@@ -188,7 +188,7 @@ export default function ListingWrite({ initialListing }) {
     initialListing ? initialListing.photos : []
   );
   const [links, setLinks] = useState(
-    initialListing ? initialListing.links : [""]
+    initialListing ? initialListing.links : []
   );
   const [visibility, setVisibility] = useState(
     initialListing ? initialListing.visibility : true
@@ -481,6 +481,7 @@ export default function ListingWrite({ initialListing }) {
           <MultiInput
             label="External links"
             required={false}
+            addButtonText="Add link"
             placeholder="Your website or social media"
             items={links}
             handleItemChange={handleLinksChange}
