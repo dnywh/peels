@@ -61,7 +61,7 @@ function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
                 ? getAvatarUrl(avatar)
                 : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
             }
-            alt="Avatar"
+            alt="Your avatar"
             style={{ width: "100px" }}
           />
 

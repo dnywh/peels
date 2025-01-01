@@ -30,7 +30,7 @@ import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import MultiInput from "@/components/MultiInput";
-import AvatarUploader from "@/components/AvatarUploader";
+import AvatarUploadClient from "@/components/AvatarUploadClient";
 import PhotosUploader from "@/components/PhotosUploader";
 import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
@@ -98,21 +98,6 @@ async function uploadPhoto(file) {
   return fileName;
 }
 
-async function uploadAvatar(file) {
-  const supabase = createClient();
-
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Math.random()}.${fileExt}`;
-
-  const { data, error } = await supabase.storage
-    .from("listing_avatars")
-    .upload(fileName, file);
-
-  if (error) throw error;
-
-  return fileName;
-}
-
 // Add a helper function to get URLs when needed
 function getPhotoUrl(filename) {
   const supabase = createClient();
@@ -120,23 +105,6 @@ function getPhotoUrl(filename) {
     data: { publicUrl },
   } = supabase.storage.from("listing_photos").getPublicUrl(filename);
   return publicUrl;
-}
-
-function getAvatarUrl(filename) {
-  const supabase = createClient();
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("listing_avatars").getPublicUrl(filename);
-  return publicUrl;
-}
-
-async function deleteAvatar(filePath) {
-  const supabase = createClient();
-  const { error } = await supabase.storage
-    .from("listing_avatars")
-    .remove([filePath]);
-
-  if (error) throw error;
 }
 
 // React component
@@ -286,39 +254,6 @@ export default function ListingWrite({ initialListing }) {
     }
   };
 
-  const handleAvatarChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      try {
-        // If there's an existing avatar, delete it first
-        if (avatar) {
-          // Extract the file path from the URL
-          const existingFilePath = avatar.split("/").pop();
-          await deleteAvatar(existingFilePath);
-        }
-
-        const avatarUrl = await uploadAvatar(file);
-        setAvatar(avatarUrl);
-      } catch (error) {
-        console.error("Error handling avatar:", error);
-        // Show error message to user
-      }
-    }
-  };
-
-  const handleAvatarDelete = async () => {
-    if (avatar) {
-      try {
-        const filePath = avatar.split("/").pop();
-        await deleteAvatar(filePath);
-        setAvatar("");
-      } catch (error) {
-        console.error("Error deleting avatar:", error);
-        // Show error message to user
-      }
-    }
-  };
-
   //   Functions for adding and removing items
   const addAcceptedItem = () => {
     // if (acceptedItems.length < 10) {
@@ -328,11 +263,6 @@ export default function ListingWrite({ initialListing }) {
   const addRejectedItem = () => {
     // if (rejectedItems.length < 10) {
     setRejectedItems([...rejectedItems, ""]);
-    // }
-  };
-  const addDonatedItem = () => {
-    // if (donatedItems.length < 10) {
-    setDonatedItems([...donatedItems, ""]);
     // }
   };
   const addLink = () => {
@@ -352,12 +282,6 @@ export default function ListingWrite({ initialListing }) {
     setRejectedItems(newItems);
   };
 
-  const handleDonatedItemChange = (index, value) => {
-    const newItems = [...donatedItems];
-    newItems[index] = value;
-    setDonatedItems(newItems);
-  };
-
   const handleLinksChange = (index, value) => {
     const newLinks = [...links];
     newLinks[index] = value;
@@ -367,11 +291,10 @@ export default function ListingWrite({ initialListing }) {
   return (
     <>
       <Form onSubmit={handleSubmit}>
-        <AvatarUploader
-          avatar={avatar}
-          getAvatarUrl={getAvatarUrl}
-          onChange={handleAvatarChange}
-          onDelete={handleAvatarDelete}
+        <AvatarUploadClient
+          initialAvatar={avatar}
+          bucket="listing_avatars"
+          onAvatarChange={(nextAvatar) => setAvatar(nextAvatar)}
         />
 
         <div>
