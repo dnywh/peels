@@ -61,9 +61,14 @@ export async function deleteAvatar(filePath, bucket, id) {
 }
 
 export function getAvatarUrl(filename, bucket) {
-    const supabase = createClient();
-    const {
-        data: { publicUrl },
-    } = supabase.storage.from(bucket).getPublicUrl(filename);
-    return publicUrl;
+    // Just using hardcoded URLs for now
+    return `https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/${bucket}/${filename}`;
+
+    // TODO:
+    // Set some privacy controls, expiry and grab the links dynamically:
+    // const supabase = createClient();
+    // const {
+    //     data: { publicUrl },
+    // } = supabase.storage.from(bucket).getPublicUrl(filename);
+    //return publicUrl;
 } 

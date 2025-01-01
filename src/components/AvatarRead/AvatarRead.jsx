@@ -1,5 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 
+import { getAvatarUrl } from "@/utils/avatarUtils";
+
 import { styled } from "@pigment-css/react";
 
 const StyledImgContainer = styled("img")({
@@ -19,32 +21,22 @@ const StyledImgContainer = styled("img")({
 export default async function AvatarRead() {
   const supabase = await createClient();
 
-  const { data: user } = await supabase.auth.getUser();
-  console.log(user);
-  // const { data: profile } = await supabase
-  //   .from("profiles")
-  //   .select("avatar")
-  //   .eq("id", user.id)
-  //   .maybeSingle();
-  const { data: profile } = await supabase
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select()
     .eq("id", user.id)
     .single();
 
-  const { data: listings } = await supabase
-    .from("listings")
-    .select()
-    .eq("owner_id", user.id);
-
-  console.log(profile);
-
   return (
     <StyledImgContainer
       src={
         profile?.avatar
-          ? `https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/avatars/${profile?.avatar}.png`
-          : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
+          ? getAvatarUrl(profile?.avatar, "avatars")
+          : getAvatarUrl("blank1.png", "listing_avatars")
       }
       alt="Your avatar"
     />
