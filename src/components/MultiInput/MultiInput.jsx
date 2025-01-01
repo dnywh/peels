@@ -22,6 +22,8 @@ function MultiInput({
   onClick,
   limit = 10,
   type = "text",
+  addButtonText = "Add",
+  addAnotherButtonText = "Add another",
 }) {
   const uniqueId = useId();
   return (
@@ -46,7 +48,7 @@ function MultiInput({
         ))}
         {items.length < limit && (
           <Button onClick={onClick}>
-            {items.length === 0 ? "Add" : "Add another"}
+            {items.length === 0 ? addButtonText : addAnotherButtonText}
           </Button>
         )}
       </Field>

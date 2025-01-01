@@ -246,6 +246,7 @@ export default function MapPageClient({ user }) {
       </StyledMapRender>
 
       <StyledSidebar>
+        {/* TODO: Bring the ChatWindow up here instead of within ListingRead. Show either physically stacked on top of ListingRead or instead of, conditionally. */}
         {selectedListing ? (
           <>
             <ListingRead

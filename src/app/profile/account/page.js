@@ -15,25 +15,16 @@ import {
 import BackButton from "@/components/BackButton";
 import Link from "next/link";
 
-import {
-    // Field,
-    Fieldset,
-    // Input,
-    // Label,
-    Legend,
-    Select,
-    Textarea,
-} from "@headlessui/react";
-
+import AvatarUploadView from "@/components/AvatarUploadView";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
+import Description from "@/components/Description";
+
 import { styled } from "@pigment-css/react";
-
-
 
 export default async function ProfilePage({ searchParams }) {
 
@@ -83,12 +74,22 @@ export default async function ProfilePage({ searchParams }) {
 
 
     // Get avatar URL if profile has avatar
-    if (profile?.avatar) {
+    // if (profile?.avatar) {
+    //     const {
+    //         data: { publicUrl },
+    //     } = supabase.storage.from("avatars").getPublicUrl(profile.avatar);
+    //     profile.avatarUrl = publicUrl; // Add URL to profile object
+    // }
+
+    async function getAvatarUrl(filename) {
+        const supabase = await createClient();
         const {
             data: { publicUrl },
-        } = supabase.storage.from("avatars").getPublicUrl(profile.avatar);
-        profile.avatarUrl = publicUrl; // Add URL to profile object
+        } = supabase.storage.from("avatars").getPublicUrl(filename);
+        return publicUrl;
     }
+
+
 
     async function updateProfile(formData) {
         "use server";
@@ -212,7 +213,7 @@ export default async function ProfilePage({ searchParams }) {
                     <Input type="email" name="email_change" defaultValue={user.email} />
 
                     {/* TODO: show the below conditionally only after email_change triggered */}
-                    <small>We just sent a email to new@email.address. Tap the link inside to confirm the change.</small>
+                    <Description>We just sent a email to new@email.address. Tap the link inside to confirm the change.</Description>
                 </Field>
 
                 {/* <Field>
@@ -225,6 +226,13 @@ export default async function ProfilePage({ searchParams }) {
                         required
                     />
                 </Field> */}
+
+                <AvatarUploadView
+                    avatar={profile?.avatar}
+                    getAvatarUrl={getAvatarUrl}
+                // onChange={handleAvatarChange}
+                // onDelete={handleAvatarDelete}
+                />
 
                 <Field>
                     <Label>Profile Picture</Label>

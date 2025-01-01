@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import AvatarUploader from "@/components/AvatarUploader";
+import AvatarUploadView from "@/components/AvatarUploadView";
 import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/avatarUtils"; // Import the utility functions
 
-function AvatarUploadClient({ initialAvatar, onAvatarChange, bucket }) {
+function AvatarUploadManager({ initialAvatar, onAvatarChange, bucket }) {
   const [avatar, setAvatar] = useState(initialAvatar || "");
 
   const handleAvatarChange = async (event) => {
@@ -39,7 +39,7 @@ function AvatarUploadClient({ initialAvatar, onAvatarChange, bucket }) {
   };
 
   return (
-    <AvatarUploader
+    <AvatarUploadView
       avatar={avatar}
       onChange={handleAvatarChange}
       onDelete={handleAvatarDelete}
@@ -48,4 +48,4 @@ function AvatarUploadClient({ initialAvatar, onAvatarChange, bucket }) {
   );
 }
 
-export default AvatarUploadClient;
+export default AvatarUploadManager;

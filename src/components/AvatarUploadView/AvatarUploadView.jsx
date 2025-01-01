@@ -26,7 +26,7 @@ const StyledImg = styled("img")({
   objectFit: "cover",
 });
 
-function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
+function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
   // Hidden file input that we'll trigger programmatically
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -110,4 +110,4 @@ function AvatarUploader({ avatar, onChange, onDelete, getAvatarUrl }) {
   );
 }
 
-export default AvatarUploader;
+export default AvatarUploadView;

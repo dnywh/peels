@@ -30,7 +30,7 @@ import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import MultiInput from "@/components/MultiInput";
-import AvatarUploadClient from "@/components/AvatarUploadClient";
+import AvatarUploadManager from "@/components/AvatarUploadManager";
 import PhotosUploader from "@/components/PhotosUploader";
 import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
@@ -291,7 +291,7 @@ export default function ListingWrite({ initialListing }) {
   return (
     <>
       <Form onSubmit={handleSubmit}>
-        <AvatarUploadClient
+        <AvatarUploadManager
           initialAvatar={avatar}
           bucket="listing_avatars"
           onAvatarChange={(nextAvatar) => setAvatar(nextAvatar)}
