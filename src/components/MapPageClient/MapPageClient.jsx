@@ -239,6 +239,7 @@ export default function MapPageClient({ user }) {
     setSelectedListing(data);
     setIsDrawerOpen(true); // Open drawer when marker is clicked
     setSnap(snapPoints[0]); // Reset snap point
+    setIsDrawerHeaderShown(false); // Reset header shown state
     router.push(`/map?listing=${data.slug}`, { scroll: false });
   };
 
@@ -252,17 +253,20 @@ export default function MapPageClient({ user }) {
 
   useEffect(() => {
     if (snap !== 1) {
-      setIsDrawerHeaderShown(false);
+      // setIsDrawerHeaderShown(false);
       return;
     }
 
     console.log("At full snap");
 
     const handleScroll = () => {
+      // console.log(drawerContentRef.current);
       if (drawerContentRef.current) {
         const scrollTop = drawerContentRef.current.scrollTop;
+        console.log("Scroll position:", scrollTop);
+
         // console.log("Scroll position:", scrollTop);
-        if (scrollTop > 0) {
+        if (scrollTop > 340) {
           // console.log("Scrolled more than 0px");
           setIsDrawerHeaderShown(true);
         } else {
@@ -273,7 +277,9 @@ export default function MapPageClient({ user }) {
     };
 
     const drawerContent = drawerContentRef.current;
+
     if (drawerContent) {
+      console.log("Adding scroll listener");
       drawerContent.addEventListener("scroll", handleScroll);
     } else {
       console.warn(
@@ -356,23 +362,30 @@ export default function MapPageClient({ user }) {
               data-testid="content"
               className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
             >
-              <header className="flex justify-between items-center sticky top-0 bg-white py-4">
-                <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
+              <header
+                className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full  py-4 px-4`}
+              >
+                <Drawer.Title
+                  className={`text-md mt-2 font-medium text-gray-900 ${
+                    isDrawerHeaderShown ? "" : "opacity-0"
+                  }`}
+                >
                   {selectedListing?.type === "residential"
                     ? selectedListing?.profiles.first_name
                     : selectedListing?.name}
                 </Drawer.Title>
-                <Drawer.Close className="bg-gray-100 rounded-full p-2">
+                <CloseButton onClick={handleCloseListing}>Close</CloseButton>
+                {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
                   Close
-                </Drawer.Close>
+                </Drawer.Close> */}
               </header>
               {/* Page content */}
               <div
                 ref={drawerContentRef}
                 // data-vaul-no-drag
                 className={clsx(" flex flex-col mx-auto w-full px-4", {
-                  "overflow-y-auto": snap === 1 || !isDragging,
-                  "overflow-hidden": snap !== 1 || isDragging,
+                  "overflow-y-auto": snap === 1,
+                  "overflow-hidden": snap !== 1,
                 })}
                 // style={{
                 //   overscrollBehavior: "none",
