@@ -11,6 +11,8 @@ import {
 import Link from "next/link";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 
+import { Drawer } from "vaul";
+
 import StorageImage from "@/components/StorageImage";
 import ChatWindow from "@/components/ChatWindow";
 import StyledMap from "@/components/StyledMap";
@@ -21,6 +23,8 @@ import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
 
 import turfDistance from "@turf/distance";
+import LoremIpsum from "@/components/LoremIpsum";
+import clsx from "clsx";
 
 const StyledCallout = styled("aside")({
   border: "1px solid grey",
@@ -140,33 +144,58 @@ const ListingRead = memo(function Listing({
             : "Not your listing, show button to chat"}
         </p>
 
-        {user ? (
-          listing.owner_id === user.id ? (
-            <LinkButton href={`/profile/listings/${listing.slug}`}>
-              Edit listing
-            </LinkButton>
+        <Drawer.NestedRoot>
+          {user ? (
+            listing.owner_id === user.id ? (
+              <LinkButton href={`/profile/listings/${listing.slug}`}>
+                Edit listing
+              </LinkButton>
+            ) : (
+              <Drawer.Trigger className="rounded-md mt-4 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                Contact{" "}
+                {listing.type === "residential"
+                  ? listing.profiles.first_name
+                  : listing.name}
+              </Drawer.Trigger>
+            )
           ) : (
-            <Button onClick={() => setIsChatOpen(true)}>
-              Contact{" "}
-              {listing.type === "residential"
-                ? listing.profiles.first_name
-                : listing.name}
-            </Button>
-          )
-        ) : (
-          <LinkButton href={`/sign-up?from=listing&slug=${listing.slug}`}>
-            Contact host
-          </LinkButton>
-        )}
-      </StyledCallout>
+            <LinkButton href={`/sign-up?from=listing&slug=${listing.slug}`}>
+              Contact host
+            </LinkButton>
+          )}
 
-      {isChatOpen && (
-        <ChatWindow
-          user={user}
-          listing={listing}
-          setIsChatOpen={setIsChatOpen}
-        />
-      )}
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-black/30" />
+            <Drawer.Content className="bg-gray-100 flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0">
+              <Drawer.Description className="sr-only">
+                Test description for aria.
+              </Drawer.Description>
+              <div className="p-4 bg-white rounded-t-[10px] flex-1">
+                {/* Handle */}
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-8" />
+                {/* Button */}
+                <Drawer.Close>Close this drawer</Drawer.Close>
+
+                <div className="">
+                  <Drawer.Title className="font-medium mb-4 text-gray-900">
+                    Nested chat drawer
+                  </Drawer.Title>
+                  <p className="text-gray-600 mb-2">
+                    If you pull this drawer down a bit, it&apos;ll scale the
+                    drawer underneath it as well.
+                  </p>
+                  <ChatWindow
+                    user={user}
+                    listing={listing}
+                    setIsChatOpen={setIsChatOpen}
+                  />
+                  <LoremIpsum />
+                </div>
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.NestedRoot>
+      </StyledCallout>
 
       {listing.description && (
         <>
