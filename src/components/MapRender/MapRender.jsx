@@ -184,17 +184,7 @@ export default function MapRender({
         }}
       >
         {isLoading ? <LoadingSpinner /> : null}
-        {/* Map search for small screens */}
-        <MapSearch
-          onPick={handleSearchPick}
-          mapController={mapController}
-          style={{
-            position: "absolute",
-            top: "2.5rem",
-            left: "1rem",
-            zIndex: 1,
-          }}
-        />
+
         {hasInitialPosition && (
           <>
             <Map
@@ -262,6 +252,18 @@ export default function MapRender({
                 </DrawerTrigger>
               ))}
             </Map>
+
+            {/* Map search for small screens */}
+            <MapSearch
+              onPick={handleSearchPick}
+              mapController={mapController}
+              style={{
+                position: "absolute",
+                top: "2.5rem",
+                left: "1rem",
+                zIndex: 0, // Setting the z-index of the map controls to 0 seems to fix the drawer content's touch responsiveness
+              }}
+            />
 
             {selectedListing && !isListingInView && (
               <button

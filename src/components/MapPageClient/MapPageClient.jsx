@@ -77,31 +77,29 @@ export default function MapPageClient({ user }) {
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
-  const [isAtFullSnap, setIsAtFullSnap] = useState(false);
-
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleDrawerOpenChange = useCallback(
-    (open, fromMarker = false) => {
-      console.log("Drawer open change:", open, "fromMarker:", fromMarker);
+  // const handleDrawerOpenChange = useCallback(
+  //   (open, fromMarker = false) => {
+  //     console.log("Drawer open change:", open, "fromMarker:", fromMarker);
 
-      if (!open && !fromMarker) {
-        // Only handle drawer closing through this handler
-        setIsDrawerOpen(false);
-        if (selectedListing) {
-          console.log("Closing listing");
-          handleCloseListing();
-        }
-      } else {
-        setIsDrawerOpen(true);
-      }
-    },
-    [selectedListing]
-  );
+  //     if (!open && !fromMarker) {
+  //       // Only handle drawer closing through this handler
+  //       setIsDrawerOpen(false);
+  //       if (selectedListing) {
+  //         console.log("Closing listing");
+  //         handleCloseListing();
+  //       }
+  //     } else {
+  //       setIsDrawerOpen(true);
+  //     }
+  //   },
+  //   [selectedListing]
+  // );
 
-  useEffect(() => {
-    console.log("snap", snap);
-  }, [snap]);
+  // useEffect(() => {
+  //   console.log("snap", snap);
+  // }, [snap]);
 
   useEffect(() => {
     // Only generate a random fact if there is NO selected listing, not when one is opened
@@ -245,14 +243,10 @@ export default function MapPageClient({ user }) {
   useEffect(() => {
     if (snap !== 1) {
       setIsDrawerHeaderShown(false);
-      console.log("Not at full snap");
-      setIsAtFullSnap(false);
-
       return;
     }
 
     console.log("At full snap");
-    setIsAtFullSnap(true);
 
     const handleScroll = () => {
       if (drawerContentRef.current) {
@@ -314,38 +308,6 @@ export default function MapPageClient({ user }) {
     router.push("/map", { scroll: false });
   };
 
-  useEffect(() => {
-    const drawerContent = drawerContentRef.current;
-
-    const handleTouchMove = (event) => {
-      console.log("Touch move");
-      // Allow scrolling
-      event.stopPropagation();
-    };
-
-    if (drawerContent) {
-      drawerContent.addEventListener("touchmove", handleTouchMove, {
-        passive: false,
-      });
-    }
-
-    return () => {
-      if (drawerContent) {
-        drawerContent.removeEventListener("touchmove", handleTouchMove);
-      }
-    };
-  }, []);
-
-  const handleTouchStart = () => {
-    console.log("Touch start");
-    setIsDragging(true);
-  };
-
-  const handleTouchEnd = () => {
-    console.log("Touch end");
-    setIsDragging(false);
-  };
-
   return (
     <StyledMapPage>
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
@@ -356,9 +318,9 @@ export default function MapPageClient({ user }) {
           setActiveSnapPoint={setSnap}
           modal={false}
           open={isDrawerOpen}
-          onOpenChange={handleDrawerOpenChange}
-          onDragStart={handleTouchStart}
-          onRelease={handleTouchEnd}
+          // onOpenChange={handleDrawerOpenChange}
+          // onDragStart={handleTouchStart}
+          // onRelease={handleTouchEnd}
           // scrollLockTimeout={1}
           onAnimationEnd={() => {
             console.log("Animation ended");
@@ -380,17 +342,45 @@ export default function MapPageClient({ user }) {
           />
 
           <Drawer.Portal>
-            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+            <Drawer.Content
+              data-testid="content"
+              className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
+            >
+              {isDrawerHeaderShown ? (
+                <header className="h-fit border-b border-gray-200 overflow-visible bg-white">
+                  <div className="h-16 flex px-4 justify-between items-center">
+                    <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
+                      {selectedListing?.type === "residential"
+                        ? selectedListing?.profiles.first_name
+                        : selectedListing?.name}
+                    </Drawer.Title>
+                  </div>
+                </header>
+              ) : (
+                <header className="h-fit overflow-visible">
+                  <div className="h-16 flex px-4 justify-between items-center">
+                    {/* Avatar */}
+                    <div className="bg-gray-300 mt-8 w-24 h-24 rounded-full"></div>
 
-            <Drawer.Content className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
+                    <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
+                      {selectedListing?.type === "residential"
+                        ? selectedListing?.profiles.first_name
+                        : selectedListing?.name}
+                    </Drawer.Title>
+                  </div>
+                </header>
+              )}
               {/* Page content */}
               <div
                 ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={`flex flex-col max-w-md mx-auto w-full px-4 ${clsx({
-                  "overflow-y-auto": snap === 1,
-                  "overflow-hidden": snap !== 1,
-                })}`}
+                className={clsx(
+                  " flex flex-col max-w-md mx-auto w-full p-4 pt-5",
+                  {
+                    "overflow-y-auto": snap === 1,
+                    "overflow-hidden": snap !== 1,
+                  }
+                )}
                 // style={{
                 //   overscrollBehavior: "none",
                 // }}
@@ -402,12 +392,12 @@ export default function MapPageClient({ user }) {
                 </Drawer.Title>
 
                 <Drawer.Description className="mt-12">TODO</Drawer.Description>
-                {/* <ListingRead
+                <ListingRead
                   user={user}
                   listing={selectedListing}
                   setSelectedListing={handleCloseListing}
                   modal={true}
-                /> */}
+                />
                 <LoremIpsum />
 
                 {/* {selectedListing ? (
