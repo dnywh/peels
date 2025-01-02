@@ -79,6 +79,8 @@ export default function MapPageClient({ user }) {
 
   const [isAtFullSnap, setIsAtFullSnap] = useState(false);
 
+  const [isDragging, setIsDragging] = useState(false);
+
   const handleDrawerOpenChange = useCallback(
     (open, fromMarker = false) => {
       console.log("Drawer open change:", open, "fromMarker:", fromMarker);
@@ -334,6 +336,16 @@ export default function MapPageClient({ user }) {
     };
   }, []);
 
+  const handleTouchStart = () => {
+    console.log("Touch start");
+    setIsDragging(true);
+  };
+
+  const handleTouchEnd = () => {
+    console.log("Touch end");
+    setIsDragging(false);
+  };
+
   return (
     <StyledMapPage>
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
@@ -345,6 +357,8 @@ export default function MapPageClient({ user }) {
           modal={false}
           open={isDrawerOpen}
           onOpenChange={handleDrawerOpenChange}
+          onDragStart={handleTouchStart}
+          onRelease={handleTouchEnd}
           // scrollLockTimeout={1}
           onAnimationEnd={() => {
             console.log("Animation ended");
@@ -367,81 +381,26 @@ export default function MapPageClient({ user }) {
 
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-            <Drawer.Content className="z-50 fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
-              {isDrawerHeaderShown && isAtFullSnap && snap === 1 ? (
-                <header
-                  // onClick={() => {
-                  //   setSnap(
-                  //     snap === 1 ? snapPoints[snap - 1] : snapPoints[snap + 1]
-                  //   );
-                  //   console.log("tapped handle", snapPoints[snap + 1]);
-                  // }}
-                  className="h-fit border-b border-gray-200 overflow-visible bg-white"
-                >
-                  <div className="h-16 flex px-4 justify-between items-center">
-                    <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
-                      {selectedListing?.type === "residential"
-                        ? selectedListing?.profiles.first_name
-                        : selectedListing?.name}
-                    </Drawer.Title>
-                    {/* <Drawer.Handle /> */}
-                    <div
-                      aria-hidden
-                      className="w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 absolute"
-                      style={{ left: "calc(50% - 1.5rem)", top: "0.5rem" }}
-                    />
 
-                    <Drawer.Close>
-                      {/* Can't use close button because a <button> can't be a descendant of another <button> */}
-                      x
-                    </Drawer.Close>
-                  </div>
-                </header>
-              ) : (
-                <header
-                  // onClick={() => {
-                  //   setSnap(
-                  //     snap === 1 ? snapPoints[snap - 1] : snapPoints[snap + 1]
-                  //   );
-                  //   console.log("tapped handle");
-                  // }}
-                  className="h-fit overflow-visible"
-                >
-                  <div className="h-16 flex px-4 justify-between items-center">
-                    <div className="bg-gray-300 mt-8 w-24 h-24 rounded-full"></div>
-                    <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
-                      {selectedListing?.type === "residential"
-                        ? selectedListing?.profiles.first_name
-                        : selectedListing?.name}
-                    </Drawer.Title>
-                    {/* <Drawer.Handle /> */}
-                    <div
-                      aria-hidden
-                      className="w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 absolute"
-                      style={{ left: "calc(50% - 1.5rem)", top: "0.5rem" }}
-                    />
-
-                    <Drawer.Close>
-                      {/* Can't use close button because a <button> can't be a descendant of another <button> */}
-                      x
-                    </Drawer.Close>
-                  </div>
-                </header>
-              )}
-
+            <Drawer.Content className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
               {/* Page content */}
               <div
                 ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={clsx(
-                  "flex flex-col max-w-md mx-auto w-full p-4 pt-5",
-                  {
-                    "overflow-y-auto": isAtFullSnap,
-                    "overflow-hidden": !isAtFullSnap,
-                  },
-                  "overflow-y-auto" // Fixes it
-                )}
+                className={`flex flex-col max-w-md mx-auto w-full px-4 ${clsx({
+                  "overflow-y-auto": snap === 1,
+                  "overflow-hidden": snap !== 1,
+                })}`}
+                // style={{
+                //   overscrollBehavior: "none",
+                // }}
               >
+                <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
+                  {selectedListing?.type === "residential"
+                    ? selectedListing?.profiles.first_name
+                    : selectedListing?.name}
+                </Drawer.Title>
+
                 <Drawer.Description className="mt-12">TODO</Drawer.Description>
                 {/* <ListingRead
                   user={user}

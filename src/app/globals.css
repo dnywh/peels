@@ -28,8 +28,8 @@ body {
 main {
   width: 100dvw;
   height: 100dvh;
-  /* overflow: hidden; */
-  /* overscroll-behavior: none; */
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* From Supabase Next starter */
