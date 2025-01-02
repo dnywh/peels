@@ -12,6 +12,9 @@ a {
 } */
 
 /*  */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* From Supabase Next starter */
 /* @tailwind base;

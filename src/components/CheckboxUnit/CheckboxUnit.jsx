@@ -1,5 +1,3 @@
-import React from "react";
-
 function CheckboxUnit({ id, checked, onChange, required = false, children }) {
   return (
     <div>
