@@ -364,7 +364,7 @@ export default function MapPageClient({ user }) {
               className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden"
             >
               <header
-                className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full  py-4 px-4`}
+                className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-4 px-4`}
               >
                 <Drawer.Title
                   className={`text-md mt-2 font-medium text-gray-900 ${
