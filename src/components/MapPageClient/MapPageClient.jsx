@@ -79,6 +79,16 @@ export default function MapPageClient({ user }) {
 
   const [isDragging, setIsDragging] = useState(false);
 
+  const handleTouchStart = () => {
+    console.log("Touch start");
+    setIsDragging(true);
+  };
+
+  const handleTouchEnd = () => {
+    console.log("Touch end");
+    setIsDragging(false);
+  };
+
   // const handleDrawerOpenChange = useCallback(
   //   (open, fromMarker = false) => {
   //     console.log("Drawer open change:", open, "fromMarker:", fromMarker);
@@ -319,8 +329,8 @@ export default function MapPageClient({ user }) {
           modal={false}
           open={isDrawerOpen}
           // onOpenChange={handleDrawerOpenChange}
-          // onDragStart={handleTouchStart}
-          // onRelease={handleTouchEnd}
+          onDrag={handleTouchStart}
+          onRelease={handleTouchEnd}
           // scrollLockTimeout={1}
           onAnimationEnd={() => {
             console.log("Animation ended");
@@ -346,29 +356,28 @@ export default function MapPageClient({ user }) {
               data-testid="content"
               className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
             >
+              <header className="flex justify-between items-center sticky top-0 bg-white py-4">
+                <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
+                  {selectedListing?.type === "residential"
+                    ? selectedListing?.profiles.first_name
+                    : selectedListing?.name}
+                </Drawer.Title>
+                <Drawer.Close className="bg-gray-100 rounded-full p-2">
+                  Close
+                </Drawer.Close>
+              </header>
               {/* Page content */}
               <div
                 ref={drawerContentRef}
                 // data-vaul-no-drag
                 className={clsx(" flex flex-col mx-auto w-full px-4", {
-                  "overflow-y-auto": snap === 1,
-                  "overflow-hidden": snap !== 1,
+                  "overflow-y-auto": snap === 1 || !isDragging,
+                  "overflow-hidden": snap !== 1 || isDragging,
                 })}
                 // style={{
                 //   overscrollBehavior: "none",
                 // }}
               >
-                <header className="flex justify-between items-center sticky top-0 bg-white py-4">
-                  <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
-                    {selectedListing?.type === "residential"
-                      ? selectedListing?.profiles.first_name
-                      : selectedListing?.name}
-                  </Drawer.Title>
-                  <Drawer.Close className="bg-gray-100 rounded-full p-2">
-                    Close
-                  </Drawer.Close>
-                </header>
-
                 <div className="bg-gray-400 w-40 h-40 py-20"></div>
 
                 <Drawer.Title className="text-3xl mt-2 font-medium text-gray-900">
