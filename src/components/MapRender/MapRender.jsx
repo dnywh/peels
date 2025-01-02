@@ -244,7 +244,7 @@ export default function MapRender({
 
               {/* <Button>Open or close drawer</Button> */}
               {listings.map((listing) => (
-                <DrawerTrigger asChild key={listing.id}>
+                <DrawerTrigger key={listing.id}>
                   <Marker
                     longitude={listing.longitude}
                     latitude={listing.latitude}

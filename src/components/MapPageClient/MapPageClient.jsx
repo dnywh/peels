@@ -280,13 +280,15 @@ export default function MapPageClient({ user }) {
               <div
                 className={`flex flex-col max-w-md mx-auto w-full p-4 pt-5 ${snap === 1 ? "overflow-y-auto" : "overflow-hidden"}`}
               >
-                <CloseButton onClick={() => setIsDrawerOpen(false)} />
                 <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
                   {selectedListing?.type === "residential"
                     ? selectedListing?.profiles.first_name
                     : selectedListing?.name}
                 </Drawer.Title>
                 <Drawer.Description>Description here</Drawer.Description>
+                <CloseButton onClick={() => setIsDrawerOpen(false)}>
+                  Close
+                </CloseButton>
                 {selectedListing ? (
                   <>
                     <ListingRead
