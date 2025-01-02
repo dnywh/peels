@@ -22,6 +22,8 @@ import { facts } from "@/data/facts";
 import { styled } from "@pigment-css/react";
 import LoremIpsum from "../LoremIpsum";
 
+import clsx from "clsx";
+
 const StyledMapPage = styled("div")({
   // background: "red",
   display: "flex",
@@ -37,7 +39,7 @@ const StyledMapRender = styled("div")({
   gap: "1rem",
   flex: 1,
   // borderRadius: "0.5rem",
-  overflow: "hidden",
+  // overflow: "hidden", // Wrecks it!
 });
 
 const StyledSidebar = styled("div")({
@@ -75,17 +77,29 @@ export default function MapPageClient({ user }) {
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
-  const handleDrawerOpenChange = useCallback((open, fromMarker = false) => {
-    console.log("Drawer open change:", open, "fromMarker:", fromMarker);
+  const [isAtFullSnap, setIsAtFullSnap] = useState(false);
 
-    if (!open && !fromMarker) {
-      // Only handle drawer closing through this handler
-      setIsDrawerOpen(false);
-      if (selectedListing) {
-        handleCloseListing();
+  const handleDrawerOpenChange = useCallback(
+    (open, fromMarker = false) => {
+      console.log("Drawer open change:", open, "fromMarker:", fromMarker);
+
+      if (!open && !fromMarker) {
+        // Only handle drawer closing through this handler
+        setIsDrawerOpen(false);
+        if (selectedListing) {
+          console.log("Closing listing");
+          handleCloseListing();
+        }
+      } else {
+        setIsDrawerOpen(true);
       }
-    }
-  }, []);
+    },
+    [selectedListing]
+  );
+
+  useEffect(() => {
+    console.log("snap", snap);
+  }, [snap]);
 
   useEffect(() => {
     // Only generate a random fact if there is NO selected listing, not when one is opened
@@ -229,18 +243,24 @@ export default function MapPageClient({ user }) {
   useEffect(() => {
     if (snap !== 1) {
       setIsDrawerHeaderShown(false);
+      console.log("Not at full snap");
+      setIsAtFullSnap(false);
+
       return;
     }
+
+    console.log("At full snap");
+    setIsAtFullSnap(true);
 
     const handleScroll = () => {
       if (drawerContentRef.current) {
         const scrollTop = drawerContentRef.current.scrollTop;
-        console.log("Scroll position:", scrollTop);
+        // console.log("Scroll position:", scrollTop);
         if (scrollTop > 0) {
-          console.log("Scrolled more than 0px");
+          // console.log("Scrolled more than 0px");
           setIsDrawerHeaderShown(true);
         } else {
-          console.log("Scrolled less than 0px");
+          // console.log("Scrolled less than 0px");
           setIsDrawerHeaderShown(false);
         }
       }
@@ -292,6 +312,28 @@ export default function MapPageClient({ user }) {
     router.push("/map", { scroll: false });
   };
 
+  useEffect(() => {
+    const drawerContent = drawerContentRef.current;
+
+    const handleTouchMove = (event) => {
+      console.log("Touch move");
+      // Allow scrolling
+      event.stopPropagation();
+    };
+
+    if (drawerContent) {
+      drawerContent.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+    }
+
+    return () => {
+      if (drawerContent) {
+        drawerContent.removeEventListener("touchmove", handleTouchMove);
+      }
+    };
+  }, []);
+
   return (
     <StyledMapPage>
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
@@ -303,6 +345,10 @@ export default function MapPageClient({ user }) {
           modal={false}
           open={isDrawerOpen}
           onOpenChange={handleDrawerOpenChange}
+          // scrollLockTimeout={1}
+          onAnimationEnd={() => {
+            console.log("Animation ended");
+          }}
           // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
         >
           <MapRender
@@ -321,9 +367,17 @@ export default function MapPageClient({ user }) {
 
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-            <Drawer.Content className="z-50 overflow-hidden fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
-              {isDrawerHeaderShown ? (
-                <header className="h-fit border-b border-gray-200  bg-white">
+            <Drawer.Content className="z-50 fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
+              {isDrawerHeaderShown && isAtFullSnap && snap === 1 ? (
+                <header
+                  // onClick={() => {
+                  //   setSnap(
+                  //     snap === 1 ? snapPoints[snap - 1] : snapPoints[snap + 1]
+                  //   );
+                  //   console.log("tapped handle", snapPoints[snap + 1]);
+                  // }}
+                  className="h-fit border-b border-gray-200 overflow-visible bg-white"
+                >
                   <div className="h-16 flex px-4 justify-between items-center">
                     <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
                       {selectedListing?.type === "residential"
@@ -344,15 +398,17 @@ export default function MapPageClient({ user }) {
                   </div>
                 </header>
               ) : (
-                <header className="h-fit overflow-visible">
+                <header
+                  // onClick={() => {
+                  //   setSnap(
+                  //     snap === 1 ? snapPoints[snap - 1] : snapPoints[snap + 1]
+                  //   );
+                  //   console.log("tapped handle");
+                  // }}
+                  className="h-fit overflow-visible"
+                >
                   <div className="h-16 flex px-4 justify-between items-center">
-                    <div className="bg-gray-300 mt-8">
-                      <img
-                        src={selectedListing?.profiles.avatar}
-                        alt={selectedListing?.profiles.first_name}
-                        className="w-24 h-24 rounded-full"
-                      />
-                    </div>
+                    <div className="bg-gray-300 mt-8 w-24 h-24 rounded-full"></div>
                     <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
                       {selectedListing?.type === "residential"
                         ? selectedListing?.profiles.first_name
@@ -373,12 +429,29 @@ export default function MapPageClient({ user }) {
                 </header>
               )}
 
+              {/* Page content */}
               <div
                 ref={drawerContentRef}
-                className={`flex flex-col max-w-md w-full px-4 pt-0 ${snap === 1 ? "overflow-y-auto" : "overflow-hidden"}`}
+                // data-vaul-no-drag
+                className={clsx(
+                  "flex flex-col max-w-md mx-auto w-full p-4 pt-5",
+                  {
+                    "overflow-y-auto": isAtFullSnap,
+                    "overflow-hidden": !isAtFullSnap,
+                  },
+                  "overflow-y-auto" // Fixes it
+                )}
               >
                 <Drawer.Description className="mt-12">TODO</Drawer.Description>
-                {selectedListing ? (
+                {/* <ListingRead
+                  user={user}
+                  listing={selectedListing}
+                  setSelectedListing={handleCloseListing}
+                  modal={true}
+                /> */}
+                <LoremIpsum />
+
+                {/* {selectedListing ? (
                   <>
                     <ListingRead
                       user={user}
@@ -414,7 +487,7 @@ export default function MapPageClient({ user }) {
                       </>
                     )}
                   </>
-                )}
+                )} */}
               </div>
             </Drawer.Content>
           </Drawer.Portal>

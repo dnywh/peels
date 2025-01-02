@@ -38,8 +38,10 @@ const ListingRead = memo(function Listing({
   }, []);
   // TODO: is this secure? Should this be done on the server or database?
   let listingName =
-    listing.type === "residential" ? listing.profiles.first_name : listing.name;
-  if (!user && listing.type === "residential") {
+    listing?.type === "residential"
+      ? listing?.profiles?.first_name
+      : listing?.name;
+  if (!user && listing?.type === "residential") {
     listingName = "Private Host";
   }
 
@@ -92,6 +94,7 @@ const ListingRead = memo(function Listing({
   //   getDistance();
   // }, []);
 
+  if (!listing) return null;
   return (
     <div>
       {/* {setSelectedListing && <CloseButton onClick={setSelectedListing} />} */}
