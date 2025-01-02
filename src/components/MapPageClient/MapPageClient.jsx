@@ -72,16 +72,23 @@ export default function MapPageClient({ user }) {
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleDrawerOpenChange = (open) => {
-    console.log("Drawer open change:", open);
-    if (!open) {
-      // Only handle drawer closing through this handler
-      setIsDrawerOpen(false);
-      if (selectedListing) {
-        handleCloseListing();
+  const handleDrawerOpenChange = useCallback(
+    (open, fromMarker = false) => {
+      console.log("Drawer open change:", open, "fromMarker:", fromMarker);
+
+      if (!open && !fromMarker) {
+        // Only handle drawer closing through this handler if not from a marker click
+        setIsDrawerOpen(false);
+        if (selectedListing) {
+          handleCloseListing();
+        }
+      } else if (open) {
+        console.log("Opening drawer. Resetting snap point");
+        setSnap(snapPoints[0]);
       }
-    }
-  };
+    },
+    [selectedListing]
+  );
 
   useEffect(() => {
     // Only generate a random fact if there is NO selected listing, not when one is opened
@@ -95,9 +102,13 @@ export default function MapPageClient({ user }) {
     const listingSlug = searchParams.get("listing");
     if (listingSlug) {
       loadListingBySlug(listingSlug);
+      // If there is a selected listing upon mount, open the drawer
+      setIsDrawerOpen(true);
     } else {
       // Clear selected listing if no slug in URL
       setSelectedListing(null);
+      // If the user traversed the history back to where there was (possibly) no slug, close the drawer
+      setIsDrawerOpen(false);
     }
   }, [searchParams]); // This will run when the URL changes
 
@@ -208,6 +219,9 @@ export default function MapPageClient({ user }) {
     setIsDrawerOpen(true); // Open drawer when marker is clicked
     setSnap(snapPoints[0]); // Reset snap point
     router.push(`/map?listing=${data.slug}`, { scroll: false });
+
+    // Call handleDrawerOpenChange with fromMarker set to true
+    handleDrawerOpenChange(true, true);
   };
 
   const handleMapClick = () => {
@@ -288,7 +302,8 @@ export default function MapPageClient({ user }) {
 
                 <Drawer.Description>Description here</Drawer.Description>
                 <Drawer.Close>
-                  <CloseButton asChild>Child close button</CloseButton>
+                  {/* Can't use close button because a <button> can't be a descendant of another <button> */}
+                  Child close button
                 </Drawer.Close>
                 {selectedListing ? (
                   <>
