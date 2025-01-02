@@ -267,6 +267,7 @@ export default function MapPageClient({ user }) {
 
         // console.log("Scroll position:", scrollTop);
         if (scrollTop > 340) {
+          // Make this equal to the height of the nav bar (64px), since that blocks the software scrollbar
           // console.log("Scrolled more than 0px");
           setIsDrawerHeaderShown(true);
         } else {
@@ -312,7 +313,7 @@ export default function MapPageClient({ user }) {
     console.log("Flying to", nextCoordinates);
     mapRef.current?.flyTo({
       center: [nextCoordinates.longitude, nextCoordinates.latitude],
-      duration: 2800,
+      duration: 1800,
       zoom: 10, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
     });
   }, []);
@@ -360,7 +361,7 @@ export default function MapPageClient({ user }) {
           <Drawer.Portal>
             <Drawer.Content
               data-testid="content"
-              className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
+              className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden"
             >
               <header
                 className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full  py-4 px-4`}
@@ -383,7 +384,7 @@ export default function MapPageClient({ user }) {
               <div
                 ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={clsx(" flex flex-col mx-auto w-full px-4", {
+                className={clsx("pt-8 flex flex-col mx-auto w-full px-4", {
                   "overflow-y-auto": snap === 1,
                   "overflow-hidden": snap !== 1,
                 })}
