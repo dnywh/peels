@@ -16,6 +16,28 @@ a {
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  overflow: hidden;
+  /* overscroll-behavior: none; */
+}
+
+body {
+  pointer-events: auto !important;
+}
+
+main {
+  width: 100dvw;
+  height: 100dvh;
+  /* overflow: hidden; */
+  /* overscroll-behavior: none; */
+}
+
 /* From Supabase Next starter */
 /* @tailwind base;
 @tailwind components;

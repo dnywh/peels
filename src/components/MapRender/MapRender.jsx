@@ -17,6 +17,11 @@ import layers from "protomaps-themes-base";
 import MapPin from "@/components/MapPin";
 import MapSearch from "@/components/MapSearch";
 
+import { Drawer } from "vaul";
+import Button from "@/components/Button";
+import CloseButton from "@/components/CloseButton";
+const snapPoints = ["148px", "355px", 1];
+
 export default function MapRender({
   mapRef,
   listings,
@@ -30,12 +35,27 @@ export default function MapRender({
   setMapController,
   handleSearchPick,
   mapController,
+  DrawerTrigger,
+  preventDrawerClose,
 }) {
   const isFirstLoad = useRef(true);
   const [lastKnownPosition, setLastKnownPosition] = useState(null);
   const [isListingInView, setIsListingInView] = useState(true);
   const hasInitialPosition =
     selectedListing || initialCoordinates || lastKnownPosition;
+
+  const [snap, setSnap] = useState(snapPoints[0]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenChange = (open) => {
+    console.log("about to open?", open);
+
+    if (open) {
+      console.log("opening. Resetting snap point");
+      setSnap(snapPoints[0]);
+    }
+    setIsOpen(open);
+  };
 
   // Initial fetch when map loads
   const handleMapLoad = useCallback(() => {
@@ -216,30 +236,31 @@ export default function MapRender({
               onLoad={handleMapLoad}
               onClick={onMapClick}
             >
-              {listings.map((listing) => (
-                <Marker
-                  key={listing.id}
-                  longitude={listing.longitude}
-                  latitude={listing.latitude}
-                  anchor="center"
-                  onClick={(event) => {
-                    event.originalEvent.stopPropagation();
-                    onMarkerClick(listing.id);
-                  }}
-                >
-                  <MapPin
-                    selected={selectedListing?.id === listing.id ? true : false}
-                    coarse={
-                      selectedListing?.type === "residential" ? true : false
-                    }
-                  />
-                </Marker>
-              ))}
               <GeolocateControl
                 showUserLocation={true}
                 animationOptions={{ duration: 100 }}
               />
               <NavigationControl showZoom={true} showCompass={false} />
+
+              {/* <Button>Open or close drawer</Button> */}
+              {listings.map((listing) => (
+                <DrawerTrigger asChild key={listing.id}>
+                  <Marker
+                    longitude={listing.longitude}
+                    latitude={listing.latitude}
+                    anchor="center"
+                    onClick={(event) => {
+                      event.originalEvent.stopPropagation();
+                      onMarkerClick(listing.id);
+                    }}
+                  >
+                    <MapPin
+                      selected={selectedListing?.id === listing.id}
+                      coarse={selectedListing?.type === "residential"}
+                    />
+                  </Marker>
+                </DrawerTrigger>
+              ))}
             </Map>
 
             {selectedListing && !isListingInView && (

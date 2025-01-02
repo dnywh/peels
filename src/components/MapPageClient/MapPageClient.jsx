@@ -2,6 +2,9 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
+import { Drawer } from "vaul";
+const snapPoints = [0.35, 1];
+
 import { createClient } from "@/utils/supabase/client";
 
 import { fetchListingsInView } from "@/app/actions";
@@ -11,17 +14,21 @@ import MapRender from "@/components/MapRender";
 import ListingRead from "@/components/ListingRead";
 import GuestActions from "@/components/GuestActions";
 
+import Button from "@/components/Button";
+import CloseButton from "@/components/CloseButton";
+
 import { facts } from "@/data/facts";
 
 import { styled } from "@pigment-css/react";
+import LoremIpsum from "../LoremIpsum";
 
 const StyledMapPage = styled("div")({
   // background: "red",
   display: "flex",
-  flexDirection: "row",
-  gap: "2rem",
-  width: "100%",
-  height: "100vh",
+  // flexDirection: "row",
+  // gap: "2rem",
+  width: "100dvw",
+  height: "100dvh",
 });
 
 const StyledMapRender = styled("div")({
@@ -29,7 +36,7 @@ const StyledMapRender = styled("div")({
   flexDirection: "column",
   gap: "1rem",
   flex: 1,
-  borderRadius: "0.5rem",
+  // borderRadius: "0.5rem",
   overflow: "hidden",
 });
 
@@ -41,7 +48,7 @@ const StyledSidebar = styled("div")({
   gap: "1rem",
   width: "20rem",
   height: "100%",
-  overflow: "scroll",
+  // overflow: "scroll",
 });
 
 // export default async function MapPage() {
@@ -61,6 +68,20 @@ export default function MapPageClient({ user }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [randomFact, setRandomFact] = useState(null);
+
+  const [snap, setSnap] = useState(snapPoints[0]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleDrawerOpenChange = (open) => {
+    console.log("Drawer open change:", open);
+    if (!open) {
+      // Only handle drawer closing through this handler
+      setIsDrawerOpen(false);
+      if (selectedListing) {
+        handleCloseListing();
+      }
+    }
+  };
 
   useEffect(() => {
     // Only generate a random fact if there is NO selected listing, not when one is opened
@@ -182,18 +203,18 @@ export default function MapPageClient({ user }) {
       console.error("Error fetching listing details:", error);
       return;
     }
-    console.log("Selected listing", data);
 
     setSelectedListing(data);
-    // Update URL without full page reload
+    setIsDrawerOpen(true); // Open drawer when marker is clicked
+    setSnap(snapPoints[0]); // Reset snap point
     router.push(`/map?listing=${data.slug}`, { scroll: false });
   };
 
   const handleMapClick = () => {
-    // Since we're stopping propagation on marker clicks,
-    // this will only fire when clicking the actual map, not a marker on the map
+    console.log("Map clicked without marker click");
     if (selectedListing) {
       handleCloseListing();
+      setIsDrawerOpen(false);
     }
   };
 
@@ -231,55 +252,83 @@ export default function MapPageClient({ user }) {
     <StyledMapPage>
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
       <StyledMapRender>
-        <MapRender
-          mapRef={mapRef}
-          listings={listings}
-          selectedListing={selectedListing}
-          initialCoordinates={initialCoordinates}
-          onBoundsChange={handleBoundsChange}
-          isLoading={isLoading}
-          onMapClick={handleMapClick}
-          onMarkerClick={handleMarkerClick}
-          onSearchPick={handleSearchPick}
-          setMapController={setMapController}
-        />
-      </StyledMapRender>
+        <Drawer.Root
+          snapPoints={snapPoints}
+          activeSnapPoint={snap}
+          setActiveSnapPoint={setSnap}
+          modal={false}
+          open={isDrawerOpen}
+          onOpenChange={handleDrawerOpenChange}
+        >
+          <MapRender
+            mapRef={mapRef}
+            listings={listings}
+            selectedListing={selectedListing}
+            initialCoordinates={initialCoordinates}
+            onBoundsChange={handleBoundsChange}
+            isLoading={isLoading}
+            onMapClick={handleMapClick}
+            onMarkerClick={handleMarkerClick}
+            onSearchPick={handleSearchPick}
+            setMapController={setMapController}
+            DrawerTrigger={Drawer.Trigger}
+          />
 
-      <StyledSidebar>
-        {/* TODO: Bring the ChatWindow up here instead of within ListingRead. Show either physically stacked on top of ListingRead or instead of, conditionally. */}
-        {selectedListing ? (
-          <>
-            <ListingRead
-              user={user}
-              listing={selectedListing}
-              setSelectedListing={handleCloseListing}
-              modal={true}
-            />
-          </>
-        ) : (
-          <>
-            <MapSearch
-              onPick={handleSearchPick}
-              mapController={mapController}
-            />
-            {user && randomFact && (
-              // TODO
-              // If user has sent >0 messages, show a fun composting fact
-              // Otherwise show the fundamentals (1, 2, 3) of Peels
-              <>
-                <p>{randomFact.fact}</p>
-                {randomFact.source && <p>Source: {randomFact.source}</p>}
-              </>
-            )}
-            {!user && (
-              <>
-                <h2>Find a home for your food scraps, wherever you are</h2>
-                <GuestActions />
-              </>
-            )}
-          </>
-        )}
-      </StyledSidebar>
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+            <Drawer.Content className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
+              <div
+                className={`flex flex-col max-w-md mx-auto w-full p-4 pt-5 ${snap === 1 ? "overflow-y-auto" : "overflow-hidden"}`}
+              >
+                <CloseButton onClick={() => setIsDrawerOpen(false)} />
+                <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
+                  {selectedListing?.type === "residential"
+                    ? selectedListing?.profiles.first_name
+                    : selectedListing?.name}
+                </Drawer.Title>
+                <Drawer.Description>Description here</Drawer.Description>
+                {selectedListing ? (
+                  <>
+                    <ListingRead
+                      user={user}
+                      listing={selectedListing}
+                      setSelectedListing={handleCloseListing}
+                      modal={true}
+                    />
+                    <LoremIpsum />
+                  </>
+                ) : (
+                  <>
+                    <MapSearch
+                      onPick={handleSearchPick}
+                      mapController={mapController}
+                    />
+                    {user && randomFact && (
+                      // TODO
+                      // If user has sent >0 messages, show a fun composting fact
+                      // Otherwise show the fundamentals (1, 2, 3) of Peels
+                      <>
+                        <p>{randomFact.fact}</p>
+                        {randomFact.source && (
+                          <p>Source: {randomFact.source}</p>
+                        )}
+                      </>
+                    )}
+                    {!user && (
+                      <>
+                        <h2>
+                          Find a home for your food scraps, wherever you are
+                        </h2>
+                        <GuestActions />
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+      </StyledMapRender>
     </StyledMapPage>
   );
 }

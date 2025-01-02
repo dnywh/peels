@@ -51,7 +51,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main>
-            <nav>
+            {/* <nav>
               <Link href={"/"}>{siteConfig.name}</Link>
 
               <Link href={"/map"}>Map</Link>
@@ -59,7 +59,7 @@ export default function RootLayout({
               <Link href={"/profile"}>Profile</Link>
 
               <NavWrapper />
-            </nav>
+            </nav> */}
 
             {children}
           </main>
