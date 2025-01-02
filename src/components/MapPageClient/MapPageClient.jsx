@@ -346,52 +346,40 @@ export default function MapPageClient({ user }) {
               data-testid="content"
               className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
             >
-              {isDrawerHeaderShown ? (
-                <header className="h-fit border-b border-gray-200 overflow-visible bg-white">
-                  <div className="h-16 flex px-4 justify-between items-center">
-                    <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
-                      {selectedListing?.type === "residential"
-                        ? selectedListing?.profiles.first_name
-                        : selectedListing?.name}
-                    </Drawer.Title>
-                  </div>
-                </header>
-              ) : (
-                <header className="h-fit overflow-visible">
-                  <div className="h-16 flex px-4 justify-between items-center">
-                    {/* Avatar */}
-                    <div className="bg-gray-300 mt-8 w-24 h-24 rounded-full"></div>
-
-                    <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
-                      {selectedListing?.type === "residential"
-                        ? selectedListing?.profiles.first_name
-                        : selectedListing?.name}
-                    </Drawer.Title>
-                  </div>
-                </header>
-              )}
               {/* Page content */}
               <div
                 ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={clsx(
-                  " flex flex-col max-w-md mx-auto w-full p-4 pt-5",
-                  {
-                    "overflow-y-auto": snap === 1,
-                    "overflow-hidden": snap !== 1,
-                  }
-                )}
+                className={clsx(" flex flex-col mx-auto w-full px-4", {
+                  "overflow-y-auto": snap === 1,
+                  "overflow-hidden": snap !== 1,
+                })}
                 // style={{
                 //   overscrollBehavior: "none",
                 // }}
               >
-                <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
+                <header className="flex justify-between items-center sticky top-0 bg-white py-4">
+                  <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
+                    {selectedListing?.type === "residential"
+                      ? selectedListing?.profiles.first_name
+                      : selectedListing?.name}
+                  </Drawer.Title>
+                  <Drawer.Close className="bg-gray-100 rounded-full p-2">
+                    Close
+                  </Drawer.Close>
+                </header>
+
+                <div className="bg-gray-400 w-40 h-40 py-20"></div>
+
+                <Drawer.Title className="text-3xl mt-2 font-medium text-gray-900">
                   {selectedListing?.type === "residential"
                     ? selectedListing?.profiles.first_name
                     : selectedListing?.name}
                 </Drawer.Title>
+                <Drawer.Description className="mt-4 text-lg">
+                  {selectedListing?.description}
+                </Drawer.Description>
 
-                <Drawer.Description className="mt-12">TODO</Drawer.Description>
                 <ListingRead
                   user={user}
                   listing={selectedListing}
