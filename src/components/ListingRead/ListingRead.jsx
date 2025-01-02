@@ -94,7 +94,7 @@ const ListingRead = memo(function Listing({
 
   return (
     <div>
-      {setSelectedListing && <CloseButton onClick={setSelectedListing} />}
+      {/* {setSelectedListing && <CloseButton onClick={setSelectedListing} />} */}
 
       <div key={listing.id}>
         {listing.type === "residential" ? (

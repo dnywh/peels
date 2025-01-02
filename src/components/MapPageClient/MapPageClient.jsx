@@ -276,7 +276,7 @@ export default function MapPageClient({ user }) {
 
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-            <Drawer.Content className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
+            <Drawer.Content className="z-50 fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
               <div
                 className={`flex flex-col max-w-md mx-auto w-full p-4 pt-5 ${snap === 1 ? "overflow-y-auto" : "overflow-hidden"}`}
               >
@@ -285,10 +285,11 @@ export default function MapPageClient({ user }) {
                     ? selectedListing?.profiles.first_name
                     : selectedListing?.name}
                 </Drawer.Title>
+
                 <Drawer.Description>Description here</Drawer.Description>
-                <CloseButton onClick={() => setIsDrawerOpen(false)}>
-                  Close
-                </CloseButton>
+                <Drawer.Close>
+                  <CloseButton asChild>Child close button</CloseButton>
+                </Drawer.Close>
                 {selectedListing ? (
                   <>
                     <ListingRead

@@ -60,7 +60,7 @@ function MapPin({
       }
     >
       <svg
-        height={selected ? 30 : 20}
+        height={selected ? 64 : 48}
         viewBox="0 0 24 24"
         style={selected ? pinStyleSelected : pinStyleUnselected}
       >
