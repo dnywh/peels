@@ -240,6 +240,13 @@ export default function MapPageClient({ user }) {
     setIsDrawerOpen(true); // Open drawer when marker is clicked
     setSnap(snapPoints[0]); // Reset snap point
     setIsDrawerHeaderShown(false); // Reset header shown state
+
+    // Scroll to the top of the drawer content in case the scrollTop is not 0
+    if (drawerContentRef.current) {
+      drawerContentRef.current.scrollTop = 0; // Reset scroll position
+      console.log("Scrolled to top of drawer content");
+    }
+
     router.push(`/map?listing=${data.slug}`, { scroll: false });
   };
 
