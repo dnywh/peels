@@ -166,31 +166,33 @@ const ListingRead = memo(function Listing({
 
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/30" />
-            <Drawer.Content className="bg-gray-100 flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0">
-              <Drawer.Description className="sr-only">
-                Test description for aria.
-              </Drawer.Description>
-              <div className="p-4 bg-white rounded-t-[10px] flex-1">
+            <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0">
+              {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
+              <header className="py-2  px-4 ">
+                <Drawer.Description className="sr-only">
+                  Test description for aria.
+                </Drawer.Description>
                 {/* Handle */}
                 <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-8" />
                 {/* Button */}
                 <Drawer.Close>Close this drawer</Drawer.Close>
 
-                <div className="">
-                  <Drawer.Title className="font-medium mb-4 text-gray-900">
-                    Nested chat drawer
-                  </Drawer.Title>
-                  <p className="text-gray-600 mb-2">
-                    If you pull this drawer down a bit, it&apos;ll scale the
-                    drawer underneath it as well.
-                  </p>
-                  <ChatWindow
-                    user={user}
-                    listing={listing}
-                    setIsChatOpen={setIsChatOpen}
-                  />
-                  <LoremIpsum />
-                </div>
+                <Drawer.Title className="font-medium mb-4 text-gray-900">
+                  Nested chat drawer
+                </Drawer.Title>
+              </header>
+
+              <div
+                // ref={drawerContentRef}
+                // data-vaul-no-drag
+                className={"flex flex-col w-full  px-4  overflow-y-auto"}
+              >
+                <ChatWindow
+                  user={user}
+                  listing={listing}
+                  setIsChatOpen={setIsChatOpen}
+                />
+                {/* <LoremIpsum /> */}
               </div>
             </Drawer.Content>
           </Drawer.Portal>

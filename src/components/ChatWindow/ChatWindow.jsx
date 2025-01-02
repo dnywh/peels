@@ -159,22 +159,25 @@ const ChatWindow = memo(function ChatWindow({
 
   return (
     <div>
-      {setIsChatOpen && (
+      {/* {setIsChatOpen && (
         <button onClick={() => setIsChatOpen(false)}>Close chat</button>
-      )}
+      )} */}
 
       {!listingIsOwnedByUser && (
         <Link href={`/listings/${listing.slug}`}>View listing</Link>
       )}
 
       <div className="messages-container">
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            direction={message.sender_id === user.id ? "sent" : "received"}
-            message={message}
-          />
-        ))}
+        {messages.map((message) => {
+          console.log(message);
+          return (
+            <ChatMessage
+              key={message.id}
+              direction={message.sender_id === user.id ? "sent" : "received"}
+              message={message}
+            />
+          );
+        })}
       </div>
 
       <ChatComposer

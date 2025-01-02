@@ -346,9 +346,9 @@ export default function MapPageClient({ user }) {
           // onDrag={handleTouchStart}
           // onRelease={handleTouchEnd}
           scrollLockTimeout={0}
-          // onAnimationEnd={() => {
-          //   console.log("Animation ended");
-          // }}
+          onAnimationEnd={() => {
+            console.log("Animation ended");
+          }}
           // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
         >
           <MapRender
