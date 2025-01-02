@@ -54,6 +54,7 @@ const StyledSidebar = styled("div")({
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
   const mapRef = useRef(null);
+  const drawerContentRef = useRef(null);
   const [initialCoordinates, setInitialCoordinates] = useState(null);
 
   const searchParams = useSearchParams();
@@ -72,23 +73,19 @@ export default function MapPageClient({ user }) {
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleDrawerOpenChange = useCallback(
-    (open, fromMarker = false) => {
-      console.log("Drawer open change:", open, "fromMarker:", fromMarker);
+  const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
-      if (!open && !fromMarker) {
-        // Only handle drawer closing through this handler if not from a marker click
-        setIsDrawerOpen(false);
-        if (selectedListing) {
-          handleCloseListing();
-        }
-      } else if (open) {
-        console.log("Opening drawer. Resetting snap point");
-        setSnap(snapPoints[0]);
+  const handleDrawerOpenChange = useCallback((open, fromMarker = false) => {
+    console.log("Drawer open change:", open, "fromMarker:", fromMarker);
+
+    if (!open && !fromMarker) {
+      // Only handle drawer closing through this handler
+      setIsDrawerOpen(false);
+      if (selectedListing) {
+        handleCloseListing();
       }
-    },
-    [selectedListing]
-  );
+    }
+  }, []);
 
   useEffect(() => {
     // Only generate a random fact if there is NO selected listing, not when one is opened
@@ -219,9 +216,6 @@ export default function MapPageClient({ user }) {
     setIsDrawerOpen(true); // Open drawer when marker is clicked
     setSnap(snapPoints[0]); // Reset snap point
     router.push(`/map?listing=${data.slug}`, { scroll: false });
-
-    // Call handleDrawerOpenChange with fromMarker set to true
-    handleDrawerOpenChange(true, true);
   };
 
   const handleMapClick = () => {
@@ -231,6 +225,42 @@ export default function MapPageClient({ user }) {
       setIsDrawerOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (snap !== 1) {
+      setIsDrawerHeaderShown(false);
+      return;
+    }
+
+    const handleScroll = () => {
+      if (drawerContentRef.current) {
+        const scrollTop = drawerContentRef.current.scrollTop;
+        console.log("Scroll position:", scrollTop);
+        if (scrollTop > 0) {
+          console.log("Scrolled more than 0px");
+          setIsDrawerHeaderShown(true);
+        } else {
+          console.log("Scrolled less than 0px");
+          setIsDrawerHeaderShown(false);
+        }
+      }
+    };
+
+    const drawerContent = drawerContentRef.current;
+    if (drawerContent) {
+      drawerContent.addEventListener("scroll", handleScroll);
+    } else {
+      console.warn(
+        "drawerContentRef.current is null, cannot add scroll listener."
+      );
+    }
+
+    return () => {
+      if (drawerContent) {
+        drawerContent.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [snap]);
 
   const handleSearchPick = useCallback((event) => {
     // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
@@ -273,6 +303,7 @@ export default function MapPageClient({ user }) {
           modal={false}
           open={isDrawerOpen}
           onOpenChange={handleDrawerOpenChange}
+          // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
         >
           <MapRender
             mapRef={mapRef}
@@ -290,21 +321,63 @@ export default function MapPageClient({ user }) {
 
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-            <Drawer.Content className="z-50 fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
-              <div
-                className={`flex flex-col max-w-md mx-auto w-full p-4 pt-5 ${snap === 1 ? "overflow-y-auto" : "overflow-hidden"}`}
-              >
-                <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
-                  {selectedListing?.type === "residential"
-                    ? selectedListing?.profiles.first_name
-                    : selectedListing?.name}
-                </Drawer.Title>
+            <Drawer.Content className="z-50 overflow-hidden fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
+              {isDrawerHeaderShown ? (
+                <header className="h-fit border-b border-gray-200  bg-white">
+                  <div className="h-16 flex px-4 justify-between items-center">
+                    <Drawer.Title className="text-md mt-2 font-medium text-gray-900">
+                      {selectedListing?.type === "residential"
+                        ? selectedListing?.profiles.first_name
+                        : selectedListing?.name}
+                    </Drawer.Title>
+                    {/* <Drawer.Handle /> */}
+                    <div
+                      aria-hidden
+                      className="w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 absolute"
+                      style={{ left: "calc(50% - 1.5rem)", top: "0.5rem" }}
+                    />
 
-                <Drawer.Description>Description here</Drawer.Description>
-                <Drawer.Close>
-                  {/* Can't use close button because a <button> can't be a descendant of another <button> */}
-                  Child close button
-                </Drawer.Close>
+                    <Drawer.Close>
+                      {/* Can't use close button because a <button> can't be a descendant of another <button> */}
+                      x
+                    </Drawer.Close>
+                  </div>
+                </header>
+              ) : (
+                <header className="h-fit overflow-visible">
+                  <div className="h-16 flex px-4 justify-between items-center">
+                    <div className="bg-gray-300 mt-8">
+                      <img
+                        src={selectedListing?.profiles.avatar}
+                        alt={selectedListing?.profiles.first_name}
+                        className="w-24 h-24 rounded-full"
+                      />
+                    </div>
+                    <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">
+                      {selectedListing?.type === "residential"
+                        ? selectedListing?.profiles.first_name
+                        : selectedListing?.name}
+                    </Drawer.Title>
+                    {/* <Drawer.Handle /> */}
+                    <div
+                      aria-hidden
+                      className="w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 absolute"
+                      style={{ left: "calc(50% - 1.5rem)", top: "0.5rem" }}
+                    />
+
+                    <Drawer.Close>
+                      {/* Can't use close button because a <button> can't be a descendant of another <button> */}
+                      x
+                    </Drawer.Close>
+                  </div>
+                </header>
+              )}
+
+              <div
+                ref={drawerContentRef}
+                className={`flex flex-col max-w-md w-full px-4 pt-0 ${snap === 1 ? "overflow-y-auto" : "overflow-hidden"}`}
+              >
+                <Drawer.Description className="mt-12">TODO</Drawer.Description>
                 {selectedListing ? (
                   <>
                     <ListingRead
