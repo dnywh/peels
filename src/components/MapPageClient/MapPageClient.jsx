@@ -77,17 +77,17 @@ export default function MapPageClient({ user }) {
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
-  const [isDragging, setIsDragging] = useState(false);
+  // const [isDragging, setIsDragging] = useState(false);
 
-  const handleTouchStart = () => {
-    console.log("Touch start");
-    setIsDragging(true);
-  };
+  // const handleTouchStart = () => {
+  //   console.log("Touch start");
+  //   setIsDragging(true);
+  // };
 
-  const handleTouchEnd = () => {
-    console.log("Touch end");
-    setIsDragging(false);
-  };
+  // const handleTouchEnd = () => {
+  //   console.log("Touch end");
+  //   setIsDragging(false);
+  // };
 
   // const handleDrawerOpenChange = useCallback(
   //   (open, fromMarker = false) => {
@@ -336,12 +336,12 @@ export default function MapPageClient({ user }) {
           modal={false}
           open={isDrawerOpen}
           // onOpenChange={handleDrawerOpenChange}
-          onDrag={handleTouchStart}
-          onRelease={handleTouchEnd}
+          // onDrag={handleTouchStart}
+          // onRelease={handleTouchEnd}
           // scrollLockTimeout={1}
-          onAnimationEnd={() => {
-            console.log("Animation ended");
-          }}
+          // onAnimationEnd={() => {
+          //   console.log("Animation ended");
+          // }}
           // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
         >
           <MapRender
@@ -392,7 +392,7 @@ export default function MapPageClient({ user }) {
                 //   overscrollBehavior: "none",
                 // }}
               >
-                <div className="bg-gray-400 w-40 h-40 py-20"></div>
+                <div className="bg-gray-400 w-24 h-24 py-12"></div>
 
                 <Drawer.Title className="text-3xl mt-2 font-medium text-gray-900">
                   {selectedListing?.type === "residential"
