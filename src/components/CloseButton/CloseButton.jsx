@@ -1,7 +1,11 @@
 import Button from "@/components/Button";
 
-function CloseButton({ onClick, children = "X" }) {
-  return <Button onClick={onClick}>{children}</Button>;
+function CloseButton({ onClick, children = "X", ...props }) {
+  return (
+    <Button onClick={onClick} {...props}>
+      {children}
+    </Button>
+  );
 }
 
 export default CloseButton;

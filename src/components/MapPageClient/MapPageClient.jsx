@@ -270,7 +270,7 @@ export default function MapPageClient({ user }) {
       // console.log(drawerContentRef.current);
       if (drawerContentRef.current) {
         const scrollTop = drawerContentRef.current.scrollTop;
-        console.log("Scroll position:", scrollTop);
+        // console.log("Scroll position:", scrollTop);
 
         // console.log("Scroll position:", scrollTop);
         if (scrollTop > 340) {
@@ -345,7 +345,7 @@ export default function MapPageClient({ user }) {
           // onOpenChange={handleDrawerOpenChange}
           // onDrag={handleTouchStart}
           // onRelease={handleTouchEnd}
-          // scrollLockTimeout={1}
+          scrollLockTimeout={0}
           // onAnimationEnd={() => {
           //   console.log("Animation ended");
           // }}
@@ -371,17 +371,27 @@ export default function MapPageClient({ user }) {
               className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden"
             >
               <header
-                className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-4 px-4`}
+                className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4`}
               >
-                <Drawer.Title
-                  className={`text-md mt-2 font-medium text-gray-900 ${
+                {/* Empty button slot until I properly set layout for centered title */}
+                <CloseButton className="opacity-0">Close</CloseButton>
+
+                <div
+                  className={`self-center flex flex-col items-center ${
                     isDrawerHeaderShown ? "" : "opacity-0"
                   }`}
                 >
-                  {selectedListing?.type === "residential"
-                    ? selectedListing?.profiles.first_name
-                    : selectedListing?.name}
-                </Drawer.Title>
+                  <Drawer.Title
+                    className={`text-md font-medium text-gray-900 `}
+                  >
+                    {selectedListing?.type === "residential"
+                      ? selectedListing?.profiles.first_name
+                      : selectedListing?.name}
+                  </Drawer.Title>
+                  <p className="-mt-1 text-sm text-gray-500">
+                    {selectedListing?.type}
+                  </p>
+                </div>
                 <CloseButton onClick={handleCloseListing}>Close</CloseButton>
                 {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
                   Close
@@ -399,23 +409,23 @@ export default function MapPageClient({ user }) {
                 //   overscrollBehavior: "none",
                 // }}
               >
-                <div className="bg-gray-400 w-24 h-24 py-12"></div>
-
-                <Drawer.Title className="text-3xl mt-2 font-medium text-gray-900">
-                  {selectedListing?.type === "residential"
-                    ? selectedListing?.profiles.first_name
-                    : selectedListing?.name}
-                </Drawer.Title>
-                <Drawer.Description className="mt-4 text-lg">
-                  {selectedListing?.description}
-                </Drawer.Description>
-
                 <ListingRead
                   user={user}
                   listing={selectedListing}
                   setSelectedListing={handleCloseListing}
                   modal={true}
                 />
+
+                <div className="bg-gray-400 w-24 h-24 py-12"></div>
+
+                <Drawer.Title>
+                  {selectedListing?.type === "residential"
+                    ? selectedListing?.profiles.first_name
+                    : selectedListing?.name}
+                </Drawer.Title>
+                <Drawer.Description>
+                  {selectedListing?.description}
+                </Drawer.Description>
                 <LoremIpsum />
 
                 {/* {selectedListing ? (

@@ -1,5 +1,12 @@
 "use client";
-import { useState, memo, useEffect, useCallback, useRef } from "react";
+import {
+  Fragment,
+  useState,
+  memo,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 
 import Link from "next/link";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
@@ -95,11 +102,12 @@ const ListingRead = memo(function Listing({
   // }, []);
 
   if (!listing) return null;
+  {
+    /* {setSelectedListing && <CloseButton onClick={setSelectedListing} />} */
+  }
   return (
-    <div>
-      {/* {setSelectedListing && <CloseButton onClick={setSelectedListing} />} */}
-
-      <div key={listing.id}>
+    <Fragment key={listing.id}>
+      <div className="flex flex-row gap-3">
         {listing.type === "residential" ? (
           <StorageImage
             bucket="avatars"
@@ -116,171 +124,171 @@ const ListingRead = memo(function Listing({
           />
         )}
 
-        <h2>{listingName}</h2>
-        <p>{listing.type}</p>
-        {/* <p>Last active: TODO</p> */}
-
-        <StyledCallout>
-          <p>
-            {user && listing.owner_id === user.id
-              ? "This is your own listing, show button to edit instead of chat"
-              : "Not your listing, show button to chat"}
-          </p>
-
-          {user ? (
-            listing.owner_id === user.id ? (
-              <LinkButton href={`/profile/listings/${listing.slug}`}>
-                Edit listing
-              </LinkButton>
-            ) : (
-              <Button onClick={() => setIsChatOpen(true)}>
-                Contact{" "}
-                {listing.type === "residential"
-                  ? listing.profiles.first_name
-                  : listing.name}
-              </Button>
-            )
-          ) : (
-            <LinkButton href={`/sign-up?from=listing&slug=${listing.slug}`}>
-              Contact host
-            </LinkButton>
-          )}
-        </StyledCallout>
-
-        {isChatOpen && (
-          <ChatWindow
-            user={user}
-            listing={listing}
-            setIsChatOpen={setIsChatOpen}
-          />
-        )}
-
-        {listing.description && (
-          <>
-            <h3>
-              {listing.type === "business" ? "Donation details" : "About"}
-            </h3>
-            <p>{listing.description}</p>
-          </>
-        )}
-
-        {!modal && (
-          <>
-            <h3>Location</h3>
-            <StyledMap
-              // ref={mapRef}
-              style={{ height: "320px" }}
-              interactive={false}
-              initialViewState={{
-                longitude: listing.longitude,
-                latitude: listing.latitude,
-                zoom: initialZoomLevel,
-              }}
-              // onZoom={(event) => {
-              //   // console.log("box zoom end", event);
-              //   setMapZoomLevel(event.viewState.zoom);
-              // }}
-              // onLoad={handleMapResize}
-              // onMove={handleMapMove}
-              // onResize={handleMapResize}
-            >
-              <Marker
-                longitude={listing.longitude}
-                latitude={listing.latitude}
-                anchor="center"
-              >
-                <MapPin selected={true} />
-              </Marker>
-              <NavigationControl showCompass={false} />
-            </StyledMap>
-            {listing.type === "residential" && (
-              <p>Contact host for their exact location.</p>
-            )}
-            <Link href={`/map?listing=${listing.slug}`}>
-              See nearby listings
-            </Link>
-          </>
-        )}
-        {listing.type === "residential" ? (
-          <p>Contact host for their exact location.</p>
-        ) : (
-          <>
-            <a
-              href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
-                listing.name
-              )}`}
-              target="_blank"
-            >
-              Apple Maps
-            </a>
-            <a
-              href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
-              target="_blank"
-            >
-              Google Maps
-            </a>
-          </>
-        )}
-
-        {listing.accepted_items.length > 0 && (
-          <>
-            <h3>Accepted</h3>
-            <ul>
-              {listing.accepted_items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        {listing.rejected_items.length > 0 && (
-          <>
-            <h3>Not accepted</h3>
-            <ul>
-              {listing.rejected_items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        {listing.photos.length > 0 && (
-          <>
-            <h3>Photos</h3>
-            <ul>
-              {listing.photos.map((photo, index) => (
-                <li key={index}>
-                  <StorageImage
-                    bucket="listing_photos"
-                    filename={photo}
-                    alt={`Photo ${index + 1}`}
-                    style={{ width: "100px", height: "100px" }}
-                  />
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        {listing.links.length > 0 && (
-          <>
-            <h3>Links</h3>
-            <ul>
-              {listing.links.map((link, index) => (
-                <li key={index}>
-                  <Link href={link} target="_blank">
-                    {link}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-        <Link href={`/listings/${listing.slug}`}>Permalink</Link>
-        {/* <h3>Raw data</h3>
-        <pre>{JSON.stringify(listing, null, 2)}</pre> */}
+        <div className="flex flex-col">
+          <h2 className="text-2xl mt-2 font-medium text-gray-900">
+            {listingName}
+          </h2>
+          <p className="text-lg text-gray-600">{listing.type}</p>
+          {/* <p>Last active: TODO</p> */}
+        </div>
       </div>
-    </div>
+
+      <StyledCallout>
+        <p>
+          {user && listing.owner_id === user.id
+            ? "This is your own listing, show button to edit instead of chat"
+            : "Not your listing, show button to chat"}
+        </p>
+
+        {user ? (
+          listing.owner_id === user.id ? (
+            <LinkButton href={`/profile/listings/${listing.slug}`}>
+              Edit listing
+            </LinkButton>
+          ) : (
+            <Button onClick={() => setIsChatOpen(true)}>
+              Contact{" "}
+              {listing.type === "residential"
+                ? listing.profiles.first_name
+                : listing.name}
+            </Button>
+          )
+        ) : (
+          <LinkButton href={`/sign-up?from=listing&slug=${listing.slug}`}>
+            Contact host
+          </LinkButton>
+        )}
+      </StyledCallout>
+
+      {isChatOpen && (
+        <ChatWindow
+          user={user}
+          listing={listing}
+          setIsChatOpen={setIsChatOpen}
+        />
+      )}
+
+      {listing.description && (
+        <>
+          <h3>{listing.type === "business" ? "Donation details" : "About"}</h3>
+          <p>{listing.description}</p>
+        </>
+      )}
+
+      {!modal && (
+        <>
+          <h3>Location</h3>
+          <StyledMap
+            // ref={mapRef}
+            style={{ height: "320px" }}
+            interactive={false}
+            initialViewState={{
+              longitude: listing.longitude,
+              latitude: listing.latitude,
+              zoom: initialZoomLevel,
+            }}
+            // onZoom={(event) => {
+            //   // console.log("box zoom end", event);
+            //   setMapZoomLevel(event.viewState.zoom);
+            // }}
+            // onLoad={handleMapResize}
+            // onMove={handleMapMove}
+            // onResize={handleMapResize}
+          >
+            <Marker
+              longitude={listing.longitude}
+              latitude={listing.latitude}
+              anchor="center"
+            >
+              <MapPin selected={true} />
+            </Marker>
+            <NavigationControl showCompass={false} />
+          </StyledMap>
+          {listing.type === "residential" && (
+            <p>Contact host for their exact location.</p>
+          )}
+          <Link href={`/map?listing=${listing.slug}`}>See nearby listings</Link>
+        </>
+      )}
+      {listing.type === "residential" ? (
+        <p>Contact host for their exact location.</p>
+      ) : (
+        <>
+          <a
+            href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
+              listing.name
+            )}`}
+            target="_blank"
+          >
+            Apple Maps
+          </a>
+          <a
+            href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
+            target="_blank"
+          >
+            Google Maps
+          </a>
+        </>
+      )}
+
+      {listing.accepted_items.length > 0 && (
+        <>
+          <h3>Accepted</h3>
+          <ul className="list-disc divide-y divide-dashed">
+            {listing.accepted_items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {listing.rejected_items.length > 0 && (
+        <>
+          <h3>Not accepted</h3>
+          <ul className="list-disc divide-y divide-dashed">
+            {listing.rejected_items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {listing.photos.length > 0 && (
+        <>
+          <h3>Photos</h3>
+          <ul>
+            {listing.photos.map((photo, index) => (
+              <li key={index}>
+                <StorageImage
+                  bucket="listing_photos"
+                  filename={photo}
+                  alt={`Photo ${index + 1}`}
+                  style={{ width: "100px", height: "100px" }}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {listing.links.length > 0 && (
+        <>
+          <h3>Links</h3>
+          <ul>
+            {listing.links.map((link, index) => (
+              <li key={index}>
+                <Link href={link} target="_blank">
+                  {link}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <Link href={`/listings/${listing.slug}`}>Permalink</Link>
+      {/* <h3>Raw data</h3>
+        <pre>{JSON.stringify(listing, null, 2)}</pre> */}
+    </Fragment>
   );
 });
 
