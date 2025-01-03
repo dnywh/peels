@@ -81,12 +81,12 @@ const ListingRead = memo(function Listing({
   // Update URL when chat is opened
   const handleChatOpen = () => {
     const params = new URLSearchParams(searchParams);
-    params.set("chatActive", "true");
+    params.set("chat", "true");
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   // Check if chat should be open from URL
-  const chatActive = searchParams.get("chatActive") === "true";
+  const chat = searchParams.get("chat") === "true";
 
   // const mapRef = useRef(null);
   // const [distanceAcrossMapWidth, setDistanceAcrossMapWidth] = useState(0);
