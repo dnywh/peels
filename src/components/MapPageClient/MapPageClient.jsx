@@ -16,7 +16,7 @@ import GuestActions from "@/components/GuestActions";
 
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
-
+import BottomTabBar from "@/components/BottomTabBar";
 import { facts } from "@/data/facts";
 
 import { styled } from "@pigment-css/react";
@@ -343,6 +343,7 @@ export default function MapPageClient({ user }) {
           snapPoints={snapPoints}
           activeSnapPoint={snap}
           setActiveSnapPoint={setSnap}
+          // snapToSequentialPoint={true}
           modal={false}
           open={isDrawerOpen}
           // onOpenChange={handleDrawerOpenChange}
@@ -367,6 +368,10 @@ export default function MapPageClient({ user }) {
             setMapController={setMapController}
             DrawerTrigger={Drawer.Trigger}
           />
+
+          {/* // TODO: Adjust attribution position to account for BottomTabBar (or just change MapRender height to account for BottomTabBar) */}
+          {/* Done by removing 'fixed' from BottomTabBar */}
+          <BottomTabBar className="md:hidden" />
 
           <Drawer.Portal>
             <Drawer.Content
