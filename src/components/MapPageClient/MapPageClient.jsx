@@ -71,11 +71,19 @@ export default function MapPageClient({ user }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [randomFact, setRandomFact] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
+
+  const mobileDrawerClassNames =
+    "fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden";
+  const desktopDrawerClassNames =
+    "right-2 top-2 bottom-2 fixed outline-none w-[310px] flex flex-col h-full bg-red-500/20";
+  // const desktopDrawerClassNames =
+  //   "bg-white flex flex-col rounded-t-[10px] h-full w-[400px] mt-24 fixed bottom-0 right-0";
 
   // const [isDragging, setIsDragging] = useState(false);
 
@@ -117,6 +125,31 @@ export default function MapPageClient({ user }) {
       setRandomFact(facts[Math.floor(Math.random() * facts.length)]);
     }
   }, [selectedListing]);
+
+  // Check if the viewport is desktop or mobile
+  // TODO make reusable for profile-redirect.js
+  useEffect(() => {
+    // Use matchMedia instead of resize event
+    const mediaQuery = window.matchMedia("(min-width: 768px)"); // TODO: make this a shared variable also used in the media queries, match with other media queries in general (e.g. tab bar)
+
+    function handleViewportChange(e) {
+      if (e.matches) {
+        // is desktop
+        console.log("Viewport is desktop");
+        setIsDesktop(true);
+      } else {
+        console.log("Viewport is mobile");
+        setIsDesktop(false);
+      }
+    }
+
+    // Check initial viewport size
+    handleViewportChange(mediaQuery);
+
+    // Listen for viewport changes
+    mediaQuery.addEventListener("change", handleViewportChange);
+    return () => mediaQuery.removeEventListener("change", handleViewportChange);
+  }, []);
 
   // Load listing from URL param on mount
   useEffect(() => {
@@ -272,7 +305,7 @@ export default function MapPageClient({ user }) {
         const scrollTop = drawerContentRef.current.scrollTop;
         // console.log("Scroll position:", scrollTop);
 
-        // console.log("Scroll position:", scrollTop);
+        console.log("Scroll position:", scrollTop);
         if (scrollTop > 340) {
           // Make this equal to the height of the nav bar (64px), since that blocks the software scrollbar
           // console.log("Scrolled more than 0px");
@@ -340,9 +373,11 @@ export default function MapPageClient({ user }) {
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
       <StyledMapRender>
         <Drawer.Root
-          snapPoints={snapPoints}
-          activeSnapPoint={snap}
-          setActiveSnapPoint={setSnap}
+          // position={isDesktop ? "right" : undefined}
+          direction={isDesktop ? "right" : undefined}
+          snapPoints={isDesktop ? undefined : snapPoints}
+          activeSnapPoint={isDesktop ? undefined : snap}
+          setActiveSnapPoint={isDesktop ? undefined : setSnap}
           // snapToSequentialPoint={true}
           modal={false}
           open={isDrawerOpen}
@@ -376,7 +411,10 @@ export default function MapPageClient({ user }) {
           <Drawer.Portal>
             <Drawer.Content
               data-testid="content"
-              className="fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden"
+              className={
+                isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
+              }
+              style={{ "--initial-transform": "calc(100% + 8px)" }}
             >
               <header
                 className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4`}
@@ -385,7 +423,7 @@ export default function MapPageClient({ user }) {
                 <CloseButton className="opacity-0">Close</CloseButton>
 
                 <div
-                  className={`self-center flex flex-col items-center ${
+                  className={`self-center flex flex-col items-center  ${
                     isDrawerHeaderShown ? "" : "opacity-0"
                   }`}
                 >
@@ -409,10 +447,13 @@ export default function MapPageClient({ user }) {
               <div
                 ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={clsx("pt-8 flex flex-col mx-auto w-full px-4", {
-                  "overflow-y-auto": snap === 1,
-                  "overflow-hidden": snap !== 1,
-                })}
+                className={clsx(
+                  "pt-8 flex flex-col mx-auto w-full px-4 bg-white",
+                  {
+                    "overflow-y-auto": snap === 1 || isDesktop,
+                    "overflow-hidden": snap !== 1 && !isDesktop,
+                  }
+                )}
                 // style={{
                 //   overscrollBehavior: "none",
                 // }}
