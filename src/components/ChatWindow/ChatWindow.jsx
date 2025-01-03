@@ -27,9 +27,10 @@ const ChatWindow = memo(function ChatWindow({
 
   // Check if the listing is owned by the user
   useEffect(() => {
+    console.log("Existing thread owned by user?", { existingThread, threadId });
     if (existingThread && existingThread.owner_id !== user.id) {
       setListingIsOwnedByUser(false);
-      console.log(listing);
+      console.log({ listing });
     } else {
       console.log("Existing thread is owned by user");
       setListingIsOwnedByUser(true);
@@ -38,6 +39,7 @@ const ChatWindow = memo(function ChatWindow({
 
   // Only update when existingThread actually changes
   useEffect(() => {
+    console.log("Existing thread changed:", { existingThread, threadId });
     if (existingThread && existingThread.id !== threadId) {
       setThreadId(existingThread.id);
       setMessages(existingThread.chat_messages || []);
@@ -169,7 +171,7 @@ const ChatWindow = memo(function ChatWindow({
 
       <div className="messages-container">
         {messages.map((message) => {
-          console.log(message);
+          console.log("Message:", { message });
           return (
             <ChatMessage
               key={message.id}

@@ -25,6 +25,8 @@ import { styled } from "@pigment-css/react";
 import turfDistance from "@turf/distance";
 import LoremIpsum from "@/components/LoremIpsum";
 import clsx from "clsx";
+import { useSearchParams, useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 const StyledCallout = styled("aside")({
   border: "1px solid grey",
@@ -37,6 +39,55 @@ const ListingRead = memo(function Listing({
   setSelectedListing,
   modal,
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [existingThread, setExistingThread] = useState(null);
+  const supabase = createClient();
+
+  // Load existing thread if any
+  useEffect(() => {
+    async function loadExistingThread() {
+      console.log("Loading existing thread for listing:", listing.slug);
+
+      const { data: thread, error } = await supabase
+        .from("chat_threads_with_participants")
+        .select(
+          `
+          *,
+          chat_messages_with_senders (*)
+        `
+        )
+        .match({
+          listing_id: listing.id,
+          initiator_id: user.id,
+          owner_id: listing.owner_id,
+        })
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error loading thread:", error);
+        return;
+      }
+
+      console.log("Found existing thread:", thread);
+      setExistingThread(thread);
+    }
+
+    if (user && listing) {
+      loadExistingThread();
+    }
+  }, [listing?.id, user?.id]);
+
+  // Update URL when chat is opened
+  const handleChatOpen = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set("chatActive", "true");
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Check if chat should be open from URL
+  const chatActive = searchParams.get("chatActive") === "true";
+
   // const mapRef = useRef(null);
   // const [distanceAcrossMapWidth, setDistanceAcrossMapWidth] = useState(0);
   // const [mapWidth, setMapWidth] = useState(0);
@@ -151,7 +202,10 @@ const ListingRead = memo(function Listing({
                 Edit listing
               </LinkButton>
             ) : (
-              <Drawer.Trigger className="rounded-md mt-4 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+              <Drawer.Trigger
+                className="rounded-md mt-4 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+                onClick={handleChatOpen}
+              >
                 Contact{" "}
                 {listing.type === "residential"
                   ? listing.profiles.first_name
@@ -190,6 +244,15 @@ const ListingRead = memo(function Listing({
                 <ChatWindow
                   user={user}
                   listing={listing}
+                  existingThread={
+                    existingThread
+                      ? {
+                          ...existingThread,
+                          chat_messages:
+                            existingThread.chat_messages_with_senders,
+                        }
+                      : null
+                  }
                   setIsChatOpen={setIsChatOpen}
                 />
                 {/* <LoremIpsum /> */}
