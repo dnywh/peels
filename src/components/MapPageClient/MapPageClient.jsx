@@ -291,40 +291,31 @@ export default function MapPageClient({ user }) {
     }
   };
 
+  // Mobile scroll listener
   useEffect(() => {
-    if (snap !== 1) {
-      // setIsDrawerHeaderShown(false);
+    if (!isDesktop && snap !== 1) {
+      setIsDrawerHeaderShown(false);
       return;
     }
 
-    console.log("At full snap");
+    console.log("Setting up mobile scroll listener");
 
     const handleScroll = () => {
-      // console.log(drawerContentRef.current);
       if (drawerContentRef.current) {
         const scrollTop = drawerContentRef.current.scrollTop;
-        // console.log("Scroll position:", scrollTop);
-
-        console.log("Scroll position:", scrollTop);
-        if (scrollTop > 340) {
-          // Make this equal to the height of the nav bar (64px), since that blocks the software scrollbar
-          // console.log("Scrolled more than 0px");
-          setIsDrawerHeaderShown(true);
-        } else {
-          // console.log("Scrolled less than 0px");
-          setIsDrawerHeaderShown(false);
-        }
+        console.log("Mobile Scroll position:", scrollTop);
+        setIsDrawerHeaderShown(scrollTop > 340);
       }
     };
 
     const drawerContent = drawerContentRef.current;
 
     if (drawerContent) {
-      console.log("Adding scroll listener");
+      console.log("Adding mobile scroll listener");
       drawerContent.addEventListener("scroll", handleScroll);
     } else {
       console.warn(
-        "drawerContentRef.current is null, cannot add scroll listener."
+        "drawerContentRef.current is null for mobile, cannot add scroll listener."
       );
     }
 
@@ -333,7 +324,38 @@ export default function MapPageClient({ user }) {
         drawerContent.removeEventListener("scroll", handleScroll);
       }
     };
-  }, [snap]);
+  }, [snap]); // Only depends on snap for mobile
+
+  // Desktop scroll listener
+  useEffect(() => {
+    if (isDesktop && isDrawerOpen) {
+      console.log("Setting up desktop scroll listener");
+
+      const handleScroll = () => {
+        if (drawerContentRef.current) {
+          const scrollTop = drawerContentRef.current.scrollTop;
+          console.log("Desktop Scroll position:", scrollTop);
+          setIsDrawerHeaderShown(scrollTop > 340);
+        }
+      };
+
+      const observer = new MutationObserver(() => {
+        const drawerContent = drawerContentRef.current;
+        if (drawerContent) {
+          console.log("Adding desktop scroll listener");
+          drawerContent.addEventListener("scroll", handleScroll);
+          observer.disconnect(); // Stop observing once the listener is added
+        }
+      });
+
+      // Start observing the drawer content for changes
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      return () => {
+        observer.disconnect(); // Clean up the observer on unmount
+      };
+    }
+  }, [isDesktop, isDrawerOpen]); // Depends on isDesktop and isDrawerOpen for desktop
 
   const handleSearchPick = useCallback((event) => {
     // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
