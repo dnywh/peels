@@ -327,9 +327,12 @@ export default function MapPageClient({ user }) {
 
   const handleCloseListing = () => {
     console.log("Closing listing");
-    setSelectedListing(null);
     // Remove listing param from URL
     router.push("/map", { scroll: false });
+    // Change selected listing to null
+    // setSelectedListing(null);
+    // Turned off because this is visually jarring as the animation is happening
+    // Instead do this as it opens
   };
 
   return (
