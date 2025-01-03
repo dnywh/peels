@@ -38,6 +38,7 @@ const ListingRead = memo(function Listing({
   listing,
   setSelectedListing,
   modal,
+  isDesktop,
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -185,7 +186,10 @@ const ListingRead = memo(function Listing({
             : "Not your listing, show button to chat"}
         </p>
 
-        <Drawer.NestedRoot>
+        <Drawer.NestedRoot
+          modal={isDesktop ? false : true}
+          direction={isDesktop ? "right" : undefined}
+        >
           {user ? (
             listing.owner_id === user.id ? (
               <LinkButton href={`/profile/listings/${listing.slug}`}>

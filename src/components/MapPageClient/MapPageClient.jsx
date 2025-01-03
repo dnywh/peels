@@ -81,7 +81,7 @@ export default function MapPageClient({ user }) {
   const mobileDrawerClassNames =
     "fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden";
   const desktopDrawerClassNames =
-    "right-2 top-2 bottom-2 fixed outline-none w-[310px] flex flex-col h-full bg-red-500/20";
+    "right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col h-full bg-red-500/20";
   // const desktopDrawerClassNames =
   //   "bg-white flex flex-col rounded-t-[10px] h-full w-[400px] mt-24 fixed bottom-0 right-0";
 
@@ -410,6 +410,7 @@ export default function MapPageClient({ user }) {
           onAnimationEnd={() => {
             console.log("Animation ended");
           }}
+
           // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
         >
           <MapRender
@@ -432,11 +433,13 @@ export default function MapPageClient({ user }) {
 
           <Drawer.Portal>
             <Drawer.Content
+              data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
               data-testid="content"
               className={
                 isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
               }
-              style={{ "--initial-transform": "calc(100% + 8px)" }}
+              // Desktop drawer offset
+              style={{ "--initial-transform": "calc(100% + 40px)" }}
             >
               <header
                 className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4`}
@@ -485,6 +488,7 @@ export default function MapPageClient({ user }) {
                   listing={selectedListing}
                   setSelectedListing={handleCloseListing}
                   modal={true}
+                  isDesktop={isDesktop}
                 />
 
                 <div className="bg-gray-400 w-24 h-24 py-12"></div>
