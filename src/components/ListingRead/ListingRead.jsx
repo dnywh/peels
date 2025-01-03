@@ -78,20 +78,10 @@ const ListingRead = memo(function Listing({
     }
   }, [listing?.id, user?.id]);
 
-  // Update URL when chat is opened
-  const handleChatOpen = () => {
-    const params = new URLSearchParams(searchParams);
-    params.set("chat", "true");
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
-
-  // Check if chat should be open from URL
-  const chat = searchParams.get("chat") === "true";
-
   // const mapRef = useRef(null);
   // const [distanceAcrossMapWidth, setDistanceAcrossMapWidth] = useState(0);
   // const [mapWidth, setMapWidth] = useState(0);
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  // const [isChatOpen, setIsChatOpen] = useState(false);
   const [mapZoomLevel, setMapZoomLevel] = useState(null);
 
   const initialZoomLevel = 14;
@@ -204,7 +194,7 @@ const ListingRead = memo(function Listing({
             ) : (
               <Drawer.Trigger
                 className="rounded-md mt-4 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
-                onClick={handleChatOpen}
+                // onClick={handleChatOpen}
               >
                 Contact{" "}
                 {listing.type === "residential"
@@ -230,6 +220,7 @@ const ListingRead = memo(function Listing({
                 <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-8" />
                 {/* Button */}
                 <Drawer.Close>Close this drawer</Drawer.Close>
+                {/* <CloseButton onClick={handleChatClose}>Close</CloseButton> */}
 
                 <Drawer.Title className="font-medium mb-4 text-gray-900">
                   Nested chat drawer
@@ -253,7 +244,7 @@ const ListingRead = memo(function Listing({
                         }
                       : null
                   }
-                  setIsChatOpen={setIsChatOpen}
+                  // setIsChatOpen={setIsChatOpen}
                 />
                 {/* <LoremIpsum /> */}
               </div>
