@@ -37,18 +37,22 @@ main {
   [data-vaul-drawer],
   [data-vaul-drawer][data-vaul-snap-points="false"],
   [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"] {
-    animation: none; /* Reset any existing animations */
-    /* transition: none !important; */
+    /* animation: none; Reset any existing animations */
+    transition-duration: 0.5s !important;
+    animation-duration: 0.5s !important;
+    /* must use 0.5 everywhere to match Vaul's internal timing, otherwise component remains mounted for double as long */
+    /* I actually think this is still broken, but it's imperceptible because of how quickly the animation plays */
+    /* Possible solution: https://github.com/emilkowalski/vaul/issues/87 */
   }
 
   /* Entrance animation */
   [data-vaul-drawer][data-state="open"] {
-    animation: fooBarIn 4.75s cubic-bezier(0.32, 0.72, 0, 1) !important;
+    animation: fooBarIn cubic-bezier(0.32, 0.72, 0, 1) forwards !important;
   }
 
   /* Exit animation */
   [data-vaul-drawer][data-state="closed"] {
-    animation: fooBarOut 4.75s cubic-bezier(0.32, 0.72, 0, 1) !important;
+    animation: fooBarOut cubic-bezier(0.32, 0.72, 0, 1) forwards !important;
   }
 }
 
@@ -62,7 +66,7 @@ main {
   }
   100% {
     transform: translateX(0) rotate(0);
-    /* opacity: 1; */
+    opacity: 1;
   }
 }
 
@@ -71,9 +75,9 @@ main {
     transform: translateX(0) rotate(0);
     opacity: 1;
   }
-  25% {
+  /* 85% {
     opacity: 0;
-  }
+  } */
   100% {
     transform: translateX(2rem) rotate(0.35deg);
     opacity: 0;
