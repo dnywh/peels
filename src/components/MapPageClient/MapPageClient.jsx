@@ -386,7 +386,7 @@ export default function MapPageClient({ user }) {
 
   return (
     <StyledMapPage className="md:p-6">
-      <TabBarLeft className="" />
+      <TabBarLeft className="hidden md:block" />
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
       <StyledMapRender className="md:rounded-lg">
         <Drawer.Root
