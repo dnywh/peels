@@ -57,7 +57,7 @@ main {
 
 @keyframes fooBarIn {
   0% {
-    transform: translateX(2rem) rotate(0.35deg);
+    transform: translateX(24px) rotate(0.35deg); /* TODO: Link to pagePadding variable */
     opacity: 0;
   }
   25% {
@@ -78,7 +78,7 @@ main {
     opacity: 0;
   }
   100% {
-    transform: translateX(2rem) rotate(0.35deg);
+    transform: translateX(24px) rotate(0.35deg); /* TODO: Link to pagePadding variable */
     opacity: 0;
   }
 }

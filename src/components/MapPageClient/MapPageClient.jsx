@@ -24,11 +24,14 @@ import LoremIpsum from "../LoremIpsum";
 
 import clsx from "clsx";
 
+const sidebarWidth = "400px";
+const pagePadding = "24px";
+
 const StyledMapPage = styled("div")({
   // background: "red",
   display: "flex",
   // flexDirection: "row",
-  // gap: "2rem",
+  gap: "1.5rem",
   width: "100dvw",
   height: "100dvh",
 });
@@ -39,7 +42,7 @@ const StyledMapRender = styled("div")({
   gap: "1rem",
   flex: 1,
   // borderRadius: "0.5rem",
-  // overflow: "hidden", // Wrecks it!
+  overflow: "hidden", // Wrecks it!
 });
 
 const StyledSidebar = styled("div")({
@@ -48,7 +51,7 @@ const StyledSidebar = styled("div")({
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
-  width: "20rem",
+  width: sidebarWidth,
   height: "100%",
   // overflow: "scroll",
 });
@@ -82,11 +85,8 @@ export default function MapPageClient({ user }) {
   const [selectedPinId, setSelectedPinId] = useState(null);
 
   const mobileDrawerClassNames =
-    "fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden";
-  const desktopDrawerClassNames =
-    "right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col bg-red-500/20";
-  // const desktopDrawerClassNames =
-  //   "bg-white flex flex-col rounded-t-[10px] h-full w-[400px] mt-24 fixed bottom-0 right-0";
+    "fixed flex flex-col bg-slate-100 border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden";
+  const desktopDrawerClassNames = `right-[24px] top-[24px] bottom-[24px] fixed outline-none w-[400px] flex flex-col overflow-hidden`;
 
   // const [isDragging, setIsDragging] = useState(false);
 
@@ -394,9 +394,9 @@ export default function MapPageClient({ user }) {
   };
 
   return (
-    <StyledMapPage>
+    <StyledMapPage className="md:p-6">
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
-      <StyledMapRender>
+      <StyledMapRender className="md:rounded-lg">
         <Drawer.Root
           // position={isDesktop ? "right" : undefined}
           direction={isDesktop ? "right" : undefined}
@@ -440,15 +440,12 @@ export default function MapPageClient({ user }) {
             <Drawer.Content
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
               data-testid="content" // Not sure if this is needed
-              className={
-                (isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames) +
-                (isChatDrawerOpen ? " stacked" : "")
-              }
+              className={`rounded-lg ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames} ${isChatDrawerOpen ? " stacked" : undefined}`}
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
             >
               <header
-                className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4`}
+                className={`${isDrawerHeaderShown ? "bg-slate-100 shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4 rounded-t-lg `}
               >
                 {/* Empty button slot until I properly set layout for centered title */}
 
@@ -470,7 +467,8 @@ export default function MapPageClient({ user }) {
                     {selectedListing?.type}
                   </p>
                 </div>
-                <CloseButton onClick={handleCloseListing}>Close</CloseButton>
+
+                <CloseButton onClick={handleCloseListing}>X Close</CloseButton>
                 {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
                   Close
                 </Drawer.Close> */}
@@ -482,7 +480,7 @@ export default function MapPageClient({ user }) {
                 ref={drawerContentRef}
                 // data-vaul-no-drag
                 className={clsx(
-                  "pt-8 flex flex-col mx-auto w-full px-4 bg-white",
+                  "pt-8 flex flex-col mx-auto w-full px-4 bg-slate-100 rounded-lg",
                   {
                     "overflow-y-auto": snap === 1 || isDesktop,
                     "overflow-hidden": snap !== 1 && !isDesktop,
@@ -501,6 +499,8 @@ export default function MapPageClient({ user }) {
                   isDesktop={isDesktop}
                   isChatDrawerOpen={isChatDrawerOpen}
                   setIsChatDrawerOpen={setIsChatDrawerOpen}
+                  pagePadding={pagePadding}
+                  sidebarWidth={sidebarWidth}
                 />
 
                 <div className="bg-gray-400 w-24 h-24 py-12"></div>
@@ -557,6 +557,11 @@ export default function MapPageClient({ user }) {
           </Drawer.Portal>
         </Drawer.Root>
       </StyledMapRender>
+      {isDesktop && (
+        <StyledSidebar className="bg-red-50 md:rounded-lg">
+          <h1>Sidebar</h1>
+        </StyledSidebar>
+      )}
     </StyledMapPage>
   );
 }

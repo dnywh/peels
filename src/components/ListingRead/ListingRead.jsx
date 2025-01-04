@@ -28,6 +28,9 @@ import clsx from "clsx";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
+const sidebarWidth = "400px";
+const pagePadding = "24px";
+
 const StyledCallout = styled("aside")({
   border: "1px solid grey",
 });
@@ -42,6 +45,7 @@ const ListingRead = memo(function Listing({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
+  console.log(pagePadding, sidebarWidth);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [existingThread, setExistingThread] = useState(null);
@@ -49,8 +53,7 @@ const ListingRead = memo(function Listing({
 
   const mobileDrawerClassNames =
     "bg-white flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0";
-  const desktopDrawerClassNames =
-    "shadow-lg right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col bg-red-500/20";
+  const desktopDrawerClassNames = `shadow-lg right-[24px] top-[24px] bottom-[24px] fixed outline-none w-[400px] flex flex-col`;
 
   // Load existing thread if any
   useEffect(() => {
@@ -225,14 +228,14 @@ const ListingRead = memo(function Listing({
             <Drawer.Overlay className="fixed inset-0 bg-black/30" />
             <Drawer.Content
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
-              className={`${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames}`}
+              className={`rounded-lg ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames}`}
               // Desktop drawer offset
               // Overridden in globals.css
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
             >
               {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
               <header
-                className={`py-2 px-4 bg-white ${
+                className={`py-2 px-4 bg-gray-50 border-b border-gray-200 ${
                   isDesktop ? "rounded-t-lg" : undefined
                 }`}
               >
@@ -241,7 +244,7 @@ const ListingRead = memo(function Listing({
                 </Drawer.Description>
                 {/* Handle */}
                 {!isDesktop && (
-                  <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-8" />
+                  <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-lg bg-gray-300 mb-8" />
                 )}
                 {/* Button */}
                 <Drawer.Close>Close this drawer</Drawer.Close>
@@ -255,7 +258,7 @@ const ListingRead = memo(function Listing({
               <div
                 // ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={`flex flex-col w-full ${isDesktop ? "rounded-b-lg h-full" : undefined} px-4 bg-white overflow-y-auto`}
+                className={`flex flex-col w-full ${isDesktop ? "rounded-b-lg h-full" : undefined} px-4 bg-gray-50 overflow-y-auto`}
               >
                 <ChatWindow
                   user={user}
