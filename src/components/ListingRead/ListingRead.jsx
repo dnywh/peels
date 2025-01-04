@@ -235,9 +235,7 @@ const ListingRead = memo(function Listing({
             >
               {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
               <header
-                className={`py-2 px-4 bg-gray-50 border-b border-gray-200 ${
-                  isDesktop ? "rounded-t-lg" : undefined
-                }`}
+                className={`rounded-t-lg py-2 px-4 bg-gray-50 border-b border-gray-200`}
               >
                 <Drawer.Description className="sr-only">
                   Test description for aria.

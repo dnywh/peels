@@ -84,9 +84,11 @@ export default function MapPageClient({ user }) {
 
   const [selectedPinId, setSelectedPinId] = useState(null);
 
+  const [isCovered, setIsCovered] = useState(false);
+
   const mobileDrawerClassNames =
-    "fixed flex flex-col bg-slate-100 border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden";
-  const desktopDrawerClassNames = `right-[24px] top-[24px] bottom-[24px] fixed outline-none w-[400px] flex flex-col overflow-hidden`;
+    "fixed flex flex-col bg-slate-100 border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]";
+  const desktopDrawerClassNames = `right-[24px] top-[24px] bottom-[24px] fixed outline-none w-[400px] flex flex-col`;
 
   // const [isDragging, setIsDragging] = useState(false);
 
@@ -121,6 +123,10 @@ export default function MapPageClient({ user }) {
   // useEffect(() => {
   //   console.log("snap", snap);
   // }, [snap]);
+
+  useEffect(() => {
+    console.log("isCovered", isCovered);
+  }, [isCovered]);
 
   useEffect(() => {
     // Only generate a random fact if there is NO selected listing, not when one is opened
@@ -275,6 +281,7 @@ export default function MapPageClient({ user }) {
 
     setSelectedListing(data);
     setIsDrawerOpen(true); // Open drawer when marker is clicked
+    setIsCovered(true);
     setSnap(snapPoints[0]); // Reset snap point
     setIsDrawerHeaderShown(false); // Reset header shown state
 
@@ -387,6 +394,7 @@ export default function MapPageClient({ user }) {
 
   const handleCloseListing = () => {
     console.log("Closing listing");
+    setIsCovered(false);
     setIsDrawerOpen(false);
     setIsChatDrawerOpen(false);
     setSelectedPinId(null);
@@ -407,11 +415,19 @@ export default function MapPageClient({ user }) {
           modal={false}
           open={isDrawerOpen}
           // onOpenChange={handleDrawerOpenChange}
+          onOpenChange={(event) => {
+            console.log("Drawer open change", event);
+            // setIsCovered(true);
+          }}
           // onDrag={handleTouchStart}
           // onRelease={handleTouchEnd}
+          onRelease={() => {
+            console.log("Drawer released");
+            // setIsCovered(true);
+          }}
           scrollLockTimeout={0}
-          onAnimationEnd={() => {
-            console.log("Animation ended");
+          onAnimationEnd={(event) => {
+            console.log("Animation ended", event);
           }}
 
           // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
@@ -440,7 +456,7 @@ export default function MapPageClient({ user }) {
             <Drawer.Content
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
               data-testid="content" // Not sure if this is needed
-              className={`rounded-lg ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames} ${isChatDrawerOpen ? " stacked" : undefined}`}
+              className={`rounded-lg overflow-hidden ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames} ${isChatDrawerOpen ? " stacked" : undefined}`}
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
             >
@@ -558,7 +574,10 @@ export default function MapPageClient({ user }) {
         </Drawer.Root>
       </StyledMapRender>
       {isDesktop && (
-        <StyledSidebar className="bg-red-50 md:rounded-lg">
+        <StyledSidebar
+          className={`bg-gray-100 md:rounded-lg sidebar`}
+          data-covered={isCovered}
+        >
           <h1>Sidebar</h1>
         </StyledSidebar>
       )}

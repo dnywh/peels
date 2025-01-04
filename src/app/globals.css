@@ -32,6 +32,27 @@ main {
   overscroll-behavior: none;
 }
 
+.sidebar {
+  /* background-color: red; */
+  transform-origin: center left;
+  transition-property: transform, opacity;
+  transition-duration: 0.35s;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  /* transition-delay: 1s !important; */
+  /* transform: scale(98%); */
+}
+
+.sidebar[data-covered="true"] {
+  /* transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important; */
+  transform: scale(0.98) translate3d(-12px, 0px, 0px);
+  opacity: 0.5;
+}
+.sidebar[data-covered="false"] {
+  transform: scale(1) translate3d(0px, 0px, 0px);
+  opacity: 1;
+  /* transition-delay: 0.25s; */
+}
+
 @media (min-width: 768px) {
   /* If I want to customize the durations or curves */
   /* [data-vaul-drawer] { */
