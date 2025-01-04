@@ -196,6 +196,7 @@ const ListingRead = memo(function Listing({
         <Drawer.NestedRoot
           modal={isDesktop ? false : true}
           direction={isDesktop ? "right" : undefined}
+          open={isChatDrawerOpen}
           onOpenChange={(event) => setIsChatDrawerOpen(event)}
         >
           {user ? (
