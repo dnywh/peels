@@ -12,15 +12,15 @@ function TabBarBottom({ ...props }) {
   );
 }
 
-// Alternative
-function FloatingTabBar() {
-  <div className="fixed bottom-0 left-0 right-0 h-20 p-2">
-    <div className="flex justify-between items-center bg-white/90 backdrop-blur-sm h-full rounded-md">
-      <div className="w-1/3">Map</div>
-      <div className="w-1/3">Chats</div>
-      <div className="w-1/3">Profile</div>
-    </div>
-  </div>;
-}
+// Alternative visual style (inset)
+// function FloatingTabBar() {
+//   <div className="fixed bottom-0 left-0 right-0 h-20 p-2">
+//     <div className="flex justify-between items-center bg-white/90 backdrop-blur-sm h-full rounded-md">
+//       <div className="w-1/3">Map</div>
+//       <div className="w-1/3">Chats</div>
+//       <div className="w-1/3">Profile</div>
+//     </div>
+//   </div>;
+// }
 
 export default TabBarBottom;
