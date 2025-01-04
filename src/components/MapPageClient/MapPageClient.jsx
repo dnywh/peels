@@ -161,7 +161,7 @@ export default function MapPageClient({ user }) {
       setIsDrawerOpen(true);
     } else {
       // Clear selected listing if no slug in URL
-      setSelectedListing(null);
+      // setSelectedListing(null);
       // If the user traversed the history back to where there was (possibly) no slug, close the drawer
       setIsDrawerOpen(false);
     }
@@ -288,9 +288,8 @@ export default function MapPageClient({ user }) {
     console.log("Map clicked without marker click");
     if (selectedListing) {
       handleCloseListing();
-      setSelectedListing(null); // Duplicated in handleCloseListing and elsewhere
-      setIsDrawerOpen(false); // Duplicated in handleCloseListing
-      setIsChatDrawerOpen(false); // Duplicated in handleCloseListing
+      setIsDrawerOpen(false);
+      setIsChatDrawerOpen(false);
     }
   };
 
@@ -385,16 +384,15 @@ export default function MapPageClient({ user }) {
 
   const handleCloseListing = () => {
     console.log("Closing listing");
-    // Close all open drawers (may be redundant because of router push)
     setIsDrawerOpen(false);
     setIsChatDrawerOpen(false);
-    // Remove listing param from URL
     router.push("/map", { scroll: false, shallow: true });
 
-    // Change selected listing to null
-    // setSelectedListing(null);
-    // Turned off because this is visually jarring as the animation is happening
-    // Instead do this as it opens
+    // Add this to clear the listing after animation completes
+    // setTimeout(() => {
+    //   setSelectedListing(null);
+    //   console.log("Cleared selected listing");
+    // }, 4500); // Adjust timing to match your drawer animation duration
   };
 
   return (

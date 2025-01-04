@@ -46,6 +46,7 @@ export default function MapRender({
 
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedPinId, setSelectedPinId] = useState(null);
 
   const handleOpenChange = (open) => {
     console.log("about to open?", open);
@@ -173,6 +174,19 @@ export default function MapRender({
     setIsListingInView(isInView);
   }, [selectedListing]);
 
+  // Update when selectedListing changes
+  useEffect(() => {
+    setSelectedPinId(selectedListing?.id || null);
+  }, [selectedListing]);
+
+  const handleMapClick = (event) => {
+    console.log("Map clicked without marker click");
+    if (selectedPinId) {
+      setSelectedPinId(null); // This will update pin visuals immediately
+      onMapClick(event); // This will handle the drawer closing
+    }
+  };
+
   return (
     <>
       <div
@@ -224,7 +238,7 @@ export default function MapRender({
               animationOptions={{ duration: 200 }}
               onMoveEnd={handleMapMove}
               onLoad={handleMapLoad}
-              onClick={onMapClick}
+              onClick={handleMapClick}
             >
               <GeolocateControl
                 showUserLocation={true}
@@ -241,12 +255,13 @@ export default function MapRender({
                     anchor="center"
                     onClick={(event) => {
                       event.originalEvent.stopPropagation();
-                      onMarkerClick(listing.id);
+                      setSelectedPinId(listing.id); // Update pin visuals immediately
+                      onMarkerClick(listing.id); // Handle the rest of the selection logic
                     }}
                   >
                     <MapPin
-                      selected={selectedListing?.id === listing.id}
-                      coarse={selectedListing?.type === "residential"}
+                      selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
+                      coarse={listing.type === "residential"}
                     />
                   </Marker>
                 </DrawerTrigger>
