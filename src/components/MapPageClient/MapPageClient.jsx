@@ -246,8 +246,8 @@ export default function MapPageClient({ user }) {
   }, []);
 
   const handleMarkerClick = async (listingId) => {
-    // If the clicked marker is already selected, do nothing and return early
-    if (selectedListing?.id === listingId) {
+    // If the clicked marker is already selected AND the drawer is already open, do nothing and return early
+    if (selectedListing?.id === listingId && isDrawerOpen) {
       return;
     }
 
