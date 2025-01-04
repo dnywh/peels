@@ -189,121 +189,118 @@ export default function MapRender({
   };
 
   return (
-    <>
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "100%",
-          backgroundColor: "lightblue",
-        }}
-      >
-        {isLoading ? <LoadingSpinner /> : null}
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "lightblue",
+      }}
+    >
+      {isLoading ? <LoadingSpinner /> : null}
 
-        {hasInitialPosition && (
-          <>
-            <Map
-              ref={mapRef}
-              mapStyle={{
-                version: 8,
-                glyphs:
-                  "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-                sprite:
-                  "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-                sources: {
-                  protomaps: {
-                    type: "vector",
-                    url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-                    attribution:
-                      '<a href="https://protomaps.com">Protomaps</a>',
-                  },
+      {hasInitialPosition && (
+        <>
+          <Map
+            ref={mapRef}
+            mapStyle={{
+              version: 8,
+              glyphs:
+                "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+              sprite:
+                "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+              sources: {
+                protomaps: {
+                  type: "vector",
+                  url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
+                  attribution: '<a href="https://protomaps.com">Protomaps</a>',
                 },
-                layers: layers("protomaps", "light"),
-              }}
-              renderWorldCopies={true}
-              initialViewState={{
-                longitude:
-                  selectedListing?.longitude ||
-                  initialCoordinates?.longitude ||
-                  lastKnownPosition?.longitude ||
-                  0,
-                latitude:
-                  selectedListing?.latitude ||
-                  initialCoordinates?.latitude ||
-                  lastKnownPosition?.latitude ||
-                  0,
-                zoom: selectedListing
-                  ? 12
-                  : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
-              }}
-              animationOptions={{ duration: 200 }}
-              onMoveEnd={handleMapMove}
-              onLoad={handleMapLoad}
-              onClick={handleMapClick}
-            >
-              <GeolocateControl
-                showUserLocation={true}
-                animationOptions={{ duration: 100 }}
-              />
-              <NavigationControl showZoom={true} showCompass={false} />
+              },
+              layers: layers("protomaps", "light"),
+            }}
+            renderWorldCopies={true}
+            initialViewState={{
+              longitude:
+                selectedListing?.longitude ||
+                initialCoordinates?.longitude ||
+                lastKnownPosition?.longitude ||
+                0,
+              latitude:
+                selectedListing?.latitude ||
+                initialCoordinates?.latitude ||
+                lastKnownPosition?.latitude ||
+                0,
+              zoom: selectedListing
+                ? 12
+                : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
+            }}
+            animationOptions={{ duration: 200 }}
+            onMoveEnd={handleMapMove}
+            onLoad={handleMapLoad}
+            onClick={handleMapClick}
+          >
+            <GeolocateControl
+              showUserLocation={true}
+              animationOptions={{ duration: 100 }}
+            />
+            <NavigationControl showZoom={true} showCompass={false} />
 
-              {/* <Button>Open or close drawer</Button> */}
-              {listings.map((listing) => (
-                <DrawerTrigger key={listing.id}>
-                  <Marker
-                    longitude={listing.longitude}
-                    latitude={listing.latitude}
-                    anchor="center"
-                    onClick={(event) => {
-                      event.originalEvent.stopPropagation();
-                      setSelectedPinId(listing.id); // Update pin visuals immediately
-                      onMarkerClick(listing.id); // Handle the rest of the selection logic
-                    }}
-                  >
-                    <MapPin
-                      selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
-                      coarse={listing.type === "residential"}
-                    />
-                  </Marker>
-                </DrawerTrigger>
-              ))}
-            </Map>
+            {/* <Button>Open or close drawer</Button> */}
+            {listings.map((listing) => (
+              <DrawerTrigger key={listing.id}>
+                <Marker
+                  longitude={listing.longitude}
+                  latitude={listing.latitude}
+                  anchor="center"
+                  onClick={(event) => {
+                    event.originalEvent.stopPropagation();
+                    setSelectedPinId(listing.id); // Update pin visuals immediately
+                    onMarkerClick(listing.id); // Handle the rest of the selection logic
+                  }}
+                >
+                  <MapPin
+                    selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
+                    coarse={listing.type === "residential"}
+                  />
+                </Marker>
+              </DrawerTrigger>
+            ))}
+          </Map>
 
-            {/* Map search for small screens */}
-            <MapSearch
-              onPick={handleSearchPick}
-              mapController={mapController}
+          {/* Map search for small screens */}
+          <MapSearch
+            onPick={handleSearchPick}
+            mapController={mapController}
+            style={{
+              position: "absolute",
+              top: "1rem",
+              left: "1rem",
+              zIndex: 0, // Setting the z-index of the map controls to 0 seems to fix the drawer content's touch responsiveness
+            }}
+          />
+
+          {selectedListing && !isListingInView && (
+            <button
+              onClick={handleFlyToListing}
               style={{
                 position: "absolute",
-                top: "1rem",
-                left: "1rem",
-                zIndex: 0, // Setting the z-index of the map controls to 0 seems to fix the drawer content's touch responsiveness
+                bottom: "20px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                padding: "8px 16px",
+                backgroundColor: "white",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                cursor: "pointer",
+                zIndex: 1,
               }}
-            />
-
-            {selectedListing && !isListingInView && (
-              <button
-                onClick={handleFlyToListing}
-                style={{
-                  position: "absolute",
-                  bottom: "20px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  padding: "8px 16px",
-                  backgroundColor: "white",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  cursor: "pointer",
-                  zIndex: 1,
-                }}
-              >
-                Return to listing
-              </button>
-            )}
-          </>
-        )}
-      </div>
-    </>
+            >
+              Return to listing
+            </button>
+          )}
+        </>
+      )}
+    </div>
   );
 }

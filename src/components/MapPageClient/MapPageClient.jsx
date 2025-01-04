@@ -70,7 +70,6 @@ export default function MapPageClient({ user }) {
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
-  const [isCovered, setIsCovered] = useState(false);
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
@@ -113,10 +112,6 @@ export default function MapPageClient({ user }) {
   // useEffect(() => {
   //   console.log("snap", snap);
   // }, [snap]);
-
-  useEffect(() => {
-    console.log("isCovered", isCovered);
-  }, [isCovered]);
 
   // Check if the viewport is desktop or mobile
   // TODO make reusable for profile-redirect.js
@@ -264,7 +259,6 @@ export default function MapPageClient({ user }) {
 
     setSelectedListing(data);
     setIsDrawerOpen(true); // Open drawer when marker is clicked
-    setIsCovered(true);
     setSnap(snapPoints[0]); // Reset snap point
     setIsDrawerHeaderShown(false); // Reset header shown state
 
@@ -377,7 +371,7 @@ export default function MapPageClient({ user }) {
 
   const handleCloseListing = () => {
     console.log("Closing listing");
-    setIsCovered(false);
+
     setIsDrawerOpen(false);
     setIsChatDrawerOpen(false);
     setSelectedPinId(null);
@@ -399,17 +393,9 @@ export default function MapPageClient({ user }) {
           modal={false}
           open={isDrawerOpen}
           // onOpenChange={handleDrawerOpenChange}
-          onOpenChange={(event) => {
-            console.log("Drawer open change", event);
-            // setIsCovered(true);
-          }}
           // onDrag={handleTouchStart}
           // onRelease={handleTouchEnd}
-          onRelease={() => {
-            console.log("Drawer released");
-            // setIsCovered(true);
-          }}
-          scrollLockTimeout={0}
+          scrollLockTimeout={0} // Not sure but seems to make the mobile drawer more responsive
           onAnimationEnd={(event) => {
             console.log("Animation ended", event);
           }}
@@ -555,7 +541,7 @@ export default function MapPageClient({ user }) {
           </Drawer.Portal>
         </Drawer.Root>
       </StyledMapRender>
-      {isDesktop && <MapSidebar user={user} covered={isCovered} />}
+      {isDesktop && <MapSidebar user={user} covered={isDrawerOpen} />}
     </StyledMapPage>
   );
 }
