@@ -95,7 +95,7 @@ main {
     transform: translateX(0) rotate(0);
     opacity: 1;
   }
-  85% {
+  25% {
     opacity: 0;
   }
   100% {

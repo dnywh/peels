@@ -17,7 +17,7 @@ import GuestActions from "@/components/GuestActions";
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
 import BottomTabBar from "@/components/BottomTabBar";
-import { facts } from "@/data/facts";
+import MapSidebar from "@/components/MapSidebar";
 
 import { styled } from "@pigment-css/react";
 import LoremIpsum from "../LoremIpsum";
@@ -45,17 +45,6 @@ const StyledMapRender = styled("div")({
   overflow: "hidden", // Wrecks it!
 });
 
-const StyledSidebar = styled("div")({
-  // background: "blue",
-  border: "1px solid grey",
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  width: sidebarWidth,
-  height: "100%",
-  // overflow: "scroll",
-});
-
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
   const mapRef = useRef(null);
@@ -73,18 +62,16 @@ export default function MapPageClient({ user }) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [randomFact, setRandomFact] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
 
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
+  const [isCovered, setIsCovered] = useState(false);
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
   const [selectedPinId, setSelectedPinId] = useState(null);
-
-  const [isCovered, setIsCovered] = useState(false);
 
   const mobileDrawerClassNames =
     "fixed flex flex-col bg-slate-100 border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]";
@@ -127,13 +114,6 @@ export default function MapPageClient({ user }) {
   useEffect(() => {
     console.log("isCovered", isCovered);
   }, [isCovered]);
-
-  useEffect(() => {
-    // Only generate a random fact if there is NO selected listing, not when one is opened
-    if (!selectedListing) {
-      setRandomFact(facts[Math.floor(Math.random() * facts.length)]);
-    }
-  }, [selectedListing]);
 
   // Check if the viewport is desktop or mobile
   // TODO make reusable for profile-redirect.js
@@ -573,14 +553,7 @@ export default function MapPageClient({ user }) {
           </Drawer.Portal>
         </Drawer.Root>
       </StyledMapRender>
-      {isDesktop && (
-        <StyledSidebar
-          className={`bg-gray-100 md:rounded-lg sidebar`}
-          data-covered={isCovered}
-        >
-          <h1>Sidebar</h1>
-        </StyledSidebar>
-      )}
+      {isDesktop && <MapSidebar user={user} covered={isCovered} />}
     </StyledMapPage>
   );
 }
