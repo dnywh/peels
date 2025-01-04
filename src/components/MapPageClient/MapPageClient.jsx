@@ -424,9 +424,16 @@ export default function MapPageClient({ user }) {
             <Drawer.Content
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
               data-testid="content" // Not sure if this is needed
-              className={`rounded-lg overflow-hidden ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames} ${isChatDrawerOpen ? " stacked" : undefined}`}
+              className={`rounded-lg overflow-hidden ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames}`}
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
+              style={
+                isDesktop
+                  ? {
+                      transform: "translate3d(0px, 0px, 0px)", // Helps drawer not get stuck at snap 0.35 point when returning to desktop breakpoint
+                    }
+                  : undefined
+              }
             >
               <header
                 className={`${isDrawerHeaderShown ? "bg-slate-100 shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4 rounded-t-lg `}
