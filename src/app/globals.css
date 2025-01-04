@@ -34,11 +34,11 @@ main {
 
 @media (min-width: 768px) {
   /* If I want to customize the durations or curves */
-  [data-vaul-drawer] {
-    /* transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important; */
-    animation-duration: 0.35s !important;
-    transition-duration: 0.35s !important;
-  }
+  /* [data-vaul-drawer] { */
+  /* transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important; */
+  /* animation-duration: 0.35s !important;
+    transition-duration: 0.35s !important; */
+  /* } */
 
   /* Override Vaul's scale-back animation for nested dialogs */
   /* [data-vaul-drawer][data-aria-hidden="true"] {

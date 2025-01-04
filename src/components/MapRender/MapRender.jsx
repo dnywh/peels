@@ -37,6 +37,8 @@ export default function MapRender({
   mapController,
   DrawerTrigger,
   preventDrawerClose,
+  selectedPinId,
+  setSelectedPinId,
 }) {
   const isFirstLoad = useRef(true);
   const [lastKnownPosition, setLastKnownPosition] = useState(null);
@@ -46,7 +48,6 @@ export default function MapRender({
 
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedPinId, setSelectedPinId] = useState(null);
 
   const handleOpenChange = (open) => {
     console.log("about to open?", open);

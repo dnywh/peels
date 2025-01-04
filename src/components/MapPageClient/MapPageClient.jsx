@@ -79,6 +79,8 @@ export default function MapPageClient({ user }) {
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
+  const [selectedPinId, setSelectedPinId] = useState(null);
+
   const mobileDrawerClassNames =
     "fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden";
   const desktopDrawerClassNames =
@@ -164,6 +166,7 @@ export default function MapPageClient({ user }) {
       // setSelectedListing(null);
       // If the user traversed the history back to where there was (possibly) no slug, close the drawer
       setIsDrawerOpen(false);
+      setSelectedPinId(null);
     }
   }, [searchParams]); // This will run when the URL changes
 
@@ -386,13 +389,8 @@ export default function MapPageClient({ user }) {
     console.log("Closing listing");
     setIsDrawerOpen(false);
     setIsChatDrawerOpen(false);
+    setSelectedPinId(null);
     router.push("/map", { scroll: false, shallow: true });
-
-    // Add this to clear the listing after animation completes
-    // setTimeout(() => {
-    //   setSelectedListing(null);
-    //   console.log("Cleared selected listing");
-    // }, 4500); // Adjust timing to match your drawer animation duration
   };
 
   return (
@@ -430,6 +428,8 @@ export default function MapPageClient({ user }) {
             onSearchPick={handleSearchPick}
             setMapController={setMapController}
             DrawerTrigger={Drawer.Trigger}
+            selectedPinId={selectedPinId}
+            setSelectedPinId={setSelectedPinId}
           />
 
           {/* // TODO: Adjust attribution position to account for BottomTabBar (or just change MapRender height to account for BottomTabBar) */}
@@ -451,6 +451,7 @@ export default function MapPageClient({ user }) {
                 className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4`}
               >
                 {/* Empty button slot until I properly set layout for centered title */}
+
                 <CloseButton className="opacity-0">Close</CloseButton>
 
                 <div
