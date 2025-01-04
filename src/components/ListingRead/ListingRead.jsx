@@ -225,7 +225,8 @@ const ListingRead = memo(function Listing({
                 isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
               }
               // Desktop drawer offset
-              // style={{ "--initial-transform": "calc(14%)" }}
+              // Overridden in globals.css
+              // style={{ "--initial-transform": "calc(114%)" }}
             >
               {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
               <header
