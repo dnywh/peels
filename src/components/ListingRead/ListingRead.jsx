@@ -45,6 +45,11 @@ const ListingRead = memo(function Listing({
   const [existingThread, setExistingThread] = useState(null);
   const supabase = createClient();
 
+  const mobileDrawerClassNames =
+    "bg-white flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0";
+  const desktopDrawerClassNames =
+    "right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col bg-red-500/20";
+
   // Load existing thread if any
   useEffect(() => {
     async function loadExistingThread() {
@@ -214,14 +219,25 @@ const ListingRead = memo(function Listing({
 
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-black/30" />
-            <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0">
+            <Drawer.Content
+              data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
+              className={
+                isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
+              }
+            >
               {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
-              <header className="py-2  px-4 ">
+              <header
+                className={`py-2 px-4 bg-white ${
+                  isDesktop ? "rounded-t-lg" : undefined
+                }`}
+              >
                 <Drawer.Description className="sr-only">
                   Test description for aria.
                 </Drawer.Description>
                 {/* Handle */}
-                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-8" />
+                {!isDesktop && (
+                  <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-8" />
+                )}
                 {/* Button */}
                 <Drawer.Close>Close this drawer</Drawer.Close>
                 {/* <CloseButton onClick={handleChatClose}>Close</CloseButton> */}
@@ -234,7 +250,7 @@ const ListingRead = memo(function Listing({
               <div
                 // ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={"flex flex-col w-full  px-4  overflow-y-auto"}
+                className={`flex flex-col w-full ${isDesktop ? "rounded-b-lg h-full" : undefined} px-4 bg-white overflow-y-auto`}
               >
                 <ChatWindow
                   user={user}

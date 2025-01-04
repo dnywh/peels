@@ -81,7 +81,7 @@ export default function MapPageClient({ user }) {
   const mobileDrawerClassNames =
     "fixed flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px] overflow-hidden";
   const desktopDrawerClassNames =
-    "right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col h-full bg-red-500/20";
+    "right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col bg-red-500/20";
   // const desktopDrawerClassNames =
   //   "bg-white flex flex-col rounded-t-[10px] h-full w-[400px] mt-24 fixed bottom-0 right-0";
 
@@ -434,7 +434,7 @@ export default function MapPageClient({ user }) {
           <Drawer.Portal>
             <Drawer.Content
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
-              data-testid="content"
+              data-testid="content" // Not sure if this is needed
               className={
                 isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
               }
@@ -468,6 +468,8 @@ export default function MapPageClient({ user }) {
                   Close
                 </Drawer.Close> */}
               </header>
+
+              {/* Begin drawer main content */}
               {/* Page content */}
               <div
                 ref={drawerContentRef}
@@ -477,7 +479,8 @@ export default function MapPageClient({ user }) {
                   {
                     "overflow-y-auto": snap === 1 || isDesktop,
                     "overflow-hidden": snap !== 1 && !isDesktop,
-                  }
+                  },
+                  isDesktop ? "h-full" : undefined
                 )}
                 // style={{
                 //   overscrollBehavior: "none",
@@ -501,7 +504,7 @@ export default function MapPageClient({ user }) {
                 <Drawer.Description>
                   {selectedListing?.description}
                 </Drawer.Description>
-                <LoremIpsum />
+                {/* <LoremIpsum /> */}
 
                 {/* {selectedListing ? (
                   <>
