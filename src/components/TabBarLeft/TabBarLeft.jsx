@@ -1,11 +1,13 @@
+import TabBarTab from "@/components/TabBarTab";
 function TabBarLeft({ ...props }) {
   return (
     <div {...props}>
-      <div className="">
-        <div className="w-1/3">Map</div>
-        <div className="w-1/3">Chats</div>
-        <div className="w-1/3">Profile</div>
-      </div>
+      <nav className="flex flex-col gap-2">
+        <TabBarTab title="Peels" icon="P" href="/" />
+        <TabBarTab title="Map" icon="M" href="/map" />
+        <TabBarTab title="Chats" icon="C" href="/chats" />
+        <TabBarTab title="Profile" icon="P" href="/profile" />
+      </nav>
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default async function ProfilePage({ searchParams }) {
 
     const message = (await searchParams)?.message
     const error = (await searchParams)?.error
-    console.log(message, error);
+    // console.log(message, error);
 
     const supabase = await createClient();
 

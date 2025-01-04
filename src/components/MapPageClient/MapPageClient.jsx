@@ -30,16 +30,21 @@ import clsx from "clsx";
 const sidebarWidth = "400px";
 const pagePadding = "24px";
 
-const StyledMapPage = styled("div")({
+const StyledMapPage = styled("main")({
+  flex: 1,
+  gap: "1.5rem",
+  alignItems: "stretch",
   // background: "red",
   display: "flex",
-  // flexDirection: "row",
-  gap: "1.5rem",
-  width: "100dvw",
-  height: "100dvh",
+  flexDirection: "row",
+  // gap: "1.5rem",
+  // width: "100dvw",
+  // height: "100dvh",
 });
 
 const StyledMapRender = styled("div")({
+  height: "100%",
+
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
@@ -379,8 +384,8 @@ export default function MapPageClient({ user }) {
   };
 
   return (
-    <StyledMapPage className="md:p-6">
-      <TabBarLeft className="hidden md:block" />
+    <StyledMapPage>
+      {/* <TabBarLeft className="hidden md:block" /> */}
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
       <StyledMapRender className="md:rounded-lg">
         <Drawer.Root
@@ -418,7 +423,7 @@ export default function MapPageClient({ user }) {
             setSelectedPinId={setSelectedPinId}
           />
 
-          <TabBarBottom className="md:hidden" />
+          {/* <TabBarBottom className="md:hidden" /> */}
 
           <Drawer.Portal>
             <Drawer.Content

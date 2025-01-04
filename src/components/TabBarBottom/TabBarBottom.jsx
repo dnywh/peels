@@ -1,13 +1,13 @@
+import TabBarTab from "@/components/TabBarTab";
+
 function TabBarBottom({ ...props }) {
   return (
-    <div {...props}>
-      <div className="bottom-0 left-0 right-0 h-20 bg-white/95 backdrop-blur-sm">
-        <div className="flex justify-between items-center">
-          <div className="w-1/3">Map</div>
-          <div className="w-1/3">Chats</div>
-          <div className="w-1/3">Profile</div>
-        </div>
-      </div>
+    <div className="fixed bottom-0 left-0 right-0 h-20" {...props}>
+      <nav className=" bg-white/95 backdrop-blur-sm p-2 flex justify-between items-center stretch">
+        <TabBarTab title="Map" icon="M" href="/map" />
+        <TabBarTab title="Chats" icon="C" href="/chats" />
+        <TabBarTab title="Profile" icon="P" href="/profile" />
+      </nav>
     </div>
   );
 }
