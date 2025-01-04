@@ -39,6 +39,8 @@ const ListingRead = memo(function Listing({
   setSelectedListing,
   modal,
   isDesktop,
+  isChatDrawerOpen,
+  setIsChatDrawerOpen,
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,7 +50,7 @@ const ListingRead = memo(function Listing({
   const mobileDrawerClassNames =
     "bg-white flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0";
   const desktopDrawerClassNames =
-    "right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col bg-red-500/20";
+    "shadow-lg right-10 top-10 bottom-10 fixed outline-none w-[448px] flex flex-col bg-red-500/20";
 
   // Load existing thread if any
   useEffect(() => {
@@ -194,6 +196,7 @@ const ListingRead = memo(function Listing({
         <Drawer.NestedRoot
           modal={isDesktop ? false : true}
           direction={isDesktop ? "right" : undefined}
+          onOpenChange={(event) => setIsChatDrawerOpen(event)}
         >
           {user ? (
             listing.owner_id === user.id ? (
@@ -221,12 +224,10 @@ const ListingRead = memo(function Listing({
             <Drawer.Overlay className="fixed inset-0 bg-black/30" />
             <Drawer.Content
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
-              className={
-                isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
-              }
+              className={`${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames}`}
               // Desktop drawer offset
               // Overridden in globals.css
-              // style={{ "--initial-transform": "calc(114%)" }}
+              // style={{ "--initial-transform": "calc(100% - 420px)" }}
             >
               {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
               <header
@@ -269,7 +270,7 @@ const ListingRead = memo(function Listing({
                   }
                   // setIsChatOpen={setIsChatOpen}
                 />
-                {/* <LoremIpsum /> */}
+                <LoremIpsum />
               </div>
             </Drawer.Content>
           </Drawer.Portal>

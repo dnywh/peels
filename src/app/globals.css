@@ -33,32 +33,30 @@ main {
 }
 
 @media (min-width: 768px) {
-  /* Handle both entrance and exit animations */
-  [data-vaul-drawer],
-  [data-vaul-drawer][data-vaul-snap-points="false"],
-  [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"] {
-    /* animation: none; Reset any existing animations */
-    transition-duration: 0.5s !important;
+  /* If I want to customize the durations or curves */
+  /* [data-vaul-drawer] {
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1) !important;
     animation-duration: 0.5s !important;
-    /* must use 0.5 everywhere to match Vaul's internal timing, otherwise component remains mounted for double as long */
-    /* I actually think this is still broken, but it's imperceptible because of how quickly the animation plays */
-    /* Possible solution: https://github.com/emilkowalski/vaul/issues/87 */
-  }
+  } */
 
-  /* Entrance animation */
-  [data-vaul-drawer][data-state="open"] {
-    animation: fooBarIn cubic-bezier(0.32, 0.72, 0, 1) forwards !important;
-  }
+  /* Override Vaul's scale-back animation for nested dialogs */
+  /* [data-vaul-drawer][data-aria-hidden="true"] {
+    pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1) !important;
+    transform: scale(0.981503) translate3d(-16px, 0px, 0px) !important;
+  } */
+}
 
-  /* Exit animation */
-  [data-vaul-drawer][data-state="closed"] {
-    animation: fooBarOut cubic-bezier(0.32, 0.72, 0, 1) forwards !important;
-  }
+[data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="open"] {
+  animation-name: fooBarIn !important;
+}
+[data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="closed"] {
+  animation-name: fooBarOut !important;
 }
 
 @keyframes fooBarIn {
   0% {
-    transform: translateX(2rem) rotate(0.35deg);
+    transform: translateX(2rem) rotate(1deg);
     opacity: 0;
   }
   25% {
@@ -75,11 +73,11 @@ main {
     transform: translateX(0) rotate(0);
     opacity: 1;
   }
-  /* 85% {
+  85% {
     opacity: 0;
-  } */
+  }
   100% {
-    transform: translateX(2rem) rotate(0.35deg);
+    transform: translateX(2rem) rotate(1deg);
     opacity: 0;
   }
 }

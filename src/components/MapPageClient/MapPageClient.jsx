@@ -75,6 +75,7 @@ export default function MapPageClient({ user }) {
 
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
 
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
 
@@ -436,10 +437,11 @@ export default function MapPageClient({ user }) {
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
               data-testid="content" // Not sure if this is needed
               className={
-                isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
+                (isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames) +
+                (isChatDrawerOpen ? " stacked" : "")
               }
               // Desktop drawer offset
-              // style={{ "--initial-transform": "calc(4%)" }}
+              // style={{ "--initial-transform": "calc(100% - 420px)" }}
             >
               <header
                 className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4`}
@@ -492,6 +494,8 @@ export default function MapPageClient({ user }) {
                   setSelectedListing={handleCloseListing}
                   modal={true}
                   isDesktop={isDesktop}
+                  isChatDrawerOpen={isChatDrawerOpen}
+                  setIsChatDrawerOpen={setIsChatDrawerOpen}
                 />
 
                 <div className="bg-gray-400 w-24 h-24 py-12"></div>
@@ -504,7 +508,7 @@ export default function MapPageClient({ user }) {
                 <Drawer.Description>
                   {selectedListing?.description}
                 </Drawer.Description>
-                {/* <LoremIpsum /> */}
+                <LoremIpsum />
 
                 {/* {selectedListing ? (
                   <>
