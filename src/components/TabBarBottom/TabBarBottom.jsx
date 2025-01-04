@@ -1,4 +1,4 @@
-function BottomTabBar({ ...props }) {
+function TabBarBottom({ ...props }) {
   return (
     <div {...props}>
       <div className="bottom-0 left-0 right-0 h-20 bg-white/95 backdrop-blur-sm">
@@ -23,4 +23,4 @@ function FloatingTabBar() {
   </div>;
 }
 
-export default BottomTabBar;
+export default TabBarBottom;

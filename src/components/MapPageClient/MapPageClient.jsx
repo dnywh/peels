@@ -16,7 +16,10 @@ import GuestActions from "@/components/GuestActions";
 
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
-import BottomTabBar from "@/components/BottomTabBar";
+
+import TabBarLeft from "@/components/TabBarLeft";
+import TabBarBottom from "@/components/TabBarBottom";
+
 import MapSidebar from "@/components/MapSidebar";
 
 import { styled } from "@pigment-css/react";
@@ -383,6 +386,7 @@ export default function MapPageClient({ user }) {
 
   return (
     <StyledMapPage className="md:p-6">
+      <TabBarLeft className="" />
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
       <StyledMapRender className="md:rounded-lg">
         <Drawer.Root
@@ -428,9 +432,7 @@ export default function MapPageClient({ user }) {
             setSelectedPinId={setSelectedPinId}
           />
 
-          {/* // TODO: Adjust attribution position to account for BottomTabBar (or just change MapRender height to account for BottomTabBar) */}
-          {/* Done by removing 'fixed' from BottomTabBar */}
-          <BottomTabBar className="md:hidden" />
+          <TabBarBottom className="md:hidden" />
 
           <Drawer.Portal>
             <Drawer.Content
