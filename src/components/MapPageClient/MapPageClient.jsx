@@ -439,7 +439,7 @@ export default function MapPageClient({ user }) {
                 isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames
               }
               // Desktop drawer offset
-              style={{ "--initial-transform": "calc(100% + 40px)" }}
+              style={{ "--initial-transform": "calc(4%)" }}
             >
               <header
                 className={`${isDrawerHeaderShown ? "bg-white shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4`}
