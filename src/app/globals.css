@@ -33,16 +33,16 @@ main {
 }
 
 @media (min-width: 768px) {
-  /* This seems to handle the rear sheet (listing) moving in and out as the front (chat) sheet moves in and out */
-  [data-vaul-drawer] {
-    /* transition: transform 5s cubic-bezier(0.32, 0.72, 0, 1) !important; */
-  }
+  /* This seems to handle ONLY the rear sheet (listing) moving in and out as the front (chat) sheet moves in and out */
+  /* [data-vaul-drawer] {
+    transition: transform 5s cubic-bezier(0.32, 0.72, 0, 1) !important;
+  } */
 
   /* This seems to handle both the front (chat) sheet moving in and the rear (listing) sheet moving IN from right */
-  [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="open"] {
-    animation: fooBar 0.5s cubic-bezier(0.32, 0.72, 0, 1) !important;
-  }
-  /* This doesn't work */
+  [data-vaul-drawer],
+  [data-vaul-drawer][data-vaul-snap-points="false"],
+  [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"],
+  [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="open"],
   [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="closed"] {
     animation: fooBar 0.5s cubic-bezier(0.32, 0.72, 0, 1) !important;
   }
@@ -50,7 +50,7 @@ main {
 
 @keyframes fooBar {
   0% {
-    transform: translateX(2rem) rotate(0.5deg);
+    transform: translateX(2rem) rotate(0.35deg);
     opacity: 0;
   }
   25% {
