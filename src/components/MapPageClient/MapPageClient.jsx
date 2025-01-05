@@ -18,7 +18,7 @@ import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
 
 import TabBarLeft from "@/components/TabBarLeft";
-import TabBarBottom from "@/components/TabBarBottom";
+import TabBar from "@/components/TabBar";
 
 import MapSidebar from "@/components/MapSidebar";
 
@@ -423,7 +423,7 @@ export default function MapPageClient({ user }) {
             setSelectedPinId={setSelectedPinId}
           />
 
-          {/* <TabBarBottom className="md:hidden" /> */}
+          {/* <TabBar className="md:hidden" /> */}
 
           <Drawer.Portal>
             <Drawer.Content

@@ -1,6 +1,20 @@
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 
+export default function TabBarTab({
+  title = "Tab",
+  href = "/",
+  icon = "Icon",
+  active = false,
+}) {
+  return (
+    <StyledTabBarTab href={href}>
+      <StyledTabBarTabIcon active={active}>{icon}</StyledTabBarTabIcon>
+      <StyledTabBarTabTitle active={active}>{title}</StyledTabBarTabTitle>
+    </StyledTabBarTab>
+  );
+}
+
 const StyledTabBarTab = styled(Link)({
   display: "flex",
   flexDirection: "column",
@@ -14,15 +28,25 @@ const StyledTabBarTab = styled(Link)({
 const StyledTabBarTabTitle = styled("p")({
   fontSize: "0.85rem",
   fontWeight: "550",
+  color: "black",
+  variants: [
+    {
+      props: { active: true },
+      style: {
+        color: "red",
+      },
+    },
+  ],
 });
 
-function TabBarTab({ title = "Tab", href = "/", icon = "Icon" }) {
-  return (
-    <StyledTabBarTab href={href}>
-      <p>{icon}</p>
-      <StyledTabBarTabTitle>{title}</StyledTabBarTabTitle>
-    </StyledTabBarTab>
-  );
-}
-
-export default TabBarTab;
+const StyledTabBarTabIcon = styled("p")({
+  color: "black",
+  variants: [
+    {
+      props: { active: true },
+      style: {
+        color: "red",
+      },
+    },
+  ],
+});

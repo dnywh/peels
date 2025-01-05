@@ -1,5 +1,4 @@
-import TabBarLeft from "@/components/TabBarLeft";
-import TabBarBottom from "@/components/TabBarBottom";
+import TabBar from "@/components/TabBar";
 import { styled } from "@pigment-css/react";
 
 const CorePage = styled("div")({
@@ -17,12 +16,13 @@ const CorePage = styled("div")({
   },
 });
 
-export default async function Layout({ children }) {
+export default async function Layout({ children, params }) {
+  console.log(await params);
   return (
     <CorePage>
-      <TabBarLeft className="hidden md:block" />
+      <TabBar breakpoint="md" className="hidden md:block" />
       {children}
-      <TabBarBottom className="block md:hidden" />
+      <TabBar breakpoint="sm" className="block md:hidden" />
     </CorePage>
   );
 }
