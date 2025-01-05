@@ -21,6 +21,7 @@ function LegalFooter() {
       <p>
         © {currentYear} {siteConfig.name}
       </p>
+      <Link href={siteConfig.links.about}>About</Link>
       <Link href={siteConfig.links.terms}>Terms</Link>
       <Link href={siteConfig.links.privacy}>Privacy</Link>
       <Link href={siteConfig.links.support}>Support</Link>

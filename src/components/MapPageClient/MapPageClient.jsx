@@ -38,6 +38,10 @@ const StyledMapPage = styled("main")({
   // width: "100dvw",
   // height: "100dvh",
 
+  // overflow: "hidden",
+  // touchAction: "none",
+  // overscrollBehavior: "none",
+
   // Doesn't work:
   // "& html": {
   //   overflow: "hidden",
@@ -46,14 +50,20 @@ const StyledMapPage = styled("main")({
 });
 
 const StyledMapRender = styled("div")({
-  height: "100%",
+  height: "calc(100% - 80px)",
+  // marginBottom: "80px", //Equal to height of tab bar
+
+  overflow: "hidden",
+  touchAction: "none",
+  overscrollBehavior: "none",
 
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
   flex: 1,
   // borderRadius: "0.5rem",
-  overflow: "hidden", // Wrecks it!
+  // overflow: "hidden", // Wrecks it!
+  // touchAction: "none",
 });
 
 // export default async function MapPage() {
@@ -117,9 +127,9 @@ export default function MapPageClient({ user }) {
   //   [selectedListing]
   // );
 
-  // useEffect(() => {
-  //   console.log("snap", snap);
-  // }, [snap]);
+  useEffect(() => {
+    console.log("snap", snap);
+  }, [snap]);
 
   // Check if the viewport is desktop or mobile
   // TODO make reusable for profile-redirect.js
@@ -186,7 +196,7 @@ export default function MapPageClient({ user }) {
             setInitialCoordinates({
               latitude: data.latitude,
               longitude: data.longitude,
-              zoom: 5,
+              zoom: 9, // Increase zoom when more listings are available
             });
           }
         } catch (error) {
@@ -397,6 +407,7 @@ export default function MapPageClient({ user }) {
           activeSnapPoint={isDesktop ? undefined : snap}
           setActiveSnapPoint={isDesktop ? undefined : setSnap}
           // snapToSequentialPoint={true}
+          // modal={isDesktop ? false : snap === 1} // Seems to break scroll responsiveness. Attempt to help with overscroll/touch events on mobile if header is dragged
           modal={false}
           open={isDrawerOpen}
           // onOpenChange={handleDrawerOpenChange}

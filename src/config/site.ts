@@ -4,6 +4,7 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   // You can add more site-wide configuration here
   links: {
+    about: "/",
     terms: "/terms",
     privacy: "/privacy",
     support: "/support",

@@ -195,6 +195,7 @@ export default function MapRender({
         width: "100%",
         height: "100%",
         backgroundColor: "lightblue",
+        touchAction: "none",
       }}
     >
       {isLoading ? <LoadingSpinner /> : null}
@@ -231,7 +232,7 @@ export default function MapRender({
                 lastKnownPosition?.latitude ||
                 0,
               zoom: selectedListing
-                ? 12
+                ? 8
                 : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
             }}
             animationOptions={{ duration: 200 }}

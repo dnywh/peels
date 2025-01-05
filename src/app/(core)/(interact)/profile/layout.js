@@ -18,10 +18,10 @@ const ProfilePageLayout = styled("div")({
 });
 
 const ProfileSidebarContainer = styled("div")({
-    display: "none",
-    '@media (min-width: 768px)': {
-        display: "block",
-    },
+    // display: "none",
+    // '@media (min-width: 768px)': {
+    //     display: "block",
+    // },
 });
 
 const ProfileSidebar = styled("div")({
@@ -40,11 +40,11 @@ const ProfileSidebar = styled("div")({
 
 export default function ProfileLayout({ children }) {
     return (
-        <div className="scrollable">
+        <div>
             <ProfileRedirect />
 
             <ProfilePageLayout>
-                {/* TODO: This sidebar should be hidden via CSS on smaller breakpoint */}
+                {/* TODO: This sidebar should be hidden via CSS on smaller breakpoint IF on a subpage */}
                 <ProfileSidebarContainer>
                     <ProfileSidebar>
 
