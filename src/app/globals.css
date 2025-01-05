@@ -16,12 +16,26 @@ a {
 @tailwind components;
 @tailwind utilities;
 
-html {
+/* Generally hand over gesture controls to map */
+html.map-open {
+  /* Required to stop mobile map and mobile tab bar from rubber-banding on scroll touch events */
+  overscroll-behavior: none;
+  /* Required to stop page elements from zooming on pinch */
+  touch-action: none;
+}
+
+html.map-open.drawer-fully-open {
+  /* Required to stop drawer from getting stuck on scroll touch events */
+  overflow: hidden; /* Interferes with scroll content? */
+
+  /* Seems to fix the issue of the scroll getting stuck from within the drawer */
+  pointer-events: none;
 }
 
 body {
   /* Not sure if this is still needed */
   /* pointer-events: auto !important; */
+
   /* Required to stop drawer from getting stuck on scroll touch events */
   /* overflow: hidden; */
   /* Required to stop mobile map and mobile tab bar from rubber-banding on scroll touch events */
@@ -29,19 +43,6 @@ body {
 
   /* Helps with pages that contain a fixed bottom tab bar without enough page content  */
   /* min-height: 100dvh; */
-}
-.scrollable {
-  /* This resets the HTML overflow and overscroll-behavior to their default values */
-  /* Requires consistent use of the .scrollable class across all pages */
-  /* height: 100dvh; */
-
-  /* overflow: scroll !important;
-  overscroll-behavior: auto !important; */
-}
-
-.not-scrollable {
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
 }
 
 /* main {

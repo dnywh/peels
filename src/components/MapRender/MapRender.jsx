@@ -20,7 +20,9 @@ import MapSearch from "@/components/MapSearch";
 import { Drawer } from "vaul";
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
+
 const snapPoints = ["148px", "355px", 1];
+const todo = false; // Temporarily turning off this feature to inspect scroll bugs
 
 export default function MapRender({
   mapRef,
@@ -195,7 +197,9 @@ export default function MapRender({
         width: "100%",
         height: "100%",
         backgroundColor: "lightblue",
-        touchAction: "none",
+
+        // touchAction: "none",
+        // pointerEvents: "none",
       }}
     >
       {isLoading ? <LoadingSpinner /> : null}
@@ -280,7 +284,7 @@ export default function MapRender({
             }}
           />
 
-          {selectedListing && !isListingInView && (
+          {selectedListing && !isListingInView && todo && (
             <button
               onClick={handleFlyToListing}
               style={{
@@ -294,7 +298,7 @@ export default function MapRender({
                 borderRadius: "4px",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 cursor: "pointer",
-                zIndex: 1,
+                zIndex: 1, // Could be interfering with drawer scroll, try setting to 0
               }}
             >
               Return to listing

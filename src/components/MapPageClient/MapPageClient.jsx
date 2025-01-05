@@ -40,7 +40,7 @@ const StyledMapPage = styled("main")({
 
   // overflow: "hidden",
   // touchAction: "none",
-  // overscrollBehavior: "none",
+  // pointerEvents: "none",
 
   // Doesn't work:
   // "& html": {
@@ -53,9 +53,9 @@ const StyledMapRender = styled("div")({
   height: "calc(100% - 80px)",
   // marginBottom: "80px", //Equal to height of tab bar
 
-  overflow: "hidden",
-  touchAction: "none",
-  overscrollBehavior: "none",
+  // overflow: "hidden",
+  // touchAction: "none",
+  // overscrollBehavior: "none",
 
   display: "flex",
   flexDirection: "column",
@@ -126,6 +126,25 @@ export default function MapPageClient({ user }) {
   //   },
   //   [selectedListing]
   // );
+
+  useEffect(() => {
+    if (isDesktop) return;
+    // Set HTML element to not overscroll or zoom if the user interacts with general page (e.g. via pinching on zoom controls)
+    document.documentElement.classList.add("map-open");
+
+    if (snap === 1) {
+      console.log("Drawer is open, adding class to html");
+      document.documentElement.classList.add("drawer-fully-open");
+    } else {
+      console.log("Drawer is closed, removing class from html");
+      document.documentElement.classList.remove("drawer-fully-open");
+    }
+
+    // Cleanup function to remove the class when the component unmounts
+    return () => {
+      document.documentElement.classList.remove("drawer-fully-open");
+    };
+  }, [snap]);
 
   useEffect(() => {
     console.log("snap", snap);
@@ -407,8 +426,8 @@ export default function MapPageClient({ user }) {
           activeSnapPoint={isDesktop ? undefined : snap}
           setActiveSnapPoint={isDesktop ? undefined : setSnap}
           // snapToSequentialPoint={true}
-          // modal={isDesktop ? false : snap === 1} // Seems to break scroll responsiveness. Attempt to help with overscroll/touch events on mobile if header is dragged
-          modal={false}
+          modal={isDesktop ? false : snap === 1} // Attempt to help with overscroll/touch events on mobile if header is dragged. Doesn't change anything about the overscroll
+          // modal={false}
           open={isDrawerOpen}
           // onOpenChange={handleDrawerOpenChange}
           // onDrag={handleTouchStart}
