@@ -6,7 +6,7 @@ import TabBarTab from "@/components/TabBarTab";
 const STYLES = {
   sm: {
     container: "fixed bottom-0 left-0 right-0 h-20",
-    nav: "bg-white/95 backdrop-blur-sm p-2 flex justify-between items-center stretch",
+    nav: "h-full bg-white/95 backdrop-blur-sm p-2 flex justify-between items-center stretch",
   },
   md: {
     container: "",
@@ -20,11 +20,14 @@ const NAVIGATION_ITEMS = [
   { title: "Profile", icon: "P", href: "/profile" },
 ];
 
-function TabBar({ breakpoint = "sm", ...props }) {
+function TabBar({ breakpoint = "sm", className = "", ...props }) {
   const pathname = usePathname();
 
   return (
-    <div className={STYLES[breakpoint].container} {...props}>
+    <div
+      className={`${STYLES[breakpoint].container} ${className}`.trim()}
+      {...props}
+    >
       <nav className={STYLES[breakpoint].nav}>
         {breakpoint === "md" && <PeelsTab />}
         {NAVIGATION_ITEMS.map(({ title, icon, href }) => (

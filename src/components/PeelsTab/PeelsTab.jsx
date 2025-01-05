@@ -1,11 +1,7 @@
 import TabBarTab from "@/components/TabBarTab";
 
 function PeelsTab() {
-  return (
-    <div className="hidden md:block">
-      <TabBarTab title="Peels" icon="P" href="/" />
-    </div>
-  );
+  return <TabBarTab title="Peels" icon="P" href="/" />;
 }
 
 export default PeelsTab;

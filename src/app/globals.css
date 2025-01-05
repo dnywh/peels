@@ -17,8 +17,8 @@ a {
 @tailwind utilities;
 
 html {
-  overflow: hidden;
-  overscroll-behavior: none;
+  /* overflow: hidden; */
+  /* overscroll-behavior: none; */
 }
 
 body {

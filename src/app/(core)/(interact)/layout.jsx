@@ -1,7 +1,7 @@
 import TabBar from "@/components/TabBar";
 import { styled } from "@pigment-css/react";
 
-const CorePage = styled("div")({
+const InteractPage = styled("div")({
   // TODO: How do I reach out and set the body colour here conditionally
   // backgroundColor: "#F8F6F3",
   // alignItems: "center",
@@ -19,10 +19,10 @@ const CorePage = styled("div")({
 export default async function Layout({ children, params }) {
   console.log(await params);
   return (
-    <CorePage>
+    <InteractPage>
       <TabBar breakpoint="md" className="hidden md:block" />
       {children}
       <TabBar breakpoint="sm" className="block md:hidden" />
-    </CorePage>
+    </InteractPage>
   );
 }

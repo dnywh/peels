@@ -1,17 +1,30 @@
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
+import { styled } from "@pigment-css/react";
 
 const currentYear = new Date().getFullYear();
 
+const StyledFooter = styled("footer")({
+  display: "flex",
+  flexDirection: "row",
+  gap: "1rem",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  padding: "1.5rem",
+  marginTop: "10rem",
+});
+
 function LegalFooter() {
   return (
-    <footer>
+    <StyledFooter>
       <p>
         © {currentYear} {siteConfig.name}
       </p>
       <Link href={siteConfig.links.terms}>Terms</Link>
       <Link href={siteConfig.links.privacy}>Privacy</Link>
-    </footer>
+      <Link href={siteConfig.links.support}>Support</Link>
+    </StyledFooter>
   );
 }
 
