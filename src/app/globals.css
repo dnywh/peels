@@ -41,13 +41,6 @@ html.map {
   }
 }
 
-/* main {
-  width: 100dvw;
-  height: 100dvh;
-  overflow: hidden;
-  overscroll-behavior: none;
-} */
-
 .sidebar {
   /* background-color: red; */
   transform-origin: center left;

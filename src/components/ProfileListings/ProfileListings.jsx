@@ -17,15 +17,20 @@ export default function ProfileListings({ listings }) {
             </Link>
           </li>
         ))}
-        <li>
-          <Link href="/add-listing">
-            <p>Add another listing to the map</p>
-            <small>
-              Whether you're an individual, community, or business, we're always
-              looking for new hosts.
-            </small>
-          </Link>
-        </li>
+        {/* Only show the "add a/another listing" link if there are less than 3 listings */}
+        {listings.length < 3 && (
+          <li>
+            <Link href="/add-listing">
+              <p>
+                Add {listings.length === 0 ? "a" : "another"} listing to the map
+              </p>
+              <small>
+                Whether you're an individual, community, or business, we're
+                always looking for new hosts.
+              </small>
+            </Link>
+          </li>
+        )}
       </ul>
     </div>
   );

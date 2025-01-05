@@ -1,25 +1,17 @@
 import { Button as UnstyledButton } from "@headlessui/react";
 import { styled } from "@pigment-css/react";
+import classNames from "classnames"; // Required for combining Tailwind classes with styled components
 
-// inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white
 const StyledButton = styled(UnstyledButton)(({ theme }) => ({
-  // padding: "0.5rem 0.75rem",
   border: "none",
-  // borderRadius: "0.375rem",
   borderRadius: theme.corners.unit * 0.5,
   fontSize: "1rem",
-  // lineHeight: "1.25rem",
   minHeight: "2.75rem",
   cursor: "pointer",
-  // width: "100%", // TODO: Make this a prop (either take width of content or 100%)
-
-  // background: theme.colors.primary,
-  // color: theme.colors.secondary,
   "&:hover": {
     background: theme.colors.primary,
     color: theme.colors.secondary,
   },
-  // These both work. Which is better then? I suppose whichever is still around once I remove Headless UI
   "&:focus": {
     background: theme.colors.primary,
     color: theme.colors.secondary,
@@ -30,9 +22,14 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   },
 }));
 
-export default function Button({ children, ...props }) {
+export default function Button({ children, className, ...props }) {
+  const combinedClassName = classNames(
+    "rounded bg-sky-600 py-2 px-4 text-sm text-white data-[hover]:bg-sky-500 data-[active]:bg-sky-700",
+    className
+  );
+
   return (
-    <StyledButton type="button" {...props}>
+    <StyledButton type="button" className={combinedClassName} {...props}>
       {children}
     </StyledButton>
   );

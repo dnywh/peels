@@ -11,8 +11,9 @@ const StyledFooter = styled("footer")({
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
-  padding: "1.5rem",
-  marginTop: "10rem",
+  flexWrap: "wrap",
+  // padding: "1.5rem",
+  // marginTop: "10rem",
 });
 
 function LegalFooter() {

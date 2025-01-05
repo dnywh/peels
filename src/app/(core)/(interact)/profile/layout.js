@@ -7,14 +7,25 @@ import BackButton from '@/components/BackButton';
 import { signOutAction } from "@/app/actions";
 import SubmitButton from '@/components/SubmitButton';
 import AvatarRead from '@/components/AvatarRead';
-
+import LegalFooter from '@/components/LegalFooter';
 import { styled } from "@pigment-css/react";
+
+const MobileBackButton = styled(BackButton)({
+    display: "block",
+    '@media (min-width: 768px)': {
+        display: "none",
+    },
+});
 
 const ProfilePageLayout = styled("div")({
     display: "flex",
-    flexDirection: "row",
+
+    flexDirection: "column",
     // alignItems: "stretch",
     gap: "2rem",
+    '@media (min-width: 768px)': {
+        flexDirection: "row",
+    },
 });
 
 const ProfileSidebarContainer = styled("div")({
@@ -39,11 +50,13 @@ const ProfileSidebar = styled("div")({
 });
 
 export default function ProfileLayout({ children }) {
+    // console.log("children", children);
     return (
         <div>
             <ProfileRedirect />
 
             <ProfilePageLayout>
+
                 {/* TODO: This sidebar should be hidden via CSS on smaller breakpoint IF on a subpage */}
                 <ProfileSidebarContainer>
                     <ProfileSidebar>
@@ -60,21 +73,17 @@ export default function ProfileLayout({ children }) {
                             <SubmitButton>Sign out</SubmitButton>
                         </form>
 
-                        <nav>
-                            <Link href="/support">Support</Link>
-                            <Link href="/terms">Terms</Link>
-                            <Link href="/privacy">Privacy</Link>
-                        </nav>
+                        <LegalFooter />
                     </ProfileSidebar>
                 </ProfileSidebarContainer>
 
                 {/* Main page content if relevant. Only renders if children */}
-                {children && (
+                {children &&
                     <main>
-                        <BackButton>Back (only on mobile)</BackButton>
+                        <MobileBackButton />
                         {children}
-                    </main>
-                )}
+                    </main>}
+
             </ProfilePageLayout>
         </div>
     );
