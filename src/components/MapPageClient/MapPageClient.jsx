@@ -17,9 +17,6 @@ import GuestActions from "@/components/GuestActions";
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
 
-import TabBarLeft from "@/components/TabBarLeft";
-import TabBar from "@/components/TabBar";
-
 import MapSidebar from "@/components/MapSidebar";
 
 import { styled } from "@pigment-css/react";
@@ -385,7 +382,6 @@ export default function MapPageClient({ user }) {
 
   return (
     <StyledMapPage>
-      {/* <TabBarLeft className="hidden md:block" /> */}
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
       <StyledMapRender className="md:rounded-lg">
         <Drawer.Root
@@ -422,8 +418,6 @@ export default function MapPageClient({ user }) {
             selectedPinId={selectedPinId}
             setSelectedPinId={setSelectedPinId}
           />
-
-          {/* <TabBar className="md:hidden" /> */}
 
           <Drawer.Portal>
             <Drawer.Content
