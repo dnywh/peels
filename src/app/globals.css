@@ -17,12 +17,22 @@ a {
 @tailwind utilities;
 
 html {
-  /* overflow: hidden; */
-  /* overscroll-behavior: none; */
+  /* Required to stop drawer from getting stuck on scroll touch events */
+  overflow: hidden;
+  /* Required to stop mobile map and mobile tab bar from rubber-banding on scroll touch events */
+  overscroll-behavior: none;
 }
 
 body {
+  /* Not sure if this is still needed */
   pointer-events: auto !important;
+}
+.scrollable {
+  /* This resets the HTML overflow and overscroll-behavior to their default values */
+  /* Requires consistent use of the .scrollable class across all pages */
+  height: 100dvh;
+  overflow: scroll !important;
+  overscroll-behavior: auto !important;
 }
 
 /* main {

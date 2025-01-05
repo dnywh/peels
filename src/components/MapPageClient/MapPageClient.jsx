@@ -37,6 +37,12 @@ const StyledMapPage = styled("main")({
   // gap: "1.5rem",
   // width: "100dvw",
   // height: "100dvh",
+
+  // Doesn't work:
+  // "& html": {
+  //   overflow: "hidden",
+  //   overscrollBehavior: "none",
+  // },
 });
 
 const StyledMapRender = styled("div")({

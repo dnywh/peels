@@ -40,7 +40,7 @@ const ProfileSidebar = styled("div")({
 
 export default function ProfileLayout({ children }) {
     return (
-        <>
+        <div className="scrollable">
             <ProfileRedirect />
 
             <ProfilePageLayout>
@@ -76,7 +76,7 @@ export default function ProfileLayout({ children }) {
                     </main>
                 )}
             </ProfilePageLayout>
-        </>
+        </div>
     );
 }
 

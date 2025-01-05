@@ -21,6 +21,10 @@ export default async function ChatsPage() {
         `)
         .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`);
 
-    return <ChatPageClient user={user} initialThreads={threads} />;
+    return (
+        <div className="scrollable">
+            <ChatPageClient user={user} initialThreads={threads} />
+        </div>
+    );
 }
 
