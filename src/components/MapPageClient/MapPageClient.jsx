@@ -145,7 +145,7 @@ export default function MapPageClient({ user }) {
   useEffect(() => {
     if (isDesktop) return;
     // Set HTML element to not overscroll or zoom if the user interacts with general page (e.g. via pinching on zoom controls)
-    document.documentElement.classList.add("map-open");
+    document.documentElement.classList.add("map");
 
     if (snap === 1) {
       console.log("Drawer is open, adding class to html");

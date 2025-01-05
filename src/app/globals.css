@@ -17,11 +17,17 @@ a {
 @tailwind utilities;
 
 /* Generally hand over gesture controls to map */
-html.map-open {
+html.map {
   /* Required to stop mobile map and mobile tab bar from rubber-banding on scroll touch events */
   overscroll-behavior: none;
   /* Required to stop page elements from zooming on pinch */
   touch-action: none;
+
+  body {
+    /* Vaul drawer seems to otherwise set pointer-events: none, even after closing drawer */
+    /* This is required to allow map to be interacted with when drawer is partially open */
+    pointer-events: auto !important;
+  }
 
   &.drawer-fully-open {
     /* Required to stop drawer from getting stuck on scroll touch events */
@@ -29,13 +35,9 @@ html.map-open {
     /* overflow: hidden; */
 
     body {
+      /* Stop map from being interacted with when drawer is fully open */
       pointer-events: none !important;
     }
-  }
-
-  body {
-    /* Vaul drawer seems to otherwise set pointer-events: none, even after closing drawer */
-    pointer-events: auto !important;
   }
 }
 
