@@ -22,27 +22,20 @@ html.map-open {
   overscroll-behavior: none;
   /* Required to stop page elements from zooming on pinch */
   touch-action: none;
-}
 
-html.map-open.drawer-fully-open {
-  /* Required to stop drawer from getting stuck on scroll touch events */
-  overflow: hidden; /* Interferes with scroll content? */
+  &.drawer-fully-open {
+    /* Required to stop drawer from getting stuck on scroll touch events */
+    /* Interferes with scroll content? */
+    /* overflow: hidden;  */
 
-  /* Seems to fix the issue of the scroll getting stuck from within the drawer */
-  pointer-events: none;
-}
+    /* Seems to fix the issue of the scroll getting stuck from within the drawer */
+    pointer-events: none;
+  }
 
-body {
-  /* Not sure if this is still needed */
-  /* pointer-events: auto !important; */
-
-  /* Required to stop drawer from getting stuck on scroll touch events */
-  /* overflow: hidden; */
-  /* Required to stop mobile map and mobile tab bar from rubber-banding on scroll touch events */
-  /* overscroll-behavior: none; */
-
-  /* Helps with pages that contain a fixed bottom tab bar without enough page content  */
-  /* min-height: 100dvh; */
+  body {
+    /* Vaul drawer seems to otherwise set pointer-events: none, even after closing drawer */
+    pointer-events: auto !important;
+  }
 }
 
 /* main {

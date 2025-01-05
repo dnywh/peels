@@ -66,6 +66,16 @@ const StyledMapRender = styled("div")({
   // touchAction: "none",
 });
 
+const StyledDrawerInner = styled("div")({
+  // touchAction: "unset !important",
+  // pointerEvents: "unset !important",
+
+  // Seems to help with drawer scroll getting stuck, possibly placebo
+  overflowY: "scroll",
+  overflowBehavior: "unset",
+  touchAction: "pan-y", // Prevents zoom gesture which stuffs up general layout, should be revisted for accessibility
+});
+
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
   const mapRef = useRef(null);
@@ -432,7 +442,7 @@ export default function MapPageClient({ user }) {
           // onOpenChange={handleDrawerOpenChange}
           // onDrag={handleTouchStart}
           // onRelease={handleTouchEnd}
-          scrollLockTimeout={0} // Not sure but seems to make the mobile drawer more responsive
+          // scrollLockTimeout={1} // Not sure but seems to make the mobile drawer more responsive
           onAnimationEnd={(event) => {
             console.log("Animation ended", event);
           }}
@@ -502,7 +512,7 @@ export default function MapPageClient({ user }) {
 
               {/* Begin drawer main content */}
               {/* Page content */}
-              <div
+              <StyledDrawerInner
                 ref={drawerContentRef}
                 // data-vaul-no-drag
                 className={clsx(
@@ -578,7 +588,7 @@ export default function MapPageClient({ user }) {
                     )}
                   </>
                 )} */}
-              </div>
+              </StyledDrawerInner>
             </Drawer.Content>
           </Drawer.Portal>
         </Drawer.Root>
