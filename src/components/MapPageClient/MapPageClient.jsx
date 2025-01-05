@@ -418,10 +418,10 @@ export default function MapPageClient({ user }) {
 
   const handleCloseListing = () => {
     console.log("Closing listing");
-
     setIsDrawerOpen(false);
     setIsChatDrawerOpen(false);
     setSelectedPinId(null);
+    setSnap(snapPoints[0]); // Helps to remove conditional CSS class from html
     router.push("/map", { scroll: false, shallow: true });
   };
 
@@ -439,9 +439,13 @@ export default function MapPageClient({ user }) {
           modal={isDesktop ? false : snap === 1} // Attempt to help with overscroll/touch events on mobile if header is dragged. Doesn't change anything about the overscroll
           // modal={false}
           open={isDrawerOpen}
-          // onOpenChange={handleDrawerOpenChange}
-          // onDrag={handleTouchStart}
-          // onRelease={handleTouchEnd}
+          onOpenChange={(open) => {
+            console.log("Drawer open change", open);
+          }}
+          onDrag={(drag) => console.log("Drawer drag", drag)}
+          onRelease={(release) => {
+            console.log("Drawer release", release);
+          }}
           // scrollLockTimeout={1} // Not sure but seems to make the mobile drawer more responsive
           onAnimationEnd={(event) => {
             console.log("Animation ended", event);

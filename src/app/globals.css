@@ -26,10 +26,11 @@ html.map-open {
   &.drawer-fully-open {
     /* Required to stop drawer from getting stuck on scroll touch events */
     /* Interferes with scroll content? */
-    /* overflow: hidden;  */
+    /* overflow: hidden; */
 
-    /* Seems to fix the issue of the scroll getting stuck from within the drawer */
-    pointer-events: none;
+    body {
+      pointer-events: none !important;
+    }
   }
 
   body {
