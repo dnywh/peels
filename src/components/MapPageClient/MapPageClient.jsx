@@ -50,7 +50,6 @@ const StyledMapPage = styled("main")({
 });
 
 const StyledMapRender = styled("div")({
-  height: "calc(100% - 80px)",
   // marginBottom: "80px", //Equal to height of tab bar
 
   // overflow: "hidden",
@@ -61,9 +60,15 @@ const StyledMapRender = styled("div")({
   flexDirection: "column",
   gap: "1rem",
   flex: 1,
-  // borderRadius: "0.5rem",
-  // overflow: "hidden", // Wrecks it!
   // touchAction: "none",
+
+  // Prepare for tab bar on mobile
+  height: "calc(100% - 80px)",
+  "@media (min-width: 768px)": {
+    height: "100%",
+    borderRadius: "0.5rem",
+    overflow: "hidden",
+  },
 });
 
 const StyledDrawerInner = styled("div")({
