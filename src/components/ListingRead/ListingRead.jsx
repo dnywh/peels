@@ -28,8 +28,8 @@ import clsx from "clsx";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
-const sidebarWidth = "400px";
-const pagePadding = "24px";
+// const sidebarWidth = "380px";
+// const pagePadding = "24px";
 
 const StyledCallout = styled("aside")({
   border: "1px solid grey",
@@ -45,7 +45,6 @@ const ListingRead = memo(function Listing({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
-  console.log(pagePadding, sidebarWidth);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [existingThread, setExistingThread] = useState(null);
@@ -53,7 +52,7 @@ const ListingRead = memo(function Listing({
 
   const mobileDrawerClassNames =
     "bg-white flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0";
-  const desktopDrawerClassNames = `shadow-lg right-[24px] top-[24px] bottom-[24px] fixed outline-none w-[400px] flex flex-col`;
+  const desktopDrawerClassNames = `shadow-lg right-[24px] top-[24px] bottom-[24px] fixed outline-none flex flex-col`;
 
   // Load existing thread if any
   useEffect(() => {
@@ -232,6 +231,7 @@ const ListingRead = memo(function Listing({
               // Desktop drawer offset
               // Overridden in globals.css
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
+              style={isDesktop ? { width: "500px" } : undefined}
             >
               {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
               <header

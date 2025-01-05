@@ -5,7 +5,7 @@ import { styled } from "@pigment-css/react";
 import GuestActions from "@/components/GuestActions";
 import { facts } from "@/data/facts";
 
-const sidebarWidth = "400px";
+const sidebarWidth = "clamp(20rem, 30vw, 30rem);";
 
 const StyledSidebar = styled("div")({
   // background: "blue",

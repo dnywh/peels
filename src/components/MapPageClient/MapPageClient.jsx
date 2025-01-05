@@ -24,7 +24,7 @@ import LoremIpsum from "../LoremIpsum";
 
 import clsx from "clsx";
 
-const sidebarWidth = "400px";
+const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
 
 const StyledMapPage = styled("main")({
@@ -110,7 +110,7 @@ export default function MapPageClient({ user }) {
 
   const mobileDrawerClassNames =
     "fixed flex flex-col bg-slate-100 border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]";
-  const desktopDrawerClassNames = `right-[24px] top-[24px] bottom-[24px] fixed outline-none w-[400px] flex flex-col`;
+  const desktopDrawerClassNames = `right-[24px] top-[24px] bottom-[24px] fixed outline-none flex flex-col`;
 
   // const [isDragging, setIsDragging] = useState(false);
 
@@ -485,6 +485,7 @@ export default function MapPageClient({ user }) {
                 isDesktop
                   ? {
                       transform: "translate3d(0px, 0px, 0px)", // Helps drawer not get stuck at snap 0.35 point when returning to desktop breakpoint
+                      width: sidebarWidth,
                     }
                   : undefined
               }
