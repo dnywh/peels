@@ -155,8 +155,9 @@ export default function MapPageClient({ user }) {
       document.documentElement.classList.remove("drawer-fully-open");
     }
 
-    // Cleanup function to remove the class when the component unmounts
+    // Cleanup function to remove the classes when the component unmounts
     return () => {
+      document.documentElement.classList.remove("map");
       document.documentElement.classList.remove("drawer-fully-open");
     };
   }, [snap]);
