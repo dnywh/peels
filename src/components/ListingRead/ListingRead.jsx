@@ -89,7 +89,7 @@ const StyledDrawerInner = styled("div")({
   width: "100%",
   padding: "1rem",
 
-  overflowBehavior: "auto",
+  // overscrollBehavior: "auto",
   overflowY: "auto",
 
   "@media (min-width: 768px)": {
@@ -225,31 +225,33 @@ const ListingRead = memo(function Listing({
   }
   return (
     <Fragment key={listing.id}>
-      <div className="flex flex-row gap-3">
-        {listing.type === "residential" ? (
-          <StorageImage
-            bucket="avatars"
-            filename={listing.profiles.avatar}
-            alt={listing.profiles.first_name}
-            style={{ width: "100px", height: "100px" }}
-          />
-        ) : (
-          <StorageImage
-            bucket="listing_avatars"
-            filename={listing.avatar}
-            alt={listing.name}
-            style={{ width: "100px", height: "100px" }}
-          />
-        )}
+      {!modal && (
+        <div className="flex flex-row gap-3">
+          {listing.type === "residential" ? (
+            <StorageImage
+              bucket="avatars"
+              filename={listing.profiles.avatar}
+              alt={listing.profiles.first_name}
+              style={{ width: "100px", height: "100px" }}
+            />
+          ) : (
+            <StorageImage
+              bucket="listing_avatars"
+              filename={listing.avatar}
+              alt={listing.name}
+              style={{ width: "100px", height: "100px" }}
+            />
+          )}
 
-        <div className="flex flex-col">
-          <h2 className="text-2xl mt-2 font-medium text-gray-900">
-            {listingName}
-          </h2>
-          <p className="text-lg text-gray-600">{listing.type}</p>
-          {/* <p>Last active: TODO</p> */}
+          <div className="flex flex-col">
+            <h2 className="text-2xl mt-2 font-medium text-gray-900">
+              {listingName}
+            </h2>
+            <p className="text-lg text-gray-600">{listing.type}</p>
+            {/* <p>Last active: TODO</p> */}
+          </div>
         </div>
-      </div>
+      )}
 
       <StyledCallout>
         <p>

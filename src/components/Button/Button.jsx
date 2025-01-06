@@ -6,7 +6,9 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   border: "none",
   borderRadius: theme.corners.unit * 0.5,
   fontSize: "1rem",
-  minHeight: "2.75rem",
+  // minHeight: "2.75rem",
+  // maxHeight: "2.75rem",
+  height: "2.75rem",
   cursor: "pointer",
   "&:hover": {
     background: theme.colors.primary,

@@ -13,6 +13,7 @@ import MapSearch from "@/components/MapSearch";
 import MapRender from "@/components/MapRender";
 import ListingRead from "@/components/ListingRead";
 import GuestActions from "@/components/GuestActions";
+import StorageImage from "@/components/StorageImage";
 
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
@@ -69,12 +70,13 @@ const StyledMapRender = styled("div")({
 });
 
 const StyledDrawerContent = styled(Drawer.Content)({
-  position: "fixed",
-  display: "flex",
-  flexDirection: "column",
+  // display: "flex",
+  // flexDirection: "column",
   border: "1px solid #E5E7EB", // border-gray-200
   borderBottom: "none",
   borderRadius: "10px 10px 0 0", // rounded-t-[10px]
+
+  position: "fixed",
   bottom: "0",
   left: "0",
   right: "0",
@@ -86,7 +88,11 @@ const StyledDrawerContent = styled(Drawer.Content)({
   background: "rgb(235, 235, 235)",
 
   overflowX: "hidden",
-  overflowY: "hidden", // Necessary to focus on the drawer content
+  // overflowY: "hidden", // Necessary to focus on the drawer content
+
+  "&::after": {
+    display: "none", // Otherwise seems to visibly block the drawer content
+  },
 
   "@media (min-width: 768px)": {
     borderRadius: "10px",
@@ -107,7 +113,7 @@ const StyledDrawerHeader = styled("header")({
   // flex justify-between items-center absolute top-0 w-full py-2 px-4 rounded-t-lg
   flex: 1,
 
-  position: "absolute",
+  position: "sticky",
   top: "0",
   width: "100%",
 
@@ -116,9 +122,21 @@ const StyledDrawerHeader = styled("header")({
   // alignItems: "center",
   justifyContent: "space-between",
   // padding: "0.5rem 1rem",
+  background: "rgb(235, 235, 235)",
 });
 
 const StyledDrawerHeaderInner = styled("div")({
+  display: "flex",
+  flexDirection: "row",
+});
+
+const StyledAvatarHolder = styled("div")({
+  width: "100px",
+  height: "100px",
+  background: "rgba(0, 0, 0, 0.1)",
+});
+
+const StyledHeaderText = styled("div")({
   display: "flex",
   flexDirection: "column",
 });
@@ -128,17 +146,20 @@ const StyledDrawerInner = styled("div")({
   // touchAction: "unset !important",
   // pointerEvents: "unset !important",
 
+  overflowY: "auto",
+
   // Seems to help with drawer scroll getting stuck, possibly placebo
-  overscrollBehavior: "auto",
-  touchAction: "pan-y", // Prevents zoom gesture which stuffs up general layout, should be revisted for accessibility
+  // overscrollBehavior: "auto",
+  // touchAction: "pan-y", // Prevents zoom gesture which stuffs up general layout, should be revisted for accessibility
 
   // Normal classes
-  // "pt-8 flex flex-col mx-auto w-full px-4 bg-slate-100 rounded-lg",
   padding: "1rem",
   paddingTop: "2rem",
+
   display: "flex",
   flexDirection: "column",
-  margin: "auto",
+
+  // margin: "auto",
   width: "100%",
   // padding: "1rem",
   // backgroundColor: "red",
@@ -375,7 +396,7 @@ export default function MapPageClient({ user }) {
       if (drawerContentRef.current) {
         const scrollTop = drawerContentRef.current.scrollTop;
         console.log("Mobile Scroll position:", scrollTop);
-        setIsDrawerHeaderShown(scrollTop > 340);
+        setIsDrawerHeaderShown(scrollTop > 16);
       }
     };
 
@@ -406,7 +427,7 @@ export default function MapPageClient({ user }) {
         if (drawerContentRef.current) {
           const scrollTop = drawerContentRef.current.scrollTop;
           console.log("Desktop Scroll position:", scrollTop);
-          setIsDrawerHeaderShown(scrollTop > 340);
+          setIsDrawerHeaderShown(scrollTop > 16);
         }
       };
 
@@ -506,17 +527,20 @@ export default function MapPageClient({ user }) {
 
           <Drawer.Portal>
             <StyledDrawerContent
+              ref={drawerContentRef}
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
               data-testid="content" // Not sure if this is needed
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
+              style={{
+                overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
+              }}
             >
               <StyledDrawerHeader
                 style={
                   isDrawerHeaderShown
                     ? {
-                        background: "rgb(243, 243, 243)",
-                        borderBottom: "1px solid #e0e0e0",
+                        borderBottom: "1px solid #6f6f6f",
                         boxShadow: "0px 1px 8px 1px #0000002d",
                       }
                     : undefined
@@ -529,20 +553,37 @@ export default function MapPageClient({ user }) {
                           opacity: 1,
                         }
                       : {
-                          opacity: 0,
+                          opacity: 1,
                         }
                   }
                 >
-                  <Drawer.Title
-                    className={`text-md font-medium text-gray-900 `}
-                  >
-                    {selectedListing?.type === "residential"
-                      ? selectedListing?.profiles.first_name
-                      : selectedListing?.name}
-                  </Drawer.Title>
-                  <p className="-mt-1 text-sm text-gray-500">
-                    {selectedListing?.type}
-                  </p>
+                  <StyledAvatarHolder>
+                    {selectedListing?.type === "residential" ? (
+                      <StorageImage
+                        bucket="avatars"
+                        filename={selectedListing?.profiles.avatar}
+                        alt={selectedListing?.profiles.first_name}
+                        style={{ width: "100px", height: "100px" }}
+                      />
+                    ) : (
+                      <StorageImage
+                        bucket="listing_avatars"
+                        filename={selectedListing?.avatar}
+                        alt={selectedListing?.name}
+                        style={{ width: "100px", height: "100px" }}
+                      />
+                    )}
+                  </StyledAvatarHolder>
+
+                  <StyledHeaderText>
+                    <Drawer.Title>
+                      {selectedListing?.type === "residential"
+                        ? selectedListing?.profiles?.first_name
+                        : selectedListing?.name}
+                    </Drawer.Title>
+                    <p>{selectedListing?.type}</p>
+                    {/* <p>Last active: TODO</p> */}
+                  </StyledHeaderText>
                 </StyledDrawerHeaderInner>
 
                 <CloseButton onClick={handleCloseListing}>X Close</CloseButton>
@@ -554,13 +595,13 @@ export default function MapPageClient({ user }) {
               {/* Begin drawer main content */}
               {/* Page content */}
               <StyledDrawerInner
-                ref={drawerContentRef}
-                // data-vaul-no-drag
-                style={{
-                  overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
-                  overscrollBehavior:
-                    snap === 1 && !isDesktop ? "auto" : "auto",
-                }}
+
+              // data-vaul-no-drag
+              // style={{
+              //   overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
+              //   overscrollBehavior:
+              //     snap === 1 && !isDesktop ? "auto" : "auto",
+              // }}
               >
                 <ListingRead
                   user={user}
@@ -573,15 +614,6 @@ export default function MapPageClient({ user }) {
                   pagePadding={pagePadding}
                   sidebarWidth={sidebarWidth}
                 />
-
-                <Drawer.Title>
-                  {selectedListing?.type === "residential"
-                    ? selectedListing?.profiles.first_name
-                    : selectedListing?.name}
-                </Drawer.Title>
-                <Drawer.Description>
-                  {selectedListing?.description}
-                </Drawer.Description>
                 <LoremIpsum />
 
                 {/* {selectedListing ? (
