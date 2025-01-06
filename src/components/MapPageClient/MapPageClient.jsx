@@ -69,8 +69,6 @@ const StyledMapRender = styled("div")({
 });
 
 const StyledDrawerContent = styled(Drawer.Content)({
-  // Still to add: rounded-lg overflow-hidden
-
   position: "fixed",
   display: "flex",
   flexDirection: "column",
@@ -85,11 +83,13 @@ const StyledDrawerContent = styled(Drawer.Content)({
   // overscrollBehavior: "unset",
   // margin: "0 -1px", // mx-[-1px]
 
-  background: "rgb(243, 243, 243)",
-  borderRadius: "10px",
+  background: "rgb(235, 235, 235)",
+
   overflowX: "hidden",
+  overflowY: "hidden", // Necessary to focus on the drawer content
 
   "@media (min-width: 768px)": {
+    borderRadius: "10px",
     // background: "blue",
     // margin: "unset",
     top: "24px",
@@ -129,8 +129,7 @@ const StyledDrawerInner = styled("div")({
   // pointerEvents: "unset !important",
 
   // Seems to help with drawer scroll getting stuck, possibly placebo
-  overflowY: "scroll",
-  overflowBehavior: "unset",
+  overscrollBehavior: "auto",
   touchAction: "pan-y", // Prevents zoom gesture which stuffs up general layout, should be revisted for accessibility
 
   // Normal classes
@@ -560,7 +559,7 @@ export default function MapPageClient({ user }) {
                 style={{
                   overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
                   overscrollBehavior:
-                    snap === 1 && !isDesktop ? "none" : "auto",
+                    snap === 1 && !isDesktop ? "auto" : "auto",
                 }}
               >
                 <ListingRead

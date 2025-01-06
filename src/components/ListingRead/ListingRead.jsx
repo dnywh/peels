@@ -39,27 +39,29 @@ const StyledDrawerOverlay = styled(Drawer.Overlay)({
 });
 
 const StyledDrawerContent = styled(Drawer.Content)({
-  // className={`rounded-lg ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames}`}
   background: "rgb(243, 243, 243)",
-  borderRadius: "10px",
+  borderRadius: "10px 10px 0 0", // rounded-t-[10px]
+  border: "1px solid #E5E7EB", // border-gray-200
 
   overflowX: "hidden",
+
+  // Different from parent
+  // overflowBehavior: "auto",
+  // overflowY: "auto",
 
   "&::after": {
     display: "none", // Otherwise seems to include side scroll, even when overflowX hidden
   },
 
-  //   const mobileDrawerClassNames =
-  //   "bg-white flex flex-col rounded-t-[10px] lg:h-[327px] h-full mt-24 max-h-[95%] fixed bottom-0 left-0 right-0";
   marginTop: "24px",
   maxHeight: "95%",
   position: "fixed",
   bottom: "0",
   left: "0",
   right: "0",
-  overflowY: "scroll",
 
   "@media (min-width: 768px)": {
+    borderRadius: "10px",
     // const desktopDrawerClassNames = `shadow-lg right-[24px] top-[24px] bottom-[24px] fixed outline-none flex flex-col`;
     marginTop: "unset",
     top: "24px",
@@ -86,9 +88,9 @@ const StyledDrawerInner = styled("div")({
   flexDirection: "column",
   width: "100%",
   padding: "1rem",
-  // overflowY: "auto",
 
-  // overflowBehavior: "unset",
+  overflowBehavior: "auto",
+  overflowY: "auto",
 
   "@media (min-width: 768px)": {
     borderBottomRadius: "10px",
