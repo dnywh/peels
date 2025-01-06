@@ -59,6 +59,8 @@ const StyledDrawerContent = styled(Drawer.Content)({
   bottom: "0",
   left: "0",
   right: "0",
+  display: "flex",
+  flexDirection: "column",
 
   "@media (min-width: 768px)": {
     borderRadius: "10px",
@@ -77,8 +79,8 @@ const StyledDrawerContent = styled(Drawer.Content)({
 const StyledDrawerHeader = styled("header")({
   background: "rgb(243, 243, 243)",
   borderBottom: "1px solid #e0e0e0",
-  position: "sticky",
-  top: "0",
+  // position: "sticky",
+  // top: "0",
   padding: "1rem",
 });
 
@@ -91,6 +93,8 @@ const StyledDrawerInner = styled("div")({
 
   // overscrollBehavior: "auto",
   overflowY: "auto",
+
+  flex: 1,
 
   "@media (min-width: 768px)": {
     borderBottomRadius: "10px",
@@ -330,7 +334,7 @@ const ListingRead = memo(function Listing({
                   }
                   // setIsChatOpen={setIsChatOpen}
                 />
-                <LoremIpsum />
+                {/* <LoremIpsum /> */}
               </StyledDrawerInner>
             </StyledDrawerContent>
           </Drawer.Portal>

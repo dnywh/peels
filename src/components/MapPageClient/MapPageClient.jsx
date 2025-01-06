@@ -357,7 +357,7 @@ export default function MapPageClient({ user }) {
     if (selectedListing?.id === listingId && isDrawerOpen) {
       return;
     }
-
+    // Otherwise load the listing details for the new marker
     const { data, error } = await supabase
       .from("listings")
       .select(
@@ -377,7 +377,11 @@ export default function MapPageClient({ user }) {
       return;
     }
 
+    // Close the chat drawer if it's open
+    setIsChatDrawerOpen(false);
+    // Prepare the listing drawer for the new listing
     setSelectedListing(data);
+    // Open the listing drawer
     setIsDrawerOpen(true); // Open drawer when marker is clicked
     setSnap(snapPoints[0]); // Reset snap point
     setIsDrawerHeaderShown(false); // Reset header shown state

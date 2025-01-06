@@ -11,11 +11,28 @@ const StyledChatWindow = styled("div")({
   flex: 1,
   display: "flex",
   flexDirection: "column",
-  height: "100%",
+  overflowY: "scroll",
+  border: "1px solid #e0e0e0",
+  borderRadius: "0.5rem",
+  // height: "100%",
+});
+
+const ChatHeader = styled("header")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch",
+  gap: "0.5rem",
+  borderBottom: "1px solid #e0e0e0",
+  backgroundColor: "#ffffff",
+  padding: "1rem",
+
+  position: "sticky",
+  top: "0",
 });
 
 const StyledMessagesContainer = styled("div")({
   flex: 1,
+  padding: "1rem",
 });
 
 // Memoize the ChatWindow component
@@ -172,13 +189,17 @@ const ChatWindow = memo(function ChatWindow({
 
   return (
     <StyledChatWindow>
-      {/* {setIsChatOpen && (
+      <ChatHeader>
+        {/* {setIsChatOpen && (
         <button onClick={() => setIsChatOpen(false)}>Close chat</button>
       )} */}
 
-      {!listingIsOwnedByUser && (
-        <Link href={`/listings/${listing.slug}`}>View listing</Link>
-      )}
+        <h1>Other person's name</h1>
+        <h2>{listing.name}</h2>
+        {!listingIsOwnedByUser && (
+          <Link href={`/listings/${listing.slug}`}>View listing</Link>
+        )}
+      </ChatHeader>
 
       <StyledMessagesContainer>
         {messages.map((message) => {

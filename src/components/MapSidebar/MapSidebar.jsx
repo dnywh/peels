@@ -8,13 +8,19 @@ import { facts } from "@/data/facts";
 const sidebarWidth = "clamp(20rem, 30vw, 30rem);";
 
 const StyledSidebar = styled("div")({
-  // background: "blue",
-  border: "1px solid grey",
+  backgroundColor: "#f0f0f0",
+  color: "#404040",
+  borderRadius: "0.5rem",
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
+  padding: "1.5rem",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
   width: sidebarWidth,
   height: "100%",
+  wordWrap: "break-word",
   // overflow: "scroll",
 });
 
@@ -29,10 +35,7 @@ export default function MapSidebar({ user, covered }) {
   }, [covered]);
 
   return (
-    <StyledSidebar
-      data-covered={covered}
-      className={`bg-gray-100 md:rounded-lg sidebar flex flex-col gap-4 p-10 items-center justify-center text-center text-lg text-gray-400`}
-    >
+    <StyledSidebar data-covered={covered}>
       {/* <MapSearch
           onPick={handleSearchPick}
           mapController={mapController}

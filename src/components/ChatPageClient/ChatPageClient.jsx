@@ -11,7 +11,12 @@ const ChatPageLayout = styled("div")({
   gap: "2rem",
   // backgroundColor: "blue",
   // height: "100vh",
+  height: "calc(100% - 80px)", // Tab Bar height
   width: "100%",
+
+  "@media (min-width: 768px)": {
+    height: "100%",
+  },
 });
 
 const ThreadsSidebar = styled("div")({
@@ -20,7 +25,7 @@ const ThreadsSidebar = styled("div")({
   alignItems: "stretch",
   gap: "2rem",
   // backgroundColor: "tomato",
-  minWidth: "16rem",
+  width: "20rem",
   border: "1px solid grey",
 });
 
@@ -30,6 +35,29 @@ const ChatWindowEmptyState = styled("div")({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
+});
+
+const ThreadPreview = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch",
+  gap: "0.5rem",
+  variants: [
+    {
+      props: { selected: true },
+      style: {
+        backgroundColor: "#f0f0f0",
+      },
+    },
+  ],
+});
+
+const LastMessage = styled("p")({
+  fontSize: "0.8rem",
+  color: "#808080",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
+  whiteSpace: "nowrap",
 });
 
 export default function ChatPageClient({ user, initialThreads }) {
@@ -82,22 +110,22 @@ export default function ChatPageClient({ user, initialThreads }) {
               : otherPersonName;
 
           return (
-            <div
+            <ThreadPreview
               key={thread.id}
-              className={`thread-preview ${thread.id === currentThreadId ? "selected" : ""}`}
+              selected={thread.id === currentThreadId}
               onClick={() => handleThreadSelect(thread)}
             >
               <h3>{displayName}</h3>
               {thread.chat_messages_with_senders?.length > 0 && (
-                <p className="last-message">
+                <LastMessage>
                   {
                     thread.chat_messages_with_senders[
                       thread.chat_messages_with_senders.length - 1
                     ].content
                   }
-                </p>
+                </LastMessage>
               )}
-            </div>
+            </ThreadPreview>
           );
         })}
       </ThreadsSidebar>

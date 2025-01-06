@@ -143,16 +143,18 @@ function generateEmailContent(
   },
 ) {
   // TODO: Only show listing URL if the recipient is NOT the owner of the listing
-  return `<header>Peels</header>
-    <h1>New message from ${senderName}</h1>
-    <p>Hi ${recipientName}, you've received a new message from ${senderName}:</p>
+  return `
+  <header>Peels</header>
+  <h1>New message from ${senderName}</h1>
+  <p>Hi ${recipientName}, you've received a new message from ${senderName}:</p>
     ${
     senderAvatarUrl
       ? `<img src="${senderAvatarUrl}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%;" />`
       : ""
   }
     <p>${messageContent}</p>
-    <p>You can reply to this message by clicking the link below:</p>
+    <hr/>
+    <p>You can reply to ${senderName}’s message by clicking the link below:</p>
   <p><a href="https://peels.app/chats/${threadId}">Reply in app</a></p>
   <p><a href="${listingUrl}">View listing</a></p>
   <hr/>
