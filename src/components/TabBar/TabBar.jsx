@@ -5,17 +5,6 @@ import TabBarTab from "@/components/TabBarTab";
 
 import { styled } from "@pigment-css/react";
 
-// const STYLES = {
-//   sm: {
-//     container: "fixed bottom-0 left-0 right-0 h-20 border-t border-gray-200",
-//     nav: "h-full bg-white/95 backdrop-blur-sm p-2 flex justify-between items-center stretch",
-//   },
-//   md: {
-//     container: "",
-//     nav: "flex flex-col gap-2",
-//   },
-// };
-
 const StyledTabBar = styled("div")({
   variants: [
     {
