@@ -3,7 +3,7 @@ import SubmitButton from "@/components/SubmitButton";
 import { styled } from "@pigment-css/react";
 
 const ChatComposerForm = styled("form")({
-  flex: 1,
+  // flex: 1,
   display: "flex",
   flexDirection: "row",
   alignItems: "stretch",

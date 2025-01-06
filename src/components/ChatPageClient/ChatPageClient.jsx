@@ -10,7 +10,8 @@ const ChatPageLayout = styled("div")({
   alignItems: "stretch",
   gap: "2rem",
   // backgroundColor: "blue",
-  height: "100vh",
+  // height: "100vh",
+  width: "100%",
 });
 
 const ThreadsSidebar = styled("div")({
@@ -21,13 +22,6 @@ const ThreadsSidebar = styled("div")({
   // backgroundColor: "tomato",
   minWidth: "16rem",
   border: "1px solid grey",
-});
-
-const ChatWindowContainer = styled("div")({
-  // backgroundColor: "green",
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
 });
 
 const ChatWindowEmptyState = styled("div")({
@@ -108,20 +102,18 @@ export default function ChatPageClient({ user, initialThreads }) {
         })}
       </ThreadsSidebar>
 
-      <ChatWindowContainer>
-        {selectedThread ? (
-          <ChatWindow
-            user={user}
-            listing={selectedThread.listing}
-            existingThread={{
-              ...selectedThread,
-              chat_messages: selectedThread.chat_messages_with_senders,
-            }}
-          />
-        ) : (
-          <ChatWindowEmptyState>No thread selected</ChatWindowEmptyState>
-        )}
-      </ChatWindowContainer>
+      {selectedThread ? (
+        <ChatWindow
+          user={user}
+          listing={selectedThread.listing}
+          existingThread={{
+            ...selectedThread,
+            chat_messages: selectedThread.chat_messages_with_senders,
+          }}
+        />
+      ) : (
+        <ChatWindowEmptyState>No thread selected</ChatWindowEmptyState>
+      )}
     </ChatPageLayout>
   );
 }

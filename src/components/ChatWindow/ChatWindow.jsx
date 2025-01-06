@@ -7,6 +7,17 @@ import ChatMessage from "@/components/ChatMessage";
 import ChatComposer from "@/components/ChatComposer";
 import { styled } from "@pigment-css/react";
 
+const StyledChatWindow = styled("div")({
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+});
+
+const StyledMessagesContainer = styled("div")({
+  flex: 1,
+});
+
 // Memoize the ChatWindow component
 const ChatWindow = memo(function ChatWindow({
   user,
@@ -160,7 +171,7 @@ const ChatWindow = memo(function ChatWindow({
   };
 
   return (
-    <div>
+    <StyledChatWindow>
       {/* {setIsChatOpen && (
         <button onClick={() => setIsChatOpen(false)}>Close chat</button>
       )} */}
@@ -169,7 +180,7 @@ const ChatWindow = memo(function ChatWindow({
         <Link href={`/listings/${listing.slug}`}>View listing</Link>
       )}
 
-      <div className="messages-container">
+      <StyledMessagesContainer>
         {messages.map((message) => {
           console.log("Message:", { message });
           return (
@@ -180,18 +191,15 @@ const ChatWindow = memo(function ChatWindow({
             />
           );
         })}
-      </div>
+      </StyledMessagesContainer>
 
       <ChatComposer
         onSubmit={handleSubmit}
         message={message}
         handleMessageChange={handleMessageChange}
       />
-    </div>
+    </StyledChatWindow>
   );
 });
-
-// Add display name for dev tools
-ChatWindow.displayName = "ChatWindow";
 
 export default ChatWindow;
