@@ -17,9 +17,6 @@ import { styled } from "@pigment-css/react";
 // };
 
 const StyledTabBar = styled("div")({
-  background: "yellow",
-  // "fixed bottom-0 left-0 right-0 h-20 border-t border-gray-200",
-
   variants: [
     {
       props: { breakpoint: "sm" },
@@ -43,6 +40,10 @@ const StyledTabBar = styled("div")({
         display: "none",
         "@media (min-width: 768px)": {
           display: "unset",
+          width: "fit-content",
+          height: "fit-content",
+          borderTop: "none",
+          touchAction: "auto",
         },
       },
     },
@@ -50,9 +51,10 @@ const StyledTabBar = styled("div")({
       props: { position: "floating", breakpoint: "md" },
       style: {
         position: "fixed",
-        background: "red",
-        top: "4px",
-        left: "4px",
+        top: "calc(1.5rem - 0.5rem)", // Visually indentical positining to non-floating tab bar. Math: (non-floating inset - floating padding)
+        left: "calc(1.5rem - 0.5rem)",
+        padding: "0.5rem",
+
         borderRadius: "10px",
         bottom: "unset",
         right: "unset",
@@ -63,27 +65,17 @@ const StyledTabBar = styled("div")({
       style: { position: "relative" },
     },
   ],
-
-  "@media (min-width: 768px)": {
-    width: "fit-content",
-    height: "fit-content",
-    borderTop: "none",
-    touchAction: "auto",
-  },
 });
 
 const StyledTabBarNav = styled("nav")({
-  // "h-full bg-white/95 backdrop-blur-sm p-2 flex justify-between items-center stretch",
   height: "100%",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "10px",
   "@media (min-width: 768px)": {
-    // "flex flex-col gap-2",
     height: "auto",
     flexDirection: "column",
-    gap: "2px",
+    gap: "1rem",
   },
 });
 
@@ -97,15 +89,8 @@ function TabBar({ breakpoint = "sm", position = "inline", ...props }) {
   const pathname = usePathname();
 
   return (
-    <StyledTabBar
-      // className={`${STYLES[breakpoint].container} ${className}`.trim()}
-      breakpoint={breakpoint}
-      position={position}
-      {...props}
-    >
-      <StyledTabBarNav
-      // className={STYLES[breakpoint].nav}
-      >
+    <StyledTabBar breakpoint={breakpoint} position={position} {...props}>
+      <StyledTabBarNav>
         {breakpoint === "md" && <PeelsTab />}
         {NAVIGATION_ITEMS.map(({ title, icon, href }) => (
           <TabBarTab

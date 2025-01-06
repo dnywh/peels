@@ -16,7 +16,7 @@ export const facts = [
     { fact: "The first known compost pile dates back over 12,000 years to ancient Scotland.", source: "https://www.nationalgeographic.com/culture/article/compost--a-history-in-green-and-brown" },
     { fact: "A backyard compost bin can reach temperatures of up to 160°F (70°C).", source: "8" },
     { fact: "Compost can help soil retain water, reducing the need for irrigation by up to 70%.", source: "" },
-    { fact: "One composting worm, called a red wiggler, can lay up to 100 cocoons in its lifetime.", source: "10" },
+    { fact: "The red wiggler composting worm can lay up to 100 cocoons in its lifetime.", source: "10" },
     { fact: "The nutrients in compost can last in soil for over a decade.", source: "16" },
     { fact: "The Australian Brush-Turkey makes a compost mound to lay its eggs in.", source: "" },
     { fact: "George Washington was an avid composter, and is known as America’s first composter.", source: "" },
