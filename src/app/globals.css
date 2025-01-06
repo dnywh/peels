@@ -75,6 +75,10 @@ html.map {
   } */
 }
 
+[data-vaul-drawer] {
+  user-select: initial !important; /* For some reason Vaul sets user-select: none on the drawer content, perhaps should be enabled here not by breakpoint but by touch device type */
+}
+
 [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="open"] {
   animation-name: fooBarIn !important;
 }

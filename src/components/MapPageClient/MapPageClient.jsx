@@ -111,7 +111,7 @@ const StyledDrawerContent = styled(Drawer.Content)({
     outline: "none",
     width: sidebarWidth,
 
-    transform: "translate3d(0px, 0px, 0px)", // Helps drawer not get stuck at snap 0.35 point when returning to desktop breakpoint
+    transform: "translate3d(0px, 0px, 0px) !important", // Helps drawer not get stuck at snap 0.35 point when returning to desktop breakpoint
   },
 });
 
