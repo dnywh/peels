@@ -576,9 +576,7 @@ export default function MapPageClient({ user }) {
                 {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
                   Close
                 </Drawer.Close> */}
-                <StyledCloseButton onClick={handleCloseListing}>
-                  X
-                </StyledCloseButton>
+                <StyledCloseButton onClick={handleCloseListing} />
               </StyledDrawerHeader>
 
               {/* Begin drawer main content */}

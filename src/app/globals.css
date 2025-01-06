@@ -73,10 +73,11 @@ html.map {
     transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1) !important;
     transform: scale(0.981503) translate3d(-16px, 0px, 0px) !important;
   } */
-}
 
-[data-vaul-drawer] {
-  user-select: initial !important; /* For some reason Vaul sets user-select: none on the drawer content, perhaps should be enabled here not by breakpoint but by touch device type */
+  [data-vaul-drawer] {
+    user-select: initial !important; /* For some reason Vaul sets user-select: none on the drawer content, perhaps should be enabled here not by breakpoint but by touch device type */
+    /* I can see why the above setting would be annoying on touch devices, but not setting it makes Chrome and Firefox on desktop not be ble to select text */
+  }
 }
 
 [data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="open"] {
