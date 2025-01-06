@@ -13,23 +13,13 @@ const StaticPage = styled("div")({
 });
 
 const StyledMdTabBar = styled(TabBar)({
-  // className="hidden md:block fixed top-4 left-4 bg-white/80 backdrop-blur-sm p-2 rounded-xl"
   display: "none",
   "@media (min-width: 768px)": {
     display: "block",
-
-    // position: "fixed !important",
-    // top: "4px",
-    // left: "4px",
-    background: "white/80",
-    backdropFilter: "blur(5px)",
-    padding: "2px",
-    borderRadius: "10px",
   },
 });
 
 const StyledSmTabBar = styled(TabBar)({
-  // className="block md:hidden"
   display: "block",
   "@media (min-width: 768px)": {
     display: "none",

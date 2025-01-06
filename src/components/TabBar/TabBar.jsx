@@ -19,22 +19,28 @@ import { styled } from "@pigment-css/react";
 const StyledTabBar = styled("div")({
   background: "yellow",
   // "fixed bottom-0 left-0 right-0 h-20 border-t border-gray-200",
-  position: "fixed",
-  bottom: "0",
-  left: "0",
-  right: "0",
-  height: "80px",
-  borderTop: "1px solid #e0e0e0",
-  touchAction: "none",
 
   variants: [
+    {
+      props: { breakpoint: "sm" },
+      style: {
+        position: "fixed",
+        bottom: "0",
+        left: "0",
+        right: "0",
+        height: "80px",
+        borderTop: "1px solid #e0e0e0",
+        touchAction: "none",
+      },
+    },
     {
       props: { position: "floating", breakpoint: "md" },
       style: {
         position: "fixed",
-        background: "red !important",
+        background: "red",
         top: "4px",
         left: "4px",
+        borderRadius: "10px",
         bottom: "unset",
         right: "unset",
       },
