@@ -11,11 +11,6 @@ a {
   text-decoration: none;
 } */
 
-/*  */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Generally hand over gesture controls to map */
 html.map {
   /* Required to stop mobile map and mobile tab bar from rubber-banding on scroll touch events */

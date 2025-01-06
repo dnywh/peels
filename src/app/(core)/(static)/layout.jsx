@@ -12,6 +12,30 @@ const StaticPage = styled("div")({
   },
 });
 
+const StyledMdTabBar = styled(TabBar)({
+  // className="hidden md:block fixed top-4 left-4 bg-white/80 backdrop-blur-sm p-2 rounded-xl"
+  display: "none",
+  "@media (min-width: 768px)": {
+    display: "block",
+
+    // position: "fixed !important",
+    // top: "4px",
+    // left: "4px",
+    background: "white/80",
+    backdropFilter: "blur(5px)",
+    padding: "2px",
+    borderRadius: "10px",
+  },
+});
+
+const StyledSmTabBar = styled(TabBar)({
+  // className="block md:hidden"
+  display: "block",
+  "@media (min-width: 768px)": {
+    display: "none",
+  },
+});
+
 export default async function Layout({ children }) {
   return (
     <StaticPage>
@@ -19,10 +43,7 @@ export default async function Layout({ children }) {
       1. The desktop tab bar should be removed from the page positioning (floating on top-left, not affecting layout of rest of page contents)
       2. Neither tab bar should be visible if the user is logged out (how does this user logged in/out check occur? Where?)
       */}
-      <TabBar
-        breakpoint="md"
-        className="hidden md:block fixed top-4 left-4 bg-white/80 backdrop-blur-sm p-2 rounded-xl"
-      />
+      <StyledMdTabBar breakpoint="md" position="floating" />
       <div>
         {children}
         {/* <LoremIpsum /> */}
@@ -30,7 +51,7 @@ export default async function Layout({ children }) {
 
       <LegalFooter />
       {/* If this tab bar is active, add an equivalent amount of padding-bottom to the page */}
-      <TabBar breakpoint="sm" className="block md:hidden" />
+      <StyledSmTabBar breakpoint="sm" />
     </StaticPage>
   );
 }

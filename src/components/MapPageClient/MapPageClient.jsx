@@ -16,13 +16,10 @@ import GuestActions from "@/components/GuestActions";
 
 import Button from "@/components/Button";
 import CloseButton from "@/components/CloseButton";
-
 import MapSidebar from "@/components/MapSidebar";
-
-import { styled } from "@pigment-css/react";
 import LoremIpsum from "../LoremIpsum";
 
-import clsx from "clsx";
+import { styled } from "@pigment-css/react";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
@@ -71,7 +68,45 @@ const StyledMapRender = styled("div")({
   },
 });
 
+const StyledDrawerContent = styled(Drawer.Content)({
+  // Still to add: rounded-lg overflow-hidden
+  position: "fixed",
+  display: "flex",
+  flexDirection: "column",
+  border: "1px solid #E5E7EB", // border-gray-200
+  borderBottom: "none",
+  borderRadius: "10px 10px 0 0", // rounded-t-[10px]
+  bottom: "0",
+  left: "0",
+  right: "0",
+  height: "100%",
+  maxHeight: "97%",
+  margin: "0 -1px", // mx-[-1px]
+  "@media (min-width: 768px)": {
+    // background: "blue",
+    right: "24px",
+    top: "24px",
+    bottom: "24px",
+    outline: "none",
+  },
+});
+
+const StyledDrawerHeader = styled("header")({
+  // flex justify-between items-center absolute top-0 w-full py-2 px-4 rounded-t-lg
+  flex: 1,
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  position: "absolute",
+  top: "0",
+  width: "100%",
+  padding: "0.5rem 1rem",
+  backgroundColor: "#f0f0f0",
+  borderBottom: "1px solid #e0e0e0",
+});
+
 const StyledDrawerInner = styled("div")({
+  // Attempts to smooth drawer scroll
   // touchAction: "unset !important",
   // pointerEvents: "unset !important",
 
@@ -79,6 +114,19 @@ const StyledDrawerInner = styled("div")({
   overflowY: "scroll",
   overflowBehavior: "unset",
   touchAction: "pan-y", // Prevents zoom gesture which stuffs up general layout, should be revisted for accessibility
+
+  // Normal classes
+  // "pt-8 flex flex-col mx-auto w-full px-4 bg-slate-100 rounded-lg",
+  paddingTop: "2rem",
+  display: "flex",
+  flexDirection: "column",
+  margin: "auto",
+  width: "100%",
+  padding: "1rem",
+  backgroundColor: "red",
+  "@media (min-width: 768px)": {
+    height: "100%",
+  },
 });
 
 // export default async function MapPage() {
@@ -97,50 +145,12 @@ export default function MapPageClient({ user }) {
   const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
 
   const [isLoading, setIsLoading] = useState(true);
-
   const [isDesktop, setIsDesktop] = useState(false);
-
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
-
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
-
   const [selectedPinId, setSelectedPinId] = useState(null);
-
-  const mobileDrawerClassNames =
-    "fixed flex flex-col bg-slate-100 border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]";
-  const desktopDrawerClassNames = `right-[24px] top-[24px] bottom-[24px] fixed outline-none flex flex-col`;
-
-  // const [isDragging, setIsDragging] = useState(false);
-
-  // const handleTouchStart = () => {
-  //   console.log("Touch start");
-  //   setIsDragging(true);
-  // };
-
-  // const handleTouchEnd = () => {
-  //   console.log("Touch end");
-  //   setIsDragging(false);
-  // };
-
-  // const handleDrawerOpenChange = useCallback(
-  //   (open, fromMarker = false) => {
-  //     console.log("Drawer open change:", open, "fromMarker:", fromMarker);
-
-  //     if (!open && !fromMarker) {
-  //       // Only handle drawer closing through this handler
-  //       setIsDrawerOpen(false);
-  //       if (selectedListing) {
-  //         console.log("Closing listing");
-  //         handleCloseListing();
-  //       }
-  //     } else {
-  //       setIsDrawerOpen(true);
-  //     }
-  //   },
-  //   [selectedListing]
-  // );
 
   useEffect(() => {
     if (isDesktop) return;
@@ -434,7 +444,7 @@ export default function MapPageClient({ user }) {
   return (
     <StyledMapPage>
       {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
-      <StyledMapRender className="md:rounded-lg">
+      <StyledMapRender>
         <Drawer.Root
           // position={isDesktop ? "right" : undefined}
           direction={isDesktop ? "right" : undefined}
@@ -476,10 +486,9 @@ export default function MapPageClient({ user }) {
           />
 
           <Drawer.Portal>
-            <Drawer.Content
+            <StyledDrawerContent
               data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
               data-testid="content" // Not sure if this is needed
-              className={`rounded-lg overflow-hidden ${isDesktop ? desktopDrawerClassNames : mobileDrawerClassNames}`}
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
               style={
@@ -491,13 +500,16 @@ export default function MapPageClient({ user }) {
                   : undefined
               }
             >
-              <header
-                className={`${isDrawerHeaderShown ? "bg-slate-100 shadow-md" : ""} flex justify-between items-center absolute top-0 w-full py-2 px-4 rounded-t-lg `}
+              <StyledDrawerHeader
+                style={
+                  isDrawerHeaderShown
+                    ? {
+                        background: "blue",
+                        boxShadow: "1px 1px 1px 1px #e0e0e0",
+                      }
+                    : undefined
+                }
               >
-                {/* Empty button slot until I properly set layout for centered title */}
-
-                <CloseButton className="opacity-0">Close</CloseButton>
-
                 <div
                   className={`self-center flex flex-col items-center  ${
                     isDrawerHeaderShown ? "" : "opacity-0"
@@ -519,24 +531,18 @@ export default function MapPageClient({ user }) {
                 {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
                   Close
                 </Drawer.Close> */}
-              </header>
+              </StyledDrawerHeader>
 
               {/* Begin drawer main content */}
               {/* Page content */}
               <StyledDrawerInner
                 ref={drawerContentRef}
                 // data-vaul-no-drag
-                className={clsx(
-                  "pt-8 flex flex-col mx-auto w-full px-4 bg-slate-100 rounded-lg",
-                  {
-                    "overflow-y-auto": snap === 1 || isDesktop,
-                    "overflow-hidden": snap !== 1 && !isDesktop,
-                  },
-                  isDesktop ? "h-full" : undefined
-                )}
-                // style={{
-                //   overscrollBehavior: "none",
-                // }}
+                style={{
+                  overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
+                  overscrollBehavior:
+                    snap === 1 || isDesktop ? "none" : undefined,
+                }}
               >
                 <ListingRead
                   user={user}
@@ -549,8 +555,6 @@ export default function MapPageClient({ user }) {
                   pagePadding={pagePadding}
                   sidebarWidth={sidebarWidth}
                 />
-
-                <div className="bg-gray-400 w-24 h-24 py-12"></div>
 
                 <Drawer.Title>
                   {selectedListing?.type === "residential"
@@ -600,7 +604,7 @@ export default function MapPageClient({ user }) {
                   </>
                 )} */}
               </StyledDrawerInner>
-            </Drawer.Content>
+            </StyledDrawerContent>
           </Drawer.Portal>
         </Drawer.Root>
       </StyledMapRender>
