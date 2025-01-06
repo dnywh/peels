@@ -31,6 +31,19 @@ const StyledTabBar = styled("div")({
         height: "80px",
         borderTop: "1px solid #e0e0e0",
         touchAction: "none",
+        display: "block",
+        "@media (min-width: 768px)": {
+          display: "none",
+        },
+      },
+    },
+    {
+      props: { breakpoint: "md" },
+      style: {
+        display: "none",
+        "@media (min-width: 768px)": {
+          display: "unset",
+        },
       },
     },
     {

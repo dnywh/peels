@@ -16,26 +16,12 @@ const InteractPage = styled("div")({
   },
 });
 
-const MdTabBar = styled(TabBar)({
-  display: "none",
-  "@media (min-width: 768px)": {
-    display: "block",
-  },
-});
-
-const SmTabBar = styled(TabBar)({
-  display: "block",
-  "@media (min-width: 768px)": {
-    display: "none",
-  },
-});
-
 export default async function Layout({ children, params }) {
   return (
     <InteractPage>
-      <MdTabBar breakpoint="md" />
+      <TabBar breakpoint="md" />
       {children}
-      <SmTabBar breakpoint="sm" />
+      <TabBar breakpoint="sm" />
     </InteractPage>
   );
 }

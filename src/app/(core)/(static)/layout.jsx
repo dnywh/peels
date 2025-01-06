@@ -12,20 +12,6 @@ const StaticPage = styled("div")({
   },
 });
 
-const StyledMdTabBar = styled(TabBar)({
-  display: "none",
-  "@media (min-width: 768px)": {
-    display: "block",
-  },
-});
-
-const StyledSmTabBar = styled(TabBar)({
-  display: "block",
-  "@media (min-width: 768px)": {
-    display: "none",
-  },
-});
-
 export default async function Layout({ children }) {
   return (
     <StaticPage>
@@ -33,7 +19,7 @@ export default async function Layout({ children }) {
       1. The desktop tab bar should be removed from the page positioning (floating on top-left, not affecting layout of rest of page contents)
       2. Neither tab bar should be visible if the user is logged out (how does this user logged in/out check occur? Where?)
       */}
-      <StyledMdTabBar breakpoint="md" position="floating" />
+      <TabBar breakpoint="md" position="floating" />
       <div>
         {children}
         {/* <LoremIpsum /> */}
@@ -41,7 +27,7 @@ export default async function Layout({ children }) {
 
       <LegalFooter />
       {/* If this tab bar is active, add an equivalent amount of padding-bottom to the page */}
-      <StyledSmTabBar breakpoint="sm" />
+      <TabBar breakpoint="sm" />
     </StaticPage>
   );
 }
