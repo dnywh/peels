@@ -69,6 +69,12 @@ const StyledMapRender = styled("div")({
   },
 });
 
+const StyledCloseButton = styled(CloseButton)({
+  position: "absolute",
+  top: "0.5rem",
+  right: "1rem",
+});
+
 const StyledDrawerContent = styled(Drawer.Content)({
   // display: "flex",
   // flexDirection: "column",
@@ -118,16 +124,26 @@ const StyledDrawerHeader = styled("header")({
   width: "100%",
 
   display: "flex",
-  padding: "1rem",
   // alignItems: "center",
-  justifyContent: "space-between",
+
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  textAlign: "center",
   // padding: "0.5rem 1rem",
-  background: "rgb(235, 235, 235)",
 });
 
 const StyledDrawerHeaderInner = styled("div")({
   display: "flex",
   flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+
+  padding: "0.5rem",
+  background: "rgb(235, 235, 235)",
+  borderBottom: "1px solid #b1b1b1",
+  boxShadow: "0px 10px 8px 6px #0000002d",
 });
 
 const StyledAvatarHolder = styled("div")({
@@ -145,6 +161,7 @@ const StyledDrawerInner = styled("div")({
   // Attempts to smooth drawer scroll
   // touchAction: "unset !important",
   // pointerEvents: "unset !important",
+  marginTop: "-3.5rem", // To account for sticky header
 
   overflowY: "auto",
 
@@ -536,47 +553,17 @@ export default function MapPageClient({ user }) {
                 overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
               }}
             >
-              <StyledDrawerHeader
-                style={
-                  isDrawerHeaderShown
-                    ? {
-                        borderBottom: "1px solid #6f6f6f",
-                        boxShadow: "0px 1px 8px 1px #0000002d",
-                      }
-                    : undefined
-                }
-              >
+              <StyledDrawerHeader>
                 <StyledDrawerHeaderInner
-                  style={
-                    isDrawerHeaderShown
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 1,
-                        }
-                  }
+                  style={{
+                    transition: "opacity 0.1s ease",
+                    // opacity: isDrawerHeaderShown ? 1 : 0,
+                    opacity: isDrawerHeaderShown ? 1 : 0,
+                    // height: isDrawerHeaderShown ? "100px" : "0",
+                  }}
                 >
-                  <StyledAvatarHolder>
-                    {selectedListing?.type === "residential" ? (
-                      <StorageImage
-                        bucket="avatars"
-                        filename={selectedListing?.profiles.avatar}
-                        alt={selectedListing?.profiles.first_name}
-                        style={{ width: "100px", height: "100px" }}
-                      />
-                    ) : (
-                      <StorageImage
-                        bucket="listing_avatars"
-                        filename={selectedListing?.avatar}
-                        alt={selectedListing?.name}
-                        style={{ width: "100px", height: "100px" }}
-                      />
-                    )}
-                  </StyledAvatarHolder>
-
                   <StyledHeaderText>
-                    <Drawer.Title>
+                    <Drawer.Title style={{ fontSize: "0.85rem" }}>
                       {selectedListing?.type === "residential"
                         ? selectedListing?.profiles?.first_name
                         : selectedListing?.name}
@@ -586,10 +573,12 @@ export default function MapPageClient({ user }) {
                   </StyledHeaderText>
                 </StyledDrawerHeaderInner>
 
-                <CloseButton onClick={handleCloseListing}>X Close</CloseButton>
                 {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
                   Close
                 </Drawer.Close> */}
+                <StyledCloseButton onClick={handleCloseListing}>
+                  X
+                </StyledCloseButton>
               </StyledDrawerHeader>
 
               {/* Begin drawer main content */}
