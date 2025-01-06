@@ -11,6 +11,14 @@ import { NavWrapper } from "@/components/nav-wrapper";
 
 import { globalCss, css } from "@pigment-css/react";
 // Global styles:
+globalCss`
+  * {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+`;
+
 // globalCss`
 //   body {
 //   background-color: #ffffff;

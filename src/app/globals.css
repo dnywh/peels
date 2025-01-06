@@ -1,7 +1,4 @@
 /* https://github.com/mui/pigment-css/blob/master/examples/pigment-css-nextjs-ts/src/app/globals.css */
-body {
-  margin: 0;
-}
 
 /* This file seems to take precedence over styles defined elsewhere */
 /* * {

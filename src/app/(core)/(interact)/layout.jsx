@@ -8,6 +8,7 @@ const InteractPage = styled("div")({
   display: "flex",
   flexDirection: "column",
   height: "100dvh",
+
   "@media (min-width: 768px)": {
     flexDirection: "row",
     alignItems: "stretch",

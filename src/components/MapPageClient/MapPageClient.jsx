@@ -70,6 +70,7 @@ const StyledMapRender = styled("div")({
 
 const StyledDrawerContent = styled(Drawer.Content)({
   // Still to add: rounded-lg overflow-hidden
+
   position: "fixed",
   display: "flex",
   flexDirection: "column",
@@ -79,30 +80,47 @@ const StyledDrawerContent = styled(Drawer.Content)({
   bottom: "0",
   left: "0",
   right: "0",
-  height: "100%",
+  // height: "100%",
   maxHeight: "97%",
-  margin: "0 -1px", // mx-[-1px]
+  // overscrollBehavior: "unset",
+  // margin: "0 -1px", // mx-[-1px]
+
+  background: "rgb(243, 243, 243)",
+  borderRadius: "10px",
+  overflowX: "hidden",
+
   "@media (min-width: 768px)": {
     // background: "blue",
-    right: "24px",
+    // margin: "unset",
     top: "24px",
+    right: "24px",
     bottom: "24px",
+    left: "unset",
     outline: "none",
+    width: sidebarWidth,
+
+    transform: "translate3d(0px, 0px, 0px)", // Helps drawer not get stuck at snap 0.35 point when returning to desktop breakpoint
   },
 });
 
 const StyledDrawerHeader = styled("header")({
   // flex justify-between items-center absolute top-0 w-full py-2 px-4 rounded-t-lg
   flex: 1,
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
+
   position: "absolute",
   top: "0",
   width: "100%",
+
+  display: "flex",
+  padding: "1rem",
+  // alignItems: "center",
+  justifyContent: "space-between",
   // padding: "0.5rem 1rem",
-  backgroundColor: "#f0f0f0",
-  borderBottom: "1px solid #e0e0e0",
+});
+
+const StyledDrawerHeaderInner = styled("div")({
+  display: "flex",
+  flexDirection: "column",
 });
 
 const StyledDrawerInner = styled("div")({
@@ -117,16 +135,18 @@ const StyledDrawerInner = styled("div")({
 
   // Normal classes
   // "pt-8 flex flex-col mx-auto w-full px-4 bg-slate-100 rounded-lg",
+  padding: "1rem",
   paddingTop: "2rem",
   display: "flex",
   flexDirection: "column",
   margin: "auto",
   width: "100%",
   // padding: "1rem",
-  backgroundColor: "red",
-  "@media (min-width: 768px)": {
-    height: "100%",
-  },
+  // backgroundColor: "red",
+
+  // "@media (min-width: 768px)": {
+  //   height: "100%",
+  // },
 });
 
 // export default async function MapPage() {
@@ -491,29 +511,28 @@ export default function MapPageClient({ user }) {
               data-testid="content" // Not sure if this is needed
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
-              style={
-                isDesktop
-                  ? {
-                      transform: "translate3d(0px, 0px, 0px)", // Helps drawer not get stuck at snap 0.35 point when returning to desktop breakpoint
-                      width: sidebarWidth,
-                    }
-                  : undefined
-              }
             >
               <StyledDrawerHeader
                 style={
                   isDrawerHeaderShown
                     ? {
-                        background: "blue",
-                        boxShadow: "1px 1px 1px 1px #e0e0e0",
+                        background: "rgb(243, 243, 243)",
+                        borderBottom: "1px solid #e0e0e0",
+                        boxShadow: "0px 1px 8px 1px #0000002d",
                       }
                     : undefined
                 }
               >
-                <div
-                  className={`self-center flex flex-col items-center  ${
-                    isDrawerHeaderShown ? "" : "opacity-0"
-                  }`}
+                <StyledDrawerHeaderInner
+                  style={
+                    isDrawerHeaderShown
+                      ? {
+                          opacity: 1,
+                        }
+                      : {
+                          opacity: 0,
+                        }
+                  }
                 >
                   <Drawer.Title
                     className={`text-md font-medium text-gray-900 `}
@@ -525,7 +544,7 @@ export default function MapPageClient({ user }) {
                   <p className="-mt-1 text-sm text-gray-500">
                     {selectedListing?.type}
                   </p>
-                </div>
+                </StyledDrawerHeaderInner>
 
                 <CloseButton onClick={handleCloseListing}>X Close</CloseButton>
                 {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
@@ -541,7 +560,7 @@ export default function MapPageClient({ user }) {
                 style={{
                   overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
                   overscrollBehavior:
-                    snap === 1 || isDesktop ? "none" : undefined,
+                    snap === 1 && !isDesktop ? "none" : "auto",
                 }}
               >
                 <ListingRead
