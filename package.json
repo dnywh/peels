@@ -22,7 +22,6 @@
     "@supabase/supabase-js": "latest",
     "@turf/distance": "^7.2.0",
     "class-variance-authority": "^0.7.0",
-    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "geist": "^1.2.1",
     "lucide-react": "^0.456.0",

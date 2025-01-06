@@ -1,9 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
-import classNames from "classnames"; // Required for combining Tailwind classes with styled components
 
-function BackButton({ onClick, children = "← Back", className }) {
+function BackButton({ onClick, children = "← Back" }) {
   const router = useRouter();
 
   // Go back to the previous page or, if provided, call the onClick function
@@ -15,11 +14,7 @@ function BackButton({ onClick, children = "← Back", className }) {
     }
   };
 
-  return (
-    <Button onClick={handleClick} className={className}>
-      {children}
-    </Button>
-  );
+  return <Button onClick={handleClick}>{children}</Button>;
 }
 
 export default BackButton;

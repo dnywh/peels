@@ -1,8 +1,8 @@
 import { Button as UnstyledButton } from "@headlessui/react";
 import { styled } from "@pigment-css/react";
-import classNames from "classnames"; // Required for combining Tailwind classes with styled components
 
 const StyledButton = styled(UnstyledButton)(({ theme }) => ({
+  // "rounded bg-sky-600 py-2 px-4 text-sm text-white data-[hover]:bg-sky-500 data-[active]:bg-sky-700",
   border: "none",
   borderRadius: theme.corners.unit * 0.5,
   fontSize: "1rem",
@@ -22,14 +22,9 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   },
 }));
 
-export default function Button({ children, className, ...props }) {
-  const combinedClassName = classNames(
-    "rounded bg-sky-600 py-2 px-4 text-sm text-white data-[hover]:bg-sky-500 data-[active]:bg-sky-700",
-    className
-  );
-
+export default function Button({ children, ...props }) {
   return (
-    <StyledButton type="button" className={combinedClassName} {...props}>
+    <StyledButton type="button" {...props}>
       {children}
     </StyledButton>
   );

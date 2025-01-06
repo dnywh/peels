@@ -100,7 +100,7 @@ const StyledDrawerHeader = styled("header")({
   position: "absolute",
   top: "0",
   width: "100%",
-  padding: "0.5rem 1rem",
+  // padding: "0.5rem 1rem",
   backgroundColor: "#f0f0f0",
   borderBottom: "1px solid #e0e0e0",
 });
@@ -122,7 +122,7 @@ const StyledDrawerInner = styled("div")({
   flexDirection: "column",
   margin: "auto",
   width: "100%",
-  padding: "1rem",
+  // padding: "1rem",
   backgroundColor: "red",
   "@media (min-width: 768px)": {
     height: "100%",
