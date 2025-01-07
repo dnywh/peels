@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import ChatPageClient from "@/components/ChatPageClient";
 
-export default async function ChatsPage() {
+export default async function ChatsPage({ params }) {
     const supabase = await createClient();
     const {
         data: { user },
@@ -21,10 +21,15 @@ export default async function ChatsPage() {
         `)
         .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`);
 
+    // Pass threadId to the client component
+    const threadId = await params?.threadId?.[0];
+
     return (
-
-        <ChatPageClient user={user} initialThreads={threads} />
-
+        <ChatPageClient
+            user={user}
+            initialThreads={threads}
+            initialThreadId={threadId}
+        />
     );
 }
 

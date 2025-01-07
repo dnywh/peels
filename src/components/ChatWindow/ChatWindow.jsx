@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, memo, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Drawer } from "vaul"; // TODO: Import only used subcomponents?
 
@@ -9,6 +10,8 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Buil
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
 import ChatComposer from "@/components/ChatComposer";
+import BackButton from "@/components/BackButton";
+
 import { styled } from "@pigment-css/react";
 
 const StyledChatWindow = styled("div")({
@@ -30,6 +33,12 @@ const ChatHeader = styled("header")({
   padding: "1rem",
 });
 
+const StyledBackButton = styled(BackButton)({
+  "@media (min-width: 768px)": {
+    display: "none !important",
+  },
+});
+
 const StyledMessagesContainer = styled("div")({
   flex: 1,
   padding: "1rem",
@@ -44,6 +53,7 @@ const ChatWindow = memo(function ChatWindow({
   existingThread = null,
   drawer = false,
 }) {
+  const router = useRouter();
   // Move Supabase client creation outside of render
   const supabase = useMemo(() => createClient(), []);
 
@@ -192,6 +202,8 @@ const ChatWindow = memo(function ChatWindow({
   return (
     <StyledChatWindow>
       <ChatHeader>
+        {/* <StyledBackButton /> */}
+        <StyledBackButton onClick={() => router.push("/chats")} />
         {drawer && (
           <>
             <VisuallyHidden.Root>
