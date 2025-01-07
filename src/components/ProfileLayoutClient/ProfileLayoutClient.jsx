@@ -8,12 +8,24 @@ const ProfilePageLayout = styled("div")({
   display: "flex",
   flexDirection: "column",
   gap: "2rem",
+  //   width: "100%",
+  flex: 1,
+  alignItems: "flex-start",
   "@media (min-width: 768px)": {
     flexDirection: "row",
   },
 });
 
 const ProfileSidebarContainer = styled("div")({
+  padding: "1rem",
+
+  "@media (min-width: 768px)": {
+    border: "1px solid #e0e0e0",
+    borderRadius: "0.5rem",
+    position: "sticky",
+    top: 0,
+  },
+
   '[data-subpage="true"] &': {
     display: "none",
     "@media (min-width: 768px)": {
@@ -28,19 +40,16 @@ const ProfileSidebar = styled("div")({
   alignItems: "stretch",
   gap: "2rem",
   width: "16rem",
-  "@media (min-width: 768px)": {
-    position: "sticky",
-    top: 0,
-    border: "1px solid grey",
-  },
 });
 
 const ProfileMain = styled("main")({
-  flex: 1,
-  "[data-desktop-back-button]": {
-    "@media (min-width: 768px)": {
-      display: "none",
-    },
+  padding: "1rem",
+  width: "100%",
+  maxWidth: "40rem",
+
+  "@media (min-width: 768px)": {
+    border: "1px solid #e0e0e0",
+    borderRadius: "0.5rem",
   },
 });
 
@@ -57,7 +66,7 @@ export default function ProfileLayoutClient({ children, sidebar }) {
       <ProfileMain>
         {isSubpage && (
           <IconButton
-            data-desktop-back-button
+            breakpoint="sm"
             action="back"
             onClick={() => router.push("/profile")}
           />

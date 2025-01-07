@@ -23,12 +23,12 @@ export default function ProfileLayout({ children }) {
     );
 
     return (
-        <div>
+        <>
             <ProfileRedirect />
             <ProfileLayoutClient sidebar={sidebar}>
                 {children}
             </ProfileLayoutClient>
-        </div>
+        </>
     );
 }
 
