@@ -6,6 +6,27 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@/utils/url";
 
+import { cookies } from "next/headers";
+
+// Check if cookies can be set for edge cases where users have disabled cookies (required for Supabase auth on server components)
+export const checkAuthCookies = async () => {
+  const cookieStore = await cookies();
+
+  // Try to set a temporary cookie
+  cookieStore.set("cookie-check", "1", {
+    maxAge: 1, // Very short lifespan
+    path: "/",
+  });
+
+  // Check if we can read it back
+  const canSetCookies = cookieStore.has("cookie-check");
+
+  // Clean up
+  cookieStore.delete("cookie-check");
+
+  return canSetCookies;
+};
+
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
@@ -91,6 +112,15 @@ export const signUpAction = async (formData: FormData) => {
 };
 
 export const signInAction = async (formData: FormData) => {
+  // Check cookies first
+  if (!await checkAuthCookies()) {
+    return encodedRedirect(
+      "error",
+      "/sign-in",
+      "Please enable cookies in your browser settings to sign in.",
+    );
+  }
+
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const next = formData.get("next") as string;

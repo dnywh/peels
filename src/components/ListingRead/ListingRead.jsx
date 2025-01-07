@@ -290,7 +290,7 @@ const ListingRead = memo(function Listing({
               </Drawer.Trigger>
             )
           ) : (
-            <LinkButton href={`/sign-up?from=listing&slug=${listing.slug}`}>
+            <LinkButton href={`/sign-in?from=listing&slug=${listing.slug}`}>
               Contact host
             </LinkButton>
           )}

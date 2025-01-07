@@ -14,6 +14,6 @@ export const facts = [
     { fact: "The nutrients in compost can last in soil for over a decade.", source: "16" },
     { fact: "The Australian Brush-Turkey makes a compost mound to lay its eggs in.", source: "" },
     { fact: "George Washington was an avid composter, and is known as America’s first composter.", source: "" },
-    { fact: "Cleopatra is said to have made earthworms sacred for their composting abilities, and made their export a crime punishable by death.", source: "" },
+    { fact: "Cleopatra is said to have made earthworms sacred for their composting abilitiesCh.", source: "" },
 
 ];

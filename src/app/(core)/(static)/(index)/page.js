@@ -37,7 +37,7 @@ export default async function Index() {
         </Button>
         <Button asChild size="lg" variant={"outline"}>
           {/* TODO: {user ? <Link href="/profile#TODO-listing-form-for-signed-in-users">Create a listing</Link> : <Link href="/sign-up">Sign up</Link>} */}
-          <Link href="/sign-up">Sign up</Link>
+          <Link href="/sign-in">Sign in</Link>
         </Button>
       </div>
 

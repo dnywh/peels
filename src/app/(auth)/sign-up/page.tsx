@@ -60,8 +60,8 @@ export default async function Signup(props: {
         <Field>
           <Label htmlFor="email">Email</Label>
           <Input
-            type="email"
             name="email"
+            type="email"
             placeholder="you@example.com"
             required
             defaultValue={searchParams.email}
