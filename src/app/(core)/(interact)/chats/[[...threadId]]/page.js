@@ -1,7 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import ChatPageClient from "@/components/ChatPageClient";
 
-export default async function ChatsPage({ params }) {
+export default async function ChatsPage(props) {
+    const params = await props.params;
     // Prepare active thread if provided
     // params itself is a promise in Next.js 13+.
     // The error message is a bit misleading - you don't need to await params itself, but rather any async operations that use those params. In your case, just accessing the array value is synchronous.
