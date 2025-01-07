@@ -37,14 +37,18 @@ const StyledButton = styled(Button)({
 function IconButton({ onClick, action = "back", breakpoint, ...props }) {
   const router = useRouter();
 
-  const handleClick = () => {
-    if (action === "back") {
+  const handleClick = (e) => {
+    if (onClick) {
+      onClick(e);
+    }
+
+    if (!onClick && action === "back") {
       router.back();
     }
   };
 
   return (
-    <StyledButton breakpoint={breakpoint} onClick={onClick} {...props}>
+    <StyledButton breakpoint={breakpoint} onClick={handleClick} {...props}>
       {action === "close" && <X />}
       {action === "back" && <ArrowLeft />}
     </StyledButton>
