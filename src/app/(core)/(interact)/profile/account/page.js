@@ -12,7 +12,7 @@ import {
     DialogTrigger,
     DialogClose,
 } from "@radix-ui/react-dialog";
-import BackButton from "@/components/BackButton";
+import IconButton from "@/components/IconButton";
 import Link from "next/link";
 
 import AvatarUploadManager from "@/components/AvatarUploadManager";

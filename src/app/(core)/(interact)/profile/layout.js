@@ -3,14 +3,14 @@ import Link from 'next/link';
 
 import NavLinks from './nav-links';
 import ProfileRedirect from './profile-redirect';
-import BackButton from '@/components/BackButton';
+import IconButton from '@/components/IconButton';
 import { signOutAction } from "@/app/actions";
 import SubmitButton from '@/components/SubmitButton';
 import AvatarRead from '@/components/AvatarRead';
 import LegalFooter from '@/components/LegalFooter';
 import { styled } from "@pigment-css/react";
 
-const MobileBackButton = styled(BackButton)({
+const MobileIconButton = styled(IconButton)({
     display: "block",
     '@media (min-width: 768px)': {
         display: "none",
@@ -80,7 +80,7 @@ export default function ProfileLayout({ children }) {
                 {/* Main page content if relevant. Only renders if children */}
                 {children &&
                     <main>
-                        <MobileBackButton />
+                        <MobileIconButton />
                         {children}
                     </main>}
 

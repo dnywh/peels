@@ -10,7 +10,7 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Buil
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
 import ChatComposer from "@/components/ChatComposer";
-import BackButton from "@/components/BackButton";
+import IconButton from "@/components/IconButton";
 
 import { styled } from "@pigment-css/react";
 
@@ -36,13 +36,6 @@ const ChatHeader = styled("header")({
   padding: "1rem",
 });
 
-const StyledBackButton = styled("div")({
-  display: "block",
-  "@media (min-width: 768px)": {
-    display: "none",
-  },
-});
-
 const StyledMessagesContainer = styled("div")({
   flex: 1,
   padding: "1rem",
@@ -53,7 +46,7 @@ const StyledMessagesContainer = styled("div")({
 const ChatWindow = memo(function ChatWindow({
   user,
   listing,
-  setIsChatOpen,
+  setIsChatDrawerOpen,
   existingThread = null,
   isDrawer = false,
 }) {
@@ -207,10 +200,11 @@ const ChatWindow = memo(function ChatWindow({
     <StyledChatWindow>
       <ChatHeader>
         {!isDrawer && (
-          // TODO: Get rid of wrapper div (needed because above media query is not working directly on BackButton)
-          <BackButton breakpoint="sm" onClick={() => router.push("/chats")} />
-          // <StyledBackButton>
-          // </StyledBackButton>
+          <IconButton
+            breakpoint="sm"
+            action="back"
+            onClick={() => router.push("/chats")}
+          />
         )}
         {isDrawer && (
           <>
@@ -220,13 +214,14 @@ const ChatWindow = memo(function ChatWindow({
                 Test description for aria.
               </Drawer.Description>
             </VisuallyHidden.Root>
-            <Drawer.Close>Close this drawer</Drawer.Close>
-            {/* <CloseButton onClick={handleChatClose}>Close</CloseButton> */}
+
+            <Drawer.Close asChild>
+              <IconButton action="close" />
+            </Drawer.Close>
+
+            {/* <IconButton onClick={handleChatClose}>Close</IconButton> */}
           </>
         )}
-        {/* {setIsChatOpen && (
-        <button onClick={() => setIsChatOpen(false)}>Close chat</button>
-      )} */}
 
         <p>Other person's name</p>
         <p>{listing.name}</p>

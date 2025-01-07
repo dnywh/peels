@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
 import { Drawer } from "vaul";
 
 import StorageImage from "@/components/StorageImage";
@@ -18,7 +19,7 @@ import ChatWindow from "@/components/ChatWindow";
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
-import CloseButton from "@/components/CloseButton";
+import IconButton from "@/components/IconButton";
 import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
 
@@ -113,7 +114,7 @@ const ListingRead = memo(function Listing({
   user,
   listing,
   setSelectedListing,
-  modal,
+  isDrawer,
   isDesktop,
   isChatDrawerOpen,
   setIsChatDrawerOpen,
@@ -147,7 +148,7 @@ const ListingRead = memo(function Listing({
         return;
       }
 
-      console.log("Found existing thread:", thread);
+      // console.log("Found existing thread:", thread);
       setExistingThread(thread);
     }
 
@@ -226,7 +227,7 @@ const ListingRead = memo(function Listing({
 
   if (!listing) return null;
   {
-    /* {setSelectedListing && <CloseButton onClick={setSelectedListing} />} */
+    /* {setSelectedListing && <IconButton onClick={setSelectedListing} />} */
   }
   return (
     <Fragment key={listing.id}>
@@ -304,6 +305,7 @@ const ListingRead = memo(function Listing({
                 // ref={drawerContentRef}
                 // data-vaul-no-drag
                 isDrawer={true}
+                setIsChatDrawerOpen={setIsChatDrawerOpen}
                 user={user}
                 listing={listing}
                 existingThread={
@@ -329,7 +331,7 @@ const ListingRead = memo(function Listing({
         </>
       )}
 
-      {!modal && (
+      {!isDrawer && (
         <>
           <h3>Location</h3>
           <StyledMap

@@ -1,5 +1,5 @@
 import ListingWrite from "@/components/ListingWrite";
-import BackButton from "@/components/BackButton";
+import IconButton from "@/components/IconButton";
 
 export default async function NewListingFormContent({ searchParams }) {
     const listingType = (await searchParams).type
@@ -10,7 +10,7 @@ export default async function NewListingFormContent({ searchParams }) {
     return (
         <main>
             <header>
-                <BackButton />
+                <IconButton />
                 <h1>
                     {finalListingType === 'community' || finalListingType === 'business' ? `List your ${finalListingType}` : 'Add your listing'}
                 </h1>

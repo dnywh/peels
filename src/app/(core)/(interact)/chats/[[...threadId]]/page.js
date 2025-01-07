@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 import ChatPageClient from "@/components/ChatPageClient";
 
 export default async function ChatsPage(props) {
@@ -6,7 +7,7 @@ export default async function ChatsPage(props) {
     // Prepare active thread if provided
     // params itself is a promise in Next.js 13+.
     // The error message is a bit misleading - you don't need to await params itself, but rather any async operations that use those params. In your case, just accessing the array value is synchronous.
-    const threadId = params?.threadId?.[0] ?? null;
+    const threadId = params?.threadId?.[0];
 
     // Get user data
     const supabase = await createClient();
@@ -29,6 +30,11 @@ export default async function ChatsPage(props) {
         `)
         .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`);
 
+    // Validate thread access if threadId exists
+    if (threadId && !threads?.some(t => t.id === threadId)) {
+        console.log("Thread not found or access denied, redirecting...");
+        redirect('/chats');
+    }
 
     return (
         <ChatPageClient

@@ -2,6 +2,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
 import { Drawer } from "vaul";
 const snapPoints = [0.35, 1];
 
@@ -16,7 +17,7 @@ import GuestActions from "@/components/GuestActions";
 import StorageImage from "@/components/StorageImage";
 
 import Button from "@/components/Button";
-import CloseButton from "@/components/CloseButton";
+import IconButton from "@/components/IconButton";
 import MapSidebar from "@/components/MapSidebar";
 import LoremIpsum from "../LoremIpsum";
 
@@ -69,10 +70,9 @@ const StyledMapRender = styled("div")({
   },
 });
 
-const StyledCloseButton = styled(CloseButton)({
+const StyledIconButton = styled(IconButton)({
   position: "absolute",
-  top: "0.5rem",
-  right: "1rem",
+  right: "0.75rem",
 });
 
 const StyledDrawerContent = styled(Drawer.Content)({
@@ -86,8 +86,10 @@ const StyledDrawerContent = styled(Drawer.Content)({
   bottom: "0",
   left: "0",
   right: "0",
-  // height: "100%",
-  maxHeight: "97%",
+
+  height: "97%", // Take up full height to prevent awkward drawer pop-ups when minimal content
+  // maxHeight: "97%",
+
   // overscrollBehavior: "unset",
   // margin: "0 -1px", // mx-[-1px]
 
@@ -104,6 +106,7 @@ const StyledDrawerContent = styled(Drawer.Content)({
     borderRadius: "10px",
     // background: "blue",
     // margin: "unset",
+    height: "unset",
     top: "24px",
     right: "24px",
     bottom: "24px",
@@ -415,7 +418,7 @@ export default function MapPageClient({ user }) {
     const handleScroll = () => {
       if (drawerContentRef.current) {
         const scrollTop = drawerContentRef.current.scrollTop;
-        console.log("Mobile Scroll position:", scrollTop);
+        // console.log("Mobile Scroll position:", scrollTop);
         setIsDrawerHeaderShown(scrollTop > 16);
       }
     };
@@ -446,7 +449,7 @@ export default function MapPageClient({ user }) {
       const handleScroll = () => {
         if (drawerContentRef.current) {
           const scrollTop = drawerContentRef.current.scrollTop;
-          console.log("Desktop Scroll position:", scrollTop);
+          // console.log("Desktop Scroll position:", scrollTop);
           setIsDrawerHeaderShown(scrollTop > 16);
         }
       };
@@ -516,16 +519,16 @@ export default function MapPageClient({ user }) {
           // modal={false}
           open={isDrawerOpen}
           onOpenChange={(open) => {
-            console.log("Drawer open change", open);
+            // console.log("Drawer open change", open);
           }}
-          onDrag={(drag) => console.log("Drawer drag", drag)}
-          onRelease={(release) => {
-            console.log("Drawer release", release);
-          }}
+          // onDrag={(drag) => console.log("Drawer drag", drag)}
+          // onRelease={(release) => {
+          //   console.log("Drawer release", release);
+          // }}
           // scrollLockTimeout={1} // Not sure but seems to make the mobile drawer more responsive
-          onAnimationEnd={(event) => {
-            console.log("Animation ended", event);
-          }}
+          // onAnimationEnd={(event) => {
+          //   console.log("Animation ended", event);
+          // }}
 
           // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
         >
@@ -556,6 +559,14 @@ export default function MapPageClient({ user }) {
                 overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
               }}
             >
+              <VisuallyHidden.Root>
+                <Drawer.Title>Nested chat drawer</Drawer.Title>
+                <Drawer.Description>
+                  Test description for aria.
+                </Drawer.Description>
+              </VisuallyHidden.Root>
+              {/* <IconButton onClick={handleChatClose}>Close</IconButton> */}
+
               <StyledDrawerHeader>
                 <StyledDrawerHeaderInner
                   style={{
@@ -579,7 +590,7 @@ export default function MapPageClient({ user }) {
                 {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
                   Close
                 </Drawer.Close> */}
-                <StyledCloseButton onClick={handleCloseListing} />
+                <StyledIconButton action="close" onClick={handleCloseListing} />
               </StyledDrawerHeader>
 
               {/* Begin drawer main content */}
@@ -597,7 +608,7 @@ export default function MapPageClient({ user }) {
                   user={user}
                   listing={selectedListing}
                   setSelectedListing={handleCloseListing}
-                  modal={true}
+                  isDrawer={true}
                   isDesktop={isDesktop}
                   isChatDrawerOpen={isChatDrawerOpen}
                   setIsChatDrawerOpen={setIsChatDrawerOpen}

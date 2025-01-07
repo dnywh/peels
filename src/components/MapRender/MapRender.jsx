@@ -19,7 +19,7 @@ import MapSearch from "@/components/MapSearch";
 
 import { Drawer } from "vaul";
 import Button from "@/components/Button";
-import CloseButton from "@/components/CloseButton";
+import IconButton from "@/components/IconButton";
 
 const snapPoints = ["148px", "355px", 1];
 const todo = false; // Temporarily turning off this feature to inspect scroll bugs

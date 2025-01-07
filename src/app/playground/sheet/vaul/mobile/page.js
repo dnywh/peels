@@ -5,7 +5,7 @@ import { Drawer } from 'vaul';
 import LoremIpsum from '@/components/LoremIpsum';
 
 import Button from '@/components/Button';
-import CloseButton from '@/components/CloseButton';
+import IconButton from '@/components/IconButton';
 
 const snapPoints = ['148px', '355px', 1];
 
@@ -54,7 +54,7 @@ export default function VaulDrawer() {
                         <div
                             className={`flex flex-col max-w-md mx-auto w-full p-4 pt-5 ${snap === 1 ? 'overflow-y-auto' : 'overflow-hidden'}`}
                         >
-                            <CloseButton onClick={() => {
+                            <IconButton onClick={() => {
                                 setIsOpen(false)
                             }} />
                             <Drawer.Title className="text-2xl mt-2 font-medium text-gray-900">The Hidden Details</Drawer.Title>

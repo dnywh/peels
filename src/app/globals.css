@@ -80,10 +80,10 @@ html.map {
   }
 }
 
-[data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="open"] {
+[data-vaul-drawer][data-vaul-drawer-direction="right"][data-state="open"] {
   animation-name: fooBarIn !important;
 }
-[data-vaul-drawer][data-vaul-snap-points="false"][data-vaul-drawer-direction="right"][data-state="closed"] {
+[data-vaul-drawer][data-vaul-drawer-direction="right"][data-state="closed"] {
   animation-name: fooBarOut !important;
 }
 

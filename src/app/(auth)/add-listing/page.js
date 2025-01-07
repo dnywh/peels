@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import SubmitButton from '@/components/SubmitButton';
-import BackButton from '@/components/BackButton/BackButton';
+import IconButton from '@/components/IconButton/IconButton';
 
 
 // TODO
@@ -60,7 +60,7 @@ function NewListingContent() {
 
     return (
         <>
-            <BackButton />
+            <IconButton />
 
             <h1>Add a listing</h1>
 
