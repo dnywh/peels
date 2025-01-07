@@ -1,5 +1,4 @@
-// Server Component
-import AvatarRead from "@/components/AvatarRead";
+import ProfileHeader from "@/components/ProfileHeader";
 import ProfileNav from "@/components/ProfileNav";
 import ProfileData from "@/components/ProfileData";
 import LegalFooter from "@/components/LegalFooter";
@@ -29,7 +28,7 @@ const ProfileSidebarContainer = styled("div")({
   },
 });
 
-const AvatarSection = styled("div")({
+const HeaderSection = styled("div")({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -47,18 +46,17 @@ const Section = styled("div")({
 export default function ProfileSidebar() {
   return (
     <ProfileSidebarContainer>
-      <AvatarSection>
-        <AvatarRead />
-        <h1>Name</h1>
-      </AvatarSection>
+      <HeaderSection>
+        <ProfileHeader />
+      </HeaderSection>
+
+      <Section>
+        <ProfileData />
+      </Section>
 
       <Section>
         <h2>Settings</h2>
         <ProfileNav />
-      </Section>
-
-      <Section>
-        <ProfileData />
       </Section>
 
       <form action={signOutAction}>
