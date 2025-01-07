@@ -12,11 +12,6 @@ const ChatComposerForm = styled("form")({
   backgroundColor: "#ffffff",
   borderTop: "1px solid #e0e0e0",
   padding: "1rem",
-
-  position: "sticky",
-  bottom: "0",
-  left: "0",
-  right: "0",
 });
 
 function ChatComposer({ onSubmit, message, handleMessageChange }) {
