@@ -89,7 +89,7 @@ html.map {
 
 @keyframes fooBarIn {
   0% {
-    transform: translateX(24px) rotate(0.35deg); /* TODO: Link to pagePadding variable */
+    transform: translateX(24px) rotate(1.35deg); /* TODO: Link to pagePadding variable */
     opacity: 0;
   }
   25% {
@@ -110,7 +110,7 @@ html.map {
     opacity: 0;
   }
   100% {
-    transform: translateX(24px) rotate(0.35deg); /* TODO: Link to pagePadding variable */
+    transform: translateX(24px) rotate(1.35deg); /* TODO: Link to pagePadding variable */
     opacity: 0;
   }
 }
