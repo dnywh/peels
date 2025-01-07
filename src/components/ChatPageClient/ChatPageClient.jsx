@@ -9,8 +9,8 @@ const ChatPageLayout = styled("main")({
   flexDirection: "row",
   alignItems: "stretch",
   gap: "2rem",
-  height: "calc(100% - 80px)", // Tab Bar height
   width: "100%",
+  height: "calc(100% - 80px)",
 
   "@media (min-width: 768px)": {
     height: "100%",
@@ -18,29 +18,24 @@ const ChatPageLayout = styled("main")({
 });
 
 const ThreadsSidebar = styled("div")({
-  // Mobile: full width when no thread selected
-  width: "100%",
+  width: "20rem",
   display: "flex",
   flexDirection: "column",
-  alignItems: "stretch",
-  gap: "2rem",
+  gap: "0.5rem",
   padding: "1rem",
 
+  // Mobile: full width when at root, hidden when thread selected
+  "@media (max-width: 767px)": {
+    width: "100%",
+    '[data-thread-selected="true"] &': {
+      display: "none",
+    },
+  },
+
   "@media (min-width: 768px)": {
-    // Desktop: always 20rem
-    width: "20rem",
-    display: "flex",
     border: "1px solid #e0e0e0",
     borderRadius: "0.5rem",
   },
-});
-
-const ChatWindowEmptyState = styled("div")({
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
 });
 
 const ThreadPreview = styled("div")({
@@ -48,6 +43,11 @@ const ThreadPreview = styled("div")({
   flexDirection: "column",
   alignItems: "stretch",
   gap: "0.5rem",
+  padding: "0.25rem 0.5rem",
+  borderRadius: "0.25rem",
+  "&:hover": {
+    backgroundColor: "#f2f2f2",
+  },
   variants: [
     {
       props: { selected: true },
@@ -66,6 +66,30 @@ const LastMessage = styled("p")({
   whiteSpace: "nowrap",
 });
 
+const ChatWindowWrapper = styled("div")({
+  flex: 1,
+
+  // Mobile: full width when thread selected, hidden when at root
+  '[data-thread-selected="false"] &': {
+    display: "none",
+  },
+
+  "@media (min-width: 768px)": {
+    '[data-thread-selected="false"] &': {
+      display: "flex",
+    },
+  },
+});
+
+const ChatWindowEmptyState = styled("div")({
+  height: "100%",
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+});
+
 export default function ChatPageClient({
   user,
   initialThreads,
@@ -74,7 +98,6 @@ export default function ChatPageClient({
   console.log("ChatPageClient rendered");
   const router = useRouter();
   const pathname = usePathname();
-  const [isDesktop, setIsDesktop] = useState(false);
 
   const threads = useMemo(() => initialThreads, [initialThreads]);
   const currentThreadId = useMemo(() => initialThreadId, [initialThreadId]);
@@ -94,95 +117,10 @@ export default function ChatPageClient({
     [currentThreadId, router]
   );
 
-  // Check if the viewport is desktop or mobile
-  // TODO make reusable for map, profile-redirect.js, chat page, etc.
-  useEffect(() => {
-    // Use matchMedia instead of resize event
-    const mediaQuery = window.matchMedia("(min-width: 768px)"); // TODO: make this a shared variable also used in the media queries, match with other media queries in general (e.g. tab bar)
-
-    function handleViewportChange(e) {
-      if (e.matches) {
-        // is desktop
-        console.log("Viewport is desktop");
-        setIsDesktop(true);
-      } else {
-        console.log("Viewport is mobile");
-        setIsDesktop(false);
-        console.log("isDesktop", isDesktop);
-      }
-    }
-
-    // Check initial viewport size
-    handleViewportChange(mediaQuery);
-
-    // Listen for viewport changes
-    mediaQuery.addEventListener("change", handleViewportChange);
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
-
-  // Mobile root
-  if (!isDesktop && !selectedThread) {
-    return (
-      <ThreadsSidebar>
-        {threads.map((thread) => {
-          const otherPersonName =
-            thread.initiator_id === user.id
-              ? thread.owner_first_name
-              : thread.initiator_first_name;
-
-          const displayName =
-            thread.listing?.type !== "residential" &&
-            thread.owner_id ===
-              (thread.initiator_id === user.id
-                ? thread.owner_id
-                : thread.initiator_id)
-              ? `${otherPersonName}, ${thread.listing.name}`
-              : otherPersonName;
-
-          return (
-            <ThreadPreview
-              key={thread.id}
-              selected={thread.id === currentThreadId}
-              onClick={() => handleThreadSelect(thread)}
-            >
-              <h3>{displayName}</h3>
-              {thread.chat_messages_with_senders?.length > 0 && (
-                <LastMessage>
-                  {
-                    thread.chat_messages_with_senders[
-                      thread.chat_messages_with_senders.length - 1
-                    ].content
-                  }
-                </LastMessage>
-              )}
-            </ThreadPreview>
-          );
-        })}
-      </ThreadsSidebar>
-    );
-  }
-
-  // Mobile thread selected
-  if (!isDesktop && selectedThread) {
-    return (
-      <ChatPageLayout>
-        <ChatWindow
-          showBackButton={true}
-          user={user}
-          listing={selectedThread.listing}
-          existingThread={{
-            ...selectedThread,
-            chat_messages: selectedThread.chat_messages_with_senders,
-          }}
-        />
-      </ChatPageLayout>
-    );
-  }
-
-  // Desktop both root and thread selected
   return (
-    <ChatPageLayout>
+    <ChatPageLayout data-thread-selected={!!initialThreadId}>
       <ThreadsSidebar>
+        <h1>Chats</h1>
         {threads.map((thread) => {
           const otherPersonName =
             thread.initiator_id === user.id
@@ -219,18 +157,20 @@ export default function ChatPageClient({
         })}
       </ThreadsSidebar>
 
-      {selectedThread ? (
-        <ChatWindow
-          user={user}
-          listing={selectedThread.listing}
-          existingThread={{
-            ...selectedThread,
-            chat_messages: selectedThread.chat_messages_with_senders,
-          }}
-        />
-      ) : (
-        <ChatWindowEmptyState>No thread selected</ChatWindowEmptyState>
-      )}
+      <ChatWindowWrapper>
+        {initialThreadId ? (
+          <ChatWindow
+            user={user}
+            listing={selectedThread?.listing}
+            existingThread={{
+              ...selectedThread,
+              chat_messages: selectedThread?.chat_messages_with_senders,
+            }}
+          />
+        ) : (
+          <ChatWindowEmptyState>No thread selected</ChatWindowEmptyState>
+        )}
+      </ChatWindowWrapper>
     </ChatPageLayout>
   );
 }

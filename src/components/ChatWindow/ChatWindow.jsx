@@ -15,6 +15,7 @@ import BackButton from "@/components/BackButton";
 import { styled } from "@pigment-css/react";
 
 const StyledChatWindow = styled("div")({
+  height: "100%",
   flex: 1,
   display: "flex",
   flexDirection: "column",
@@ -35,6 +36,13 @@ const ChatHeader = styled("header")({
   padding: "1rem",
 });
 
+const StyledBackButton = styled("div")({
+  display: "block",
+  "@media (min-width: 768px)": {
+    display: "none",
+  },
+});
+
 const StyledMessagesContainer = styled("div")({
   flex: 1,
   padding: "1rem",
@@ -48,7 +56,6 @@ const ChatWindow = memo(function ChatWindow({
   setIsChatOpen,
   existingThread = null,
   drawer = false,
-  showBackButton = false,
 }) {
   const router = useRouter();
   // Move Supabase client creation outside of render
@@ -199,7 +206,12 @@ const ChatWindow = memo(function ChatWindow({
   return (
     <StyledChatWindow>
       <ChatHeader>
-        {showBackButton && <BackButton onClick={() => router.push("/chats")} />}
+        {!drawer && (
+          // TODO: Get rid of wrapper div (needed because above media query is not working directly on BackButton)
+          <BackButton breakpoint="sm" onClick={() => router.push("/chats")} />
+          // <StyledBackButton>
+          // </StyledBackButton>
+        )}
         {drawer && (
           <>
             <VisuallyHidden.Root>
