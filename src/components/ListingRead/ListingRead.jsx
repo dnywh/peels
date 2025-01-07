@@ -67,6 +67,7 @@ const StyledDrawerContent = styled(Drawer.Content)({
   "@media (min-width: 768px)": {
     borderRadius: "10px",
     // const desktopDrawerClassNames = `shadow-lg right-[24px] top-[24px] bottom-[24px] fixed outline-none flex flex-col`;
+    height: "unset",
     marginTop: "unset",
     top: "24px",
     right: "24px",
