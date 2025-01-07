@@ -277,12 +277,15 @@ const ListingRead = memo(function Listing({
               </LinkButton>
             ) : (
               <Drawer.Trigger
-              // onClick={handleChatOpen}
+                asChild
+                // onClick={handleChatOpen}
               >
-                Contact{" "}
-                {listing.type === "residential"
-                  ? listing.profiles.first_name
-                  : listing.name}
+                <Button>
+                  Contact{" "}
+                  {listing.type === "residential"
+                    ? listing.profiles.first_name
+                    : listing.name}
+                </Button>
               </Drawer.Trigger>
             )
           ) : (
