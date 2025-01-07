@@ -110,8 +110,6 @@ const StyledDrawerContent = styled(Drawer.Content)({
     left: "unset",
     outline: "none",
     width: sidebarWidth,
-
-    transform: "translate3d(0px, 0px, 0px) !important", // Helps drawer not get stuck at snap 0.35 point when returning to desktop breakpoint
   },
 });
 
@@ -243,6 +241,7 @@ export default function MapPageClient({ user }) {
       if (e.matches) {
         // is desktop
         console.log("Viewport is desktop");
+        setSnap(snapPoints[1]); // Reset snap point to top in order to prevent drawer from getting stuck at snap 0.35 point when returning to desktop breakpoint
         setIsDesktop(true);
       } else {
         console.log("Viewport is mobile");
@@ -509,9 +508,9 @@ export default function MapPageClient({ user }) {
         <Drawer.Root
           // position={isDesktop ? "right" : undefined}
           direction={isDesktop ? "right" : undefined}
-          snapPoints={isDesktop ? undefined : snapPoints}
-          activeSnapPoint={isDesktop ? undefined : snap}
-          setActiveSnapPoint={isDesktop ? undefined : setSnap}
+          snapPoints={snapPoints}
+          activeSnapPoint={isDesktop ? 1 : snap}
+          setActiveSnapPoint={setSnap}
           // snapToSequentialPoint={true}
           modal={isDesktop ? false : snap === 1} // Attempt to help with overscroll/touch events on mobile if header is dragged. Doesn't change anything about the overscroll
           // modal={false}
@@ -605,7 +604,7 @@ export default function MapPageClient({ user }) {
                   pagePadding={pagePadding}
                   sidebarWidth={sidebarWidth}
                 />
-                <LoremIpsum />
+                {/* <LoremIpsum /> */}
 
                 {/* {selectedListing ? (
                   <>

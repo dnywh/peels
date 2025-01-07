@@ -35,7 +35,7 @@ export default function MapSidebar({ user, covered }) {
   }, [covered]);
 
   return (
-    <StyledSidebar data-covered={covered}>
+    <StyledSidebar className="sidebar" data-covered={covered}>
       {/* <MapSearch
           onPick={handleSearchPick}
           mapController={mapController}

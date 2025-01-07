@@ -6,7 +6,6 @@ export const facts = [
     { fact: "Compost worms are hermaphroditic, meaning they have both male and female reproductive organs.", source: "" },
     { fact: "Compost worms can eat their weight in food scraps every single day.", source: "" },
     { fact: "Compost worms breathe through their skin.", source: "" },
-    { fact: "What we eat matters much more for our carbon footprint than how far it has travelled to reach us.", source: "https://ourworldindata.org/food-choice-vs-eating-local" },
     { fact: "Worms can eat their weight in food scraps every single day!", source: "5" },
     { fact: "The first known compost pile dates back over 12,000 years to ancient Scotland.", source: "https://www.nationalgeographic.com/culture/article/compost--a-history-in-green-and-brown" },
     { fact: "A backyard compost bin can reach temperatures of up to 160°F (70°C).", source: "8" },
