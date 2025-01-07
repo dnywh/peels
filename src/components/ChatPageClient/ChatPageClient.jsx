@@ -4,7 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
 import { styled } from "@pigment-css/react";
 
-const ChatPageLayout = styled("div")({
+const ChatPageLayout = styled("main")({
   display: "flex",
   flexDirection: "row",
   alignItems: "stretch",
@@ -24,12 +24,14 @@ const ThreadsSidebar = styled("div")({
   flexDirection: "column",
   alignItems: "stretch",
   gap: "2rem",
+  padding: "1rem",
 
   "@media (min-width: 768px)": {
     // Desktop: always 20rem
     width: "20rem",
     display: "flex",
-    border: "1px solid grey",
+    border: "1px solid #e0e0e0",
+    borderRadius: "0.5rem",
   },
 });
 
@@ -118,6 +120,7 @@ export default function ChatPageClient({
     return () => mediaQuery.removeEventListener("change", handleViewportChange);
   }, []);
 
+  // Mobile root
   if (!isDesktop && !selectedThread) {
     return (
       <ThreadsSidebar>
@@ -159,20 +162,24 @@ export default function ChatPageClient({
     );
   }
 
+  // Mobile thread selected
   if (!isDesktop && selectedThread) {
     return (
-      <ChatWindow
-        showBackButton={true}
-        user={user}
-        listing={selectedThread.listing}
-        existingThread={{
-          ...selectedThread,
-          chat_messages: selectedThread.chat_messages_with_senders,
-        }}
-      />
+      <ChatPageLayout>
+        <ChatWindow
+          showBackButton={true}
+          user={user}
+          listing={selectedThread.listing}
+          existingThread={{
+            ...selectedThread,
+            chat_messages: selectedThread.chat_messages_with_senders,
+          }}
+        />
+      </ChatPageLayout>
     );
   }
 
+  // Desktop both root and thread selected
   return (
     <ChatPageLayout>
       <ThreadsSidebar>
