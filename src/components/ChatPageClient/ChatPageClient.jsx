@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
 import { styled } from "@pigment-css/react";
@@ -72,7 +72,7 @@ export default function ChatPageClient({
   console.log("ChatPageClient rendered");
   const router = useRouter();
   const pathname = usePathname();
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const threads = useMemo(() => initialThreads, [initialThreads]);
   const currentThreadId = useMemo(() => initialThreadId, [initialThreadId]);
@@ -92,7 +92,33 @@ export default function ChatPageClient({
     [currentThreadId, router]
   );
 
-  if (isMobile && !selectedThread) {
+  // Check if the viewport is desktop or mobile
+  // TODO make reusable for map, profile-redirect.js, chat page, etc.
+  useEffect(() => {
+    // Use matchMedia instead of resize event
+    const mediaQuery = window.matchMedia("(min-width: 768px)"); // TODO: make this a shared variable also used in the media queries, match with other media queries in general (e.g. tab bar)
+
+    function handleViewportChange(e) {
+      if (e.matches) {
+        // is desktop
+        console.log("Viewport is desktop");
+        setIsDesktop(true);
+      } else {
+        console.log("Viewport is mobile");
+        setIsDesktop(false);
+        console.log("isDesktop", isDesktop);
+      }
+    }
+
+    // Check initial viewport size
+    handleViewportChange(mediaQuery);
+
+    // Listen for viewport changes
+    mediaQuery.addEventListener("change", handleViewportChange);
+    return () => mediaQuery.removeEventListener("change", handleViewportChange);
+  }, []);
+
+  if (!isDesktop && !selectedThread) {
     return (
       <ThreadsSidebar>
         {threads.map((thread) => {
@@ -133,9 +159,10 @@ export default function ChatPageClient({
     );
   }
 
-  if (isMobile && selectedThread) {
+  if (!isDesktop && selectedThread) {
     return (
       <ChatWindow
+        showBackButton={true}
         user={user}
         listing={selectedThread.listing}
         existingThread={{

@@ -232,7 +232,7 @@ export default function MapPageClient({ user }) {
   }, [snap]);
 
   // Check if the viewport is desktop or mobile
-  // TODO make reusable for profile-redirect.js
+  // TODO make reusable for map, profile-redirect.js, chat page, etc.
   useEffect(() => {
     // Use matchMedia instead of resize event
     const mediaQuery = window.matchMedia("(min-width: 768px)"); // TODO: make this a shared variable also used in the media queries, match with other media queries in general (e.g. tab bar)

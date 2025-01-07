@@ -33,12 +33,6 @@ const ChatHeader = styled("header")({
   padding: "1rem",
 });
 
-const StyledBackButton = styled(BackButton)({
-  "@media (min-width: 768px)": {
-    display: "none !important",
-  },
-});
-
 const StyledMessagesContainer = styled("div")({
   flex: 1,
   padding: "1rem",
@@ -52,6 +46,7 @@ const ChatWindow = memo(function ChatWindow({
   setIsChatOpen,
   existingThread = null,
   drawer = false,
+  showBackButton = false,
 }) {
   const router = useRouter();
   // Move Supabase client creation outside of render
@@ -202,8 +197,7 @@ const ChatWindow = memo(function ChatWindow({
   return (
     <StyledChatWindow>
       <ChatHeader>
-        {/* <StyledBackButton /> */}
-        <StyledBackButton onClick={() => router.push("/chats")} />
+        {showBackButton && <BackButton onClick={() => router.push("/chats")} />}
         {drawer && (
           <>
             <VisuallyHidden.Root>
