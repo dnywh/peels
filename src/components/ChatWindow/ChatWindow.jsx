@@ -2,6 +2,10 @@
 import { useState, useEffect, memo, useMemo } from "react";
 import Link from "next/link";
 
+import { Drawer } from "vaul"; // TODO: Import only used subcomponents?
+
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
+
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
 import ChatComposer from "@/components/ChatComposer";
@@ -38,6 +42,7 @@ const ChatWindow = memo(function ChatWindow({
   listing,
   setIsChatOpen,
   existingThread = null,
+  drawer = false,
 }) {
   // Move Supabase client creation outside of render
   const supabase = useMemo(() => createClient(), []);
@@ -48,11 +53,11 @@ const ChatWindow = memo(function ChatWindow({
 
   const [listingIsOwnedByUser, setListingIsOwnedByUser] = useState(false);
 
-  console.log("Chat window component rendering");
+  // console.log("Chat window component rendering");
 
   // Check if the listing is owned by the user
   useEffect(() => {
-    console.log("Existing thread owned by user?", { existingThread, threadId });
+    // console.log("Existing thread owned by user?", { existingThread, threadId });
     if (existingThread && existingThread.owner_id !== user.id) {
       setListingIsOwnedByUser(false);
       console.log({ listing });
@@ -64,7 +69,7 @@ const ChatWindow = memo(function ChatWindow({
 
   // Only update when existingThread actually changes
   useEffect(() => {
-    console.log("Existing thread changed:", { existingThread, threadId });
+    // console.log("Existing thread changed:", { existingThread, threadId });
     if (existingThread && existingThread.id !== threadId) {
       setThreadId(existingThread.id);
       setMessages(existingThread.chat_messages || []);
@@ -187,6 +192,18 @@ const ChatWindow = memo(function ChatWindow({
   return (
     <StyledChatWindow>
       <ChatHeader>
+        {drawer && (
+          <>
+            <VisuallyHidden.Root>
+              <Drawer.Title>Nested chat drawer</Drawer.Title>
+              <Drawer.Description>
+                Test description for aria.
+              </Drawer.Description>
+            </VisuallyHidden.Root>
+            <Drawer.Close>Close this drawer</Drawer.Close>
+            {/* <CloseButton onClick={handleChatClose}>Close</CloseButton> */}
+          </>
+        )}
         {/* {setIsChatOpen && (
         <button onClick={() => setIsChatOpen(false)}>Close chat</button>
       )} */}
@@ -199,16 +216,15 @@ const ChatWindow = memo(function ChatWindow({
       </ChatHeader>
 
       <StyledMessagesContainer>
-        {messages.map((message) => {
-          console.log("Message:", { message });
-          return (
+        {messages.length === 0 && <p>No messages yet</p>}
+        {messages.length > 0 &&
+          messages.map((message) => (
             <ChatMessage
               key={message.id}
               direction={message.sender_id === user.id ? "sent" : "received"}
               message={message}
             />
-          );
-        })}
+          ))}
       </StyledMessagesContainer>
 
       <ChatComposer

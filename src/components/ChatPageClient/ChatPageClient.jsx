@@ -20,13 +20,16 @@ const ChatPageLayout = styled("div")({
 });
 
 const ThreadsSidebar = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "stretch",
-  gap: "2rem",
-  // backgroundColor: "tomato",
-  width: "20rem",
-  border: "1px solid grey",
+  display: "none",
+  "@media (min-width: 768px)": {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: "2rem",
+    // backgroundColor: "tomato",
+    width: "20rem",
+    border: "1px solid grey",
+  },
 });
 
 const ChatWindowEmptyState = styled("div")({

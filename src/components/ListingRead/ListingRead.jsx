@@ -41,7 +41,7 @@ const StyledDrawerOverlay = styled(Drawer.Overlay)({
 const StyledDrawerContent = styled(Drawer.Content)({
   background: "rgb(243, 243, 243)",
   borderRadius: "10px 10px 0 0", // rounded-t-[10px]
-  border: "1px solid #E5E7EB", // border-gray-200
+  // border: "1px solid #E5E7EB", // border-gray-200
 
   overflowX: "hidden",
 
@@ -54,7 +54,8 @@ const StyledDrawerContent = styled(Drawer.Content)({
   },
 
   marginTop: "24px",
-  maxHeight: "95%",
+  // maxHeight: "95%",
+  height: "95%", // Take up full height even if the message contents aren't overflowing yet
   position: "fixed",
   bottom: "0",
   left: "0",
@@ -275,8 +276,7 @@ const ListingRead = memo(function Listing({
               </LinkButton>
             ) : (
               <Drawer.Trigger
-                className="rounded-md mt-4 w-full bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
-                // onClick={handleChatOpen}
+              // onClick={handleChatOpen}
               >
                 Contact{" "}
                 {listing.type === "residential"
@@ -299,43 +299,24 @@ const ListingRead = memo(function Listing({
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
             >
               {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
-              <StyledDrawerHeader>
-                <Drawer.Description className="sr-only">
-                  Test description for aria.
-                </Drawer.Description>
-                {/* Handle */}
-                {!isDesktop && (
-                  <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-lg bg-gray-300 mb-8" />
-                )}
-                {/* Button */}
-                <Drawer.Close>Close this drawer</Drawer.Close>
-                {/* <CloseButton onClick={handleChatClose}>Close</CloseButton> */}
 
-                <Drawer.Title className="font-medium mb-4 text-gray-900">
-                  Nested chat drawer
-                </Drawer.Title>
-              </StyledDrawerHeader>
-
-              <StyledDrawerInner
-              // ref={drawerContentRef}
-              // data-vaul-no-drag
-              >
-                <ChatWindow
-                  user={user}
-                  listing={listing}
-                  existingThread={
-                    existingThread
-                      ? {
-                          ...existingThread,
-                          chat_messages:
-                            existingThread.chat_messages_with_senders,
-                        }
-                      : null
-                  }
-                  // setIsChatOpen={setIsChatOpen}
-                />
-                {/* <LoremIpsum /> */}
-              </StyledDrawerInner>
+              <ChatWindow
+                // ref={drawerContentRef}
+                // data-vaul-no-drag
+                drawer={true}
+                user={user}
+                listing={listing}
+                existingThread={
+                  existingThread
+                    ? {
+                        ...existingThread,
+                        chat_messages:
+                          existingThread.chat_messages_with_senders,
+                      }
+                    : null
+                }
+                // setIsChatOpen={setIsChatOpen}
+              />
             </StyledDrawerContent>
           </Drawer.Portal>
         </Drawer.NestedRoot>
