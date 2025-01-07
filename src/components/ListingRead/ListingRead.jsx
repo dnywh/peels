@@ -303,7 +303,7 @@ const ListingRead = memo(function Listing({
               <ChatWindow
                 // ref={drawerContentRef}
                 // data-vaul-no-drag
-                drawer={true}
+                isDrawer={true}
                 user={user}
                 listing={listing}
                 existingThread={

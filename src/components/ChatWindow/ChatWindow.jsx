@@ -55,7 +55,7 @@ const ChatWindow = memo(function ChatWindow({
   listing,
   setIsChatOpen,
   existingThread = null,
-  drawer = false,
+  isDrawer = false,
 }) {
   const router = useRouter();
   // Move Supabase client creation outside of render
@@ -206,13 +206,13 @@ const ChatWindow = memo(function ChatWindow({
   return (
     <StyledChatWindow>
       <ChatHeader>
-        {!drawer && (
+        {!isDrawer && (
           // TODO: Get rid of wrapper div (needed because above media query is not working directly on BackButton)
           <BackButton breakpoint="sm" onClick={() => router.push("/chats")} />
           // <StyledBackButton>
           // </StyledBackButton>
         )}
-        {drawer && (
+        {isDrawer && (
           <>
             <VisuallyHidden.Root>
               <Drawer.Title>Nested chat drawer</Drawer.Title>
