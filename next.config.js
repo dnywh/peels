@@ -9,6 +9,7 @@ const tokens = {
     },
     black: {
         6: 'hsla(0, 0%, 0%, 0.06)',
+        100: 'hsla(0, 0%, 0%, 1)',
     },
     rock: {
         50: 'hsla(0, 4%, 95%, 1)',
@@ -34,6 +35,9 @@ const tokens = {
 export default withPigment(nextConfig, {
     theme: {
         colors: {
+            focus: {
+                outline: tokens.forest[400],
+            },
             background: {
                 sunk: tokens.ochre[80],
                 top: tokens.white[100]
@@ -49,18 +53,34 @@ export default withPigment(nextConfig, {
             button: {
                 primary: {
                     background: tokens.kaki[700],
+                    hover: {
+                        tint: tokens.black[100],
+                        mix: `10%`,
+                    },
                     text: tokens.ochre[800]
                 },
                 secondary: {
                     background: tokens.white[100],
+                    hover: {
+                        tint: tokens.black[100],
+                        mix: `10%`,
+                    },
                     text: tokens.ochre[800],
                 },
                 danger: {
                     background: tokens.white[100],
+                    hover: {
+                        tint: tokens.black[100],
+                        mix: `10%`,
+                    },
                     text: tokens.ochre[600]
                 },
                 disabled: {
                     background: tokens.rock[50],
+                    hover: {
+                        tint: tokens.black[100],
+                        mix: `10%`,
+                    },
                     text: tokens.rock[400]
                 }
             },

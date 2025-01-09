@@ -89,22 +89,28 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
 
         {!avatar ? (
           // Scenario 1: No avatar - show single "Add" button
-          <Button onClick={handleFileSelect}>Add</Button>
+          <Button variant="secondary" size="small" onClick={handleFileSelect}>
+            Add
+          </Button>
         ) : (
           // Scenario 2 & 3: Has avatar - show menu with options
           <Menu>
-            <Menu.Button as={Button} level="secondary">
+            <Menu.Button as={Button} variant="secondary" size="small">
               Edit
             </Menu.Button>
 
             <Menu.Items>
               <Menu.Item>
-                <Button onClick={handleFileSelect} level="secondary">
+                <Button
+                  onClick={handleFileSelect}
+                  variant="secondary"
+                  size="small"
+                >
                   Replace
                 </Button>
               </Menu.Item>
               <Menu.Item>
-                <Button onClick={onDelete} level="danger">
+                <Button onClick={onDelete} variant="danger" size="small">
                   Delete
                 </Button>
               </Menu.Item>

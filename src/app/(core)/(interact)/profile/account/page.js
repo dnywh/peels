@@ -189,17 +189,10 @@ export default async function ProfilePage({ searchParams }) {
                 </SubmitButton>
             </Form>
 
-            <hr />
-
-
-
-            <Form action={sendPasswordResetEmailAction}>
-                <SubmitButton>Reset password</SubmitButton>
-            </Form>
-
-
-
             <AccountSettings>
+                <Form action={sendPasswordResetEmailAction}>
+                    <SubmitButton variant="secondary" width="contained">Reset password</SubmitButton>
+                </Form>
                 <DeleteAccountButton listings={listings} deleteAccountAction={deleteAccountAction} />
             </AccountSettings>
         </div>

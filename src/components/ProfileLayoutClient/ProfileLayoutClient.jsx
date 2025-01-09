@@ -21,7 +21,7 @@ const ProfileMain = styled("main")(({ theme }) => ({
   borderRadius: theme.corners.base,
   backgroundColor: theme.colors.background.top,
 
-  padding: theme.spacing.unit * 2,
+  padding: theme.spacing.unit * 3,
 
   width: "100%",
 

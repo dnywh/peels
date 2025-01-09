@@ -66,6 +66,11 @@ h1, h2, h3, h4, h5, h6 {
 a:not(p a) {
   text-decoration: none;
 }
+
+// Lazy letter-spacing fix
+* {
+  letter-spacing: -0.015em
+}
 `;
 
 export const metadata: Metadata = {
