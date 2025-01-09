@@ -1,7 +1,8 @@
 import TabBarTab from "@/components/TabBarTab";
+import PeelsLogo from "@/components/PeelsLogo";
 
 function PeelsTab() {
-  return <TabBarTab title="Peels" icon="P" href="/" />;
+  return <TabBarTab icon={<PeelsLogo />} href="/" />;
 }
 
 export default PeelsTab;

@@ -1,13 +1,14 @@
 import TabBar from "@/components/TabBar";
 import { styled } from "@pigment-css/react";
 
-const InteractPage = styled("div")({
+const InteractPage = styled("div")(({ theme }) => ({
   // TODO: How do I reach out and set the body colour here conditionally
   // backgroundColor: "#F8F6F3",
   // alignItems: "center",
   display: "flex",
   flexDirection: "column",
   height: "100dvh",
+  backgroundColor: theme.colors.background.sunk,
 
   "@media (min-width: 768px)": {
     flexDirection: "row",
@@ -15,7 +16,7 @@ const InteractPage = styled("div")({
     gap: "1.5rem",
     padding: "1.5rem", //24px
   },
-});
+}));
 
 export default async function Layout({ children, params }) {
   return (

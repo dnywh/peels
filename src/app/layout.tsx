@@ -9,7 +9,7 @@ import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site";
 import { NavWrapper } from "@/components/nav-wrapper";
 
-import { globalCss, css } from "@pigment-css/react";
+import { globalCss } from "@pigment-css/react";
 // Global styles:
 globalCss`
 // https://www.joshwcomeau.com/css/custom-css-reset/
@@ -55,12 +55,19 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
+
 /*
   9. Create a root stacking context
 */
 // #root, #__next {
 //   isolation: isolate;
 // }
+
+// Custom styles
+// Remove underlines by default, except for links in paragraphs
+a:not(p a) {
+  text-decoration: none;
+}
 `;
 
 export const metadata: Metadata = {

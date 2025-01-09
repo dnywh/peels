@@ -10,13 +10,15 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   // maxHeight: "2.75rem",
   height: "2.75rem",
   cursor: "pointer",
+  background: theme.colors.button.primary.background,
+  color: theme.colors.button.primary.text,
   "&:hover": {
-    background: theme.colors.primary,
-    color: theme.colors.secondary,
+    background: theme.colors.tab.active,
+    color: theme.colors.text.primary,
   },
   "&:focus": {
-    background: theme.colors.primary,
-    color: theme.colors.secondary,
+    background: theme.colors.tab.active,
+    color: theme.colors.text.primary,
     outline: "2px solid green",
   },
   "&[data-focus]": {

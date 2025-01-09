@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import PeelsTab from "@/components/PeelsTab";
 import TabBarTab from "@/components/TabBarTab";
+import { MapPin, MessageCircleMore, CircleUserRound } from "lucide-react";
 
 import { styled } from "@pigment-css/react";
 
@@ -70,9 +71,9 @@ const StyledTabBarNav = styled("nav")({
 });
 
 const NAVIGATION_ITEMS = [
-  { title: "Map", icon: "M", href: "/map" },
-  { title: "Chats", icon: "C", href: "/chats" },
-  { title: "Profile", icon: "P", href: "/profile" },
+  { title: "Map", Icon: MapPin, href: "/map" },
+  { title: "Chats", Icon: MessageCircleMore, href: "/chats" },
+  { title: "Profile", Icon: CircleUserRound, href: "/profile" },
 ];
 
 function TabBar({ breakpoint = "sm", position = "inline", ...props }) {
@@ -81,12 +82,12 @@ function TabBar({ breakpoint = "sm", position = "inline", ...props }) {
   return (
     <StyledTabBar breakpoint={breakpoint} position={position} {...props}>
       <StyledTabBarNav>
-        {breakpoint === "md" && <PeelsTab />}
-        {NAVIGATION_ITEMS.map(({ title, icon, href }) => (
+        {breakpoint === "md" && <PeelsTab size={32} />}
+        {NAVIGATION_ITEMS.map(({ title, Icon, href }) => (
           <TabBarTab
             key={href}
             title={title}
-            icon={icon}
+            icon={<Icon size={24} />}
             href={href}
             active={pathname.startsWith(href)}
           />
