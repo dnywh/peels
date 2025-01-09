@@ -11,18 +11,7 @@ import LocationSelect from "@/components/LocationSelect";
 import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
 
-import {
-  // Field,
-  // Fieldset,
-  // Input,
-  // Label,
-  Legend,
-  Select,
-  // Textarea,
-} from "@headlessui/react";
-
 import Form from "@/components/Form";
-import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";

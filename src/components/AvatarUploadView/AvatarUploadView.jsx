@@ -43,7 +43,7 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
 
   return (
     <Fieldset>
-      <Field>
+      <Field style={{ alignItems: "flex-start" }}>
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -93,14 +93,20 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
         ) : (
           // Scenario 2 & 3: Has avatar - show menu with options
           <Menu>
-            <Menu.Button as={Button}>Edit</Menu.Button>
+            <Menu.Button as={Button} level="secondary">
+              Edit
+            </Menu.Button>
 
             <Menu.Items>
               <Menu.Item>
-                <button onClick={handleFileSelect}>Replace</button>
+                <Button onClick={handleFileSelect} level="secondary">
+                  Replace
+                </Button>
               </Menu.Item>
               <Menu.Item>
-                <button onClick={onDelete}>Delete</button>
+                <Button onClick={onDelete} level="danger">
+                  Delete
+                </Button>
               </Menu.Item>
             </Menu.Items>
           </Menu>

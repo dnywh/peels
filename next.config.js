@@ -4,8 +4,14 @@ import { withPigment } from "@pigment-css/nextjs-plugin";
 const nextConfig = {};
 
 const tokens = {
+    white: {
+        100: 'hsla(0, 0%, 100%, 1)',
+    },
+    black: {
+        6: 'hsla(0, 0%, 0%, 0.06)',
+    },
     rock: {
-        0: 'hsla(0, 0%, 100%, 1)',
+        50: 'hsla(0, 4%, 95%, 1)',
         300: 'hsla(38, 5%, 71%, 1)',
         400: 'hsla(37, 5%, 61%, 1)',
         800: 'hsla(37, 5%, 40%, 1)'
@@ -14,8 +20,9 @@ const tokens = {
         400: 'hsla(81, 95%, 36%, 1)'
     },
     ochre: {
-        80: 'hsla(22, 35%, 91%, 1)',
+        80: 'hsla(36, 26%, 96%, 1)',
         500: 'hsla(22, 87%, 50%, 1)',
+        600: 'hsla(22, 87%, 44%, 1)',
         700: 'hsla(22, 97%, 25%, 1)',
         800: 'hsla(22, 100%, 14%, 1),'
     },
@@ -29,7 +36,10 @@ export default withPigment(nextConfig, {
         colors: {
             background: {
                 sunk: tokens.ochre[80],
-                top: tokens.rock[0]
+                top: tokens.white[100]
+            },
+            border: {
+                base: tokens.black[6],
             },
             tab: {
                 active: tokens.forest[400],
@@ -39,11 +49,19 @@ export default withPigment(nextConfig, {
             button: {
                 primary: {
                     background: tokens.kaki[700],
-                    text: tokens.rock[0]
+                    text: tokens.ochre[800]
                 },
                 secondary: {
-                    background: tokens.rock[400],
-                    text: tokens.rock[0]
+                    background: tokens.white[100],
+                    text: tokens.ochre[800],
+                },
+                danger: {
+                    background: tokens.white[100],
+                    text: tokens.ochre[600]
+                },
+                disabled: {
+                    background: tokens.rock[50],
+                    text: tokens.rock[400]
                 }
             },
             text: {
@@ -58,7 +76,7 @@ export default withPigment(nextConfig, {
             unit: 8,
         },
         corners: {
-            unit: 8,
+            base: 16,
         },
         typography: {
             fontFamily: "Inter, sans-serif",

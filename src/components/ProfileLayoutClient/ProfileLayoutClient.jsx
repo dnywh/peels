@@ -16,16 +16,19 @@ const ProfilePageLayout = styled("div")({
   },
 });
 
-const ProfileMain = styled("main")({
-  padding: "1rem",
+const ProfileMain = styled("main")(({ theme }) => ({
+  border: `1px solid ${theme.colors.border.base}`,
+  borderRadius: theme.corners.base,
+  backgroundColor: theme.colors.background.top,
+
+  padding: theme.spacing.unit * 2,
+
   width: "100%",
 
   "@media (min-width: 768px)": {
     maxWidth: "40rem",
-    border: "1px solid #e0e0e0",
-    borderRadius: "0.5rem",
   },
-});
+}));
 
 export default function ProfileLayoutClient({ children, sidebar }) {
   const pathname = usePathname();

@@ -10,8 +10,55 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   // maxHeight: "2.75rem",
   height: "2.75rem",
   cursor: "pointer",
-  background: theme.colors.button.primary.background,
-  color: theme.colors.button.primary.text,
+  // background: theme.colors.button.primary.background,
+  // color: theme.colors.button.primary.text,
+  borderWidth: "2px",
+  borderStyle: "solid",
+  borderColor: theme.colors.border.base,
+  borderRadius: theme.corners.base,
+
+  padding: `0 ${theme.spacing.unit * 2}px`,
+
+  variants: [
+    {
+      props: { width: "contained" },
+      style: {
+        alignSelf: "flex-start",
+      },
+    },
+    {
+      props: { level: "primary" },
+      style: {
+        background: theme.colors.button.primary.background,
+        color: theme.colors.button.primary.text,
+        border: "none",
+      },
+    },
+    {
+      props: { level: "secondary" },
+      style: {
+        background: theme.colors.button.secondary.background,
+        color: theme.colors.button.secondary.text,
+        borderColor: theme.colors.border.base,
+      },
+    },
+    {
+      props: { level: "danger" },
+      style: {
+        background: theme.colors.button.danger.background,
+        color: theme.colors.button.danger.text,
+        borderColor: theme.colors.border.base,
+      },
+    },
+    {
+      props: { disabled: true },
+      style: {
+        background: theme.colors.button.disabled.background,
+        color: theme.colors.button.disabled.text,
+      },
+    },
+  ],
+
   "&:hover": {
     background: theme.colors.tab.active,
     color: theme.colors.text.primary,
@@ -26,9 +73,14 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   },
 }));
 
-export default function Button({ children, ...props }) {
+export default function Button({
+  level = "primary",
+  disabled = false,
+  children,
+  ...props
+}) {
   return (
-    <StyledButton type="button" {...props}>
+    <StyledButton disabled={disabled} level={level} type="button" {...props}>
       {children}
     </StyledButton>
   );

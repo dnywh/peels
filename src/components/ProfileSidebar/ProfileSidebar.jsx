@@ -60,7 +60,7 @@ export default function ProfileSidebar() {
       </Section>
 
       <form action={signOutAction}>
-        <SubmitButton>Sign out</SubmitButton>
+        <SubmitButton level="secondary">Sign out</SubmitButton>
       </form>
       <LegalFooter />
     </ProfileSidebarContainer>

@@ -3,12 +3,16 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { styled } from "@pigment-css/react";
 
-const ThreadsSidebar = styled("div")({
+const ThreadsSidebar = styled("div")(({ theme }) => ({
   width: "20rem",
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
   padding: "1rem",
+
+  backgroundColor: theme.colors.background.top,
+  border: `1px solid ${theme.colors.border.base}`,
+  borderRadius: theme.corners.base,
 
   // Mobile: full width when at root, hidden when thread selected
   "@media (max-width: 767px)": {
@@ -18,19 +22,20 @@ const ThreadsSidebar = styled("div")({
     },
   },
 
-  "@media (min-width: 768px)": {
-    border: "1px solid #e0e0e0",
-    borderRadius: "0.5rem",
-  },
-});
+  // "@media (min-width: 768px)": {
+  //   border: "1px solid #e0e0e0",
+  //   borderRadius: "0.5rem",
+  // },
+}));
 
-const ThreadPreview = styled("div")({
+const ThreadPreview = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
   gap: "0.5rem",
   padding: "0.25rem 0.5rem",
   borderRadius: "0.25rem",
+
   "&:hover": {
     backgroundColor: "#f2f2f2",
   },
@@ -42,15 +47,15 @@ const ThreadPreview = styled("div")({
       },
     },
   ],
-});
+}));
 
-const LastMessage = styled("p")({
+const LastMessage = styled("p")(({ theme }) => ({
   fontSize: "0.8rem",
   color: "#808080",
   textOverflow: "ellipsis",
   overflow: "hidden",
   whiteSpace: "nowrap",
-});
+}));
 
 function ThreadsList({ user, threads, currentThreadId }) {
   const router = useRouter();

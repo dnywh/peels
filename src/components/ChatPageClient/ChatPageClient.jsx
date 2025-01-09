@@ -18,9 +18,11 @@ const ChatPageLayout = styled("main")({
   },
 });
 
-const ChatWindowWrapper = styled("div")({
+const ChatWindowWrapper = styled("div")(({ theme }) => ({
   flex: 1,
-
+  backgroundColor: theme.colors.background.top,
+  border: `1px solid ${theme.colors.border.base}`,
+  borderRadius: theme.corners.base,
   // Mobile: full width when thread selected, hidden when at root
   '[data-thread-selected="false"] &': {
     display: "none",
@@ -31,16 +33,16 @@ const ChatWindowWrapper = styled("div")({
       display: "flex",
     },
   },
-});
+}));
 
-const ChatWindowEmptyState = styled("div")({
+const ChatWindowEmptyState = styled("div")(({ theme }) => ({
   height: "100%",
   flex: 1,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-});
+}));
 
 export default function ChatPageClient({
   user,
