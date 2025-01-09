@@ -1,8 +1,8 @@
 import { signUpAction } from "@/app/actions";
 import { FormMessage } from "@/components/form-message";
 import SubmitButton from "@/components/SubmitButton";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
+// import Input from "@/components/Input";
+// import Label from "@/components/Label";
 import Link from "next/link";
 
 import {

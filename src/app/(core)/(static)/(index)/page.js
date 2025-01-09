@@ -1,5 +1,4 @@
-// import SignInButton from "@/components/sign-in-button";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/Button";
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 
@@ -32,10 +31,10 @@ export default async function Index() {
     <StyledMain>
       <h2>Find a home for your food scraps, wherever you are.</h2>
       <div>
-        <Button asChild size="lg" variant={"default"}>
+        <Button variant={"default"}>
           <Link href="/map">Browse the map</Link>
         </Button>
-        <Button asChild size="lg" variant={"outline"}>
+        <Button variant={"outline"}>
           {/* TODO: {user ? <Link href="/profile#TODO-listing-form-for-signed-in-users">Create a listing</Link> : <Link href="/sign-up">Sign up</Link>} */}
           <Link href="/sign-in">Sign in</Link>
         </Button>
