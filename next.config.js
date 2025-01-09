@@ -21,11 +21,12 @@ const tokens = {
         400: 'hsla(81, 95%, 36%, 1)'
     },
     ochre: {
+        50: 'hsla(36, 26%, 99%, 1)',
         80: 'hsla(36, 26%, 96%, 1)',
         500: 'hsla(22, 87%, 50%, 1)',
         600: 'hsla(22, 87%, 44%, 1)',
         700: 'hsla(22, 97%, 25%, 1)',
-        800: 'hsla(22, 100%, 14%, 1),'
+        800: 'hsla(22, 100%, 14%, 1)'
     },
     kaki: {
         700: 'hsla(47, 100%, 50%, 1)',
@@ -50,36 +51,46 @@ export default withPigment(nextConfig, {
                 inactive: tokens.rock[300],
                 unread: tokens.ochre[500]
             },
+            radio: {
+                checked: {
+                    background: tokens.ochre[150],
+                    border: tokens.ochre[700],
+                },
+                unchecked: {
+                    background: tokens.ochre[50],
+                    border: tokens.rock[50],
+                }
+            },
             button: {
                 primary: {
                     background: tokens.kaki[700],
                     hover: {
-                        tint: tokens.black[100],
-                        mix: `10%`,
+                        tint: tokens.white[100],
+                        mix: `20%`,
                     },
                     text: tokens.ochre[800]
                 },
                 secondary: {
                     background: tokens.white[100],
                     hover: {
-                        tint: tokens.black[100],
-                        mix: `10%`,
+                        tint: tokens.white[100],
+                        mix: `20%`,
                     },
                     text: tokens.ochre[800],
                 },
                 danger: {
                     background: tokens.white[100],
                     hover: {
-                        tint: tokens.black[100],
-                        mix: `10%`,
+                        tint: tokens.white[100],
+                        mix: `20%`,
                     },
                     text: tokens.ochre[600]
                 },
                 disabled: {
                     background: tokens.rock[50],
                     hover: {
-                        tint: tokens.black[100],
-                        mix: `10%`,
+                        tint: tokens.white[100],
+                        mix: `20%`,
                     },
                     text: tokens.rock[400]
                 }

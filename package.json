@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
     "@maptiler/geocoding-control": "^2.0.1",
     "@maptiler/sdk": "^2.5.1",
     "@pigment-css/react": "^0.0.29",
