@@ -27,7 +27,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
       },
     },
     {
-      props: { level: "primary" },
+      props: { variant: "primary" },
       style: {
         background: theme.colors.button.primary.background,
         color: theme.colors.button.primary.text,
@@ -35,7 +35,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
       },
     },
     {
-      props: { level: "secondary" },
+      props: { variant: "secondary" },
       style: {
         background: theme.colors.button.secondary.background,
         color: theme.colors.button.secondary.text,
@@ -43,7 +43,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
       },
     },
     {
-      props: { level: "danger" },
+      props: { variant: "danger" },
       style: {
         background: theme.colors.button.danger.background,
         color: theme.colors.button.danger.text,
@@ -74,13 +74,18 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
 }));
 
 export default function Button({
-  level = "primary",
+  variant = "primary",
   disabled = false,
   children,
   ...props
 }) {
   return (
-    <StyledButton disabled={disabled} level={level} type="button" {...props}>
+    <StyledButton
+      disabled={disabled}
+      variant={variant}
+      type="button"
+      {...props}
+    >
       {children}
     </StyledButton>
   );

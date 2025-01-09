@@ -24,7 +24,9 @@ import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import Description from "@/components/Description";
 
-import { styled } from "@pigment-css/react";
+import AccountSettings from "@/components/AccountSettings";
+
+import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 export default async function ProfilePage({ searchParams }) {
 
@@ -138,6 +140,7 @@ export default async function ProfilePage({ searchParams }) {
 
             <h1>Account</h1>
 
+
             {/* <form action={updateEmail}>
                 <button type="submit">Change email</button>
             </form> */}
@@ -188,57 +191,18 @@ export default async function ProfilePage({ searchParams }) {
 
             <hr />
 
+
+
             <Form action={sendPasswordResetEmailAction}>
                 <SubmitButton>Reset password</SubmitButton>
             </Form>
 
 
 
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button>
-                        Delete account
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogTitle>Delete account</DialogTitle>
-                    <>
-                        Are you sure you want to delete your account?
-
-                        {listings?.length && listings.length > 0 && (
-                            <>
-                                {' '}Your listing{listings.length > 1 ? 's' : ''} will also be deleted:
-                                <ul>
-                                    {listings.map((listing) => (
-                                        <li key={listing.slug}>{listing.name}</li>
-                                    ))}
-                                </ul>
-                            </>
-                        )}
-                    </>
-
-                    <DialogDescription>
-                        This action cannot be undone.
-                    </DialogDescription>
-
-
-                    <div className="mt-4 flex gap-4">
-                        <form action={deleteAccountAction}>
-                            <button
-                                type="submit"
-                                className="bg-red-500 text-white px-4 py-2 rounded"
-                            >
-                                Yes, delete my account {listings.length > 0 && `and listings`}
-                            </button>
-                        </form>
-                        <DialogClose asChild>
-                            <button type="button" className="bg-gray-200 px-4 py-2 rounded">
-                                No, cancel
-                            </button>
-                        </DialogClose>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            <AccountSettings>
+                <DeleteAccountButton listings={listings} deleteAccountAction={deleteAccountAction} />
+            </AccountSettings>
         </div>
     );
 }
+
