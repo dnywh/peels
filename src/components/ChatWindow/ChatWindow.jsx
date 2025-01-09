@@ -46,6 +46,7 @@ const StyledMessagesContainer = styled("div")({
 const ChatWindow = memo(function ChatWindow({
   user,
   listing,
+  listingName,
   setIsChatDrawerOpen,
   existingThread = null,
   isDrawer = false,
@@ -209,9 +210,9 @@ const ChatWindow = memo(function ChatWindow({
         {isDrawer && (
           <>
             <VisuallyHidden.Root>
-              <Drawer.Title>Nested chat drawer</Drawer.Title>
+              <Drawer.Title>Nested chat drawer title TODO</Drawer.Title>
               <Drawer.Description>
-                Test description for aria.
+                Test description for aria TODO.
               </Drawer.Description>
             </VisuallyHidden.Root>
 
@@ -223,7 +224,8 @@ const ChatWindow = memo(function ChatWindow({
           </>
         )}
 
-        <p>Other person's name</p>
+        {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
+        <p>{listingName}</p>
         <p>{listing.name}</p>
         {!listingIsOwnedByUser && (
           <Link href={`/listings/${listing.slug}`}>View listing</Link>

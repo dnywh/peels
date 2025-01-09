@@ -312,6 +312,7 @@ const ListingRead = memo(function Listing({
                 setIsChatDrawerOpen={setIsChatDrawerOpen}
                 user={user}
                 listing={listing}
+                listingName={listingName}
                 existingThread={
                   existingThread
                     ? {

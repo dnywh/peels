@@ -20,7 +20,7 @@ const StyledSidebar = styled("div")({
   textAlign: "center",
   width: sidebarWidth,
   height: "100%",
-  wordWrap: "break-word",
+  wordWrap: "anywhere", // for source URLs on facts, remove when those go
   // overflow: "scroll",
 });
 
