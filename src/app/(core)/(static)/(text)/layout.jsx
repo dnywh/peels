@@ -10,9 +10,10 @@ const Main = styled("main")(({ theme }) => ({
   padding: "2rem 2rem 3.5rem",
   borderRadius: theme.corners.base,
   border: `1px solid ${theme.colors.border.base}`,
+  marginBottom: "3rem",
 
   "@media (min-width: 768px)": {
-    margin: "4rem auto 0",
+    margin: "4rem auto 3rem",
   },
 
   h1: {

@@ -70,6 +70,7 @@ const StyledTabBarNav = styled("nav")(({ theme }) => ({
   backgroundColor: theme.colors.background.top,
   borderRadius: theme.corners.base,
   border: `1px solid ${theme.colors.border.base}`,
+
   "@media (min-width: 768px)": {
     border: "none",
     backgroundColor: "transparent",
@@ -77,7 +78,7 @@ const StyledTabBarNav = styled("nav")(({ theme }) => ({
 
     height: "auto",
     flexDirection: "column",
-    gap: "1rem",
+    gap: "1.5rem",
   },
 }));
 

@@ -8,5 +8,6 @@ export const siteConfig = {
     terms: "/terms",
     privacy: "/privacy",
     support: "/support",
+    colophon: "/colophon",
   },
 } as const;

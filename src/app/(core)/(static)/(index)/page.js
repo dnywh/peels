@@ -10,6 +10,7 @@ const StyledMain = styled("main")({
   textAlign: "center",
   paddingTop: "15vh",
   gap: "3.5rem",
+  marginBottom: "5rem",
 
   "@media (min-width: 768px)": {
     paddingTop: "20vh",
