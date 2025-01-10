@@ -1,24 +1,24 @@
 import { Button as UnstyledButton } from "@headlessui/react";
+import Link from "next/link";
 import { styled } from "@pigment-css/react";
 
-const StyledButton = styled(UnstyledButton)(({ theme }) => ({
-  // "rounded bg-sky-600 py-2 px-4 text-sm text-white data-[hover]:bg-sky-500 data-[active]:bg-sky-700",
+const buttonStyles = ({ theme }) => ({
+  // Base styles that both button and link will share
   border: "none",
   borderRadius: theme.corners.unit * 0.5,
   fontSize: "1rem",
-  // minHeight: "2.75rem",
-  // maxHeight: "2.75rem",
   height: "3rem",
   cursor: "pointer",
   fontWeight: "600",
-
+  display: "inline-flex", // Added to help with alignment
+  alignItems: "center", // Added to help with alignment
+  justifyContent: "center", // Added to help with alignment
+  textDecoration: "none",
   borderWidth: "2px",
   borderStyle: "solid",
   borderColor: theme.colors.border.base,
   borderRadius: theme.corners.base,
-
   padding: `0 ${theme.spacing.unit * 2}px`,
-
   transition: "background 150ms ease-in-out",
 
   "&:focus": {
@@ -39,6 +39,15 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
       props: { width: "full" },
       style: {
         width: "100%",
+      },
+    },
+    {
+      props: { size: "massive" },
+      style: {
+        height: "4rem",
+        fontSize: "1.25rem",
+        borderRadius: theme.corners.base * 1.5,
+        padding: `0 ${theme.spacing.unit * 4}px`,
       },
     },
     {
@@ -74,7 +83,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
         color: theme.colors.button.secondary.text,
         borderColor: theme.colors.border.base,
         "&:hover&:not([disabled])": {
-          background: `color-mix(in srgb, ${theme.colors.button.secondary.background}, ${theme.colors.button.secondary.hover.tint} ${theme.colors.button.secondary.hover.mix})`,
+          color: `color-mix(in srgb, ${theme.colors.button.secondary.text}, ${theme.colors.button.secondary.hover.tint} ${theme.colors.button.secondary.hover.mix})`,
         },
       },
     },
@@ -98,21 +107,31 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
       },
     },
   ],
-}));
+});
+
+const StyledButton = styled(UnstyledButton)(buttonStyles);
+const StyledLink = styled(Link)(buttonStyles);
 
 export default function Button({
   variant = "primary",
   disabled = false,
+  href,
   children,
   ...props
 }) {
-  return (
-    <StyledButton
-      disabled={disabled}
-      variant={variant}
-      type="button"
-      {...props}
-    >
+  const sharedProps = {
+    disabled,
+    variant,
+    ...props,
+  };
+
+  // Render either a button or a link based on the presence of href
+  return href ? (
+    <StyledLink href={href} {...sharedProps}>
+      {children}
+    </StyledLink>
+  ) : (
+    <StyledButton type="button" {...sharedProps}>
       {children}
     </StyledButton>
   );

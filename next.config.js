@@ -106,6 +106,9 @@ export default withPigment(nextConfig, {
             unit: 8,
             forms: {
                 maxWidth: "28rem",
+            },
+            controls: {
+                maxWidth: "30rem",
             }
         },
         corners: {

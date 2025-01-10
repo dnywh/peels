@@ -62,7 +62,7 @@ const StyledTabBar = styled("div")({
 const StyledTabBarNav = styled("nav")(({ theme }) => ({
   flex: 1,
   height: "4rem",
-  maxWidth: "30rem",
+  maxWidth: theme.spacing.controls.maxWidth,
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",

@@ -4,7 +4,8 @@ import { styled } from "@pigment-css/react";
 
 const currentYear = new Date().getFullYear();
 
-const StyledFooter = styled("footer")({
+const StyledFooter = styled("footer")(({ theme }) => ({
+  marginTop: "10rem",
   display: "flex",
   flexDirection: "row",
   gap: "1rem",
@@ -14,7 +15,16 @@ const StyledFooter = styled("footer")({
   flexWrap: "wrap",
   // padding: "1.5rem",
   // marginTop: "10rem",
-});
+  color: theme.colors.text.tertiary,
+
+  "& a": {
+    color: theme.colors.text.tertiary,
+    transition: "color 150ms ease-in-out",
+    "&:hover": {
+      color: theme.colors.text.secondary,
+    },
+  },
+}));
 
 function LegalFooter() {
   return (

@@ -67,6 +67,10 @@ a:not(p a) {
   text-decoration: none;
 }
 
+a:visited {
+  color: inherit;
+}
+
 fieldset {
   border: none;
   margin: 0;
