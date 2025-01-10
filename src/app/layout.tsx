@@ -67,6 +67,12 @@ a:not(p a) {
   text-decoration: none;
 }
 
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
 // Lazy letter-spacing fix
 * {
   letter-spacing: -0.015em

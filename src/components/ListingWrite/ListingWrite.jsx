@@ -344,37 +344,36 @@ export default function ListingWrite({ initialListing }) {
           )}
         </div>
 
-        {listingType === "residential" ||
-          (listingType === "community" && (
-            <div>
-              <h2>Composting details</h2>
-              <p>
-                Be specific so people know exactly what should be avoided. Enter
-                items separately so it’s easier to read.
-              </p>
+        {(listingType === "residential" || listingType === "community") && (
+          <div>
+            <h2>Composting details</h2>
+            <p>
+              Be specific so people know exactly what should be avoided. Enter
+              items separately so it’s easier to read.
+            </p>
 
-              <MultiInput
-                label="What scraps do you accept?"
-                placeholder="Something you accept (e.g. ‘fruit rinds’)"
-                secondaryPlaceholder="Something else"
-                items={acceptedItems}
-                minRequired={1}
-                handleItemChange={handleAcceptedItemChange}
-                onClick={addAcceptedItem}
-                limit={6}
-              />
+            <MultiInput
+              label="What scraps do you accept?"
+              placeholder="Something you accept (e.g. ‘fruit rinds’)"
+              secondaryPlaceholder="Something else"
+              items={acceptedItems}
+              minRequired={1}
+              handleItemChange={handleAcceptedItemChange}
+              onClick={addAcceptedItem}
+              limit={6}
+            />
 
-              <MultiInput
-                label="What scraps do you not accept?"
-                placeholder="Something you don’t accept (e.g. ‘meat’)"
-                secondaryPlaceholder="Something else"
-                items={rejectedItems}
-                handleItemChange={handleRejectedItemChange}
-                onClick={addRejectedItem}
-                limit={6}
-              />
-            </div>
-          ))}
+            <MultiInput
+              label="What scraps do you not accept?"
+              placeholder="Something you don’t accept (e.g. ‘meat’)"
+              secondaryPlaceholder="Something else"
+              items={rejectedItems}
+              handleItemChange={handleRejectedItemChange}
+              onClick={addRejectedItem}
+              limit={6}
+            />
+          </div>
+        )}
 
         <div>
           <h2>Media</h2>

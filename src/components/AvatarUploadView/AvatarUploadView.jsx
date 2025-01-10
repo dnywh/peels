@@ -13,6 +13,10 @@ import Menu from "@/components/Menu";
 
 import { styled } from "@pigment-css/react";
 
+const StyledField = styled(Field)({
+  alignItems: "center",
+});
+
 const StyledImgContainer = styled("div")({
   position: "relative",
   borderRadius: "50%",
@@ -24,6 +28,11 @@ const StyledImgContainer = styled("div")({
 
 const StyledImg = styled("img")({
   objectFit: "cover",
+});
+
+const AvatarButton = styled(Button)({
+  marginTop: "-1rem",
+  zIndex: 1,
 });
 
 function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
@@ -43,7 +52,7 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
 
   return (
     <Fieldset>
-      <Field style={{ alignItems: "flex-start" }}>
+      <StyledField>
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -89,9 +98,13 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
 
         {!avatar ? (
           // Scenario 1: No avatar - show single "Add" button
-          <Button variant="secondary" size="small" onClick={handleFileSelect}>
+          <AvatarButton
+            variant="secondary"
+            size="small"
+            onClick={handleFileSelect}
+          >
             Add
-          </Button>
+          </AvatarButton>
         ) : (
           // Scenario 2 & 3: Has avatar - show menu with options
           <Menu>
@@ -117,7 +130,7 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
             </Menu.Items>
           </Menu>
         )}
-      </Field>
+      </StyledField>
     </Fieldset>
   );
 }

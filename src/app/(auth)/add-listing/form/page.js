@@ -1,5 +1,7 @@
 import ListingWrite from "@/components/ListingWrite";
 import IconButton from "@/components/IconButton";
+import Form from '@/components/Form';
+import FormHeader from '@/components/FormHeader';
 
 export default async function NewListingFormContent({ searchParams }) {
     const listingType = (await searchParams).type
@@ -8,9 +10,8 @@ export default async function NewListingFormContent({ searchParams }) {
     const finalListingType = validatedListingTypes.includes(listingType) ? listingType : 'residential';
 
     return (
-        <main>
-            <header>
-                <IconButton />
+        <>
+            <FormHeader action="back">
                 <h1>
                     {finalListingType === 'community' || finalListingType === 'business' ? `List your ${finalListingType}` : 'Add your listing'}
                 </h1>
@@ -19,9 +20,10 @@ export default async function NewListingFormContent({ searchParams }) {
                     {finalListingType === 'business' && `People can pick up spent coffee from your cafe, spent hops from your brewery, or similar.`}
                     {finalListingType === 'residential' && `A private residence or similar.`}
                 </p>
-            </header>
+
+            </FormHeader>
 
             <ListingWrite />
-        </main >
+        </>
     )
 }

@@ -47,7 +47,12 @@ function MultiInput({
           />
         ))}
         {items.length < limit && (
-          <Button onClick={onClick}>
+          <Button
+            size="small"
+            variant="secondary"
+            width="contained"
+            onClick={onClick}
+          >
             {items.length === 0 ? addButtonText : addAnotherButtonText}
           </Button>
         )}
