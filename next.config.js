@@ -51,6 +51,7 @@ export default withPigment(nextConfig, {
             },
             border: {
                 base: tokens.black[6],
+                elevated: tokens.black[6],
             },
             tab: {
                 active: tokens.forest[400],
@@ -105,7 +106,6 @@ export default withPigment(nextConfig, {
                 counter: tokens.rock[100],
             },
         },
-
         spacing: {
             unit: 8,
             forms: {

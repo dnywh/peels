@@ -1,6 +1,23 @@
 import Button from "@/components/Button";
 import Link from "next/link";
+import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
+
+const Intro = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  gap: "1.5rem",
+}));
+
+const StyledPeelsLogo = styled(PeelsLogo)({
+  display: "block",
+  "@media (min-width: 768px)": {
+    display: "none",
+  },
+});
 
 const StyledMain = styled("main")({
   display: "flex",
@@ -88,7 +105,10 @@ export default async function Index() {
 
   return (
     <StyledMain>
-      <Heading1>Find a home for your food scraps, wherever you are.</Heading1>
+      <Intro>
+        <StyledPeelsLogo size={40} />
+        <Heading1>Find a home for your food scraps, wherever you are.</Heading1>
+      </Intro>
 
       <HeroButtons>
         <Button href="/map" variant="primary" size="massive">
@@ -102,10 +122,10 @@ export default async function Index() {
 
       <Section>
         <HeroParagraph>
-          Peels connects those with food scraps to those who can use them for their compost, chooks, red wigglers, and more.
+          Peels connects folks with food scraps to those who can use them for compost, chooks, red wigglers, and more.
         </HeroParagraph>
         <HeroParagraph>
-          We’ve just started to build our community, and would love to see you there. <Link href="/sign-up">Sign up</Link> to put your mark on the map.
+          We’ve just started to build our community and would love to see you there. <Link href="/sign-up">Sign up</Link> to place your mark on our map.
         </HeroParagraph>
       </Section>
     </StyledMain>

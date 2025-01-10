@@ -138,11 +138,13 @@ export default function MapSidebar({ user, covered }) {
         <Fact>
           <h3>Did you know?</h3>
           <p>{randomFact.fact}</p>
-          <p>
-            <Link href={randomFact.source} target="_blank">
-              Source
-            </Link>
-          </p>
+          {randomFact.source && (
+            <p>
+              <Link href={randomFact.source} target="_blank">
+                Source
+              </Link>
+            </p>
+          )}
         </Fact>
       )}
       {!user && (
