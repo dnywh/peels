@@ -8,6 +8,21 @@ import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site";
 
 import { globalCss, styled } from "@pigment-css/react";
+import type { ExtendTheme } from "@pigment-css/react/theme";
+
+declare module "@pigment-css/react/theme" {
+  interface ThemeTokens {
+    // the structure of your theme
+  }
+
+  interface ThemeArgs {
+    theme: ExtendTheme<{
+      colorScheme: "light" | "dark";
+      tokens: ThemeTokens;
+    }>;
+  }
+}
+
 // Global styles:
 globalCss`
 // https://www.joshwcomeau.com/css/custom-css-reset/
