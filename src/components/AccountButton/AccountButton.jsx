@@ -3,16 +3,21 @@ import Button from "@/components/Button";
 
 export default async function AccountButton({ children, ...props }) {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("first_name")
-    .eq("id", user.id)
-    .single();
+  // Only fetch profile if user exists
+  const profile = user
+    ? await supabase
+        .from("profiles")
+        .select("first_name")
+        .eq("id", user.id)
+        .single()
+        .then(({ data }) => data)
+    : null;
+
+  console.log("User auth state:", !!user, "Profile:", profile);
 
   return user ? (
     <Button href="/profile" variant="secondary" {...props}>
