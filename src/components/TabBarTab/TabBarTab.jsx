@@ -24,12 +24,19 @@ const StyledTabBarTab = styled(Link)(({ theme }) => ({
   justifyContent: "center",
   gap: "0.05rem",
   // padding: "1rem",
+  height: "100%",
   flexGrow: 1,
   color: theme.colors.tab.inactive,
+
+  transition: "opacity 150ms ease-in-out",
+
+  "&:hover": {
+    opacity: 0.8,
+  },
 }));
 
 const StyledTabBarTabTitle = styled("p")(({ theme }) => ({
-  fontSize: "0.85rem",
+  fontSize: "0.75rem",
   fontWeight: "550",
 
   variants: [

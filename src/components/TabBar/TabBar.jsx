@@ -16,11 +16,11 @@ const StyledTabBar = styled("div")({
         bottom: "0",
         left: "0",
         right: "0",
-        height: "80px",
-        borderTop: "1px solid #e0e0e0",
-        backgroundColor: "#ffffff",
+        // height: "80px",
+        margin: "0 0.75rem 0.75rem",
         touchAction: "none",
-        display: "block",
+        display: "flex",
+        justifyContent: "center",
         "@media (min-width: 768px)": {
           display: "none",
         },
@@ -59,17 +59,27 @@ const StyledTabBar = styled("div")({
   ],
 });
 
-const StyledTabBarNav = styled("nav")({
-  height: "100%",
+const StyledTabBarNav = styled("nav")(({ theme }) => ({
+  flex: 1,
+  height: "4rem",
+  maxWidth: "30rem",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+
+  backgroundColor: theme.colors.background.top,
+  borderRadius: theme.corners.base,
+  border: `1px solid ${theme.colors.border.base}`,
   "@media (min-width: 768px)": {
+    border: "none",
+    backgroundColor: "transparent",
+    borderRadius: "0",
+
     height: "auto",
     flexDirection: "column",
     gap: "1rem",
   },
-});
+}));
 
 const NAVIGATION_ITEMS = [
   { title: "Map", Icon: MapIcon, href: "/map" },

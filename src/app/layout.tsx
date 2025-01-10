@@ -81,6 +81,12 @@ fieldset {
 
 const Body = styled("body")(({ theme }) => ({
   backgroundColor: theme.colors.background.sunk,
+
+  // Prepare for bottom tab bar across all possible pages
+  paddingBottom: "5rem",
+  "@media (min-width: 768px)": {
+    paddingBottom: "0",
+  },
 }));
 
 export const metadata: Metadata = {

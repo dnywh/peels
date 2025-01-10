@@ -8,7 +8,7 @@ const AuthPage = styled("main")(({ theme }) => ({
   gap: "2rem",
 
   "@media (min-width: 768px)": {
-    paddingTop: "6rem",
+    paddingTop: "3rem",
   },
 }));
 
