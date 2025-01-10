@@ -4,6 +4,7 @@ import SubmitButton from "@/components/SubmitButton";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
 import Form from "@/components/Form";
+import FormHeader from "@/components/FormHeader";
 import Field from "@/components/Field";
 
 import Link from "next/link";
@@ -18,52 +19,59 @@ export default async function Login(props: {
   const searchParams = await props.searchParams;
 
   return (
-    <Form>
-      <h1>Sign in</h1>
-      <p>
-        Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
-          Sign up
-        </Link>
-      </p>
+    <>
+      <FormHeader action="close">
+        <h1>Sign in</h1>
+        <p>
+          Don't have an account?{" "}
+          <Link
+            className="text-foreground font-medium underline"
+            href="/sign-up"
+          >
+            Sign up
+          </Link>
+        </p>
+      </FormHeader>
 
-      <Field>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          name="email"
-          type="email"
-          placeholder="you@example.com"
-          required
+      <Form>
+        <Field>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+          />
+        </Field>
+
+        <Field>
+          <Label htmlFor="password">Password</Label>
+          <Link
+            className="text-xs text-foreground underline"
+            href="/forgot-password"
+          >
+            Forgot Password?
+          </Link>
+
+          <Input
+            type="password"
+            name="password"
+            placeholder="Your password"
+            required
+          />
+        </Field>
+
+        {searchParams.next && (
+          <input type="hidden" name="next" value={searchParams.next} />
+        )}
+        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
+          Sign in
+        </SubmitButton>
+
+        <FormMessage
+          message={{ error: searchParams.error, success: searchParams.success }}
         />
-      </Field>
-
-      <Field>
-        <Label htmlFor="password">Password</Label>
-        <Link
-          className="text-xs text-foreground underline"
-          href="/forgot-password"
-        >
-          Forgot Password?
-        </Link>
-
-        <Input
-          type="password"
-          name="password"
-          placeholder="Your password"
-          required
-        />
-      </Field>
-
-      {searchParams.next && (
-        <input type="hidden" name="next" value={searchParams.next} />
-      )}
-      <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-        Sign in
-      </SubmitButton>
-
-      <FormMessage
-        message={{ error: searchParams.error, success: searchParams.success }}
-      />
-    </Form>
+      </Form>
+    </>
   );
 }

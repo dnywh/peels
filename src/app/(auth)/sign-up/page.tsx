@@ -15,15 +15,12 @@ import {
   Textarea,
 } from "@headlessui/react";
 
+import FormHeader from "@/components/FormHeader";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Input from "@/components/Input";
 
 import { styled } from "@pigment-css/react";
-
-const Header = styled("header")({
-  textAlign: "center",
-});
 
 export default async function Signup(props: {
   searchParams: Promise<{
@@ -41,12 +38,12 @@ export default async function Signup(props: {
 
   return (
     <>
-      <Header>
+      <FormHeader action="close">
         <h1>Sign up{searchParams.from === "listing" && " to contact hosts"}</h1>
         <p>
           Already have an account? <Link href="/sign-in">Sign in</Link>
         </p>
-      </Header>
+      </FormHeader>
       <Form>
         <Field>
           <Label htmlFor="first_name">First name</Label>

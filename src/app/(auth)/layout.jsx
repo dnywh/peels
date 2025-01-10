@@ -13,9 +13,5 @@ const AuthPage = styled("main")(({ theme }) => ({
 }));
 
 export default async function Layout({ children }) {
-  return (
-    <>
-      <AuthPage>{children}</AuthPage>
-    </>
-  );
+  return <AuthPage>{children}</AuthPage>;
 }

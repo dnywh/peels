@@ -11,8 +11,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
   height: "3rem",
   cursor: "pointer",
   fontWeight: "600",
-  // background: theme.colors.button.primary.background,
-  // color: theme.colors.button.primary.text,
+
   borderWidth: "2px",
   borderStyle: "solid",
   borderColor: theme.colors.border.base,

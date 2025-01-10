@@ -20,6 +20,9 @@ const tokens = {
     forest: {
         400: 'hsla(81, 95%, 36%, 1)'
     },
+    ocean: {
+        500: 'hsla(193, 77%, 43%, 1)'
+    },
     ochre: {
         50: 'hsla(36, 26%, 99%, 1)',
         80: 'hsla(36, 26%, 96%, 1)',
@@ -37,7 +40,7 @@ export default withPigment(nextConfig, {
     theme: {
         colors: {
             focus: {
-                outline: tokens.forest[400],
+                outline: tokens.ocean[500],
             },
             background: {
                 sunk: tokens.ochre[80],
@@ -101,6 +104,9 @@ export default withPigment(nextConfig, {
 
         spacing: {
             unit: 8,
+            forms: {
+                maxWidth: "28rem",
+            }
         },
         corners: {
             base: 16,

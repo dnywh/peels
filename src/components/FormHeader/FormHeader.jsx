@@ -20,6 +20,8 @@ const StyledIconButton = styled(IconButton)({
 
 const Header = styled("header")(({ theme }) => ({
   width: "100%",
+  maxWidth: theme.spacing.forms.maxWidth,
+
   display: "flex",
   flexDirection: "column",
   gap: "0",
