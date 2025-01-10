@@ -62,10 +62,10 @@ const StyledMapRender = styled("div")({
   // touchAction: "none",
 
   // Prepare for tab bar on mobile
-  height: "calc(100% - 80px)",
+  height: "100%",
   "@media (min-width: 768px)": {
-    height: "100%",
     borderRadius: "0.5rem",
+    boxShadow: "inset 0 0 0 1px hsla(0, 0%, 0%, 0.1)",
     overflow: "hidden",
   },
 });
@@ -546,6 +546,7 @@ export default function MapPageClient({ user }) {
             DrawerTrigger={Drawer.Trigger}
             selectedPinId={selectedPinId}
             setSelectedPinId={setSelectedPinId}
+            isDesktop={isDesktop}
           />
 
           <Drawer.Portal>

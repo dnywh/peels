@@ -17,12 +17,26 @@ import layers from "protomaps-themes-base";
 import MapPin from "@/components/MapPin";
 import MapSearch from "@/components/MapSearch";
 
+import { styled, css } from "@pigment-css/react";
+
 import { Drawer } from "vaul";
 import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
 
 const snapPoints = ["148px", "355px", 1];
 const todo = false; // Temporarily turning off this feature to inspect scroll bugs
+
+const attributionControlMobileStyle = {
+  // Optically position attribution control above-right of TabBar
+  marginRight: "calc(clamp(10px, calc(((100vw - 30rem) / 2)), 100vw) + 6px)",
+  marginBottom: "5.25rem", // Place above bottom TabBar
+  opacity: 0.875,
+};
+const attributionControlDesktopStyle = {
+  opacity: 1,
+  marginRight: "10px",
+  marginBottom: "10px",
+};
 
 export default function MapRender({
   mapRef,
@@ -41,6 +55,7 @@ export default function MapRender({
   preventDrawerClose,
   selectedPinId,
   setSelectedPinId,
+  isDesktop,
 }) {
   const isFirstLoad = useRef(true);
   const [lastKnownPosition, setLastKnownPosition] = useState(null);
@@ -208,6 +223,7 @@ export default function MapRender({
         <>
           <Map
             ref={mapRef}
+            attributionControl={false}
             mapStyle={{
               version: 8,
               glyphs:
@@ -249,6 +265,15 @@ export default function MapRender({
               animationOptions={{ duration: 100 }}
             />
             <NavigationControl showZoom={true} showCompass={false} />
+
+            <AttributionControl
+              compact={true}
+              style={
+                !isDesktop
+                  ? attributionControlMobileStyle
+                  : attributionControlDesktopStyle
+              }
+            />
 
             {/* <Button>Open or close drawer</Button> */}
             {listings.map((listing) => (
