@@ -48,7 +48,7 @@ const StyledMapPage = styled("main")({
   // },
 });
 
-const StyledMapRender = styled("div")({
+const StyledMapRender = styled("div")(({ theme }) => ({
   // marginBottom: "80px", //Equal to height of tab bar
 
   // overflow: "hidden",
@@ -64,11 +64,11 @@ const StyledMapRender = styled("div")({
   // Prepare for tab bar on mobile
   height: "100%",
   "@media (min-width: 768px)": {
-    borderRadius: "0.5rem",
-    boxShadow: "inset 0 0 0 1px hsla(0, 0%, 0%, 0.1)",
+    borderRadius: theme.corners.base,
+    border: `1px solid ${theme.colors.border.base}`,
     overflow: "hidden",
   },
-});
+}));
 
 const StyledIconButton = styled(IconButton)({
   position: "absolute",

@@ -13,6 +13,7 @@ const tokens = {
     },
     rock: {
         50: 'hsla(0, 4%, 95%, 1)',
+        100: 'hsla(37, 5%, 83%, 1)',
         300: 'hsla(38, 5%, 71%, 1)',
         400: 'hsla(37, 5%, 61%, 1)',
         800: 'hsla(37, 5%, 40%, 1)'
@@ -26,6 +27,7 @@ const tokens = {
     ochre: {
         50: 'hsla(36, 26%, 99%, 1)',
         80: 'hsla(36, 26%, 96%, 1)',
+        150: 'hsla(22, 35%, 95%, 1)',
         500: 'hsla(22, 87%, 50%, 1)',
         600: 'hsla(22, 87%, 44%, 1)',
         700: 'hsla(22, 97%, 25%, 1)',
@@ -43,8 +45,9 @@ export default withPigment(nextConfig, {
                 outline: tokens.ocean[500],
             },
             background: {
+                top: tokens.white[100],
                 sunk: tokens.ochre[80],
-                top: tokens.white[100]
+                pit: tokens.ochre[150],
             },
             border: {
                 base: tokens.black[6],
@@ -98,7 +101,8 @@ export default withPigment(nextConfig, {
                 primary: tokens.ochre[800],
                 secondary: tokens.rock[800],
                 tertiary: tokens.rock[300],
-                link: tokens.ochre[700]
+                link: tokens.ochre[700],
+                counter: tokens.rock[100],
             },
         },
 

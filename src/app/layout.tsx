@@ -86,6 +86,12 @@ a:visited {
   color: inherit;
 }
 
+ul, ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 fieldset {
   border: none;
   margin: 0;

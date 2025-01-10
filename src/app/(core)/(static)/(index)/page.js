@@ -54,6 +54,7 @@ const HeroParagraph = styled("p")(({ theme }) => ({
   letterSpacing: "-0.02em",
   lineHeight: "1.5",
   fontWeight: "500",
+  textWrap: "balance",
   color: theme.colors.text.tertiary,
 
   "& a": {
