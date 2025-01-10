@@ -2,9 +2,9 @@
 import { usePathname } from "next/navigation";
 import PeelsTab from "@/components/PeelsTab";
 import TabBarTab from "@/components/TabBarTab";
-import { MapPin, MessageCircleMore, CircleUserRound } from "lucide-react";
-import { BeakerIcon } from "@heroicons/react/24/solid";
-import MapPinIcon from "@/components/MapPinIcon";
+import MapIcon from "@/components/MapIcon";
+import ChatsIcon from "@/components/ChatsIcon";
+import ProfileIcon from "@/components/ProfileIcon";
 import { styled } from "@pigment-css/react";
 
 const StyledTabBar = styled("div")({
@@ -72,9 +72,9 @@ const StyledTabBarNav = styled("nav")({
 });
 
 const NAVIGATION_ITEMS = [
-  { title: "Map", Icon: MapPinIcon, href: "/map" },
-  { title: "Chats", Icon: MessageCircleMore, href: "/chats" },
-  { title: "Profile", Icon: CircleUserRound, href: "/profile" },
+  { title: "Map", Icon: MapIcon, href: "/map" },
+  { title: "Chats", Icon: ChatsIcon, href: "/chats" },
+  { title: "Profile", Icon: ProfileIcon, href: "/profile" },
 ];
 
 function TabBar({ breakpoint = "sm", position = "inline", ...props }) {
