@@ -63,7 +63,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
         background: theme.colors.button.primary.background,
         color: theme.colors.button.primary.text,
         border: "none",
-        "&:hover": {
+        "&:hover&:not([disabled])": {
           background: `color-mix(in srgb, ${theme.colors.button.primary.background}, ${theme.colors.button.primary.hover.tint} ${theme.colors.button.primary.hover.mix})`,
         },
       },
@@ -74,7 +74,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
         background: theme.colors.button.secondary.background,
         color: theme.colors.button.secondary.text,
         borderColor: theme.colors.border.base,
-        "&:hover": {
+        "&:hover&:not([disabled])": {
           background: `color-mix(in srgb, ${theme.colors.button.secondary.background}, ${theme.colors.button.secondary.hover.tint} ${theme.colors.button.secondary.hover.mix})`,
         },
       },
@@ -85,7 +85,7 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
         background: theme.colors.button.danger.background,
         color: theme.colors.button.danger.text,
         borderColor: theme.colors.border.base,
-        "&:hover": {
+        "&:hover&:not([disabled])": {
           background: `color-mix(in srgb, ${theme.colors.button.danger.background}, ${theme.colors.button.danger.hover.tint} ${theme.colors.button.danger.hover.mix})`,
         },
       },
@@ -93,11 +93,9 @@ const StyledButton = styled(UnstyledButton)(({ theme }) => ({
     {
       props: { disabled: true },
       style: {
+        cursor: "default",
         background: theme.colors.button.disabled.background,
         color: theme.colors.button.disabled.text,
-        "&:hover": {
-          background: `color-mix(in srgb, ${theme.colors.button.disabled.background}, ${theme.colors.button.disabled.hover.tint} ${theme.colors.button.disabled.hover.mix})`,
-        },
       },
     },
   ],

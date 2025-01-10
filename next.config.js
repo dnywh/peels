@@ -88,10 +88,6 @@ export default withPigment(nextConfig, {
                 },
                 disabled: {
                     background: tokens.rock[50],
-                    hover: {
-                        tint: tokens.white[100],
-                        mix: `20%`,
-                    },
                     text: tokens.rock[400]
                 }
             },

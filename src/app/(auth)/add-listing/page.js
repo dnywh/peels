@@ -7,6 +7,7 @@ import { Field, Label, Radio, RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
 import SubmitButton from '@/components/SubmitButton';
+import Form from '@/components/Form';
 import FormHeader from '@/components/FormHeader';
 import { styled } from '@pigment-css/react'
 
@@ -75,8 +76,8 @@ const StyledCheckCircleIcon = styled(CheckCircleIcon)(({ theme }) => ({
 // 3. The button should ask another question if they select "I accept food scraps"
 // 4. In that #3 case, the next form's button should route them to the the residential form if they select "residential" or the commuity form if they select "Community place"
 const listingTypes = [
-    { title: 'I accept food scraps', description: 'Others can arrange food scraps drop-off to your home or your community garden.' },
-    { title: 'My business donates scraps', description: 'Others can pick up spent coffee from your cafe, hops from your brewery, or similar.' },
+    { key: 'accept', title: 'I accept food scraps', description: 'Others can arrange food scraps drop-off to your home or your community garden.' },
+    { key: 'business', title: 'My business donates scraps', description: 'Others can pick up spent coffee from your cafe, hops from your brewery, or similar.' },
 ]
 
 function NewListingContent() {
@@ -84,11 +85,10 @@ function NewListingContent() {
     const searchParams = useSearchParams();
 
     // Initialize state from URL params
-    const [listingType, setListingType] = useState('');
+    const [selectedListingType, setSelectedListingType] = useState(null)
     const [accepterType, setAccepterType] = useState('');
     const [currentStep, setCurrentStep] = useState(1);
 
-    let [selected, setSelected] = useState(listingTypes[0])
 
     // Sync state with the URL params
     useEffect(() => {
@@ -99,9 +99,6 @@ function NewListingContent() {
         }
     }, [searchParams])
 
-    function handleListingTypeChange(event) {
-        setListingType(event.target.value);
-    }
 
     function handleAccepterTypeChange(event) {
         setAccepterType(event.target.value);
@@ -110,10 +107,12 @@ function NewListingContent() {
     function handleSubmit(event) {
         event.preventDefault();
 
+        console.log(selectedListingType.key)
+
         // Navigate to appropriate form
-        if (listingType === 'business') {
-            router.push(`/add-listing/form?type=${listingType}`);
-        } else if (listingType === 'accept' && currentStep === 1) {
+        if (selectedListingType.key === 'business') {
+            router.push(`/add-listing/form?type=${selectedListingType.key}`);
+        } else if (selectedListingType.key === 'accept' && currentStep === 1) {
             router.push('/add-listing?step=2');
             setCurrentStep(2);
         } else if (currentStep === 2) {
@@ -135,16 +134,16 @@ function NewListingContent() {
             {currentStep === 1 ? (
                 <>
 
-                    <form onSubmit={handleSubmit}>
+                    <Form onSubmit={handleSubmit}>
 
                         <StyledRadioGroup
                             by="title"
-                            value={selected}
-                            onChange={setSelected}
+                            value={selectedListingType}
+                            onChange={setSelectedListingType}
                             aria-label="Listing type">
                             {listingTypes.map((option) => (
                                 <StyledRadio
-                                    key={option.title}
+                                    key={option.key}
                                     value={option}
                                 >
                                     <>
@@ -157,35 +156,11 @@ function NewListingContent() {
                                 </StyledRadio>
                             ))}
                         </StyledRadioGroup>
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="listingType"
-                                    value="accept"
-                                    checked={listingType === 'accept'}
-                                    onChange={handleListingTypeChange}
-                                />
-                                <span className="text-lg font-medium">I accept food scraps</span>
-                                <span className="text-sm text-muted-foreground">Others can arrange food scraps drop-off to your home or your community garden.</span>
-                            </label>
 
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="listingType"
-                                    value="business"
-                                    checked={listingType === 'business'}
-                                    onChange={handleListingTypeChange}
-                                />
-                                <span className="text-lg font-medium">My business donates food scraps</span>
-                                <span className="text-sm text-muted-foreground">Others can pick up spent coffee from your cafe, hops from your brewery, or similar.</span>
-                            </label>
-                        </div>
-                        <SubmitButton width="full">
+                        <SubmitButton width="full" disabled={!selectedListingType}>
                             Continue
                         </SubmitButton>
-                    </form>
+                    </Form>
                 </>
             ) : (
                 <>
@@ -216,7 +191,7 @@ function NewListingContent() {
                                 <span className="text-sm text-muted-foreground">I manage a community garden or similar</span>
                             </label>
                         </div>
-                        <SubmitButton width="full">
+                        <SubmitButton width="full" >
                             Continue
                         </SubmitButton>
                     </form>
