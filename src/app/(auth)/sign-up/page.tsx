@@ -4,6 +4,8 @@ import SubmitButton from "@/components/SubmitButton";
 // import Input from "@/components/Input";
 // import Label from "@/components/Label";
 import Link from "next/link";
+import FieldHeader from "@/components/FieldHeader";
+import Hyperlink from "@/components/Hyperlink";
 
 import {
   // Field,
@@ -38,10 +40,12 @@ export default async function Signup(props: {
 
   return (
     <>
-      <FormHeader action="close">
+      {/* TODO: Make FormHeader action conditional based on whether this page (which should be a component) is rendered modally or as a page */}
+      <FormHeader action="back">
         <h1>Sign up{searchParams.from === "listing" && " to contact hosts"}</h1>
         <p>
-          Already have an account? <Link href="/sign-in">Sign in</Link>
+          Already have an account?{" "}
+          <Hyperlink href="/sign-in">Sign in</Hyperlink>
         </p>
       </FormHeader>
       <Form>
@@ -75,7 +79,10 @@ export default async function Signup(props: {
           />
         </Field>
         <Field>
-          <Label htmlFor="invite_code">Invite code</Label>
+          <FieldHeader>
+            <Label htmlFor="invite_code">Invite code</Label>
+            <Hyperlink href="/preview">Need one?</Hyperlink>
+          </FieldHeader>
           <Input name="invite_code" placeholder="Your invite code" required />
         </Field>
         <SubmitButton formAction={signUpAction} pendingText="Signing up...">

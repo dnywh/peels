@@ -59,6 +59,7 @@ const HeroParagraph = styled("p")(({ theme }) => ({
 
   "& a": {
     // color: theme.colors.text.secondary,
+    color: "inherit",
     transition: "color 150ms ease-in-out",
     "&:hover": {
       color: theme.colors.text.primary,

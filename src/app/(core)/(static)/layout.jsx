@@ -11,10 +11,10 @@ const StyledAccountButton = styled(AccountButton)({
 
 const StaticPage = styled("div")({
   // Accounting for tab bar at bottom (should be dynamic)
-  padding: "1.5rem 1.5rem 5rem 1.5rem",
+  padding: "1.5rem 1rem 5rem",
   // height: "100dvh",
   "@media (min-width: 768px)": {
-    padding: "5rem 10rem",
+    padding: "5rem 8rem",
   },
 });
 
@@ -23,13 +23,8 @@ export default async function Layout({ children }) {
     <StaticPage>
       <StyledAccountButton />
       <TabBar breakpoint="md" position="floating" />
-      <div>
-        {children}
-        {/* <LoremIpsum /> */}
-      </div>
-
+      {children}
       <LegalFooter />
-      {/* If this tab bar is active, add an equivalent amount of padding-bottom to the page */}
       <TabBar breakpoint="sm" />
     </StaticPage>
   );

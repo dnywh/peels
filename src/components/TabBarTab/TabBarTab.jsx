@@ -28,10 +28,11 @@ const StyledTabBarTab = styled(Link)(({ theme }) => ({
   flexGrow: 1,
   color: theme.colors.tab.inactive,
 
-  transition: "opacity 150ms ease-in-out",
+  transition: "opacity 150ms ease-in-out, transform 65ms ease-in-out",
 
   "&:hover": {
     opacity: 0.8,
+    transform: "scale(0.965)",
   },
 }));
 

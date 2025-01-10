@@ -28,7 +28,7 @@ const StyledSidebar = styled("div")(({ theme }) => ({
   wordWrap: "anywhere", // for source URLs on facts, remove when those go
   border: `2px dashed ${theme.colors.border.base}`,
 
-  // overflow: "scroll",
+  overflowY: "scroll",
 }));
 
 const StepList = styled("ol")(({ theme }) => ({

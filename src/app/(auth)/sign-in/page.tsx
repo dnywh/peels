@@ -6,6 +6,8 @@ import Label from "@/components/Label";
 import Form from "@/components/Form";
 import FormHeader from "@/components/FormHeader";
 import Field from "@/components/Field";
+import FieldHeader from "@/components/FieldHeader";
+import Hyperlink from "@/components/Hyperlink";
 
 import Link from "next/link";
 
@@ -20,16 +22,11 @@ export default async function Login(props: {
 
   return (
     <>
-      <FormHeader action="close">
+      {/* TODO: Make FormHeader action conditional based on whether this page (which should be a component) is rendered modally or as a page */}
+      <FormHeader action="back">
         <h1>Sign in</h1>
         <p>
-          Don't have an account?{" "}
-          <Link
-            className="text-foreground font-medium underline"
-            href="/sign-up"
-          >
-            Sign up
-          </Link>
+          Don't have an account? <Hyperlink href="/sign-up">Sign up</Hyperlink>
         </p>
       </FormHeader>
 
@@ -45,14 +42,10 @@ export default async function Login(props: {
         </Field>
 
         <Field>
-          <Label htmlFor="password">Password</Label>
-          <Link
-            className="text-xs text-foreground underline"
-            href="/forgot-password"
-          >
-            Forgot Password?
-          </Link>
-
+          <FieldHeader>
+            <Label htmlFor="password">Password</Label>
+            <Hyperlink href="/forgot-password">Forgot Password?</Hyperlink>
+          </FieldHeader>
           <Input
             type="password"
             name="password"
