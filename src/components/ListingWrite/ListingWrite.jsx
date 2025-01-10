@@ -443,8 +443,6 @@ export default function ListingWrite({ initialListing }) {
         </SubmitButton>
       </Form>
 
-      <hr />
-
       <div>
         {/* TODO: warn if unsaved changes? */}
         {initialListing && (
