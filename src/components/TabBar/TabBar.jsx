@@ -70,8 +70,10 @@ const StyledTabBarNav = styled("nav")(({ theme }) => ({
   backgroundColor: theme.colors.background.top,
   borderRadius: theme.corners.base,
   border: `1px solid ${theme.colors.border.base}`,
+  boxShadow: `0px 0px 3px 1px rgba(0, 0, 0, 0.06)`,
 
   "@media (min-width: 768px)": {
+    boxShadow: "none",
     border: "none",
     backgroundColor: "transparent",
     borderRadius: "0",

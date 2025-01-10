@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { styled } from "@pigment-css/react";
-import GuestActions from "@/components/GuestActions";
 import { facts } from "@/data/facts";
 
 const steps = [
@@ -29,6 +29,42 @@ const StyledSidebar = styled("div")(({ theme }) => ({
   border: `2px dashed ${theme.colors.border.base}`,
 
   overflowY: "scroll",
+}));
+
+const Fact = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+  color: theme.colors.text.tertiary,
+
+  "& h3": {
+    fontSize: "0.75rem",
+    fontWeight: "600",
+    letterSpacing: "0.05em",
+    lineHeight: "100%",
+    textTransform: "uppercase",
+  },
+
+  "& p:first-of-type": {
+    fontSize: "1.35rem",
+    fontWeight: "500",
+    lineHeight: "120%",
+    textWrap: "balance",
+  },
+
+  "& p:last-of-type": {
+    fontSize: "0.75rem",
+    fontWeight: "500",
+    lineHeight: "100%",
+
+    "& a": {
+      color: "inherit",
+      transition: "opacity 150ms ease-in-out",
+      "&:hover": {
+        opacity: 0.75,
+      },
+    },
+  },
 }));
 
 const StepList = styled("ol")(({ theme }) => ({
@@ -99,22 +135,25 @@ export default function MapSidebar({ user, covered }) {
         // TODO
         // If user has sent >0 messages, show a fun composting fact
         // Otherwise show the fundamentals (1, 2, 3) of Peels
-        <>
+        <Fact>
+          <h3>Did you know?</h3>
           <p>{randomFact.fact}</p>
-          {randomFact.source && <small>Source: {randomFact.source}</small>}
-        </>
+          <p>
+            <Link href={randomFact.source} target="_blank">
+              Source
+            </Link>
+          </p>
+        </Fact>
       )}
       {!user && (
-        <>
-          <StepList>
-            {steps.map((step, index) => (
-              <li key={index}>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </li>
-            ))}
-          </StepList>
-        </>
+        <StepList>
+          {steps.map((step, index) => (
+            <li key={index}>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </li>
+          ))}
+        </StepList>
       )}
     </StyledSidebar>
   );

@@ -75,12 +75,12 @@ const StyledIconButton = styled(IconButton)({
   right: "0.75rem",
 });
 
-const StyledDrawerContent = styled(Drawer.Content)({
+const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   // display: "flex",
   // flexDirection: "column",
-  border: "1px solid #E5E7EB", // border-gray-200
+  border: `2px solid ${theme.colors.border.base}`, // border-gray-200
   borderBottom: "none",
-  borderRadius: "10px 10px 0 0", // rounded-t-[10px]
+  borderRadius: `${theme.corners.base}px ${theme.corners.base}px 0 0`,
 
   position: "fixed",
   bottom: "0",
@@ -93,7 +93,10 @@ const StyledDrawerContent = styled(Drawer.Content)({
   // overscrollBehavior: "unset",
   // margin: "0 -1px", // mx-[-1px]
 
-  background: "rgb(235, 235, 235)",
+  background: theme.colors.background.top,
+
+  border: `0.5px solid ${theme.colors.border.base}`,
+  boxShadow: `0px -3px 3px 1px rgba(0, 0, 0, 0.06)`,
 
   overflowX: "hidden",
   // overflowY: "hidden", // Necessary to focus on the drawer content
@@ -103,7 +106,8 @@ const StyledDrawerContent = styled(Drawer.Content)({
   },
 
   "@media (min-width: 768px)": {
-    borderRadius: "10px",
+    borderRadius: theme.corners.base,
+    boxShadow: `-3px 0px 3px 1px rgba(0, 0, 0, 0.03)`,
     // background: "blue",
     // margin: "unset",
     height: "unset",
@@ -114,7 +118,7 @@ const StyledDrawerContent = styled(Drawer.Content)({
     outline: "none",
     width: sidebarWidth,
   },
-});
+}));
 
 const StyledDrawerHeader = styled("header")({
   // flex justify-between items-center absolute top-0 w-full py-2 px-4 rounded-t-lg
