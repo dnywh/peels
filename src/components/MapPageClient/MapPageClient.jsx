@@ -127,6 +127,8 @@ const StyledDrawerHeader = styled("header")({
 
   position: "sticky",
   top: "0",
+  // Create a new stacking context to ensure header content stays above avatar whose rotation transform causes a new stacking context
+  zIndex: 1,
   width: "100%",
 
   display: "flex",
@@ -150,6 +152,9 @@ const StyledDrawerHeaderInner = styled("div")(({ theme }) => ({
   background: theme.colors.background.slight,
   borderBottom: `1px solid ${theme.colors.border.base}`,
   boxShadow: `0px 1px 8px 0px ${theme.colors.border.base}`,
+  // Ensure header content stays above avatar whose rotation transform causes a new stacking context
+  // position: "relative",
+  // zIndex: 1,
 }));
 
 const StyledHeaderText = styled("div")(({ theme }) => ({
