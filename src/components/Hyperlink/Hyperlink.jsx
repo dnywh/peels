@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 
-// const StyledTabBarNav = styled("nav")(({ theme }) => ({
-const Hyperlink = styled(Link)(({ theme }) => ({
+const getSharedStyles = ({ theme }) => ({
   color: theme.colors.text.primary,
   fontWeight: "500",
   textDecoration: "underline",
@@ -10,6 +9,15 @@ const Hyperlink = styled(Link)(({ theme }) => ({
   "&:hover": {
     opacity: 0.65,
   },
-}));
+});
 
-export default Hyperlink;
+const StyledLink = styled(Link)(getSharedStyles);
+const StyledAnchor = styled("a")(getSharedStyles);
+
+export default function Hyperlink({ as = Link, children, href }) {
+  if (as === "anchor") {
+    return <StyledAnchor href={href}>{children}</StyledAnchor>;
+  }
+
+  return <StyledLink href={href}>{children}</StyledLink>;
+}
