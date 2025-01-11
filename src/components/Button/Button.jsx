@@ -4,6 +4,7 @@ import { styled } from "@pigment-css/react";
 
 const buttonStyles = ({ theme }) => ({
   // Base styles that both button and link will share
+  flexShrink: "0",
   border: "none",
   borderRadius: theme.corners.unit * 0.5,
   fontSize: "1rem",

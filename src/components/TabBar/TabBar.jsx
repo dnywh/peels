@@ -16,7 +16,6 @@ const StyledTabBar = styled("div")({
         bottom: "0",
         left: "0",
         right: "0",
-        // height: "80px",
         margin: "0 0.75rem 0.75rem",
         touchAction: "none",
         display: "flex",

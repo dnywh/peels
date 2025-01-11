@@ -215,7 +215,7 @@ const ListingRead = memo(function Listing({
               latitude={listing.latitude}
               anchor="center"
             >
-              <MapPin selected={true} />
+              <MapPin selected={true} type={listing.type} />
             </Marker>
             <NavigationControl showCompass={false} />
           </StyledMap>
@@ -224,8 +224,8 @@ const ListingRead = memo(function Listing({
             <p>
               {listingName} is a{" "}
               {listing.area_name
-                ? `resident located of ${listing.area_name}`
-                : "resident in this local area"}
+                ? `resident located in ${listing.area_name}`
+                : "resident of this area"}
               . Ask them for their exact location when you arrange a food scrap
               drop-off.
             </p>
