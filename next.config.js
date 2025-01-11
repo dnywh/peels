@@ -58,6 +58,14 @@ export default withPigment(nextConfig, {
                 inactive: tokens.rock[300],
                 unread: tokens.ochre[500]
             },
+            marker: {
+                dot: tokens.white[100],
+                background: {
+                    donate: tokens.ochre[700],
+                    receive: tokens.kaki[700],
+                },
+                border: tokens.white[100],
+            },
             radio: {
                 checked: {
                     background: tokens.ochre[150],
