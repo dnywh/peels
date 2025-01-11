@@ -29,7 +29,7 @@ function ListingCta({ type, slug }) {
         >
           Edit listing
         </Button>
-        <p>This is your listing. Lookin’ good!</p>
+        <p>This is your own listing. Lookin’ good!</p>
       </StyledListingCta>
     );
   }

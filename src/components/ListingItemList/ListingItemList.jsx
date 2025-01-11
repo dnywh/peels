@@ -1,6 +1,7 @@
 import AcceptedItemIcon from "@/components/AcceptedItemIcon";
 import RejectedItemIcon from "@/components/RejectedItemIcon";
 import Link from "next/link";
+import Hyperlink from "@/components/Hyperlink";
 import { styled } from "@pigment-css/react";
 
 // TODO:  Use ::marker method with SVG inline, once Data URI is supported in Pigment
@@ -53,6 +54,24 @@ const StyledListingItemList = styled("ol")(({ theme }) => ({
   ],
 }));
 
+const ListLink = styled(Link)(({ theme }) => ({
+  color: theme.colors.text.primary,
+  fontWeight: "500",
+  transition: "opacity 150ms ease-in-out",
+  "&:hover": {
+    opacity: 0.65,
+  },
+}));
+
+function prettifyLink(link) {
+  if (link.includes("http")) {
+    link = link.replace("http://", "").replace("https://", ""); // Remove http/https
+    link = link.replace(/^www\./, ""); // Remove www. if present
+    link = link.split("?")[0]; // Remove query parameters
+  }
+  return link;
+}
+
 function ListingItemList({ items, type = "accepted" }) {
   return (
     <StyledListingItemList type={type}>
@@ -61,9 +80,9 @@ function ListingItemList({ items, type = "accepted" }) {
           {type === "accepted" && <AcceptedItemIcon />}
           {type === "rejected" && <RejectedItemIcon />}
           {type === "links" ? (
-            <Link href={item} target="_blank">
-              {item}
-            </Link>
+            <Hyperlink href={item} target="_blank">
+              {prettifyLink(item)}
+            </Hyperlink>
           ) : (
             item
           )}
