@@ -4,5 +4,5 @@ export default function Listings() {
     // This component can be empty, as we are handling redirection
     redirect('/map');
     // Maybe it could show a list of listings I've contact in the past, ordered by most recent
-    // Or a general sitemap (of listings) for SEO
+    // Or a general sitemap (of community and business listings), Brown Pages style (split by country and state, area) for SEO
 }

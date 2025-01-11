@@ -127,7 +127,7 @@ const StyledDrawerHeader = styled("header")({
 
   position: "sticky",
   top: "0",
-  // Create a new stacking context to ensure header content stays above avatar whose rotation transform causes a new stacking context
+  // Create a new stacking context to ensure header content stays above avatar whose rotation transform caused a new stacking context
   zIndex: 1,
   width: "100%",
 

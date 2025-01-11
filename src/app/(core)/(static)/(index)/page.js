@@ -30,7 +30,7 @@ const StyledMain = styled("main")({
   marginBottom: "5rem",
 
   "@media (min-width: 768px)": {
-    paddingTop: "20vh",
+    paddingTop: "16vh",
   },
 });
 
@@ -125,7 +125,7 @@ export default async function Index() {
           Peels connects folks with food scraps to those who can use them for compost, chooks, red wigglers, and more.
         </HeroParagraph>
         <HeroParagraph>
-          We’ve just started to build our community and would love to see you there. <Link href="/sign-up">Sign up</Link> to place your mark on our map.
+          We’ve just started to build our community and would love to see you there. <Link href="/sign-up">Sign up</Link> to put your mark on the map.
         </HeroParagraph>
       </Section>
     </StyledMain>
