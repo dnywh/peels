@@ -138,31 +138,38 @@ const StyledDrawerHeader = styled("header")({
   // padding: "0.5rem 1rem",
 });
 
-const StyledDrawerHeaderInner = styled("div")({
+const StyledDrawerHeaderInner = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   justifyContent: "center",
   alignItems: "center",
   width: "100%",
 
-  padding: "0.5rem",
-  background: "rgb(235, 235, 235)",
-  borderBottom: "1px solid #b1b1b1",
-  boxShadow: "0px 10px 8px 6px #0000002d",
-});
+  padding: "1rem",
+  background: theme.colors.background.slight,
+  borderBottom: `1px solid ${theme.colors.border.base}`,
+  boxShadow: `0px 1px 8px 0px ${theme.colors.border.base}`,
+}));
 
-const StyledAvatarHolder = styled("div")({
-  width: "100px",
-  height: "100px",
-  background: "rgba(0, 0, 0, 0.1)",
-});
-
-const StyledHeaderText = styled("div")({
+const StyledHeaderText = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-});
+  gap: "0.25rem",
 
-const StyledDrawerInner = styled("div")({
+  "& h3, p": {
+    lineHeight: "100%",
+  },
+  "& h3": {
+    fontSize: "0.925rem",
+    color: theme.colors.text.secondary,
+  },
+  "& p": {
+    fontSize: "0.825rem",
+    color: theme.colors.text.tertiary,
+  },
+}));
+
+const StyledDrawerInner = styled("div")(({ theme }) => ({
   // Attempts to smooth drawer scroll
   // touchAction: "unset !important",
   // pointerEvents: "unset !important",
@@ -180,6 +187,7 @@ const StyledDrawerInner = styled("div")({
 
   display: "flex",
   flexDirection: "column",
+  gap: "3rem",
 
   // margin: "auto",
   width: "100%",
@@ -189,7 +197,7 @@ const StyledDrawerInner = styled("div")({
   // "@media (min-width: 768px)": {
   //   height: "100%",
   // },
-});
+}));
 
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
@@ -582,12 +590,12 @@ export default function MapPageClient({ user }) {
                   }}
                 >
                   <StyledHeaderText>
-                    <Drawer.Title style={{ fontSize: "0.85rem" }}>
+                    <h3 style={{ fontSize: "0.85rem" }}>
                       {selectedListing?.type === "residential"
                         ? selectedListing?.profiles?.first_name
                         : selectedListing?.name}
-                    </Drawer.Title>
-                    <p>{selectedListing?.type}</p>
+                    </h3>
+                    <p>{selectedListing?.type} host</p>
                     {/* <p>Last active: TODO</p> */}
                   </StyledHeaderText>
                 </StyledDrawerHeaderInner>

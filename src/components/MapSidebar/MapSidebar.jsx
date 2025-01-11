@@ -35,7 +35,7 @@ const Fact = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
-  color: theme.colors.text.tertiary,
+  color: theme.colors.text.quaternity,
 
   "& h3": {
     fontSize: "0.75rem",

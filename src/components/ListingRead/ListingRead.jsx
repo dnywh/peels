@@ -27,7 +27,13 @@ import LoremIpsum from "@/components/LoremIpsum";
 import clsx from "clsx";
 import ListingCta from "@/components/ListingCta";
 import ListingHeader from "@/components/ListingHeader";
+import ListingItemList from "@/components/ListingItemList";
 import { createClient } from "@/utils/supabase/client";
+
+const ButtonGroup = styled("div")({
+  display: "flex",
+  gap: "0.5rem",
+});
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 // const pagePadding = "24px";
@@ -289,14 +295,14 @@ const ListingRead = memo(function Listing({
       </Drawer.NestedRoot>
 
       {listing.description && (
-        <>
+        <section>
           <h3>{listing.type === "business" ? "Donation details" : "About"}</h3>
           <p>{listing.description}</p>
-        </>
+        </section>
       )}
 
       {!isDrawer && (
-        <>
+        <section>
           <h3>Location</h3>
           <StyledMap
             // ref={mapRef}
@@ -324,57 +330,78 @@ const ListingRead = memo(function Listing({
             </Marker>
             <NavigationControl showCompass={false} />
           </StyledMap>
+
           {listing.type === "residential" && (
-            <p>Contact host for their exact location.</p>
+            <p>
+              {listingName} is a{" "}
+              {listing.area_name
+                ? `resident located of ${listing.area_name}`
+                : "resident in this local area"}
+              . Ask them for their exact location when you arrange a food scrap
+              drop-off.
+            </p>
           )}
-          <Link href={`/map?listing=${listing.slug}`}>See nearby listings</Link>
-        </>
-      )}
-      {listing.type === "residential" ? (
-        <p>Contact host for their exact location.</p>
-      ) : (
-        <>
-          <a
-            href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
-              listing.name
-            )}`}
-            target="_blank"
-          >
-            Apple Maps
-          </a>
-          <a
-            href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
-            target="_blank"
-          >
-            Google Maps
-          </a>
-        </>
+          {listing.type === "community" && listing.area_name && (
+            <p>
+              {listingName} is a located in {listing.area_name}.
+            </p>
+          )}
+          {listing.type === "business" && listing.area_name && (
+            <p>
+              {listingName} is a business located in {listing.area_name}.
+            </p>
+          )}
+
+          <ButtonGroup>
+            <Button
+              variant="secondary"
+              size="small"
+              href={`/map?listing=${listing.slug}`}
+            >
+              See nearby listings
+            </Button>
+            {listing.type !== "residential" && (
+              <>
+                <Button
+                  variant="secondary"
+                  size="small"
+                  href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
+                    listing.name
+                  )}`}
+                  target="_blank"
+                >
+                  Open in Apple Maps
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="small"
+                  href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
+                  target="_blank"
+                >
+                  Open in Google Maps
+                </Button>
+              </>
+            )}
+          </ButtonGroup>
+        </section>
       )}
 
       {listing.accepted_items.length > 0 && (
-        <>
+        <section>
           <h3>Accepted</h3>
-          <ul className="list-disc divide-y divide-dashed">
-            {listing.accepted_items.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </>
+          <ListingItemList items={listing.accepted_items} type="accepted" />
+        </section>
       )}
 
       {listing.rejected_items.length > 0 && (
-        <>
+        <section>
           <h3>Not accepted</h3>
-          <ul className="list-disc divide-y divide-dashed">
-            {listing.rejected_items.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </>
+          <ListingItemList items={listing.rejected_items} type="rejected" />
+        </section>
       )}
 
       {listing.photos.length > 0 && (
-        <>
+        <section>
           <h3>Photos</h3>
           <ul>
             {listing.photos.map((photo, index) => (
@@ -388,26 +415,26 @@ const ListingRead = memo(function Listing({
               </li>
             ))}
           </ul>
-        </>
+        </section>
       )}
 
       {listing.links.length > 0 && (
-        <>
+        <section>
           <h3>Links</h3>
-          <ul>
-            {listing.links.map((link, index) => (
-              <li key={index}>
-                <Link href={link} target="_blank">
-                  {link}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </>
+          <ListingItemList items={listing.links} type="links" />
+        </section>
       )}
-      <Link href={`/listings/${listing.slug}`}>Permalink</Link>
-      {/* <h3>Raw data</h3>
-        <pre>{JSON.stringify(listing, null, 2)}</pre> */}
+
+      {isDrawer && (
+        <Button
+          variant="secondary"
+          size="small"
+          width="contained"
+          href={`/listings/${listing.slug}`}
+        >
+          View full listing
+        </Button>
+      )}
     </Fragment>
   );
 });

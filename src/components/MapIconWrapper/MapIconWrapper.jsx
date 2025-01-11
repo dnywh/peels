@@ -34,6 +34,7 @@ function MapIconWrapper({
   return (
     <StyledMapIcon
       xmlns="http://www.w3.org/2000/svg"
+      // preserveAspectRatio="none" // Failed test to stop jitter on Safari during scale transform
       width={width}
       height={height}
       fill={fill}

@@ -7,6 +7,11 @@ const StyledListingHeader = styled("header")(({ theme }) => ({
   flexDirection: "row",
   alignItems: "center",
   gap: "1rem",
+
+  "& p": {
+    color: theme.colors.text.tertiary,
+    lineHeight: "1.25",
+  },
 }));
 
 const intro = `

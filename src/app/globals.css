@@ -38,6 +38,11 @@ html.map {
   }
 }
 
+[data-vaul-drawer],
+[data-vaul-overlay] {
+  z-index: 2;
+}
+
 /* Misc */
 summary.maplibregl-ctrl-attrib-button {
   opacity: 0.24;

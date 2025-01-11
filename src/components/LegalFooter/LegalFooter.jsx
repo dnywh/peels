@@ -14,11 +14,11 @@ const StyledFooter = styled("footer")(({ theme }) => ({
   flexWrap: "wrap",
   // padding: "1.5rem",
   // marginTop: "10rem",
-  color: theme.colors.text.tertiary,
+  color: theme.colors.text.quaternity,
   fontSize: "1rem",
 
   "& a": {
-    color: theme.colors.text.tertiary,
+    color: theme.colors.text.quaternity,
     transition: "color 150ms ease-in-out",
     "&:hover": {
       color: theme.colors.text.secondary,

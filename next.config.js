@@ -75,6 +75,10 @@ export default withPigment(nextConfig, {
                 inactive: tokens.rock[300],
                 unread: tokens.ochre[500]
             },
+            status: {
+                accepted: tokens.forest[400],
+                rejected: tokens.ochre[500],
+            },
             marker: {
                 dot: tokens.white[100],
                 background: {
@@ -127,7 +131,8 @@ export default withPigment(nextConfig, {
             text: {
                 primary: tokens.ochre[800],
                 secondary: tokens.rock[800],
-                tertiary: tokens.rock[300],
+                tertiary: tokens.rock[400],
+                quaternity: tokens.rock[300],
                 link: tokens.ochre[700],
                 counter: tokens.rock[100],
             },

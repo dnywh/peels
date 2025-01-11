@@ -14,7 +14,7 @@ const StyledListingCta = styled("aside")(({ theme }) => ({
   justifyContent: "center",
 
   "& p": {
-    color: theme.colors.text.tertiary,
+    color: theme.colors.text.quaternity,
   },
 }));
 

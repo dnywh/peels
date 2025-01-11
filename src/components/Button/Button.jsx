@@ -61,7 +61,7 @@ const buttonStyles = ({ theme }) => ({
       props: { size: "small" },
       style: {
         height: "2.5rem",
-        fontSize: "1rem",
+        fontSize: "0.875rem",
         padding: `0 ${theme.spacing.unit * 1.5}px`,
       },
     },

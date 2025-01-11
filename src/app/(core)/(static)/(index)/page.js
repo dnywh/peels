@@ -73,7 +73,7 @@ const HeroParagraph = styled("p")(({ theme }) => ({
   lineHeight: "1.5",
   fontWeight: "500",
   textWrap: "balance",
-  color: theme.colors.text.tertiary,
+  color: theme.colors.text.quaternity,
 
   "& a": {
     // color: theme.colors.text.secondary,
