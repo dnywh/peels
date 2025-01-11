@@ -57,14 +57,7 @@ const UnselectedPinInner = styled("div")(({ theme }) => ({
 }));
 
 const SelectedPin = styled("div")(({ theme }) => ({
-  // cursor: "pointer",
   display: "flex",
-  // flexDirection: "column",
-  // justifyContent: "center",
-  // alignItems: "center",
-  // width: "48px",
-  // height: "48px",
-  // borderRadius: "50%",
 }));
 
 const SelectedPinInner = styled("div")(({ theme }) => ({
@@ -91,7 +84,7 @@ const SelectedPinDot = styled("div")(({ theme }) => ({
 }));
 
 const SelectedPinIcon = styled("svg")(({ theme }) => ({
-  fill: theme.colors.marker.background.residential,
+  fill: theme.colors.text.tertiary, // Backup fill for when type is not specified
   stroke: theme.colors.marker.border,
   strokeWidth: "1.5px",
   overflow: "visible",
@@ -102,6 +95,27 @@ const SelectedPinIcon = styled("svg")(({ theme }) => ({
   transform: "translate(calc(40px - 1.625rem), -50%)",
   filter:
     "drop-shadow(0px 3px 18px rgba(0, 0, 0, 0.12)) drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.15))",
+
+  variants: [
+    {
+      props: { type: "residential" },
+      style: {
+        fill: theme.colors.marker.background.residential,
+      },
+    },
+    {
+      props: { type: "community" },
+      style: {
+        fill: theme.colors.marker.background.community,
+      },
+    },
+    {
+      props: { type: "business" },
+      style: {
+        fill: theme.colors.marker.background.business,
+      },
+    },
+  ],
 }));
 
 const SelectedPinVisual = styled("svg")(({ theme }) => ({
@@ -157,7 +171,7 @@ function MapPin({
           <SelectedPinDot />
         </SelectedPinRing>
 
-        <SelectedPinIcon viewBox="0 0 20 24">
+        <SelectedPinIcon viewBox="0 0 20 24" type={type}>
           <path d={ICON} />
         </SelectedPinIcon>
         {IconComponent && <IconComponent size="large" />}
