@@ -1,12 +1,13 @@
 import { styled } from "@pigment-css/react";
 
-import StorageImage from "@/components/StorageImage";
+import Avatar from "@/components/Avatar";
 
 const StyledListingHeader = styled("header")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  gap: "1rem",
+  gap: "2rem", // Acount for rotated avatar
+  paddingLeft: "0.75rem", // Acount for rotated avatar
 
   "& p": {
     color: theme.colors.text.tertiary,
@@ -14,23 +15,19 @@ const StyledListingHeader = styled("header")(({ theme }) => ({
   },
 }));
 
-const intro = `
-  Resident of 
-`;
-
 function ListingHeader({ listing, listingName }) {
   console.log(listing);
   return (
     <StyledListingHeader>
       {listing.type === "residential" ? (
-        <StorageImage
+        <Avatar
           bucket="avatars"
           filename={listing.profiles.avatar}
           alt={listing.profiles.first_name}
           size={100}
         />
       ) : (
-        <StorageImage
+        <Avatar
           bucket="listing_avatars"
           filename={listing.avatar}
           alt={listing?.name}

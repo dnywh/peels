@@ -223,6 +223,7 @@ export default function MapRender({
         <>
           <Map
             ref={mapRef}
+            // projection="globe" // Not yet supported in maplibre
             attributionControl={false}
             mapStyle={{
               version: 8,

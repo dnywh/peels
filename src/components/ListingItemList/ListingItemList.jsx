@@ -20,16 +20,16 @@ import { styled } from "@pigment-css/react";
 const StyledListingItemList = styled("ol")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: "0.75rem",
 
   "& li": {
     display: "flex",
-    gap: "0.5rem",
+    gap: "0.75rem",
     alignItems: "center",
   },
 
   "& li:not(:last-child)": {
-    paddingBottom: "0.5rem",
+    paddingBottom: "0.75rem",
     borderBottom: `1px solid ${theme.colors.border.base}`,
   },
   variants: [

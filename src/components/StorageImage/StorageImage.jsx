@@ -1,6 +1,10 @@
 import Image from "next/image";
+
 //TODO: Use safer getPublicUrl method from Supabase
 // But this adds complication and all my URLs are already public
+
+// E.g.
+// import { getAvatarUrl } from "@/utils/avatarUtils";
 
 // function getListingAvatarUrl(filename) {
 //   const {

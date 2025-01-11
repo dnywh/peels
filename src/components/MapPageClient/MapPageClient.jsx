@@ -93,7 +93,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   // overscrollBehavior: "unset",
   // margin: "0 -1px", // mx-[-1px]
 
-  background: theme.colors.background.top,
+  background: theme.colors.background.between,
 
   border: `0.5px solid ${theme.colors.border.base}`,
   boxShadow: `0px -3px 3px 1px rgba(0, 0, 0, 0.06)`,
@@ -106,6 +106,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   },
 
   "@media (min-width: 768px)": {
+    background: theme.colors.background.top,
     borderRadius: theme.corners.base,
     boxShadow: `-3px 0px 3px 1px rgba(0, 0, 0, 0.03)`,
     // background: "blue",
@@ -160,11 +161,11 @@ const StyledHeaderText = styled("div")(({ theme }) => ({
     lineHeight: "100%",
   },
   "& h3": {
-    fontSize: "0.925rem",
+    fontSize: "1",
     color: theme.colors.text.secondary,
   },
   "& p": {
-    fontSize: "0.825rem",
+    fontSize: "0.85rem",
     color: theme.colors.text.tertiary,
   },
 }));
@@ -193,10 +194,6 @@ const StyledDrawerInner = styled("div")(({ theme }) => ({
   width: "100%",
   // padding: "1rem",
   // backgroundColor: "red",
-
-  // "@media (min-width: 768px)": {
-  //   height: "100%",
-  // },
 }));
 
 // export default async function MapPage() {

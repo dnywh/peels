@@ -1,6 +1,7 @@
 import { styled } from "@pigment-css/react";
 
 const StyledListItemIconWrapper = styled("svg")(({ theme }) => ({
+  flexShrink: 0,
   variants: [
     {
       props: { type: "accepted" },

@@ -40,6 +40,7 @@ const tokens = {
     ochre: {
         50: 'hsla(36, 26%, 99%, 1)',
         80: 'hsla(36, 26%, 96%, 1)',
+        100: 'hsla(22, 35%, 96%, 1)',
         150: 'hsla(22, 35%, 95%, 1)',
         500: 'hsla(22, 87%, 50%, 1)',
         600: 'hsla(22, 87%, 44%, 1)',
@@ -63,12 +64,14 @@ export default withPigment(nextConfig, {
                 top: tokens.white[100],
                 slight: tokens.ochre[50],
                 sunk: tokens.ochre[80],
+                between: tokens.ochre[100],
                 pit: tokens.ochre[150],
             },
             border: {
                 light: tokens.black[3],
                 base: tokens.black[6],
                 elevated: tokens.black[6],
+                stark: tokens.rock[100],
             },
             tab: {
                 active: tokens.forest[400],
