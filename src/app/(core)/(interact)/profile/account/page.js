@@ -190,6 +190,7 @@ export default async function ProfilePage({ searchParams }) {
             </Form>
 
             <AccountSettings>
+                <SubmitButton variant="secondary" width="contained">Export data</SubmitButton>
                 <Form action={sendPasswordResetEmailAction}>
                     <SubmitButton variant="secondary" width="contained">Reset password</SubmitButton>
                 </Form>

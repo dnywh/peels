@@ -20,6 +20,7 @@ const tokens = {
         100: "hsla(0, 0%, 100%, 1)",
     },
     black: {
+        3: 'hsla(0, 0%, 0%, 0.03)',
         6: 'hsla(0, 0%, 0%, 0.06)',
         100: 'hsla(0, 0%, 0%, 1)',
     },
@@ -60,10 +61,12 @@ export default withPigment(nextConfig, {
             },
             background: {
                 top: tokens.white[100],
+                slight: tokens.ochre[50],
                 sunk: tokens.ochre[80],
                 pit: tokens.ochre[150],
             },
             border: {
+                light: tokens.black[3],
                 base: tokens.black[6],
                 elevated: tokens.black[6],
             },

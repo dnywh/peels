@@ -19,14 +19,13 @@ import ChatWindow from "@/components/ChatWindow";
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
-import IconButton from "@/components/IconButton";
-import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
 
 import turfDistance from "@turf/distance";
 import LoremIpsum from "@/components/LoremIpsum";
 import clsx from "clsx";
 import { useSearchParams, useRouter } from "next/navigation";
+import ListingCta from "@/components/ListingCta";
 import { createClient } from "@/utils/supabase/client";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
@@ -104,10 +103,6 @@ const StyledDrawerInner = styled("div")({
     // height: "100%",
     // padding: "16px",
   },
-});
-
-const StyledCallout = styled("aside")({
-  border: "1px solid grey",
 });
 
 // Memoize the Listing component
@@ -258,76 +253,63 @@ const ListingRead = memo(function Listing({
         </div>
       </div>
 
-      <StyledCallout>
-        <p>
-          {user && listing.owner_id === user.id
-            ? "This is your own listing, show button to edit instead of chat"
-            : "Not your listing, show button to chat"}
-        </p>
-
-        <Drawer.NestedRoot
-          modal={isDesktop ? false : true}
-          direction={isDesktop ? "right" : undefined}
-          open={isChatDrawerOpen}
-          onOpenChange={(event) => setIsChatDrawerOpen(event)}
-        >
-          {user ? (
-            listing.owner_id === user.id ? (
-              <LinkButton href={`/profile/listings/${listing.slug}`}>
-                Edit listing
-              </LinkButton>
-            ) : (
-              <Drawer.Trigger
-                asChild
-                // onClick={handleChatOpen}
-              >
-                <Button>
-                  Contact{" "}
-                  {listing.type === "residential"
-                    ? listing.profiles.first_name
-                    : listing.name}
-                </Button>
-              </Drawer.Trigger>
-            )
+      <Drawer.NestedRoot
+        modal={isDesktop ? false : true}
+        direction={isDesktop ? "right" : undefined}
+        open={isChatDrawerOpen}
+        onOpenChange={(event) => setIsChatDrawerOpen(event)}
+      >
+        {user ? (
+          listing.owner_id === user.id ? (
+            <ListingCta type="owner" slug={listing.slug} />
           ) : (
-            <LinkButton href={`/sign-in?from=listing&slug=${listing.slug}`}>
-              Contact host
-            </LinkButton>
-          )}
-
-          <Drawer.Portal>
-            <StyledDrawerOverlay />
-            <StyledDrawerContent
-              data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
-              // Desktop drawer offset
-              // Overridden in globals.css
-              // style={{ "--initial-transform": "calc(100% - 420px)" }}
+            <Drawer.Trigger
+              asChild
+              // onClick={handleChatOpen}
             >
-              {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
+              <Button>
+                Contact{" "}
+                {listing.type === "residential"
+                  ? listing.profiles.first_name
+                  : listing.name}
+              </Button>
+            </Drawer.Trigger>
+          )
+        ) : (
+          <ListingCta type="guest" slug={listing.slug} />
+        )}
 
-              <ChatWindow
-                // ref={drawerContentRef}
-                // data-vaul-no-drag
-                isDrawer={true}
-                setIsChatDrawerOpen={setIsChatDrawerOpen}
-                user={user}
-                listing={listing}
-                listingName={listingName}
-                existingThread={
-                  existingThread
-                    ? {
-                        ...existingThread,
-                        chat_messages:
-                          existingThread.chat_messages_with_senders,
-                      }
-                    : null
-                }
-                // setIsChatOpen={setIsChatOpen}
-              />
-            </StyledDrawerContent>
-          </Drawer.Portal>
-        </Drawer.NestedRoot>
-      </StyledCallout>
+        <Drawer.Portal>
+          <StyledDrawerOverlay />
+          <StyledDrawerContent
+            data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
+            // Desktop drawer offset
+            // Overridden in globals.css
+            // style={{ "--initial-transform": "calc(100% - 420px)" }}
+          >
+            {/* "p-4 bg-white rounded-t-[10px] flex-1 */}
+
+            <ChatWindow
+              // ref={drawerContentRef}
+              // data-vaul-no-drag
+              isDrawer={true}
+              setIsChatDrawerOpen={setIsChatDrawerOpen}
+              user={user}
+              listing={listing}
+              listingName={listingName}
+              existingThread={
+                existingThread
+                  ? {
+                      ...existingThread,
+                      chat_messages: existingThread.chat_messages_with_senders,
+                    }
+                  : null
+              }
+              // setIsChatOpen={setIsChatOpen}
+            />
+          </StyledDrawerContent>
+        </Drawer.Portal>
+      </Drawer.NestedRoot>
 
       {listing.description && (
         <>

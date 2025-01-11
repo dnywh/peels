@@ -52,7 +52,7 @@ const Fact = styled("div")(({ theme }) => ({
     textWrap: "balance",
   },
 
-  "& p:last-of-type": {
+  "& p > small": {
     fontSize: "0.75rem",
     fontWeight: "500",
     lineHeight: "100%",
@@ -140,9 +140,11 @@ export default function MapSidebar({ user, covered }) {
           <p>{randomFact.fact}</p>
           {randomFact.source && (
             <p>
-              <Link href={randomFact.source} target="_blank">
-                Source
-              </Link>
+              <small>
+                <Link href={randomFact.source} target="_blank">
+                  Source
+                </Link>
+              </small>
             </p>
           )}
         </Fact>

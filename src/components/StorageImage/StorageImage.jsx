@@ -1,5 +1,4 @@
 import Image from "next/image";
-import avatar from "./avatar.png";
 //TODO: Use safer getPublicUrl method from Supabase
 // But this adds complication and all my URLs are already public
 
@@ -35,7 +34,7 @@ export default function StorageImage({
   if (!filename) {
     return (
       <Image
-        src={avatar}
+        src={`/avatar.png`}
         alt={alt}
         style={style}
         width={size}
