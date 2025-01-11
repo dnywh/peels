@@ -1,11 +1,23 @@
 import { withPigment } from "@pigment-css/nextjs-plugin";
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'mfnaqdyunuafbwukbbyr.supabase.co',
+                port: '',
+                pathname: '/storage/v1/object/public/**',
+                search: '',
+            },
+        ],
+    },
+};
 
 const tokens = {
     white: {
-        100: 'hsla(0, 0%, 100%, 1)',
+        100: "hsla(0, 0%, 100%, 1)",
     },
     black: {
         6: 'hsla(0, 0%, 0%, 0.06)',

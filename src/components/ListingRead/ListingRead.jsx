@@ -238,14 +238,14 @@ const ListingRead = memo(function Listing({
             bucket="avatars"
             filename={listing.profiles.avatar}
             alt={listing.profiles.first_name}
-            style={{ width: "100px", height: "100px" }}
+            size={100}
           />
         ) : (
           <StorageImage
             bucket="listing_avatars"
             filename={listing.avatar}
             alt={listing.name}
-            style={{ width: "100px", height: "100px" }}
+            size={100}
           />
         )}
 

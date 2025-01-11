@@ -1,10 +1,13 @@
+import Image from "next/image";
+import defaultAvatar from "../public/default-avatar.png";
+
 import { createClient } from "@/utils/supabase/server";
 
 import { getAvatarUrl } from "@/utils/avatarUtils";
 
 import { styled } from "@pigment-css/react";
 
-const StyledImgContainer = styled("img")({
+const StyledImgContainer = styled(Image)({
   position: "relative",
   borderRadius: "50%",
   border: "4px solid #e5e7eb",
@@ -31,14 +34,5 @@ export default async function AvatarRead() {
     .eq("id", user.id)
     .single();
 
-  return (
-    <StyledImgContainer
-      src={
-        profile?.avatar
-          ? getAvatarUrl(profile?.avatar, "avatars")
-          : getAvatarUrl("blank1.png", "listing_avatars")
-      }
-      alt="Your avatar"
-    />
-  );
+  return <StyledImgContainer src={defaultAvatar} alt="Your avatar" />;
 }

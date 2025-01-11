@@ -12,6 +12,11 @@ const UnselectedPin = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+
+  transition: "transform 110ms ease-in-out",
+  "&:hover": {
+    transform: "scale(1.15)",
+  },
 }));
 
 const UnselectedPinInner = styled("div")(({ theme }) => ({
@@ -25,11 +30,6 @@ const UnselectedPinInner = styled("div")(({ theme }) => ({
   alignItems: "center",
   filter:
     "drop-shadow(0px 3px 18px rgba(0, 0, 0, 0.10)) drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.15))",
-  transition: "transform 80ms ease-in-out",
-
-  "&:hover": {
-    transform: "scale(1.065)",
-  },
 
   variants: [
     {
