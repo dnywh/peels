@@ -61,8 +61,9 @@ export default withPigment(nextConfig, {
             marker: {
                 dot: tokens.white[100],
                 background: {
-                    donate: tokens.ochre[700],
-                    receive: tokens.kaki[700],
+                    residential: tokens.kaki[700],
+                    community: tokens.ochre[500],
+                    business: tokens.ochre[700],
                 },
                 border: tokens.white[100],
             },

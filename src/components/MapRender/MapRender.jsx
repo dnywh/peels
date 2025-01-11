@@ -287,10 +287,13 @@ export default function MapRender({
                     setSelectedPinId(listing.id); // Update pin visuals immediately
                     onMarkerClick(listing.id); // Handle the rest of the selection logic
                   }}
+                  style={{
+                    zIndex: selectedPinId === listing.id ? 1 : 0,
+                  }}
                 >
                   <MapPin
                     selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
-                    coarse={listing.type === "residential"}
+                    type={listing.type}
                   />
                 </Marker>
               </DrawerTrigger>
