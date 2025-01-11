@@ -20,12 +20,13 @@ import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import turfDistance from "@turf/distance";
 import LoremIpsum from "@/components/LoremIpsum";
 import clsx from "clsx";
-import { useSearchParams, useRouter } from "next/navigation";
 import ListingCta from "@/components/ListingCta";
+import ListingHeader from "@/components/ListingHeader";
 import { createClient } from "@/utils/supabase/client";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
@@ -227,31 +228,7 @@ const ListingRead = memo(function Listing({
   }
   return (
     <Fragment key={listing.id}>
-      <div className="flex flex-row gap-3">
-        {listing.type === "residential" ? (
-          <StorageImage
-            bucket="avatars"
-            filename={listing.profiles.avatar}
-            alt={listing.profiles.first_name}
-            size={100}
-          />
-        ) : (
-          <StorageImage
-            bucket="listing_avatars"
-            filename={listing.avatar}
-            alt={listing.name}
-            size={100}
-          />
-        )}
-
-        <div className="flex flex-col">
-          <h2 className="text-2xl mt-2 font-medium text-gray-900">
-            {listingName}
-          </h2>
-          <p className="text-lg text-gray-600">{listing.type}</p>
-          {/* <p>Last active: TODO</p> */}
-        </div>
-      </div>
+      <ListingHeader listing={listing} listingName={listingName} />
 
       <Drawer.NestedRoot
         modal={isDesktop ? false : true}
