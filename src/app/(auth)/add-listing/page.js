@@ -26,11 +26,12 @@ const accepterTypes = [
 function AddListingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [currentStep, setCurrentStep] = useState(1);
+    // const currentStep = searchParams.get('step') === '2' ? 2 : 1;
 
     // Initialize state from URL params
     const [selectedListingType, setSelectedListingType] = useState(null)
     const [selectedAccepterType, setSelectedAccepterType] = useState(null);
-    const [currentStep, setCurrentStep] = useState(1);
 
     // Modified useEffect to preserve state during navigation
     useEffect(() => {
@@ -62,27 +63,24 @@ function AddListingContent() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        console.log('Submit with state:', { selectedListingType, selectedAccepterType, currentStep });
 
-        // Guard against null values
-        if (!selectedListingType && currentStep === 1) {
-            console.warn('No listing type selected');
-            return;
-        }
+        if (currentStep === 1) {
+            if (!selectedListingType?.key) {
+                console.warn('No listing type selected');
+                return;
+            }
 
-        if (!selectedAccepterType && currentStep === 2) {
-            console.warn('No accepter type selected');
-            return;
-        }
-
-        // Navigate to appropriate form
-        if (currentStep === 1 && selectedListingType?.key === 'business') {
-            router.push(`/add-listing/form?type=${selectedListingType.key}`);
-        } else if (currentStep === 1 && selectedListingType?.key === 'accept') {
-            router.push('/add-listing?step=2');
-            setCurrentStep(2);
-        } else if (currentStep === 2 && selectedAccepterType?.key) {
-            router.push(`/add-listing/form?type=${selectedAccepterType.key}`);
+            if (selectedListingType.key === 'business') {
+                router.push(`/add-listing/business`);
+            } else if (selectedListingType.key === 'accept') {
+                router.push('/add-listing?step=2');
+            }
+        } else if (currentStep === 2) {
+            if (!selectedAccepterType?.key) {
+                console.warn('No accepter type selected');
+                return;
+            }
+            router.push(`/add-listing/${selectedAccepterType.key}`);
         }
     }
 
