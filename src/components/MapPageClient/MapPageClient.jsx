@@ -238,20 +238,20 @@ export default function MapPageClient({ user }) {
   }, [isDesktop]);
 
   useEffect(() => {
-    console.log("snap", snap);
+    console.log("Managing HTML classes", { hasTouch, snap });
+    const listingSlug = searchParams.get("listing");
 
     if (!hasTouch) return;
 
-    // Touch device, continue setting appropriate classes
-    // First off, set HTML to not overscroll or zoom if the user interacts with general page (e.g. via pinching on zoom controls)
+    // Always add map class for touch devices
     document.documentElement.classList.add("map");
 
-    // If the drawer is open, set the HTML to not allow pointer events
-    if (snap === 1) {
+    // Manage drawer-fully-open class based on both snap AND URL state
+    if (snap === 1 && listingSlug) {
       console.log("Drawer is open, adding class to HTML");
       document.documentElement.classList.add("drawer-fully-open");
     } else {
-      console.log("Drawer is closed, removing class from HTML");
+      console.log("Drawer is closed or no listing, removing class from HTML");
       document.documentElement.classList.remove("drawer-fully-open");
     }
 
@@ -260,7 +260,7 @@ export default function MapPageClient({ user }) {
       document.documentElement.classList.remove("map");
       document.documentElement.classList.remove("drawer-fully-open");
     };
-  }, [snap, hasTouch]);
+  }, [snap, hasTouch, searchParams]); // Include all dependencies
 
   // Load listing from URL param on mount
   useEffect(() => {
