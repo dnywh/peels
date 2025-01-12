@@ -30,6 +30,8 @@ import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
 import { getListingDisplayName } from "@/utils/listing";
 
+import Hyperlink from "@/components/Hyperlink";
+
 import ListingChatDrawer from "@/components/ListingChatDrawer";
 const ButtonGroup = styled("div")({
   display: "flex",
@@ -255,6 +257,13 @@ const ListingRead = memo(function Listing({
           <h3>Links</h3>
           <ListingItemList items={listing.links} type="links" />
         </section>
+      )}
+
+      {!user && listing.type === "residential" && (
+        <p>
+          <Hyperlink href="/sign-in">Sign in</Hyperlink> to see more about this
+          host.
+        </p>
       )}
 
       {isDrawer && (
