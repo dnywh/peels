@@ -11,6 +11,7 @@ const ProfilePageLayout = styled("div")({
   //   width: "100%",
   flex: 1,
   alignItems: "flex-start",
+  justifyContent: "center",
   "@media (min-width: 768px)": {
     flexDirection: "row",
   },

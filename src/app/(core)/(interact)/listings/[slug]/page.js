@@ -17,6 +17,11 @@ const StyledMain = styled("main")({
     "& > section": {
         // backgroundColor: "red",
     },
+
+    // "@media (min-width: 768px)": {
+    //     maxWidth: "1024px",
+    //     marginLeft: ""
+    // },
 });
 
 // Move data fetching to a reusable function
