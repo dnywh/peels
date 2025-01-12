@@ -133,7 +133,7 @@ export default async function ProfilePage({ searchParams }) {
 
 
     return (
-        <>
+        <div>
             {/* TODO: Show these search param at both profile and profile/account, depending on which is routed to*/}
             {message && <p>Message: {message}</p>}
             {error && <p>Error: {error}</p>}
@@ -196,7 +196,7 @@ export default async function ProfilePage({ searchParams }) {
                 </Form>
                 <DeleteAccountButton listings={listings} deleteAccountAction={deleteAccountAction} />
             </AdditionalSettings>
-        </>
+        </div>
     );
 }
 
