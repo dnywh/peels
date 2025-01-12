@@ -14,10 +14,6 @@ const StyledMain = styled("main")({
     margin: "4rem auto",
     maxWidth: "640px",
 
-    "& > section": {
-        // backgroundColor: "red",
-    },
-
     // "@media (min-width: 768px)": {
     //     maxWidth: "1024px",
     //     marginLeft: ""
