@@ -9,6 +9,16 @@ const StyledListingHeader = styled("header")(({ theme }) => ({
   alignItems: "center",
   gap: "2rem", // Acount for rotated avatar
   paddingLeft: "0.75rem", // Acount for rotated avatar
+}));
+
+const StyledText = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.35rem",
+
+  "& h2": {
+    lineHeight: "1.2",
+  },
 
   "& p": {
     color: theme.colors.text.tertiary,
@@ -30,7 +40,7 @@ function ListingHeader({ listing, listingName, user }) {
         size={100}
       />
 
-      <div>
+      <StyledText>
         <h2>{listingName}</h2>
         {/* Use getListingDisplayType() here? Or is it too limiting? */}
         {listing.type === "residential" && (
@@ -60,7 +70,7 @@ function ListingHeader({ listing, listingName, user }) {
             )}
           </p>
         )}
-      </div>
+      </StyledText>
     </StyledListingHeader>
   );
 }

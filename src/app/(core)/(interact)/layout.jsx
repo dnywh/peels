@@ -1,6 +1,6 @@
 import TabBar from "@/components/TabBar";
-import { styled } from "@pigment-css/react";
 import { TabBarProvider } from "@/contexts/TabBarContext";
+import { styled } from "@pigment-css/react";
 
 const InteractPage = styled("div")(({ theme }) => ({
   // TODO: How do I reach out and set the body colour here conditionally

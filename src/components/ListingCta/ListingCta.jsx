@@ -12,9 +12,11 @@ const StyledListingCta = styled("aside")(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
+  textAlign: "center",
 
   "& p": {
     color: theme.colors.text.quaternity,
+    textWrap: "balance",
   },
 }));
 
