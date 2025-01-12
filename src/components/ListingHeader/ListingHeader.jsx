@@ -12,6 +12,7 @@ const StyledListingHeader = styled("header")(({ theme }) => ({
 
   "& p": {
     color: theme.colors.text.tertiary,
+    textWrap: "balance",
     lineHeight: "1.25",
   },
 }));
@@ -35,10 +36,7 @@ function ListingHeader({ listing, listingName, user }) {
         {listing.type === "residential" && (
           <p>
             {listing.area_name ? (
-              <>
-                Resident of <br />
-                {listing.area_name}
-              </>
+              <>Resident of {listing.area_name}</>
             ) : (
               "Local resident"
             )}
@@ -47,10 +45,7 @@ function ListingHeader({ listing, listingName, user }) {
         {listing.type === "community" && (
           <p>
             {listing.area_name ? (
-              <>
-                Community in <br />
-                {listing.area_name}
-              </>
+              <>Community in {listing.area_name}</>
             ) : (
               "Local community"
             )}
@@ -59,10 +54,7 @@ function ListingHeader({ listing, listingName, user }) {
         {listing.type === "business" && (
           <p>
             {listing.area_name ? (
-              <>
-                Business in <br />
-                {listing.area_name}
-              </>
+              <>Business in {listing.area_name}</>
             ) : (
               "Local business"
             )}

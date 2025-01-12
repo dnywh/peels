@@ -1,4 +1,5 @@
 import TabBar from "@/components/TabBar";
+import { TabBarProvider } from "@/contexts/TabBarContext";
 import LegalFooter from "@/components/LegalFooter";
 import { styled } from "@pigment-css/react";
 import AccountButton from "@/components/AccountButton";
@@ -20,12 +21,14 @@ const StaticPage = styled("div")({
 
 export default async function Layout({ children }) {
   return (
-    <StaticPage>
-      <StyledAccountButton />
-      <TabBar breakpoint="md" position="floating" />
-      {children}
-      <LegalFooter />
-      <TabBar breakpoint="sm" />
-    </StaticPage>
+    <TabBarProvider>
+      <StaticPage>
+        <StyledAccountButton />
+        <TabBar breakpoint="md" position="floating" />
+        {children}
+        <LegalFooter />
+        <TabBar breakpoint="sm" />
+      </StaticPage>
+    </TabBarProvider>
   );
 }
