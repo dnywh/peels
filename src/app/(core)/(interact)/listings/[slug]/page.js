@@ -5,6 +5,8 @@ import ListingRead from "@/components/ListingRead";
 
 import { styled } from "@pigment-css/react";
 
+import { getListingDisplayName } from "@/utils/listing";
+
 const StyledMain = styled("main")({
     display: "flex",
     flexDirection: "column",
@@ -23,35 +25,51 @@ const StyledMain = styled("main")({
     },
 });
 
-export default async function Post({ params }) {
+// Move data fetching to a reusable function
+async function getListingData(slug) {
     const supabase = await createClient();
-    // Get current user's info
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Generate pages
-    const { slug } = await params;  // Awaiting params to access slug
-
-    const { data } = await supabase
+    const { data: listing } = await supabase
         .from('listings')
-        .select(
-            `
-            *,
-            profiles (
-              first_name,
-              avatar
-            )
-          `
-        )
-        .match({ slug })  // Use slug to match the listing
-        .single()
+        .select(`
+      *,
+      profiles (
+        first_name,
+        avatar
+      )
+    `)
+        .match({ slug })
+        .single();
 
-    if (!data) {
-        notFound()
+    return { user, listing };
+}
+
+export async function generateMetadata({ params }) {
+    const { user, listing } = await getListingData(params.slug);
+
+    if (!listing) {
+        return {
+            title: 'Listing Not Found'
+        };
+    }
+
+    const listingDisplayName = getListingDisplayName(listing, user);
+    return {
+        title: `${listingDisplayName}`,
+    };
+}
+
+export default async function ListingPage({ params }) {
+    const { user, listing } = await getListingData(params.slug);
+
+    if (!listing) {
+        notFound();
     }
 
     return (
         <StyledMain>
-            <ListingRead user={user} listing={data} />
+            <ListingRead user={user} listing={listing} />
         </StyledMain>
-    )
+    );
 }

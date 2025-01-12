@@ -29,6 +29,7 @@ import ListingCta from "@/components/ListingCta";
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
 import { createClient } from "@/utils/supabase/client";
+import { getListingDisplayName } from "@/utils/listing";
 
 const ButtonGroup = styled("div")({
   display: "flex",
@@ -131,20 +132,13 @@ const ListingRead = memo(function Listing({
     setMapZoomLevel(initialZoomLevel);
   }, []);
 
-  // TODO: is this secure? Should this be done on the server or database?
-  let listingName =
-    listing?.type === "residential"
-      ? listing?.profiles?.first_name
-      : listing?.name;
-  if (!user && listing?.type === "residential") {
-    listingName = "Private Host";
-  }
+  const listingDisplayName = getListingDisplayName(listing, user);
 
   if (!listing) return null;
 
   return (
     <Fragment key={listing.id}>
-      <ListingHeader listing={listing} listingName={listingName} />
+      <ListingHeader listing={listing} listingName={listingDisplayName} />
 
       <Drawer.NestedRoot
         modal={isDesktop ? false : true}
@@ -177,7 +171,7 @@ const ListingRead = memo(function Listing({
               setIsChatDrawerOpen={setIsChatDrawerOpen}
               user={user}
               listing={listing}
-              listingName={listingName}
+              listingDisplayName={listingDisplayName}
               existingThread={
                 existingThread
                   ? {
@@ -222,7 +216,7 @@ const ListingRead = memo(function Listing({
 
           {listing.type === "residential" && (
             <p>
-              {listingName} is a{" "}
+              {listingDisplayName} is a{" "}
               {listing.area_name
                 ? `resident located in ${listing.area_name}`
                 : "resident of this area"}
@@ -232,12 +226,12 @@ const ListingRead = memo(function Listing({
           )}
           {listing.type === "community" && listing.area_name && (
             <p>
-              {listingName} is a located in {listing.area_name}.
+              {listingDisplayName} is a located in {listing.area_name}.
             </p>
           )}
           {listing.type === "business" && listing.area_name && (
             <p>
-              {listingName} is a business located in {listing.area_name}.
+              {listingDisplayName} is a business located in {listing.area_name}.
             </p>
           )}
 

@@ -37,6 +37,7 @@ function ListingHeader({ listing, listingName }) {
 
       <div>
         <h2>{listingName}</h2>
+        {/* Use getListingDisplayType() here? Or is it too limiting? */}
         {listing.type === "residential" && (
           <p>
             {listing.area_name ? (

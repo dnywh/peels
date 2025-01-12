@@ -22,6 +22,7 @@ import MapSidebar from "@/components/MapSidebar";
 import LoremIpsum from "../LoremIpsum";
 
 import { styled } from "@pigment-css/react";
+import { getListingDisplayName, getListingDisplayType } from "@/utils/listing";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
@@ -593,12 +594,9 @@ export default function MapPageClient({ user }) {
                 >
                   <StyledHeaderText>
                     <h3 style={{ fontSize: "0.85rem" }}>
-                      {selectedListing?.type === "residential"
-                        ? selectedListing?.profiles?.first_name
-                        : selectedListing?.name}
+                      {getListingDisplayName(selectedListing, user)}
                     </h3>
-                    <p>{selectedListing?.type} host</p>
-                    {/* <p>Last active: TODO</p> */}
+                    <p>{getListingDisplayType(selectedListing)}</p>
                   </StyledHeaderText>
                 </StyledDrawerHeaderInner>
 
