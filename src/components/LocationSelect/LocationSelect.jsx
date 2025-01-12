@@ -69,6 +69,7 @@ async function initializeLocation() {
 
 // React component
 export default function LocationSelect({
+  listingType,
   coordinates,
   setCoordinates,
   countryCode,
@@ -236,7 +237,7 @@ export default function LocationSelect({
               onDragEnd={handleDragEnd}
               onClick={() => console.log("Tapped marker")}
             >
-              <MapPin size={28} />
+              <MapPin type={listingType} selected={true} />
             </Marker>
             <NavigationControl showZoom={true} showCompass={false} />
           </StyledMap>

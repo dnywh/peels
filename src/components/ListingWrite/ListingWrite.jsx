@@ -305,6 +305,7 @@ export default function ListingWrite({ initialListing }) {
 
           {/* TODO: Handle database error when user doesn't enter a location */}
           <LocationSelect
+            listingType={listingType}
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             countryCode={countryCode}
