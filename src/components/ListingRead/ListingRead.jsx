@@ -95,7 +95,7 @@ const ListingRead = memo(function Listing({
   // Load existing thread if any
   useEffect(() => {
     async function loadExistingThread() {
-      console.log("Loading existing thread for listing:", listing.slug);
+      // console.log("Loading existing thread for listing:", listing.slug);
 
       const { data: thread, error } = await supabase
         .from("chat_threads_with_participants")

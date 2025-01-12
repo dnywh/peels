@@ -1,6 +1,11 @@
 import Hyperlink from "@/components/Hyperlink";
+import type { Metadata } from "next";
 
-export default function Index() {
+export const metadata: Metadata = {
+  title: "Privacy",
+};
+
+export default function Privacy() {
   return (
     <>
       <h1>Privacy policy</h1>

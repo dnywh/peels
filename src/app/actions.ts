@@ -209,14 +209,14 @@ export const signOutAction = async () => {
 };
 
 export const deleteListingAction = async (slug: string) => {
-  console.log({ slug });
+  // console.log({ slug });
   const supabase = await createClient();
   try {
     const { data: listing } = await supabase
       .from("listings")
       .delete()
       .eq("slug", slug);
-    console.log({ listing });
+    // console.log({ listing });
 
     // Redirect with a success message
     return redirect(`/profile?message=Listing deleted successfully!`);
@@ -257,7 +257,7 @@ export const deleteAccountAction = async () => {
     console.log("Response ok:", response.ok);
 
     const data = await response.json();
-    console.log("Response data:", data);
+    // console.log("Response data:", data);
 
     redirectPath = `/sign-in?success=Account successfully deleted`;
 

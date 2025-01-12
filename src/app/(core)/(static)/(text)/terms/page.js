@@ -1,5 +1,9 @@
 import Hyperlink from "@/components/Hyperlink";
 
+export const metadata = {
+  title: 'Terms',
+}
+
 export default function Index() {
   return (
     <>

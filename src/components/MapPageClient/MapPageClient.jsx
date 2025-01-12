@@ -364,7 +364,7 @@ export default function MapPageClient({ user }) {
       bounds._ne.lat,
       bounds._ne.lng
     );
-    console.log("Data fetched:", data);
+    // console.log("Data fetched:", data);
     setListings(data);
     setIsLoading(false);
   }, []);

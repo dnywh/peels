@@ -2,6 +2,10 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import ChatPageClient from "@/components/ChatPageClient";
 
+export const metadata = {
+    title: 'Chats',
+}
+
 export default async function ChatsPage(props) {
     const params = await props.params;
     // Prepare active thread if provided

@@ -68,7 +68,7 @@ const ChatWindow = memo(function ChatWindow({
     // console.log("Existing thread owned by user?", { existingThread, threadId });
     if (existingThread && existingThread.owner_id !== user.id) {
       setListingIsOwnedByUser(false);
-      console.log({ listing });
+      // console.log({ listing });
     } else {
       console.log("Existing thread is owned by user");
       setListingIsOwnedByUser(true);

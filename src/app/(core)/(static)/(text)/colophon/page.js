@@ -1,5 +1,9 @@
 import Hyperlink from "@/components/Hyperlink";
 
+export const metadata = {
+  title: 'Colophon',
+}
+
 export default function Colophon() {
   return (
     <>

@@ -46,7 +46,9 @@ async function getListingData(slug) {
 }
 
 export async function generateMetadata({ params }) {
-    const { user, listing } = await getListingData(params.slug);
+    const { slug } = await params;
+
+    const { user, listing } = await getListingData(slug);
 
     if (!listing) {
         return {
@@ -61,7 +63,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ListingPage({ params }) {
-    const { user, listing } = await getListingData(params.slug);
+    const { slug } = await params;
+    const { user, listing } = await getListingData(slug);
 
     if (!listing) {
         notFound();

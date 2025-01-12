@@ -1,5 +1,8 @@
-
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+
+export const metadata = {
+  title: "Support",
+};
 
 export default function Support() {
   return (
