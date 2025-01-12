@@ -30,6 +30,74 @@ import { styled } from "@pigment-css/react";
 
 const ZOOM_LEVEL = 16;
 
+import * as maptilersdk from "@maptiler/sdk";
+import "@maptiler/sdk/dist/maptiler-sdk.css"; // IS this needed?
+
+// Reverse geocoding for legible location (area_name)
+maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+
+// const maptilerClient = new maptilersdk.Maptiler();
+
+async function getAreaName(longitude, latitude) {
+  // const result = await maptilersdk.geocoding.reverse([6.249638, 46.402056]);
+  // console.log({ result });
+  // config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+  const coordinates = await maptilersdk.geocoding.reverse([
+    longitude,
+    latitude,
+  ]);
+
+  const features = coordinates.features;
+  console.log({ features });
+
+  if (!features || features.length === 0) {
+    return undefined;
+  }
+
+  // Helper function to find feature by place type
+  const findFeatureByType = (features, types) => {
+    return features.find((f) =>
+      types.some((type) => f.place_type?.includes(type))
+    );
+  };
+
+  // Look for features in order of specificity
+  const neighbourhood = findFeatureByType(features, ["neighbourhood"]);
+  const place = findFeatureByType(features, ["place"]);
+  const municipality = findFeatureByType(features, ["municipality"]);
+  const region = findFeatureByType(features, ["region"]);
+  const country = findFeatureByType(features, ["country"]);
+  const marine = findFeatureByType(features, ["continental_marine"]);
+
+  let areaName = "";
+
+  // Build location string based on available information
+
+  if (place) {
+    areaName = place.text;
+    // } else if (place && region) {
+    //   areaName = `${place.text}, ${region.text}`;
+    // } else if (municipality && region) {
+    //   areaName = `${municipality.text}, ${region.text}`;
+  } else if (neighbourhood) {
+    areaName = neighbourhood.text;
+  } else if (municipality) {
+    areaName = municipality.text;
+  } else if (region) {
+    areaName = region.text;
+  } else if (country) {
+    areaName = country.text;
+  } else if (marine) {
+    areaName = marine.text;
+  } else {
+    // Fallback to the most relevant feature's place name
+    areaName = features[0].place_name || undefined;
+  }
+
+  console.log({ areaName });
+  return areaName;
+}
+
 // TODO: use this to build a custom component around the core geocoding API, using my nice own components for input and dropdown
 // https://docs.maptiler.com/cloud/api/geocoding/
 // async function basicCallToBuildCustomComponentAround() {
@@ -74,13 +142,15 @@ export default function LocationSelect({
   setCoordinates,
   countryCode,
   setCountryCode,
+  areaName,
+  setAreaName,
 }) {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
-    "Your street or nearby"
+    "Your street name or nearby"
   );
 
   useEffect(() => {
@@ -124,16 +194,31 @@ export default function LocationSelect({
     };
 
     setCoordinates(nextCoordinates); // Unsure if this is needed. Might be helpful for form submission
+
+    const nextAreaName = getAreaName(
+      nextCoordinates.longitude,
+      nextCoordinates.latitude
+    );
+    setAreaName(nextAreaName);
   }, []);
 
   const handlePick = useCallback(
-    (event) => {
+    async (event) => {
       // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
       // Return early if that's the case
       if (!event.feature?.center) return;
 
       // Otherwise continue as normal
       console.log("Picked:", event, event.feature?.center);
+
+      // Set place name to the geocoded area name that we get 'for free' from this GeocodingControl anyway
+      const nextAreaName = event.feature?.place_name;
+      setAreaName(nextAreaName);
+      // const areaName = await getAreaName(
+      //   event.feature?.center[0],
+      //   event.feature?.center[1]
+      // );
+      console.log("Area name:", nextAreaName);
 
       const nextCoordinates = {
         latitude: event.feature?.center[1],
@@ -242,7 +327,11 @@ export default function LocationSelect({
             <NavigationControl showZoom={true} showCompass={false} />
           </StyledMap>
           {coordinates && (
-            <p>Coordinates provided, showing map automatically.</p>
+            <p>
+              Coordinates provided, showing map automatically. Your location
+              will be shown as: <br />
+              <b>{areaName}</b>
+            </p>
           )}
           {/* TODO: Make the following conditionally show for individual hosts only */}
           {/* Marker should show this visually, like Airbnb */}
