@@ -9,8 +9,8 @@ const FooBar = styled("div")(({ theme }) => ({
   gap: theme.spacing.unit * 1.5,
 }));
 
-function AccountSettings({ children }) {
+function AdditionalSettings({ children }) {
   return <FooBar>{children}</FooBar>;
 }
 
-export default AccountSettings;
+export default AdditionalSettings;

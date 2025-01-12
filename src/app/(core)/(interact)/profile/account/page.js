@@ -24,7 +24,7 @@ import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import Description from "@/components/Description";
 
-import AccountSettings from "@/components/AccountSettings";
+import AdditionalSettings from "@/components/AdditionalSettings";
 
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
@@ -189,13 +189,13 @@ export default async function ProfilePage({ searchParams }) {
                 </SubmitButton>
             </Form>
 
-            <AccountSettings>
+            <AdditionalSettings>
                 <SubmitButton variant="secondary" width="contained">Export data</SubmitButton>
                 <Form action={sendPasswordResetEmailAction}>
                     <SubmitButton variant="secondary" width="contained">Reset password</SubmitButton>
                 </Form>
                 <DeleteAccountButton listings={listings} deleteAccountAction={deleteAccountAction} />
-            </AccountSettings>
+            </AdditionalSettings>
         </div>
     );
 }

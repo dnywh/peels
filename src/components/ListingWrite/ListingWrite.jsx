@@ -24,6 +24,8 @@ import PhotosUploader from "@/components/PhotosUploader";
 import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
 
+import AdditionalSettings from "@/components/AdditionalSettings";
+
 async function uploadPhoto(file) {
   const supabase = createClient();
 
@@ -136,7 +138,7 @@ export default function ListingWrite({ initialListing }) {
         accepted_items: acceptedItems.filter((item) => item.trim() !== ""),
         rejected_items: rejectedItems.filter((item) => item.trim() !== ""),
         photos,
-        links: links ? [links] : [],
+        links: links.filter((link) => link.trim() !== ""),
         visibility,
       };
 
@@ -389,38 +391,43 @@ export default function ListingWrite({ initialListing }) {
         </SubmitButton>
       </Form>
 
-      <div>
-        {/* TODO: warn if unsaved changes? */}
-        {initialListing && (
-          <>
-            <LinkButton href={`/listings/${initialListing.slug}`}>
-              View listing
-            </LinkButton>
-            <Button onClick={() => setIsDeleting(true)}>Delete listing</Button>
+      {/* TODO: warn if unsaved changes? */}
+      {initialListing && (
+        <AdditionalSettings>
+          <Button
+            variant="secondary"
+            width="contained"
+            href={`/listings/${initialListing.slug}`}
+          >
+            View listing
+          </Button>
+          <Button
+            variant="danger"
+            width="contained"
+            onClick={() => setIsDeleting(true)}
+          >
+            Delete listing
+          </Button>
 
-            {isDeleting && (
-              <Form
-                onSubmit={async (event) => {
-                  event.preventDefault();
-                  console.log(
-                    "Deleting listing with slug:",
-                    initialListing.slug
-                  );
-                  await deleteListingAction(initialListing.slug);
-                  setIsDeleting(false);
-                }}
-              >
-                <p>
-                  Are you sure you want to delete this listing? This action
-                  cannot be undone.
-                </p>
-                <SubmitButton>Yes, delete my listing</SubmitButton>
-                <Button onClick={() => setIsDeleting(false)}>No, cancel</Button>
-              </Form>
-            )}
-          </>
-        )}
-      </div>
+          {isDeleting && (
+            <Form
+              onSubmit={async (event) => {
+                event.preventDefault();
+                console.log("Deleting listing with slug:", initialListing.slug);
+                await deleteListingAction(initialListing.slug);
+                setIsDeleting(false);
+              }}
+            >
+              <p>
+                Are you sure you want to delete this listing? This action cannot
+                be undone.
+              </p>
+              <SubmitButton>Yes, delete my listing</SubmitButton>
+              <Button onClick={() => setIsDeleting(false)}>No, cancel</Button>
+            </Form>
+          )}
+        </AdditionalSettings>
+      )}
     </>
   );
 }
