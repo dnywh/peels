@@ -505,22 +505,47 @@ export default function MapPageClient({ user }) {
     setSnap(snapPoints[0]); // Helps to remove conditional CSS class from html
 
     // Explicitly remove the class
+    // This is ignored for some reason on popstate, so commenting out to make clear.
+    // console.log("Removing drawer-fully-open class");
     // document.documentElement.classList.remove("drawer-fully-open");
 
     router.push("/map", { scroll: false, shallow: true });
   }, [router]);
 
   // Add an effect to handle browser back/forward
+  useEffect(() => {
+    const handlePopState = () => {
+      console.log("Popstate event searchParams: ", searchParams);
+      if (!searchParams.get("listing")) {
+        console.log("Popstate event: Removing drawer-fully-open class");
+        document.documentElement.classList.remove("drawer-fully-open");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   // useEffect(() => {
-  //   const handlePopState = () => {
-  //     if (!searchParams.get("listing")) {
+  //   const handlePopstate = () => {
+  //     // Check if the modal is open on mobile devices
+  //     // Replace the condition with your modal open check logic
+  //     const isModalOpenOnMobile = true; // Replace with your own logic
+  //     if (isModalOpenOnMobile) {
+  //       // Close the modal when navigating using browser's back/forward buttons
+  //       // Implement your own modal close logic here
+
+  //       console.log("Removing drawer-fully-open class");
   //       document.documentElement.classList.remove("drawer-fully-open");
   //     }
   //   };
 
-  //   window.addEventListener("popstate", handlePopState);
-  //   return () => window.removeEventListener("popstate", handlePopState);
-  // }, [searchParams]);
+  //   window.addEventListener("popstate", handlePopstate);
+
+  //   return () => {
+  //     window.removeEventListener("popstate", handlePopstate);
+  //   };
+  // }, []);
 
   return (
     <StyledMapPage>
