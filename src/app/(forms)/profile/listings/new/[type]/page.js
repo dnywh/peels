@@ -7,7 +7,7 @@ const typeConfig = {
         description: 'A private residence or similar.'
     },
     community: {
-        title: 'List your community space',
+        title: 'List your community',
         description: 'People can drop off food scraps to your community garden, farm, or similar.'
     },
     business: {

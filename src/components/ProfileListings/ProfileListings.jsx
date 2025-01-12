@@ -20,7 +20,7 @@ export default function ProfileListings({ listings }) {
         {/* Only show the "add a/another listing" link if there are less than 3 listings */}
         {listings.length < 3 && (
           <li>
-            <Link href="/add-listing">
+            <Link href="/profile/listings/new">
               <p>
                 Add {listings.length === 0 ? "a" : "another"} listing to the map
               </p>

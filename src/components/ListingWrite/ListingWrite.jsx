@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 
 import { deleteListingAction } from "@/app/actions";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 
 import LocationSelect from "@/components/LocationSelect";
@@ -98,16 +98,8 @@ function getPhotoUrl(filename) {
 
 // React component
 export default function ListingWrite({ initialListing }) {
-  const searchParams = useSearchParams();
-  // Is this being declared twice, once here and once in the parent?
-  const listingTypeFromSearchParams =
-    searchParams.get("type") === "community" ||
-    searchParams.get("type") === "business"
-      ? searchParams.get("type")
-      : "residential";
-
-  // TODO do we need this?
-  //   const [listing, setListing] = useState(initialListing);
+  const { type } = useParams();
+  const listingType = initialListing?.type || type;
 
   // Populate editable fields
   const [avatar, setAvatar] = useState(
@@ -154,11 +146,6 @@ export default function ListingWrite({ initialListing }) {
 
   // Other states
   const [isDeleting, setIsDeleting] = useState(false);
-
-  //   Populate hardcoded values
-  const listingType = initialListing
-    ? initialListing.type
-    : listingTypeFromSearchParams;
 
   // Form handling logic here
   async function handleSubmit(event) {
