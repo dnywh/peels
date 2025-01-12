@@ -20,7 +20,32 @@ export function getListingDisplayName(listing, user) {
 }
 
 export function getListingAvatar(listing, user) {
-    // TODO
+    if (!listing) return null;
+
+    // For residential listings
+    if (listing.type === "residential") {
+        // Show private avatar to non-authenticated users, if the profile has one
+        if (!user && listing.profiles.avatar) {
+            return {
+                bucket: "public",
+                filename: "avatars/private.jpg",
+                alt: "A blurred avatar for Private Host. Sign in to see their full information."
+            };
+        }
+        // Show actual avatar to authenticated users
+        return {
+            bucket: "avatars",
+            filename: listing.profiles.avatar,
+            alt: `${listing.profiles.first_name}’s avatar`
+        };
+    }
+
+    // For business and community listings
+    return {
+        bucket: "listing_avatars",
+        filename: listing.avatar,
+        alt: `${listing.name}’s avatar`
+    };
 }
 
 

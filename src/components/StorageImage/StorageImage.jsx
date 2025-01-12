@@ -35,10 +35,12 @@ export default function StorageImage({
   size = 100,
   ...props
 }) {
-  if (!filename) {
+  // Handle missing filename or public folder images
+  if (!filename || bucket === "public") {
+    const imagePath = !filename ? "/avatars/default.png" : `/${filename}`;
     return (
       <Image
-        src={`/avatar.png`}
+        src={imagePath}
         alt={alt}
         style={style}
         width={size}
@@ -47,6 +49,8 @@ export default function StorageImage({
       />
     );
   }
+
+  // Handle Supabase storage images
   return (
     <Image
       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${filename}`}

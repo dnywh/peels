@@ -1,6 +1,7 @@
 import { styled } from "@pigment-css/react";
 
 import Avatar from "@/components/Avatar";
+import { getListingAvatar } from "@/utils/listing";
 
 const StyledListingHeader = styled("header")(({ theme }) => ({
   display: "flex",
@@ -15,25 +16,18 @@ const StyledListingHeader = styled("header")(({ theme }) => ({
   },
 }));
 
-function ListingHeader({ listing, listingName }) {
+function ListingHeader({ listing, listingName, user }) {
+  const avatarProps = getListingAvatar(listing, user);
+
   console.log(listing);
   return (
     <StyledListingHeader>
-      {listing.type === "residential" ? (
-        <Avatar
-          bucket="avatars"
-          filename={listing.profiles.avatar}
-          alt={listing.profiles.first_name}
-          size={100}
-        />
-      ) : (
-        <Avatar
-          bucket="listing_avatars"
-          filename={listing.avatar}
-          alt={listing?.name}
-          size={100}
-        />
-      )}
+      <Avatar
+        bucket={avatarProps.bucket}
+        filename={avatarProps.filename}
+        alt={avatarProps.alt}
+        size={100}
+      />
 
       <div>
         <h2>{listingName}</h2>

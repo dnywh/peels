@@ -117,7 +117,11 @@ const ListingRead = memo(function Listing({
 
   return (
     <Fragment key={listing.id}>
-      <ListingHeader listing={listing} listingName={listingDisplayName} />
+      <ListingHeader
+        listing={listing}
+        listingName={listingDisplayName}
+        user={user}
+      />
 
       <ListingChatDrawer
         isNested={isDrawer}
@@ -227,23 +231,24 @@ const ListingRead = memo(function Listing({
         </section>
       )}
 
-      {listing.photos.length > 0 && (
-        <section>
-          <h3>Photos</h3>
-          <ul>
-            {listing.photos.map((photo, index) => (
-              <li key={index}>
-                <StorageImage
-                  bucket="listing_photos"
-                  filename={photo}
-                  alt={`Photo ${index + 1}`}
-                  style={{ width: "100px", height: "100px" }}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {listing.photos.length > 0 &&
+        (!listing.type === "residential" || user) && (
+          <section>
+            <h3>Photos</h3>
+            <ul>
+              {listing.photos.map((photo, index) => (
+                <li key={index}>
+                  <StorageImage
+                    bucket="listing_photos"
+                    filename={photo}
+                    alt={`Photo ${index + 1}`}
+                    style={{ width: "100px", height: "100px" }}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
       {listing.links.length > 0 && (
         <section>
