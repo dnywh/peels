@@ -48,7 +48,7 @@ const Heading1 = styled("h1")(({ theme }) => ({
 
 const HeroButtons = styled("div")(({ theme }) => ({
   width: "100%",
-  maxWidth: theme.spacing.controls.maxWidth,
+  maxWidth: "30rem",
   justifyContent: "center",
   display: "flex",
   flexDirection: "column",

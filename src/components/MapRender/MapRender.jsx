@@ -28,7 +28,7 @@ const todo = false; // Temporarily turning off this feature to inspect scroll bu
 
 const attributionControlMobileStyle = {
   // Optically position attribution control above-right of TabBar
-  marginRight: "calc(clamp(10px, calc(((100vw - 30rem) / 2)), 100vw) + 6px)",
+  marginRight: `calc(clamp(var(--spacing-tabBar-marginX), calc(((100vw - var(--spacing-tabBar-maxWidth)) / 2)), 100vw) + 4px)`,
   marginBottom: "5.25rem", // Place above bottom TabBar
   opacity: 0.875,
 };

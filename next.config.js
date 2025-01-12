@@ -1,4 +1,4 @@
-import { withPigment } from "@pigment-css/nextjs-plugin";
+import { withPigment, extendTheme } from "@pigment-css/nextjs-plugin";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -55,7 +55,7 @@ const tokens = {
 }
 
 export default withPigment(nextConfig, {
-    theme: {
+    theme: extendTheme({
         colors: {
             focus: {
                 outline: tokens.ocean[500],
@@ -145,8 +145,10 @@ export default withPigment(nextConfig, {
             forms: {
                 maxWidth: "28rem",
             },
-            controls: {
-                maxWidth: "30rem",
+            tabBar: {
+                maxWidth: "26rem",
+                marginX: "1.5rem",
+                marginBottom: "0.75rem",
             }
         },
         corners: {
@@ -155,5 +157,5 @@ export default withPigment(nextConfig, {
         typography: {
             fontFamily: "Inter, sans-serif",
         },
-    },
+    }),
 });

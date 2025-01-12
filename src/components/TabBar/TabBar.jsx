@@ -8,7 +8,7 @@ import ProfileIcon from "@/components/ProfileIcon";
 import { styled } from "@pigment-css/react";
 import { useTabBar } from "@/contexts/TabBarContext";
 
-const StyledTabBar = styled("div")({
+const StyledTabBar = styled("div")(({ theme }) => ({
   variants: [
     {
       props: { breakpoint: "sm" },
@@ -17,7 +17,7 @@ const StyledTabBar = styled("div")({
         bottom: "0",
         left: "0",
         right: "0",
-        margin: "0 0.75rem 0.75rem",
+        margin: `0 ${theme.spacing.tabBar.marginX} ${theme.spacing.tabBar.marginBottom}`,
         touchAction: "none",
         display: "flex",
         justifyContent: "center",
@@ -43,7 +43,7 @@ const StyledTabBar = styled("div")({
       props: { position: "floating", breakpoint: "md" },
       style: {
         position: "fixed",
-        top: "calc(1.5rem - 0.5rem)", // Visually indentical positining to non-floating tab bar. Math: (non-floating inset - floating padding)
+        top: "calc(1.5rem - 0.5rem)", // Visually indentical positioning to non-floating tab bar. Math: (non-floating inset - floating padding)
         left: "calc(1.5rem - 0.5rem)",
         padding: "0.5rem",
 
@@ -57,12 +57,12 @@ const StyledTabBar = styled("div")({
       style: { position: "relative" },
     },
   ],
-});
+}));
 
 const StyledTabBarNav = styled("nav")(({ theme }) => ({
   flex: 1,
   height: "4rem",
-  maxWidth: theme.spacing.controls.maxWidth,
+  maxWidth: theme.spacing.tabBar.maxWidth,
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
