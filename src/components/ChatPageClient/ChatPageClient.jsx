@@ -12,11 +12,11 @@ const ChatPageLayout = styled("main")({
   alignItems: "stretch",
   gap: "2rem",
   width: "100%",
-  height: "calc(100% - 80px)",
+  // height: "calc(100% - 80px)",
 
-  "@media (min-width: 768px)": {
-    height: "100%",
-  },
+  // "@media (min-width: 768px)": {
+  //   height: "100%",
+  // },
 });
 
 const ChatWindowWrapper = styled("div")(({ theme }) => ({
@@ -24,6 +24,14 @@ const ChatWindowWrapper = styled("div")(({ theme }) => ({
   backgroundColor: theme.colors.background.top,
   border: `1px solid ${theme.colors.border.base}`,
   borderRadius: theme.corners.base,
+
+  '[data-thread-selected="true"] &': {
+    height: "100dvh",
+    "@media (min-width: 768px)": {
+      height: "inherit",
+    },
+  },
+
   // Mobile: full width when thread selected, hidden when at root
   '[data-thread-selected="false"] &': {
     display: "none",

@@ -97,12 +97,11 @@ function TabBar({ breakpoint = "sm", ...props }) {
   // Only use visibility prop on small breakpoint. Larger breakpoints should always be visible.
   if (!tabBarProps.visible && breakpoint === "sm") return null;
 
+  // Only use the position prop on larger breakpoints. Smaller breakpoints should always use the default position.
+  const position = breakpoint === "md" ? tabBarProps.position : "inherit";
+
   return (
-    <StyledTabBar
-      breakpoint={breakpoint}
-      position={tabBarProps.position}
-      {...props}
-    >
+    <StyledTabBar breakpoint={breakpoint} position={position} {...props}>
       <StyledTabBarNav>
         {breakpoint === "md" && <PeelsTab size={32} />}
         {NAVIGATION_ITEMS.map(({ title, Icon, href }) => (
