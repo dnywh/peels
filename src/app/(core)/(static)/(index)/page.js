@@ -48,7 +48,7 @@ const Heading1 = styled("h1")(({ theme }) => ({
 
 const HeroButtons = styled("div")(({ theme }) => ({
   width: "100%",
-  maxWidth: "30rem",
+  maxWidth: theme.spacing.tabBar.maxWidth, // Visually match width of tab bar on mobile
   justifyContent: "center",
   display: "flex",
   flexDirection: "column",

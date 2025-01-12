@@ -151,12 +151,19 @@ const StyledDrawerHeaderInner = styled("div")(({ theme }) => ({
   width: "100%",
 
   padding: "1rem",
-  background: theme.colors.background.slight,
+  background: theme.colors.background.sunk,
   borderBottom: `1px solid ${theme.colors.border.base}`,
   boxShadow: `0px 1px 8px 0px ${theme.colors.border.base}`,
   // Ensure header content stays above avatar whose rotation transform causes a new stacking context
   // position: "relative",
   // zIndex: 1,
+
+  transform: "translateY(-0.5px)", // Avoid clipping on Retina screens
+
+  "@media (min-width: 768px)": {
+    background: theme.colors.background.slight,
+    transform: "unset",
+  },
 }));
 
 const StyledHeaderText = styled("div")(({ theme }) => ({

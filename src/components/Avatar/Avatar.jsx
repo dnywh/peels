@@ -7,6 +7,7 @@ const StyledAvatar = styled(StorageImage)(({ theme }) => ({
   height: "7rem",
   overflow: "hidden",
   objectFit: "cover",
+  flexShrink: 0,
 
   background: theme.colors.background.pit,
   boxShadow: `0px 0px 0px 4px ${theme.colors.background.top}, 0px 0px 0px 5.5px ${theme.colors.border.base}, 3px 4px 0px 5px ${theme.colors.border.stark}`,
