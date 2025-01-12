@@ -3,6 +3,7 @@ import { useDeviceContext } from "@/hooks/useDeviceContext";
 import { Drawer } from "vaul";
 import Button from "@/components/Button";
 import ChatWindow from "@/components/ChatWindow";
+import ListingCta from "@/components/ListingCta";
 import { styled } from "@pigment-css/react";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
@@ -70,14 +71,22 @@ export default function ListingChatDrawer({
       onOpenChange={setIsChatDrawerOpen}
       {...props}
     >
-      <Drawer.Trigger asChild>
-        <Button>
-          Contact{" "}
-          {listing.type === "residential"
-            ? listing.profiles.first_name
-            : listing.name}
-        </Button>
-      </Drawer.Trigger>
+      {user ? (
+        listing.owner_id === user.id ? (
+          <ListingCta type="owner" slug={listing.slug} />
+        ) : (
+          <Drawer.Trigger asChild>
+            <Button>
+              Contact{" "}
+              {listing.type === "residential"
+                ? listing.profiles.first_name
+                : listing.name}
+            </Button>
+          </Drawer.Trigger>
+        )
+      ) : (
+        <ListingCta type="guest" slug={listing.slug} />
+      )}
 
       <Drawer.Portal>
         <StyledDrawerOverlay />

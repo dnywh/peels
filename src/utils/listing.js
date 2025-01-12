@@ -19,6 +19,11 @@ export function getListingDisplayName(listing, user) {
     return listing.name || '';
 }
 
+export function getListingAvatar(listing, user) {
+    // TODO
+}
+
+
 
 export function getListingDisplayType(listing) {
     if (!listing) return '';

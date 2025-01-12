@@ -10,8 +10,8 @@ import {
 
 import { useTabBar } from "@/contexts/TabBarContext";
 
-import Link from "next/link";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
+import { createClient } from "@/utils/supabase/client";
 
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
 import { Drawer } from "vaul";
@@ -25,22 +25,17 @@ import { styled } from "@pigment-css/react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import turfDistance from "@turf/distance";
-import LoremIpsum from "@/components/LoremIpsum";
-import clsx from "clsx";
-import ListingCta from "@/components/ListingCta";
 
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
-import { createClient } from "@/utils/supabase/client";
 import { getListingDisplayName } from "@/utils/listing";
 
 import ListingChatDrawer from "@/components/ListingChatDrawer";
 const ButtonGroup = styled("div")({
   display: "flex",
+  flexWrap: "wrap",
   gap: "0.5rem",
 });
-
-const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 
 // Memoize the Listing component
 const ListingRead = memo(function Listing({
@@ -48,7 +43,6 @@ const ListingRead = memo(function Listing({
   listing,
   setSelectedListing,
   isDrawer,
-  isDesktop,
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
