@@ -12,12 +12,18 @@ const StyledMain = styled("main")({
     flexDirection: "column",
     gap: "3rem",
     margin: "4rem auto",
-    maxWidth: "640px",
+    maxWidth: "960px", // Should be shared with ProfileLayoutClient
 
     // "@media (min-width: 768px)": {
     //     maxWidth: "1024px",
     //     marginLeft: ""
     // },
+
+    // Optically center the content once the screen width is greater than tab bar + gutter + content width
+    // Calculate this dynamically rather than guessing the tab bar width (and gutters, etc) as 2rem
+    "@media (min-width: 1200px)": {
+        transform: "translateX(-2rem)", // Should be more exactly calculated from TabBar width (and account for gutters, etc) and also shared with Listings page
+    },
 });
 
 // Move data fetching to a reusable function

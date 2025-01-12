@@ -7,14 +7,20 @@ import { styled } from "@pigment-css/react";
 const ProfilePageLayout = styled("div")({
   display: "flex",
   flexDirection: "column",
-  gap: "2rem",
+  gap: "1.5rem",
   //   width: "100%",
   flex: 1,
   alignItems: "flex-start",
+  // maxWidth: "960px", // Should be applied to children (perhaps as a wrapper) and shared with Listings page
 
   "@media (min-width: 768px)": {
     justifyContent: "center",
     flexDirection: "row",
+  },
+  // Optically center the content once the screen width is greater than tab bar + left column + main column width
+  // Calculate this dynamically rather than guessing the tab bar width (and gutters, etc) as 2rem
+  "@media (min-width: 1200px)": {
+    transform: "translateX(-2rem)", // Should be more exactly calculated from TabBar width (and account for gutters, etc) and also shared with Listings page
   },
 });
 

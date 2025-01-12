@@ -548,7 +548,6 @@ export default function MapPageClient({ user }) {
 
   return (
     <StyledMapPage>
-      {/* <h1>Map for {user ? user.email : "Guest"}</h1> */}
       <StyledMapRender>
         <Drawer.Root
           // position={isDesktop ? "right" : undefined}
