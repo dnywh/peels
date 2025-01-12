@@ -6,6 +6,7 @@ import MapIcon from "@/components/MapIcon";
 import ChatsIcon from "@/components/ChatsIcon";
 import ProfileIcon from "@/components/ProfileIcon";
 import { styled } from "@pigment-css/react";
+import { useTabBar } from "@/contexts/TabBarContext";
 
 const StyledTabBar = styled("div")({
   variants: [
@@ -89,11 +90,19 @@ const NAVIGATION_ITEMS = [
   { title: "Profile", Icon: ProfileIcon, href: "/profile" },
 ];
 
-function TabBar({ breakpoint = "sm", position = "inline", ...props }) {
+function TabBar({ breakpoint = "sm", ...props }) {
   const pathname = usePathname();
+  const { tabBarProps } = useTabBar();
+
+  // Only use visibility prop on small breakpoint. Larger breakpoints should always be visible.
+  if (!tabBarProps.visible && breakpoint === "sm") return null;
 
   return (
-    <StyledTabBar breakpoint={breakpoint} position={position} {...props}>
+    <StyledTabBar
+      breakpoint={breakpoint}
+      position={tabBarProps.position}
+      {...props}
+    >
       <StyledTabBarNav>
         {breakpoint === "md" && <PeelsTab size={32} />}
         {NAVIGATION_ITEMS.map(({ title, Icon, href }) => (

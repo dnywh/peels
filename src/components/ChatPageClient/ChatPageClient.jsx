@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import ThreadsList from "@/components/ThreadsList";
 import ChatWindow from "@/components/ChatWindow";
 import { styled } from "@pigment-css/react";
+import { useTabBar } from "@/contexts/TabBarContext";
 
 const ChatPageLayout = styled("main")({
   display: "flex",
@@ -52,6 +53,7 @@ export default function ChatPageClient({
   console.log("ChatPageClient rendered");
   const router = useRouter();
   const pathname = usePathname();
+  const { setTabBarProps } = useTabBar();
 
   const threads = useMemo(() => initialThreads, [initialThreads]);
   const currentThreadId = useMemo(() => initialThreadId, [initialThreadId]);
@@ -61,6 +63,22 @@ export default function ChatPageClient({
       currentThreadId ? threads.find((t) => t.id === currentThreadId) : null,
     [currentThreadId, threads]
   );
+
+  // Hide TabBar when thread is selected
+  useEffect(() => {
+    setTabBarProps((prev) => ({
+      ...prev,
+      visible: !initialThreadId,
+    }));
+
+    // Restore visibility on unmount
+    return () => {
+      setTabBarProps((prev) => ({
+        ...prev,
+        visible: true,
+      }));
+    };
+  }, [initialThreadId, setTabBarProps]);
 
   return (
     <ChatPageLayout data-thread-selected={!!initialThreadId}>
