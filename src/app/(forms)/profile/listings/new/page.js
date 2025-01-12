@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import SubmitButton from '@/components/SubmitButton';
@@ -114,7 +114,9 @@ function AddListingContent() {
 }
 
 function AddListingPage() {
-    return <AddListingContent />;
+    return <Suspense fallback={<div>Loading...</div>}>
+        <AddListingContent />
+    </Suspense>;
 }
 
 export default AddListingPage;
