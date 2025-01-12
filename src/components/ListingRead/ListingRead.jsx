@@ -17,7 +17,7 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Buil
 import { Drawer } from "vaul";
 
 import StorageImage from "@/components/StorageImage";
-import ChatWindow from "@/components/ChatWindow";
+
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
@@ -28,57 +28,19 @@ import turfDistance from "@turf/distance";
 import LoremIpsum from "@/components/LoremIpsum";
 import clsx from "clsx";
 import ListingCta from "@/components/ListingCta";
+
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
 import { createClient } from "@/utils/supabase/client";
 import { getListingDisplayName } from "@/utils/listing";
 
+import ListingChatDrawer from "@/components/ListingChatDrawer";
 const ButtonGroup = styled("div")({
   display: "flex",
   gap: "0.5rem",
 });
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
-
-const StyledDrawerOverlay = styled(Drawer.Overlay)({
-  background: "rgba(0, 0, 0, 0.3)",
-  position: "fixed",
-  inset: "0",
-});
-
-const StyledDrawerContent = styled(Drawer.Content)({
-  background: "rgb(243, 243, 243)",
-  borderRadius: "10px 10px 0 0",
-
-  overflowX: "hidden",
-
-  "&::after": {
-    display: "none", // Otherwise seems to include side scroll, even when overflowX hidden
-  },
-
-  marginTop: "24px",
-  // maxHeight: "95%",
-  height: "95%", // Take up full height even if the message contents aren't overflowing yet
-  position: "fixed",
-  bottom: "0",
-  left: "0",
-  right: "0",
-  display: "flex",
-  flexDirection: "column",
-
-  "@media (min-width: 768px)": {
-    borderRadius: "10px",
-    height: "unset",
-    marginTop: "unset",
-    top: "24px",
-    right: "24px",
-    bottom: "24px",
-    left: "unset",
-    outline: "none",
-    width: sidebarWidth,
-    // height: "100%",
-  },
-});
 
 // Memoize the Listing component
 const ListingRead = memo(function Listing({
@@ -163,50 +125,15 @@ const ListingRead = memo(function Listing({
     <Fragment key={listing.id}>
       <ListingHeader listing={listing} listingName={listingDisplayName} />
 
-      <Drawer.NestedRoot
-        modal={isDesktop ? false : true}
-        direction={isDesktop ? "right" : undefined}
-        open={isChatDrawerOpen}
-        onOpenChange={(event) => setIsChatDrawerOpen(event)}
-      >
-        {user ? (
-          listing.owner_id === user.id ? (
-            <ListingCta type="owner" slug={listing.slug} />
-          ) : (
-            <Drawer.Trigger asChild>
-              <Button>
-                Contact{" "}
-                {listing.type === "residential"
-                  ? listing.profiles.first_name
-                  : listing.name}
-              </Button>
-            </Drawer.Trigger>
-          )
-        ) : (
-          <ListingCta type="guest" slug={listing.slug} />
-        )}
-
-        <Drawer.Portal>
-          <StyledDrawerOverlay />
-          <StyledDrawerContent data-vaul-no-drag={isDesktop ? true : undefined}>
-            <ChatWindow
-              isDrawer={true}
-              setIsChatDrawerOpen={setIsChatDrawerOpen}
-              user={user}
-              listing={listing}
-              listingDisplayName={listingDisplayName}
-              existingThread={
-                existingThread
-                  ? {
-                      ...existingThread,
-                      chat_messages: existingThread.chat_messages_with_senders,
-                    }
-                  : null
-              }
-            />
-          </StyledDrawerContent>
-        </Drawer.Portal>
-      </Drawer.NestedRoot>
+      <ListingChatDrawer
+        isNested={isDrawer}
+        user={user}
+        listing={listing}
+        isChatDrawerOpen={isChatDrawerOpen}
+        setIsChatDrawerOpen={setIsChatDrawerOpen}
+        existingThread={existingThread}
+        listingDisplayName={listingDisplayName}
+      />
 
       {listing.description && (
         <section>

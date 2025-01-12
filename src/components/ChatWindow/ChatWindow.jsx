@@ -21,7 +21,7 @@ const StyledChatWindow = styled("div")({
   flexDirection: "column",
   overflow: "hidden",
   "@media (min-width: 768px)": {
-    border: "1px solid #e0e0e0",
+    // border: "1px solid #e0e0e0",
     borderRadius: "0.5rem",
   },
 });

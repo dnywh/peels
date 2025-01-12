@@ -23,6 +23,7 @@ import LoremIpsum from "../LoremIpsum";
 
 import { styled } from "@pigment-css/react";
 import { getListingDisplayName, getListingDisplayType } from "@/utils/listing";
+import { useDeviceContext } from "@/hooks/useDeviceContext";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
@@ -218,62 +219,48 @@ export default function MapPageClient({ user }) {
   const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isDesktop, setIsDesktop] = useState(false);
+  // const [isDesktop, setIsDesktop] = useState(false);
   const [snap, setSnap] = useState(snapPoints[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
   const [selectedPinId, setSelectedPinId] = useState(null);
 
+  const { isDesktop, hasTouch } = useDeviceContext();
+
   useEffect(() => {
-    if (isDesktop) return;
-    // Set HTML element to not overscroll or zoom if the user interacts with general page (e.g. via pinching on zoom controls)
+    if (isDesktop) {
+      setSnap(snapPoints[1]);
+      console.log("Viewport is desktop");
+    } else {
+      console.log("Viewport is mobile");
+    }
+  }, [isDesktop]);
+
+  useEffect(() => {
+    console.log("snap", snap);
+
+    if (!hasTouch) return;
+
+    // Touch device, continue setting appropriate classes
+    // First off, set HTML to not overscroll or zoom if the user interacts with general page (e.g. via pinching on zoom controls)
     document.documentElement.classList.add("map");
 
+    // If the drawer is open, set the HTML to not allow pointer events
     if (snap === 1) {
-      console.log("Drawer is open, adding class to html");
+      console.log("Drawer is open, adding class to HTML");
       document.documentElement.classList.add("drawer-fully-open");
     } else {
-      console.log("Drawer is closed, removing class from html");
+      console.log("Drawer is closed, removing class from HTML");
       document.documentElement.classList.remove("drawer-fully-open");
     }
 
-    // Cleanup function to remove the classes when the component unmounts
+    // Cleanup on unmount
     return () => {
       document.documentElement.classList.remove("map");
       document.documentElement.classList.remove("drawer-fully-open");
     };
-  }, [snap]);
-
-  useEffect(() => {
-    console.log("snap", snap);
-  }, [snap]);
-
-  // Check if the viewport is desktop or mobile
-  // TODO make reusable for map, profile-redirect.js, chat page, etc.
-  useEffect(() => {
-    // Use matchMedia instead of resize event
-    const mediaQuery = window.matchMedia("(min-width: 768px)"); // TODO: make this a shared variable also used in the media queries, match with other media queries in general (e.g. tab bar)
-
-    function handleViewportChange(e) {
-      if (e.matches) {
-        // is desktop
-        console.log("Viewport is desktop");
-        setSnap(snapPoints[1]); // Reset snap point to top in order to prevent drawer from getting stuck at snap 0.35 point when returning to desktop breakpoint
-        setIsDesktop(true);
-      } else {
-        console.log("Viewport is mobile");
-        setIsDesktop(false);
-      }
-    }
-
-    // Check initial viewport size
-    handleViewportChange(mediaQuery);
-
-    // Listen for viewport changes
-    mediaQuery.addEventListener("change", handleViewportChange);
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
+  }, [snap, hasTouch]);
 
   // Load listing from URL param on mount
   useEffect(() => {
@@ -510,14 +497,30 @@ export default function MapPageClient({ user }) {
     });
   }, []);
 
-  const handleCloseListing = () => {
+  const handleCloseListing = useCallback(() => {
     console.log("Closing listing");
     setIsDrawerOpen(false);
     setIsChatDrawerOpen(false);
     setSelectedPinId(null);
     setSnap(snapPoints[0]); // Helps to remove conditional CSS class from html
+
+    // Explicitly remove the class
+    // document.documentElement.classList.remove("drawer-fully-open");
+
     router.push("/map", { scroll: false, shallow: true });
-  };
+  }, [router]);
+
+  // Add an effect to handle browser back/forward
+  // useEffect(() => {
+  //   const handlePopState = () => {
+  //     if (!searchParams.get("listing")) {
+  //       document.documentElement.classList.remove("drawer-fully-open");
+  //     }
+  //   };
+
+  //   window.addEventListener("popstate", handlePopState);
+  //   return () => window.removeEventListener("popstate", handlePopState);
+  // }, [searchParams]);
 
   return (
     <StyledMapPage>
@@ -567,7 +570,7 @@ export default function MapPageClient({ user }) {
           <Drawer.Portal>
             <StyledDrawerContent
               ref={drawerContentRef}
-              data-vaul-no-drag={isDesktop ? true : undefined} // Or detect via touch input vs no touch input instead?
+              data-vaul-no-drag={!hasTouch ? true : undefined}
               data-testid="content" // Not sure if this is needed
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
