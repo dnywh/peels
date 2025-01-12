@@ -117,11 +117,6 @@ export default function ListingWrite({ initialListing }) {
         data: { user },
       } = await supabase.auth.getUser();
 
-      const areaName = await getAreaName(
-        coordinates.longitude,
-        coordinates.latitude
-      );
-
       // Prepare the listing data
       const listingData = {
         // Add the id if it's an existing listing, so we know which to update

@@ -185,22 +185,25 @@ export default function LocationSelect({
     setPlaceholderText("Custom location"); //TODO: use reverse geocoding to get something like "Suburb, City"
   }, []);
 
-  const handleDragEnd = useCallback((event) => {
-    console.log("Drag end. Location:", event.lngLat);
+  const handleDragEnd = useCallback(
+    async (event) => {
+      console.log("Drag end. Location:", event.lngLat);
 
-    const nextCoordinates = {
-      latitude: event.lngLat.lat,
-      longitude: event.lngLat.lng,
-    };
+      const nextCoordinates = {
+        latitude: event.lngLat.lat,
+        longitude: event.lngLat.lng,
+      };
 
-    setCoordinates(nextCoordinates); // Unsure if this is needed. Might be helpful for form submission
+      setCoordinates(nextCoordinates); // Unsure if this is needed. Might be helpful for form submission
 
-    const nextAreaName = getAreaName(
-      nextCoordinates.longitude,
-      nextCoordinates.latitude
-    );
-    setAreaName(nextAreaName);
-  }, []);
+      const nextAreaName = await getAreaName(
+        nextCoordinates.longitude,
+        nextCoordinates.latitude
+      );
+      setAreaName(nextAreaName);
+    },
+    [setCoordinates, setAreaName]
+  );
 
   const handlePick = useCallback(
     async (event) => {
@@ -211,26 +214,21 @@ export default function LocationSelect({
       // Otherwise continue as normal
       console.log("Picked:", event, event.feature?.center);
 
-      // Set place name to the geocoded area name that we get 'for free' from this GeocodingControl anyway
-      const nextAreaName = event.feature?.place_name;
-      setAreaName(nextAreaName);
-      // const areaName = await getAreaName(
-      //   event.feature?.center[0],
-      //   event.feature?.center[1]
-      // );
-      console.log("Area name:", nextAreaName);
-
       const nextCoordinates = {
         latitude: event.feature?.center[1],
         longitude: event.feature?.center[0],
       };
 
-      // Blur the input
+      // Get area name from coordinates
+      const nextAreaName = await getAreaName(
+        nextCoordinates.longitude,
+        nextCoordinates.latitude
+      );
+      setAreaName(nextAreaName);
+
       inputRef.current.blur();
 
-      // Only update coordinates now, no need for markerPosition
       if (!mapShown) {
-        // console.log('Map not yet shown. Setting coordinates to', nextCoordinates);
         console.log("Map isnt shown yet, coming now...");
         setCoordinates(nextCoordinates);
         setMapShown(true);
@@ -249,7 +247,7 @@ export default function LocationSelect({
         setCoordinates(nextCoordinates);
       }
     },
-    [mapShown]
+    [mapShown, coordinates, setCoordinates, setAreaName]
   );
 
   return (
