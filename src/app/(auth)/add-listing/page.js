@@ -32,31 +32,57 @@ function AddListingContent() {
     const [selectedAccepterType, setSelectedAccepterType] = useState(null);
     const [currentStep, setCurrentStep] = useState(1);
 
-
-    // Sync state with the URL params
+    // Modified useEffect to preserve state during navigation
     useEffect(() => {
-        const nextStep = searchParams.get('step')
-        setCurrentStep(nextStep ? parseInt(nextStep) : 1)
-        if (!nextStep) {
-            setSelectedAccepterType(null)
+        const nextStep = searchParams.get('step');
+        const newStep = nextStep ? parseInt(nextStep) : 1;
+
+        console.log('URL Change - Current state:', {
+            step: newStep,
+            selectedListingType,
+            selectedAccepterType
+        });
+
+        setCurrentStep(newStep);
+
+        // Only reset accepterType if we're going back to step 1
+        if (newStep === 1) {
+            setSelectedAccepterType(null);
         }
-    }, [searchParams])
+    }, [searchParams]);
+
+    // Add debug logs to track state changes
+    useEffect(() => {
+        console.log('State Update:', {
+            currentStep,
+            selectedListingType,
+            selectedAccepterType
+        });
+    }, [currentStep, selectedListingType, selectedAccepterType]);
 
     function handleSubmit(event) {
         event.preventDefault();
+        console.log('Submit with state:', { selectedListingType, selectedAccepterType, currentStep });
+
+        // Guard against null values
+        if (!selectedListingType && currentStep === 1) {
+            console.warn('No listing type selected');
+            return;
+        }
+
+        if (!selectedAccepterType && currentStep === 2) {
+            console.warn('No accepter type selected');
+            return;
+        }
 
         // Navigate to appropriate form
-        if (selectedListingType.key === 'business') {
+        if (currentStep === 1 && selectedListingType?.key === 'business') {
             router.push(`/add-listing/form?type=${selectedListingType.key}`);
-        } else if (selectedListingType.key === 'accept' && currentStep === 1) {
+        } else if (currentStep === 1 && selectedListingType?.key === 'accept') {
             router.push('/add-listing?step=2');
             setCurrentStep(2);
-        } else if (currentStep === 2) {
-            if (selectedAccepterType.key === 'residential') {
-                router.push(`/add-listing/form?type=${selectedAccepterType.key}`);
-            } else if (selectedAccepterType.key === 'community') {
-                router.push(`/add-listing/form?type=${selectedAccepterType.key}`);
-            }
+        } else if (currentStep === 2 && selectedAccepterType?.key) {
+            router.push(`/add-listing/form?type=${selectedAccepterType.key}`);
         }
     }
 
@@ -92,7 +118,10 @@ function AddListingContent() {
                     <RadioGroup
                         by="title"
                         value={selectedAccepterType}
-                        onChange={setSelectedAccepterType}
+                        onChange={(value) => {
+                            console.log('RadioGroup onChange value:', value);
+                            setSelectedAccepterType(value);
+                        }}
                         aria-label="Listing type">
                         {accepterTypes.map((option) => (
                             <Radio
