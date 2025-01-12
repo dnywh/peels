@@ -10,9 +10,9 @@ export function useDeviceContext() {
     useEffect(() => {
         // Check for touch capability once on mount
         const hasTouch = window.matchMedia("(pointer: coarse)").matches;
-        // const hasTouch = 'ontouchstart' in window || 
-        // navigator.maxTouchPoints > 0 ||
-        // navigator.msMaxTouchPoints > 0;
+        // const hasTouch = 'ontouchstart' in window ||
+        //     navigator.maxTouchPoints > 0 ||
+        //     navigator.msMaxTouchPoints > 0;
 
         // Initial viewport check
         const mediaQuery = window.matchMedia("(min-width: 768px)");

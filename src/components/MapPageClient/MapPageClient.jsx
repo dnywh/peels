@@ -72,9 +72,21 @@ const StyledMapRender = styled("div")(({ theme }) => ({
   },
 }));
 
-const StyledIconButton = styled(IconButton)({
+const ButtonSet = styled("div")({
+  display: "flex",
+  flexDirection: "row",
+  gap: "0.5rem",
   position: "absolute",
   right: "0.75rem",
+});
+
+const StyledIconButtonAbsolute = styled(IconButton)({
+  position: "absolute",
+  right: "0.75rem",
+});
+
+const StyledIconButtonStationary = styled(IconButton)({
+  position: "relative",
 });
 
 const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
@@ -248,13 +260,13 @@ export default function MapPageClient({ user }) {
     console.log("Managing HTML classes", { hasTouch, snap });
     const listingSlug = searchParams.get("listing");
 
-    if (!hasTouch) return;
+    if (isDesktop) return;
 
     // Always add map class for touch devices
     document.documentElement.classList.add("map");
 
     // Manage drawer-fully-open class based on both snap AND URL state
-    if (snap === 1 && listingSlug) {
+    if (snap === snapPoints[1] && listingSlug) {
       console.log("Drawer is open, adding class to HTML");
       document.documentElement.classList.add("drawer-fully-open");
     } else {
@@ -267,14 +279,14 @@ export default function MapPageClient({ user }) {
       document.documentElement.classList.remove("map");
       document.documentElement.classList.remove("drawer-fully-open");
     };
-  }, [snap, hasTouch, searchParams]); // Include all dependencies
+  }, [snap, isDesktop, searchParams]); // Include all dependencies
 
   // Load listing from URL param on mount
   useEffect(() => {
     const listingSlug = searchParams.get("listing");
     if (listingSlug) {
       loadListingBySlug(listingSlug);
-      // If there is a selected listing upon mount, open the drawer
+      // If there is a selected listing upon mount, open the drawerc
       setIsDrawerOpen(true);
     } else {
       // Clear selected listing if no slug in URL
@@ -362,6 +374,18 @@ export default function MapPageClient({ user }) {
     setListings(data);
     setIsLoading(false);
   }, []);
+
+  const handleSnapChange = () => {
+    console.log("Handling snap change", snap, snapPoints[0]);
+    if (snap === snapPoints[0]) {
+      setSnap(snapPoints[1]);
+    } else {
+      if (drawerContentRef.current) {
+        drawerContentRef.current.scrollTop = 0;
+      }
+      setSnap(snapPoints[0]);
+    }
+  };
 
   const handleMarkerClick = async (listingId) => {
     // If the clicked marker is already selected AND the drawer is already open, do nothing and return early
@@ -563,7 +587,7 @@ export default function MapPageClient({ user }) {
           activeSnapPoint={isDesktop ? 1 : snap}
           setActiveSnapPoint={setSnap}
           // snapToSequentialPoint={true}
-          modal={isDesktop ? false : snap === 1} // Attempt to help with overscroll/touch events on mobile if header is dragged. Doesn't change anything about the overscroll
+          modal={isDesktop ? false : snap === snapPoints[1]} // Attempt to help with overscroll/touch events on mobile if header is dragged. Doesn't change anything about the overscroll
           // modal={false}
           open={isDrawerOpen}
           onOpenChange={(open) => {
@@ -600,7 +624,7 @@ export default function MapPageClient({ user }) {
           <Drawer.Portal>
             <StyledDrawerContent
               ref={drawerContentRef}
-              data-vaul-no-drag={!hasTouch ? true : undefined}
+              data-vaul-no-drag={isDesktop ? true : undefined}
               data-testid="content" // Not sure if this is needed
               // Desktop drawer offset
               // style={{ "--initial-transform": "calc(100% - 420px)" }}
@@ -633,10 +657,23 @@ export default function MapPageClient({ user }) {
                   </StyledHeaderText>
                 </StyledDrawerHeaderInner>
 
-                {/* <Drawer.Close className="bg-gray-100 rounded-full p-2">
-                  Close
-                </Drawer.Close> */}
-                <StyledIconButton action="close" onClick={handleCloseListing} />
+                {!hasTouch && !isDesktop ? (
+                  <ButtonSet>
+                    <StyledIconButtonStationary
+                      action={snap === snapPoints[0] ? "maximize" : "minimize"}
+                      onClick={handleSnapChange}
+                    />
+                    <StyledIconButtonStationary
+                      action="close"
+                      onClick={handleCloseListing}
+                    />
+                  </ButtonSet>
+                ) : (
+                  <StyledIconButtonAbsolute
+                    action="close"
+                    onClick={handleCloseListing}
+                  />
+                )}
               </StyledDrawerHeader>
 
               {/* Begin drawer main content */}
@@ -645,9 +682,9 @@ export default function MapPageClient({ user }) {
 
               // data-vaul-no-drag
               // style={{
-              //   overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
+              //   overflowY: snap === snapPoints[1] || isDesktop ? "auto" : "hidden",
               //   overscrollBehavior:
-              //     snap === 1 && !isDesktop ? "auto" : "auto",
+              //     snap === snapPoints[1] && !isDesktop ? "auto" : "auto",
               // }}
               >
                 <ListingRead
