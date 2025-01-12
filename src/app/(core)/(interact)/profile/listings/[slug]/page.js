@@ -1,7 +1,4 @@
 import { createClient } from "@/utils/supabase/server";
-
-import Link from "next/link";
-
 import ListingWrite from "@/components/ListingWrite";
 
 // Next.js automatically provides params
@@ -22,8 +19,6 @@ export default async function EditListingPage({ params }) {
     if (!listing) {
         return <div>Listing not found</div>;
     }
-
-    // console.log("listing", listing);
 
     return (
         <div>
