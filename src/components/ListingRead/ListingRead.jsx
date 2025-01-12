@@ -8,6 +8,8 @@ import {
   useRef,
 } from "react";
 
+import { useTabBar } from "@/contexts/TabBarContext";
+
 import Link from "next/link";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 
@@ -88,10 +90,31 @@ const ListingRead = memo(function Listing({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
+  const { setTabBarProps } = useTabBar();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [existingThread, setExistingThread] = useState(null);
   const supabase = createClient();
+
+  useEffect(() => {
+    if (isDrawer) {
+      return;
+    }
+
+    // Only set the position prop in listings page, not when ListingRead is used in a drawer
+    setTabBarProps((prev) => ({
+      ...prev,
+      position: "floating",
+    }));
+
+    return () => {
+      setTabBarProps((prev) => ({
+        ...prev,
+        position: "inherit",
+      }));
+    };
+  }, [setTabBarProps]);
+
   // Load existing thread if any
   useEffect(() => {
     async function loadExistingThread() {

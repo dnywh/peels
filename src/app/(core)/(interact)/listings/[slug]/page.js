@@ -17,12 +17,6 @@ const StyledMain = styled("main")({
     "& > section": {
         // backgroundColor: "red",
     },
-
-    "@media (min-width: 768px)": {
-        "& > *": {
-            marginLeft: "-4.25rem", // TODO: Set tab bar as floating on this page instead, or (failing that) make this offset dynamic based on desktop tab bar width
-        },
-    },
 });
 
 // Move data fetching to a reusable function
