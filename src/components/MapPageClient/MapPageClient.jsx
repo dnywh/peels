@@ -514,17 +514,16 @@ export default function MapPageClient({ user }) {
 
   // Add an effect to handle browser back/forward
   useEffect(() => {
-    const handlePopState = () => {
-      console.log("Popstate event searchParams: ", searchParams);
-      if (!searchParams.get("listing")) {
-        console.log("Popstate event: Removing drawer-fully-open class");
-        document.documentElement.classList.remove("drawer-fully-open");
-      }
-    };
+    // Check URL state whenever searchParams changes
+    const listingSlug = searchParams.get("listing");
 
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+    if (!listingSlug) {
+      // No listing in URL, ensure drawer-fully-open is removed
+      console.log("No listing in URL, removing drawer-fully-open class");
+      document.documentElement.classList.remove("drawer-fully-open");
+      setSnap(snapPoints[0]);
+    }
+  }, [searchParams]); // Only depend on searchParams changes
 
   // useEffect(() => {
   //   const handlePopstate = () => {
