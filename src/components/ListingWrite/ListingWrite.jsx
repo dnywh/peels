@@ -24,6 +24,51 @@ import PhotosUploader from "@/components/PhotosUploader";
 import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
 
+// Helper functions for database changes
+// Initialize MapTiler client
+// maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+// console.log(maptilersdk.config.apiKey)
+// async function createLegibleLocation(longitude, latitude) {
+//     // config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+//     const result = await geocoding.reverse([longitude, latitude]);
+//     // Helper function to find feature by place type
+//     const findFeatureByType = (features, types) => {
+//         return features.find(f => types.some(type => f.place_type?.includes(type)));
+//     };
+
+//     const features = result.features;
+//     console.log(features)
+
+//     if (!features || features.length === 0) {
+//         return undefined;
+//     }
+
+//     // Look for features in order of specificity
+//     const neighbourhood = findFeatureByType(features, ['neighbourhood']);
+//     const place = findFeatureByType(features, ['place']);
+//     const municipality = findFeatureByType(features, ['municipality']);
+//     const region = findFeatureByType(features, ['region']);
+//     const country = findFeatureByType(features, ['country']);
+//     const marine = findFeatureByType(features, ['continental_marine']);
+
+//     // Build location string based on available information
+//     if (place && region) {
+//         return `${place.text}, ${region.text}`;
+//     } else if (municipality && region) {
+//         return `${municipality.text}, ${region.text}`;
+//     } else if (municipality) {
+//         return municipality.text;
+//     } else if (region) {
+//         return region.text;
+//     } else if (country) {
+//         return country.text;
+//     } else if (marine) {
+//         return marine.text;
+//     } else {
+//         // Fallback to the most relevant feature's place name
+//         return features[0].place_name || undefined;
+//     }
+// }
 async function uploadPhoto(file) {
   const supabase = createClient();
 
@@ -78,10 +123,6 @@ export default function ListingWrite({ initialListing }) {
       : null
   );
 
-  const [areaName, setAreaName] = useState(
-    initialListing ? initialListing.area_name : ""
-  );
-
   const [acceptedItems, setAcceptedItems] = useState(
     initialListing ? initialListing.accepted_items : [""]
   );
@@ -117,10 +158,8 @@ export default function ListingWrite({ initialListing }) {
         data: { user },
       } = await supabase.auth.getUser();
 
-      const areaName = await getAreaName(
-        coordinates.longitude,
-        coordinates.latitude
-      );
+      // Get location_legible using your tested function
+      // const locationLegible = await createLegibleLocation(longitude, latitude);
 
       // Prepare the listing data
       const listingData = {
@@ -136,7 +175,6 @@ export default function ListingWrite({ initialListing }) {
         // ...because I can't get the geometry type to convert to to long and lat dynamically if a user goes direct to a listing, e.g. http://localhost:3000/map?listing=9xvN9zxH0rzZ
         longitude: coordinates.longitude,
         latitude: coordinates.latitude,
-        area_name: areaName,
         country_code: countryCode,
         accepted_items: acceptedItems.filter((item) => item.trim() !== ""),
         rejected_items: rejectedItems.filter((item) => item.trim() !== ""),
@@ -259,8 +297,6 @@ export default function ListingWrite({ initialListing }) {
             setCoordinates={setCoordinates}
             countryCode={countryCode}
             setCountryCode={setCountryCode}
-            areaName={areaName}
-            setAreaName={setAreaName}
           />
 
           {listingType === "business" ? (
