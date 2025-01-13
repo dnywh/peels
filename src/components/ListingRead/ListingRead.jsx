@@ -33,10 +33,15 @@ import { getListingDisplayName } from "@/utils/listing";
 import Hyperlink from "@/components/Hyperlink";
 
 import ListingChatDrawer from "@/components/ListingChatDrawer";
+
 const ButtonGroup = styled("div")({
   display: "flex",
   flexWrap: "wrap",
   gap: "0.5rem",
+});
+
+const ParagraphWithLineBreaks = styled("p")({
+  whiteSpace: "pre-line",
 });
 
 // Memoize the Listing component
@@ -139,7 +144,9 @@ const ListingRead = memo(function Listing({
       {listing.description && (
         <section>
           <h3>{listing.type === "business" ? "Donation details" : "About"}</h3>
-          <p>{listing.description}</p>
+          <ParagraphWithLineBreaks>
+            {listing.description}
+          </ParagraphWithLineBreaks>
         </section>
       )}
 
