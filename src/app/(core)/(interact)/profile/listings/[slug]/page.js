@@ -28,7 +28,7 @@ export default async function EditListingPage({ params }) {
 
     return (
         <div>
-            <h1>{listing.type === "residential" ? `${profile.first_name}’s listing` : listing.name}</h1>
+            <h1>{listing.type === "residential" ? profile.first_name : listing.name}</h1>
             <ListingWrite
                 initialListing={listing}
                 user={user}

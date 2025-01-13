@@ -261,9 +261,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
           {listingType === "business" ? (
             <Field>
-              <Label htmlFor="description">
-                Donation and collection details
-              </Label>
+              <Label htmlFor="description">Donation details</Label>
               <Textarea
                 id="description"
                 rows={4}
@@ -284,7 +282,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 rows={4}
                 maxLength={512}
                 required={false}
-                placeholder="Description here"
+                placeholder={`About your ${listingType === "residential" ? "listing" : listingType === "community" ? "community project" : "business"}`}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
@@ -326,8 +324,13 @@ export default function ListingWrite({ initialListing, user, profile }) {
         <div>
           <h2>Media</h2>
           <p>
-            Optionally show a bit more about your community project to Peels
-            members.
+            Optionally show{" "}
+            {listingType === "residential"
+              ? "a bit more about your listing"
+              : listingType === "community"
+                ? "a bit more about your community project"
+                : "off your business"}{" "}
+            to Peels members.
           </p>
 
           <PhotosUploader
@@ -338,17 +341,19 @@ export default function ListingWrite({ initialListing, user, profile }) {
             getPhotoUrl={getPhotoUrl}
           />
 
-          <MultiInput
-            label="External links"
-            required={false}
-            addButtonText="Add link"
-            placeholder="Your website or social media"
-            items={links}
-            handleItemChange={handleLinksChange}
-            onClick={addLink}
-            limit={3}
-            type="url"
-          />
+          {listingType !== "residential" && (
+            <MultiInput
+              label="External links"
+              required={false}
+              addButtonText="Add link"
+              placeholder="Your website or social media"
+              items={links}
+              handleItemChange={handleLinksChange}
+              onClick={addLink}
+              limit={3}
+              type="url"
+            />
+          )}
         </div>
 
         {initialListing && (

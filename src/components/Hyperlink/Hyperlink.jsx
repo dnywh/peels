@@ -14,10 +14,18 @@ const getSharedStyles = ({ theme }) => ({
 const StyledLink = styled(Link)(getSharedStyles);
 const StyledAnchor = styled("a")(getSharedStyles);
 
-export default function Hyperlink({ as = Link, children, href }) {
+export default function Hyperlink({ as = Link, children, href, ...props }) {
   if (as === "anchor") {
-    return <StyledAnchor href={href}>{children}</StyledAnchor>;
+    return (
+      <StyledAnchor href={href} {...props}>
+        {children}
+      </StyledAnchor>
+    );
   }
 
-  return <StyledLink href={href}>{children}</StyledLink>;
+  return (
+    <StyledLink href={href} {...props}>
+      {children}
+    </StyledLink>
+  );
 }

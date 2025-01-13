@@ -40,9 +40,17 @@ const ButtonGroup = styled("div")({
   gap: "0.5rem",
 });
 
-const ParagraphWithLineBreaks = styled("p")({
-  whiteSpace: "pre-line",
-});
+// A much fancier version than just using whiteSpace: "pre-wrap", which renders looking like a completely new empty paragraph in between lines
+const ParagraphWithLineBreaks = ({ text }) => {
+  const paragraphs = text.split("\n").filter((line) => line.trim() !== ""); // Split by line breaks and filter out empty lines
+  return (
+    <>
+      {paragraphs.map((paragraph, index) => (
+        <p key={index}>{paragraph}</p> // Render each line as a separate paragraph
+      ))}
+    </>
+  );
+};
 
 // Memoize the Listing component
 const ListingRead = memo(function Listing({
@@ -144,9 +152,7 @@ const ListingRead = memo(function Listing({
       {listing.description && (
         <section>
           <h3>{listing.type === "business" ? "Donation details" : "About"}</h3>
-          <ParagraphWithLineBreaks>
-            {listing.description}
-          </ParagraphWithLineBreaks>
+          <ParagraphWithLineBreaks text={listing.description} />
         </section>
       )}
 

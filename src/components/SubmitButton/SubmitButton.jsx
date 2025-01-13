@@ -5,7 +5,7 @@ import { useFormStatus } from "react-dom";
 
 export default function SubmitButton({
   children,
-  pendingText = "Submitting...",
+  pendingText = "Loading...",
   ...props
 }) {
   const { pending } = useFormStatus();
