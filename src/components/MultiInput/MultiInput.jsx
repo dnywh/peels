@@ -26,6 +26,26 @@ function MultiInput({
   addAnotherButtonText = "Add another",
 }) {
   const uniqueId = useId();
+
+  const handleAddItem = () => {
+    onClick();
+    // After adding item, focus the new input field
+    setTimeout(() => {
+      const newIndex = items.length;
+      const newInput = document.getElementById(`${uniqueId}-${newIndex}`);
+      if (newInput) {
+        newInput.focus();
+      }
+    }, 0);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddItem();
+    }
+  };
+
   return (
     <Fieldset>
       <Field>
@@ -51,7 +71,8 @@ function MultiInput({
             size="small"
             variant="secondary"
             width="contained"
-            onClick={onClick}
+            onClick={handleAddItem}
+            onKeyDown={handleKeyDown}
           >
             {items.length === 0 ? addButtonText : addAnotherButtonText}
           </Button>

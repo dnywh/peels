@@ -118,11 +118,13 @@ export default function Button({
   disabled = false,
   href,
   children,
+  tabIndex = 0,
   ...props
 }) {
   const sharedProps = {
     disabled,
     variant,
+    tabIndex,
     ...props,
   };
 
