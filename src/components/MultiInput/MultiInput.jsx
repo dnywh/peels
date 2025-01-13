@@ -1,5 +1,5 @@
 "use client";
-import { useId } from "react";
+import { useId, useRef } from "react";
 
 import Form from "@/components/Form";
 import Fieldset from "@/components/Fieldset";
@@ -26,6 +26,7 @@ function MultiInput({
   addAnotherButtonText = "Add another",
 }) {
   const uniqueId = useId();
+  const addButtonRef = useRef(null);
 
   const handleAddItem = () => {
     onClick();
@@ -39,10 +40,12 @@ function MultiInput({
     }, 0);
   };
 
-  const handleKeyDown = (e) => {
+  const handleInputKeyDown = (e, index) => {
     if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddItem();
+      e.preventDefault(); // Prevent form submission
+      if (addButtonRef.current) {
+        addButtonRef.current.focus();
+      }
     }
   };
 
@@ -64,15 +67,16 @@ function MultiInput({
             placeholder={index === 0 ? placeholder : secondaryPlaceholder}
             value={item}
             onChange={(e) => handleItemChange(index, e.target.value)}
+            onKeyDown={(e) => handleInputKeyDown(e, index)}
           />
         ))}
         {items.length < limit && (
           <Button
+            ref={addButtonRef}
             size="small"
             variant="secondary"
             width="contained"
             onClick={handleAddItem}
-            onKeyDown={handleKeyDown}
           >
             {items.length === 0 ? addButtonText : addAnotherButtonText}
           </Button>
