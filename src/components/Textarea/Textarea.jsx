@@ -13,11 +13,20 @@ const StyledTextarea = styled(HeadlessTextarea)({
   "&[data-focus]": {
     outline: "2px solid blue",
   },
+  variants: [
+    {
+      props: { resize: "vertical" },
+      style: {
+        resize: "vertical",
+      },
+    },
+  ],
 });
 
-function Textarea({ children, ...props }) {
+function Textarea({ resize, children, ...props }) {
   return (
     <StyledTextarea
+      resize={resize}
       autoCorrect="on"
       spellCheck="true"
       autoCapitalize="sentences"

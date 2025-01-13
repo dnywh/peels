@@ -267,6 +267,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 rows={4}
                 maxLength={512}
                 required={true}
+                resize="vertical"
                 placeholder="Your donation details"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
@@ -282,6 +283,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 rows={4}
                 maxLength={512}
                 required={false}
+                resize="vertical"
                 placeholder={`About your ${listingType === "residential" ? "listing" : listingType === "community" ? "community project" : "business"}`}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}

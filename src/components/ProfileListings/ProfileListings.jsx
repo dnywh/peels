@@ -23,13 +23,17 @@ export default function ProfileListings({ listings, firstName }) {
         {listings.length < 3 && (
           <li>
             <Link href="/profile/listings/new">
-              <p>
-                Add {listings.length === 0 ? "a" : "another"} listing to the map
-              </p>
-              <small>
-                Whether you're an individual, community, or business, we're
-                always looking for new hosts.
-              </small>
+              {listings.length === 0 ? (
+                <>
+                  <p>Add a listing</p>
+                  <small>
+                    Put yourself, your community spot, or your business on the
+                    map!
+                  </small>
+                </>
+              ) : (
+                <p>Add another listing</p>
+              )}
             </Link>
           </li>
         )}

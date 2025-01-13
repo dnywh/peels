@@ -180,12 +180,9 @@ const ListingRead = memo(function Listing({
 
           {listing.type === "residential" && (
             <p>
-              {listingDisplayName} is a{" "}
-              {listing.area_name
-                ? `resident located in ${listing.area_name}`
-                : "resident of this area"}
-              . Ask them for their exact location when you arrange a food scrap
-              drop-off.
+              {listingDisplayName} is a resident of{" "}
+              {listing.area_name ? listing.area_name : "this area"}. Ask them
+              for their exact location when you arrange a food scrap drop-off.
             </p>
           )}
           {listing.type === "community" && listing.area_name && (
