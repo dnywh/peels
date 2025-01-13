@@ -22,6 +22,7 @@ const tokens = {
     black: {
         3: 'hsla(0, 0%, 0%, 0.03)',
         6: 'hsla(0, 0%, 0%, 0.06)',
+        33: 'hsla(0, 0%, 0%, 0.33)',
         100: 'hsla(0, 0%, 0%, 1)',
     },
     rock: {
@@ -66,6 +67,7 @@ export default withPigment(nextConfig, {
                 sunk: tokens.ochre[80],
                 between: tokens.ochre[100],
                 pit: tokens.ochre[150],
+                overlay: tokens.black[33],
             },
             border: {
                 light: tokens.black[3],
@@ -138,6 +140,7 @@ export default withPigment(nextConfig, {
                 quaternity: tokens.rock[300],
                 link: tokens.ochre[700],
                 counter: tokens.rock[100],
+                overlay: tokens.white[100],
             },
         },
         spacing: {
@@ -151,8 +154,12 @@ export default withPigment(nextConfig, {
                 marginBottom: "0.75rem",
             }
         },
+        rotations: {
+            avatar: "-3deg",
+        },
         corners: {
             base: 16,
+            avatar: "0.5rem",
         },
         typography: {
             fontFamily: "Inter, sans-serif",

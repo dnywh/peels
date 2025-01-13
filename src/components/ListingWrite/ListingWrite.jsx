@@ -108,23 +108,6 @@ export default function ListingWrite({ initialListing, user, profile }) {
   // Other states
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Add state for user's profile avatar
-  const [userAvatar, setUserAvatar] = useState(profile?.avatar || "");
-
-  // Simplify the useEffect since we now have profile data directly
-  useEffect(() => {
-    if (listingType === "residential") {
-      console.log("Setting residential avatar from profile:", profile?.avatar);
-      setAvatar(profile?.avatar || "");
-    } else if (initialListing?.avatar) {
-      console.log(
-        "Setting business/community avatar from listing:",
-        initialListing.avatar
-      );
-      setAvatar(initialListing.avatar);
-    }
-  }, [listingType, profile?.avatar, initialListing?.avatar]);
-
   // Form handling logic here
   async function handleSubmit(event) {
     event.preventDefault();
@@ -248,20 +231,14 @@ export default function ListingWrite({ initialListing, user, profile }) {
             initialAvatar={profile?.avatar || ""}
             bucket="avatars"
             entityId={user.id}
-            onAvatarChange={(nextAvatar) => {
-              console.log("Residential avatar changed:", nextAvatar);
-              setAvatar(nextAvatar);
-            }}
+            onAvatarChange={setAvatar}
           />
         ) : (
           <AvatarUploadManager
             initialAvatar={avatar}
             bucket="listing_avatars"
             entityId={initialListing?.slug}
-            onAvatarChange={(nextAvatar) => {
-              console.log("Business/community avatar changed:", nextAvatar);
-              setAvatar(nextAvatar);
-            }}
+            onAvatarChange={setAvatar}
           />
         )}
 

@@ -24,9 +24,29 @@ const StyledImgContainer = styled("div")({
 });
 
 const AvatarButton = styled(Button)({
-  marginTop: "-1rem",
-  zIndex: 1,
+  marginLeft: "0.35rem", // Optical offset for theme.rotations.avatar
+  marginTop: "-1.25rem",
+  zIndex: 2,
 });
+
+const LoadingSpinner = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "white",
+  fontSize: "20px",
+
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: theme.colors.background.overlay,
+  color: theme.colors.text.overlay,
+  // Match Avatar
+  transform: `rotate(${theme.rotations.avatar})`,
+  borderRadius: theme.corners.avatar,
+}));
 
 function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
   // Hidden file input that we'll trigger programmatically
@@ -59,26 +79,7 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
         <StyledImgContainer>
           <Avatar bucket="avatars" filename={avatar} alt="Your avatar" />
 
-          {loading && (
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.5)", // 50% black overlay
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "white",
-                fontSize: "20px",
-                zIndex: 1, // Ensure overlay is above the image
-              }}
-            >
-              Loading...
-            </div>
-          )}
+          {loading && <LoadingSpinner>Loading...</LoadingSpinner>}
         </StyledImgContainer>
 
         {!avatar ? (
@@ -93,7 +94,7 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
         ) : (
           // Scenario 2 & 3: Has avatar - show menu with options
           <Menu>
-            <Menu.Button as={Button} variant="secondary" size="small">
+            <Menu.Button as={AvatarButton} variant="secondary" size="small">
               Edit
             </Menu.Button>
 
