@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 
-export default function ProfileListings({ listings }) {
+export default function ProfileListings({ listings, firstName }) {
   if (!listings) return null;
 
   return (
@@ -11,9 +11,11 @@ export default function ProfileListings({ listings }) {
         {listings.map(({ id, slug, type, name, visibility }) => (
           <li key={id}>
             <Link href={`/profile/listings/${slug}`}>
-              <p>{type === "residential" ? name : name}</p>
-              <p>{type}</p>
-              {!visibility && <p>hidden</p>}
+              <p>{type === "residential" ? firstName : name}</p>
+              <small>
+                {type.charAt(0).toUpperCase() + type.slice(1)} listing
+              </small>
+              {!visibility && <small>hidden</small>}
             </Link>
           </li>
         ))}

@@ -14,12 +14,18 @@ export default async function ProfileData() {
     .select()
     .eq("owner_id", user.id);
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select()
+    .eq("id", user.id)
+    .single();
+
   //   console.log("Profile data:", { user, listings });
 
   // Pass the data down to client components
   return (
     <>
-      <ProfileListings listings={listings} />
+      <ProfileListings listings={listings} firstName={profile.first_name} />
     </>
   );
 }
