@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
 import { deleteListingAction } from "@/app/actions";
@@ -56,6 +57,8 @@ function getPhotoUrl(filename) {
 // React component
 export default function ListingWrite({ initialListing, user, profile }) {
   const { type } = useParams();
+  const router = useRouter();
+
   const listingType = initialListing?.type || type;
 
   // Populate editable fields
@@ -112,7 +115,6 @@ export default function ListingWrite({ initialListing, user, profile }) {
   async function handleSubmit(event) {
     event.preventDefault();
     console.log(visibility);
-    // console.log(coordinates);
     try {
       const supabase = createClient();
       const {
@@ -153,25 +155,13 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
       if (error) throw error;
 
-      // Clear form and show success
       console.log("Listing created/updated:", data);
 
-      // Reset form after submission if it's a new listing
-      //   if (!initialListing) {
-      //     setName("");
-      //     setAvatar("");
-      //     setDescription("");
-      //     setCoordinates({ latitude: 0, longitude: 0 });
-      //     setCountryCode("");
-      //     setAcceptedItems([""]);
-      //     setRejectedItems([""]);
-      //     setPhotos([]);
-      //     setLinks([]);
-      //     setVisibility(true);
-      //     setLegal(false);
-      //   }
-
-      // TODO: redirect to listings page and show success toast
+      // Redirect to the new/updated listing
+      router.push(
+        `/listings/${data.slug}?status=${initialListing ? "updated" : "created"}`
+      );
+      // window.location.href = `/listings/${data.slug}?success=Listing ${initialListing ? "updated" : "created"} successfully`
     } catch (error) {
       console.error("Error creating listing:", error);
     }
