@@ -1,3 +1,4 @@
+import { createClient } from "@/utils/supabase/server";
 import ListingWrite from "@/components/ListingWrite";
 import FormHeader from '@/components/FormHeader';
 
@@ -20,6 +21,15 @@ export default async function NewListingFormContent({ params }) {
     const { type } = await params;
     const config = typeConfig[type] || typeConfig.residential;
 
+    // Get user and profile data
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", user.id)
+        .single();
+
     return (
         <>
             <FormHeader action="back">
@@ -27,7 +37,7 @@ export default async function NewListingFormContent({ params }) {
                 <p>{config.description}</p>
             </FormHeader>
 
-            <ListingWrite />
+            <ListingWrite user={user} profile={profile} />
         </>
     );
 }

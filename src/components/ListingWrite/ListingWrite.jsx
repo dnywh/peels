@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 
 import { deleteListingAction } from "@/app/actions";
@@ -54,7 +54,7 @@ function getPhotoUrl(filename) {
 }
 
 // React component
-export default function ListingWrite({ initialListing }) {
+export default function ListingWrite({ initialListing, user, profile }) {
   const { type } = useParams();
   const listingType = initialListing?.type || type;
 
@@ -108,6 +108,23 @@ export default function ListingWrite({ initialListing }) {
   // Other states
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Add state for user's profile avatar
+  const [userAvatar, setUserAvatar] = useState(profile?.avatar || "");
+
+  // Simplify the useEffect since we now have profile data directly
+  useEffect(() => {
+    if (listingType === "residential") {
+      console.log("Setting residential avatar from profile:", profile?.avatar);
+      setAvatar(profile?.avatar || "");
+    } else if (initialListing?.avatar) {
+      console.log(
+        "Setting business/community avatar from listing:",
+        initialListing.avatar
+      );
+      setAvatar(initialListing.avatar);
+    }
+  }, [listingType, profile?.avatar, initialListing?.avatar]);
+
   // Form handling logic here
   async function handleSubmit(event) {
     event.preventDefault();
@@ -125,7 +142,7 @@ export default function ListingWrite({ initialListing }) {
         ...(initialListing && { id: initialListing.id }),
         owner_id: user.id,
         type: listingType,
-        avatar,
+        ...(listingType !== "residential" && avatar && { avatar }),
         name,
         description,
         location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
@@ -142,7 +159,7 @@ export default function ListingWrite({ initialListing }) {
         visibility,
       };
 
-      // console.log(listingData);
+      console.log("Submitting listing data:", listingData);
 
       // Insert the listing into the database
       const { data, error } = await supabase
@@ -226,12 +243,27 @@ export default function ListingWrite({ initialListing }) {
   return (
     <>
       <Form onSubmit={handleSubmit}>
-        <AvatarUploadManager
-          initialAvatar={avatar}
-          bucket="listing_avatars"
-          entityId={initialListing?.slug}
-          onAvatarChange={(nextAvatar) => setAvatar(nextAvatar)} // Needed since there is no ID or slug to tie it to
-        />
+        {listingType === "residential" ? (
+          <AvatarUploadManager
+            initialAvatar={profile?.avatar || ""}
+            bucket="avatars"
+            entityId={user.id}
+            onAvatarChange={(nextAvatar) => {
+              console.log("Residential avatar changed:", nextAvatar);
+              setAvatar(nextAvatar);
+            }}
+          />
+        ) : (
+          <AvatarUploadManager
+            initialAvatar={avatar}
+            bucket="listing_avatars"
+            entityId={initialListing?.slug}
+            onAvatarChange={(nextAvatar) => {
+              console.log("Business/community avatar changed:", nextAvatar);
+              setAvatar(nextAvatar);
+            }}
+          />
+        )}
 
         <div>
           <h2>Basics</h2>

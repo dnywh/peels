@@ -8,9 +8,12 @@ import ListingWrite from "@/components/ListingWrite";
 export default async function EditListingPage({ params }) {
     const { slug } = await params;
     const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", user.id)
+        .single();
 
     const { data: listing } = await supabase
         .from("listings")
@@ -23,12 +26,14 @@ export default async function EditListingPage({ params }) {
         return <div>Listing not found</div>;
     }
 
-    // console.log("listing", listing);
-
     return (
         <div>
             <h1>Edit Listing</h1>
-            <ListingWrite initialListing={listing} />
+            <ListingWrite
+                initialListing={listing}
+                user={user}
+                profile={profile}
+            />
         </div>
     );
 } 

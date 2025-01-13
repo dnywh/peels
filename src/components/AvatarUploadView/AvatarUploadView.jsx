@@ -2,6 +2,8 @@
 
 import { useState, useRef } from "react";
 
+import Avatar from "@/components/Avatar";
+
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
@@ -19,15 +21,6 @@ const StyledField = styled(Field)({
 
 const StyledImgContainer = styled("div")({
   position: "relative",
-  borderRadius: "50%",
-  border: "4px solid #e5e7eb",
-  width: "100px",
-  height: "100px",
-  overflow: "hidden",
-});
-
-const StyledImg = styled("img")({
-  objectFit: "cover",
 });
 
 const AvatarButton = styled(Button)({
@@ -64,15 +57,7 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
         />
 
         <StyledImgContainer>
-          <StyledImg
-            src={
-              avatar
-                ? getAvatarUrl(avatar)
-                : "https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/listing_avatars/blank1.png"
-            }
-            alt="Your avatar"
-            style={{ width: "100px" }}
-          />
+          <Avatar bucket="avatars" filename={avatar} alt="Your avatar" />
 
           {loading && (
             <div

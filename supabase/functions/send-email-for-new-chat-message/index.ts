@@ -149,7 +149,7 @@ function generateEmailContent(
   <p>Hi ${recipientName}, you've received a new message from ${senderName}:</p>
     ${
     senderAvatarUrl
-      ? `<img src="${senderAvatarUrl}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%;" />`
+      ? `<img src="${senderAvatarUrl}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 0.5rem; transform: rotate(-3deg);" />`
       : ""
   }
     <p>${messageContent}</p>

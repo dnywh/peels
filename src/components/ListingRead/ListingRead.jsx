@@ -220,21 +220,21 @@ const ListingRead = memo(function Listing({
         </section>
       )}
 
-      {listing.accepted_items.length > 0 && (
+      {listing.accepted_items?.length > 0 && (
         <section>
           <h3>Accepted</h3>
           <ListingItemList items={listing.accepted_items} type="accepted" />
         </section>
       )}
 
-      {listing.rejected_items.length > 0 && (
+      {listing.rejected_items?.length > 0 && (
         <section>
           <h3>Not accepted</h3>
           <ListingItemList items={listing.rejected_items} type="rejected" />
         </section>
       )}
 
-      {listing.photos.length > 0 &&
+      {listing.photos?.length > 0 &&
         (!listing.type === "residential" || user) && (
           <section>
             <h3>Photos</h3>
@@ -253,7 +253,7 @@ const ListingRead = memo(function Listing({
           </section>
         )}
 
-      {listing.links.length > 0 && (
+      {listing.links?.length > 0 && (
         <section>
           <h3>Links</h3>
           <ListingItemList items={listing.links} type="links" />
