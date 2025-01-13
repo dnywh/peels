@@ -48,7 +48,13 @@ const LoadingSpinner = styled("div")(({ theme }) => ({
   borderRadius: theme.corners.avatar,
 }));
 
-function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
+function AvatarUploadView({
+  avatar,
+  onChange,
+  onDelete,
+  getAvatarUrl,
+  bucket,
+}) {
   // Hidden file input that we'll trigger programmatically
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -77,9 +83,9 @@ function AvatarUploadView({ avatar, onChange, onDelete, getAvatarUrl }) {
         />
 
         <StyledImgContainer>
-          <Avatar bucket="avatars" filename={avatar} alt="Your avatar" />
+          <Avatar bucket={bucket} filename={avatar} alt="Your avatar" />
 
-          {loading && <LoadingSpinner>Loading...</LoadingSpinner>}
+          {loading && <LoadingSpinner>Uploading...</LoadingSpinner>}
         </StyledImgContainer>
 
         {!avatar ? (

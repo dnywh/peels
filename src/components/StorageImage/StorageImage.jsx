@@ -35,6 +35,7 @@ export default function StorageImage({
   size = 100,
   ...props
 }) {
+  console.log("StorageImage received:", { bucket, filename });
   // Handle missing filename or public folder images
   if (!filename || bucket === "public") {
     const imagePath = !filename ? "/avatars/default.png" : `/${filename}`;

@@ -17,12 +17,11 @@ function AvatarUploadManager({
     if (file) {
       try {
         if (avatar) {
-          const existingFilePath = avatar.split("/").pop();
-          await deleteAvatar(existingFilePath, bucket, entityId);
+          await deleteAvatar(avatar, bucket, entityId);
         }
-        const avatarUrl = await uploadAvatar(file, bucket, entityId);
-        setAvatar(avatarUrl);
-        onAvatarChange?.(avatarUrl);
+        const filename = await uploadAvatar(file, bucket, entityId);
+        setAvatar(filename);
+        onAvatarChange?.(filename);
       } catch (error) {
         console.error("Error handling avatar:", error);
       }
@@ -32,8 +31,7 @@ function AvatarUploadManager({
   const handleAvatarDelete = async () => {
     if (avatar) {
       try {
-        const filePath = avatar.split("/").pop();
-        await deleteAvatar(filePath, bucket, entityId);
+        await deleteAvatar(avatar, bucket, entityId);
         setAvatar("");
         onAvatarChange?.("");
       } catch (error) {
@@ -48,6 +46,7 @@ function AvatarUploadManager({
       onChange={handleAvatarChange}
       onDelete={handleAvatarDelete}
       getAvatarUrl={(filename) => getAvatarUrl(filename, bucket)}
+      bucket={bucket}
     />
   );
 }
