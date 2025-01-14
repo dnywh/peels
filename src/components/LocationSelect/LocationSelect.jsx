@@ -30,9 +30,6 @@ import { styled } from "@pigment-css/react";
 
 const ZOOM_LEVEL = 16;
 
-// import * as maptilersdk from "@maptiler/sdk";
-// import "@maptiler/sdk/dist/maptiler-sdk.css"; // IS this needed?
-
 import { config, geocoding, geolocation } from "@maptiler/client";
 
 // Reverse geocoding for legible location (area_name)
