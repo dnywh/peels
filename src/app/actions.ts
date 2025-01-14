@@ -276,6 +276,24 @@ export const deleteAccountAction = async () => {
   }
 };
 
+// Helper function to wait
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Retry wrapper
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  backoff = 300,
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries === 0) throw error;
+    await delay(backoff);
+    return withRetry(fn, retries - 1, backoff * 2);
+  }
+}
+
 export async function fetchListingsInView(
   south: number,
   west: number,
@@ -284,19 +302,40 @@ export async function fetchListingsInView(
 ) {
   const supabase = await createClient();
 
-  // Try sending as a single object instead
-  const { data, error } = await supabase.rpc("listings_in_view", {
-    min_lat: south,
-    min_long: west,
-    max_lat: north,
-    max_long: east,
-  });
+  try {
+    const { data, error } = await withRetry(async () => {
+      console.log("Fetching listings with bounds:", {
+        south,
+        west,
+        north,
+        east,
+      });
 
-  if (error) {
-    console.error("Error fetching listings:", error);
-    console.error("Error details:", error.details);
+      return await supabase.rpc("listings_in_view", {
+        min_lat: south,
+        min_long: west,
+        max_lat: north,
+        max_long: east,
+      });
+    });
+
+    if (error) {
+      console.error("Supabase RPC Error:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return [];
+    }
+
+    console.log(`Successfully fetched ${data?.length || 0} listings`);
+    return data || [];
+  } catch (error) {
+    console.error("Fatal error in fetchListingsInView:", {
+      error,
+      bounds: { south, west, north, east },
+    });
     return [];
   }
-
-  return data || [];
 }

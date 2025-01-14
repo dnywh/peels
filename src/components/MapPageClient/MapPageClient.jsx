@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { debounce } from "lodash";
 
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
 import { Drawer } from "vaul";
@@ -368,25 +369,32 @@ export default function MapPageClient({ user }) {
     setSelectedListing(data);
   };
 
-  const handleBoundsChange = useCallback(async (bounds) => {
-    setIsLoading(true);
-    // console.log("Bounds changed. Bounds being sent:", bounds, {
-    //   bottomLeftWest: bounds._sw.lat,
-    //   bottomLeftSouth: bounds._sw.lng,
-    //   topRightNorth: bounds._ne.lat,
-    //   topRightEast: bounds._ne.lng,
-    // });
+  const debouncedBoundsChange = useCallback(
+    debounce(async (bounds) => {
+      setIsLoading(true);
+      try {
+        const data = await fetchListingsInView(
+          bounds._sw.lat,
+          bounds._sw.lng,
+          bounds._ne.lat,
+          bounds._ne.lng
+        );
+        setListings(data);
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300), // 300ms delay
+    []
+  );
 
-    const data = await fetchListingsInView(
-      bounds._sw.lat,
-      bounds._sw.lng,
-      bounds._ne.lat,
-      bounds._ne.lng
-    );
-    // console.log("Data fetched:", data);
-    setListings(data);
-    setIsLoading(false);
-  }, []);
+  const handleBoundsChange = useCallback(
+    async (bounds) => {
+      debouncedBoundsChange(bounds);
+    },
+    [debouncedBoundsChange]
+  );
 
   const handleSnapChange = () => {
     console.log("Handling snap change", snap, snapPoints[0]);
