@@ -114,46 +114,6 @@ async function getAreaName(longitude, latitude) {
 // }
 // basicCallToBuildCustomComponentAround();
 
-// TODO: See if MapTiler's Geolocation API is faster than my manual IP lookup below
-// https://docs.maptiler.com/client-js/geolocation/
-async function initializeLocation() {
-  console.log("No listing slug. Initializing location");
-
-  try {
-    const response = await geolocation.info();
-
-    if (response.latitude && response.longitude) {
-      console.log(
-        "Using MapTiler IP lookup coordinates",
-        response.latitude,
-        response.longitude
-      );
-      setInitialCoordinates({
-        latitude: response.latitude,
-        longitude: response.longitude,
-        zoom: 9, // Increase zoom when more listings are available
-      });
-    } else {
-      // Brisbane fallback coordinates
-      console.log("Using Brisbane fallback coordinates");
-      setInitialCoordinates({
-        latitude: -33.86785,
-        longitude: 151.20732,
-        zoom: 9,
-      });
-    }
-  } catch (error) {
-    console.warn("Could not determine location from MapTiler:", error);
-    // Brisbane fallback coordinates
-    console.log("Using Brisbane fallback coordinates");
-    setInitialCoordinates({
-      latitude: -33.86785,
-      longitude: 151.20732,
-      zoom: 9,
-    });
-  }
-}
-
 // React component
 export default function LocationSelect({
   listingType,
