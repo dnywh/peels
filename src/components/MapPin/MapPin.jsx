@@ -147,7 +147,6 @@ function MapPin({
   distanceAcrossMapWidth = 0,
   mapWidth = 0,
 }) {
-  console.log(type);
   // console.log("zoomLevel", zoomLevel);
   const basicSize = 2 ** (zoomLevel * 0.565);
   // const size = 1000 / (1 + Math.exp(-10 * (zoomLevel - 10)));

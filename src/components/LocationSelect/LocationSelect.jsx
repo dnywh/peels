@@ -30,11 +30,13 @@ import { styled } from "@pigment-css/react";
 
 const ZOOM_LEVEL = 16;
 
-import * as maptilersdk from "@maptiler/sdk";
-import "@maptiler/sdk/dist/maptiler-sdk.css"; // IS this needed?
+// import * as maptilersdk from "@maptiler/sdk";
+// import "@maptiler/sdk/dist/maptiler-sdk.css"; // IS this needed?
+
+import { config, geocoding, geolocation } from "@maptiler/client";
 
 // Reverse geocoding for legible location (area_name)
-maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
 // const maptilerClient = new maptilersdk.Maptiler();
 
@@ -42,10 +44,7 @@ async function getAreaName(longitude, latitude) {
   // const result = await maptilersdk.geocoding.reverse([6.249638, 46.402056]);
   // console.log({ result });
   // config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
-  const coordinates = await maptilersdk.geocoding.reverse([
-    longitude,
-    latitude,
-  ]);
+  const coordinates = await geocoding.reverse([longitude, latitude]);
 
   const features = coordinates.features;
   console.log({ features });
@@ -118,20 +117,40 @@ async function getAreaName(longitude, latitude) {
 // TODO: See if MapTiler's Geolocation API is faster than my manual IP lookup below
 // https://docs.maptiler.com/client-js/geolocation/
 async function initializeLocation() {
+  console.log("No listing slug. Initializing location");
+
   try {
-    const response = await fetch("https://freeipapi.com/api/json/", {
-      signal: AbortSignal.timeout(3000), // 3 second timeout
-    });
+    const response = await geolocation.info();
 
-    if (!response.ok) throw new Error("IP lookup failed");
-    const data = await response.json();
-
-    if (data.countryCode) {
-      return data.countryCode;
+    if (response.latitude && response.longitude) {
+      console.log(
+        "Using MapTiler IP lookup coordinates",
+        response.latitude,
+        response.longitude
+      );
+      setInitialCoordinates({
+        latitude: response.latitude,
+        longitude: response.longitude,
+        zoom: 9, // Increase zoom when more listings are available
+      });
+    } else {
+      // Brisbane fallback coordinates
+      console.log("Using Brisbane fallback coordinates");
+      setInitialCoordinates({
+        latitude: -33.86785,
+        longitude: 151.20732,
+        zoom: 9,
+      });
     }
   } catch (error) {
-    // Fail silently - default view state will be used
-    console.warn("Could not determine location from IP");
+    console.warn("Could not determine location from MapTiler:", error);
+    // Brisbane fallback coordinates
+    console.log("Using Brisbane fallback coordinates");
+    setInitialCoordinates({
+      latitude: -33.86785,
+      longitude: 151.20732,
+      zoom: 9,
+    });
   }
 }
 
@@ -158,18 +177,27 @@ export default function LocationSelect({
       // No country code provided, automatically update to the user's country based on IP address
       (async () => {
         try {
-          const nextCountryCode = await initializeLocation();
-          console.log(
-            "No country code provided, automatically updating to:",
-            nextCountryCode
-          );
-          setCountryCode(nextCountryCode); // Ensure this is defined correctly
+          const response = await geolocation.info();
+          console.log({ response });
+
+          if (response && response.country_code) {
+            console.log(
+              "No country code provided, automatically updating to:",
+              response.country_code
+            );
+            setCountryCode(response.country_code);
+          } else {
+            console.log(
+              "No country detected from IP, keeping initial selection"
+            );
+          }
         } catch (error) {
           console.error("Error fetching country code:", error);
+          // Don't set any fallback - keep the "Select a country" option
         }
-      })(); // Immediately invoke the async function
+      })();
     }
-  }, [countryCode, setCountryCode]); // Added dependencies
+  }, [countryCode, setCountryCode]);
 
   const handleCountryChange = useCallback((e) => {
     setCountryCode(e.target.value);

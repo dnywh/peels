@@ -10,6 +10,8 @@ import { createClient } from "@/utils/supabase/client";
 
 import { fetchListingsInView } from "@/app/actions";
 
+import { config, geolocation } from "@maptiler/client";
+
 import MapSearch from "@/components/MapSearch";
 import MapRender from "@/components/MapRender";
 import ListingRead from "@/components/ListingRead";
@@ -27,6 +29,9 @@ import { useDeviceContext } from "@/hooks/useDeviceContext";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
+
+//ForIP geolocation API
+config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
 const StyledMapPage = styled("main")({
   flex: 1,
@@ -302,32 +307,47 @@ export default function MapPageClient({ user }) {
     const listingSlug = searchParams.get("listing");
     if (!listingSlug) {
       // Only fetch IP location if there's no listing in URL
-      // TODO: Use MapTiler's API and compare which returns faster
       // TODO: see if there is location data already set from local storage, and return that first if so
       // Perhaps do this on the homepage/first page loaded and then use that data for the map
       // And then store that data in local storage for future use in the same session/browser
-      // Consider using that as the default view state for the map for next time (by saving it to Supabase)
       async function initializeLocation() {
         console.log("No listing slug. Initializing location");
+
         try {
-          const response = await fetch("https://freeipapi.com/api/json/", {
-            signal: AbortSignal.timeout(3000),
-          });
+          const response = await geolocation.info();
 
-          if (!response.ok) throw new Error("IP lookup failed");
-          const data = await response.json();
-
-          if (data.latitude && data.longitude) {
+          if (response.latitude && response.longitude) {
+            console.log(
+              "Using MapTiler IP lookup coordinates",
+              response.latitude,
+              response.longitude
+            );
             setInitialCoordinates({
-              latitude: data.latitude,
-              longitude: data.longitude,
+              latitude: response.latitude,
+              longitude: response.longitude,
               zoom: 9, // Increase zoom when more listings are available
+            });
+          } else {
+            // Brisbane fallback coordinates
+            console.log("Using Brisbane fallback coordinates");
+            setInitialCoordinates({
+              latitude: -33.86785,
+              longitude: 151.20732,
+              zoom: 9,
             });
           }
         } catch (error) {
-          console.warn("Could not determine location from IP");
+          console.warn("Could not determine location from MapTiler:", error);
+          // Brisbane fallback coordinates
+          console.log("Using Brisbane fallback coordinates");
+          setInitialCoordinates({
+            latitude: -33.86785,
+            longitude: 151.20732,
+            zoom: 9,
+          });
         }
       }
+
       initializeLocation();
     }
   }, []); // Run once on mount

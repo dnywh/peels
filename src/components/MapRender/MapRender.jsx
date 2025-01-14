@@ -9,11 +9,10 @@ import Map, {
 } from "react-map-gl/maplibre";
 
 import maplibregl from "maplibre-gl";
-import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
 import "maplibre-gl/dist/maplibre-gl.css";
-
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
+
 import MapPin from "@/components/MapPin";
 import MapSearch from "@/components/MapSearch";
 
