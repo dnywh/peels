@@ -28,7 +28,7 @@ const StyledSidebar = styled("div")(({ theme }) => ({
   wordWrap: "anywhere", // for source URLs on facts, remove when those go
   border: `2px dashed ${theme.colors.border.base}`,
 
-  overflowY: "scroll",
+  overflowY: "hidden",
 }));
 
 const Fact = styled("div")(({ theme }) => ({
@@ -70,7 +70,7 @@ const Fact = styled("div")(({ theme }) => ({
 const StepList = styled("ol")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "6rem",
+  gap: "clamp(1rem, 6rem, 9vh)",
   listStyle: "none",
   padding: 0,
   counterReset: "steps",

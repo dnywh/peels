@@ -264,7 +264,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               <Label htmlFor="description">Donation details</Label>
               <Textarea
                 id="description"
-                rows={4}
+                rows={6}
                 maxLength={512}
                 required={true}
                 resize="vertical"
@@ -280,7 +280,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               </Label>
               <Textarea
                 id="description"
-                rows={4}
+                rows={6}
                 maxLength={512}
                 required={false}
                 resize="vertical"

@@ -10,6 +10,7 @@ const StyledTextarea = styled(HeadlessTextarea)({
   gap: "1rem",
   resize: "none",
   fieldSizing: "content", // https://chriscoyier.net/2023/09/29/css-solves-auto-expanding-textareas-probably-eventually/
+  formSizing: "content",
   "&[data-focus]": {
     outline: "2px solid blue",
   },
