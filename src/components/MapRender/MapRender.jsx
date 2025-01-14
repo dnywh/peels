@@ -103,7 +103,6 @@ export default function MapRender({
   // Fetch on map move
   const handleMapMove = useCallback(() => {
     if (!mapRef.current) return; // Add check for mapRef.current so this isn't called when user navigates to a different page.
-    console.log("MAP MOVED");
     const map = mapRef.current.getMap();
     if (!map) return; // Add safety check for map object
     const bounds = map.getBounds();

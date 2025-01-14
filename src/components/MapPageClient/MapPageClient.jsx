@@ -370,12 +370,12 @@ export default function MapPageClient({ user }) {
 
   const handleBoundsChange = useCallback(async (bounds) => {
     setIsLoading(true);
-    console.log("Bounds changed. Bounds being sent:", bounds, {
-      bottomLeftWest: bounds._sw.lat,
-      bottomLeftSouth: bounds._sw.lng,
-      topRightNorth: bounds._ne.lat,
-      topRightEast: bounds._ne.lng,
-    });
+    // console.log("Bounds changed. Bounds being sent:", bounds, {
+    //   bottomLeftWest: bounds._sw.lat,
+    //   bottomLeftSouth: bounds._sw.lng,
+    //   topRightNorth: bounds._ne.lat,
+    //   topRightEast: bounds._ne.lng,
+    // });
 
     const data = await fetchListingsInView(
       bounds._sw.lat,
