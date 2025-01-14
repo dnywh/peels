@@ -10,10 +10,10 @@ import { siteConfig } from "@/config/site";
 import { globalCss, styled } from "@pigment-css/react";
 import type { ExtendTheme } from "@pigment-css/react/theme";
 
-// Variable font, don't need to specifiy the weights
 const publicSans = Public_Sans({
   display: "swap",
   subsets: ["latin"],
+  fallback: ["system-ui", "arial"],
 });
 
 declare module "@pigment-css/react/theme" {
@@ -122,7 +122,8 @@ const Body = styled("body")(({ theme }) => ({
 }));
 
 export const metadata: Metadata = {
-  metadataBase: new URL(getBaseUrl()),
+  // Force the Peels URL (NEXT_PUBLIC_APP_URL) instead of what might render as a preview deployment URL (VERCEL_URL)
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
@@ -141,7 +142,7 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
-    url: getBaseUrl(),
+    url: siteConfig.url,
   },
 };
 
@@ -151,7 +152,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={publicSans.className} suppressHydrationWarning>
+    // Re-add suppressHydrationWarning? What was it in for?
+    <html lang="en" className={publicSans.className}>
       <Body>{children}</Body>
     </html>
   );
