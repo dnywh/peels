@@ -1,4 +1,4 @@
-import { GeistSans } from "geist/font/sans";
+import { Public_Sans } from "next/font/google";
 import "@pigment-css/react/styles.css";
 import "./globals.css";
 
@@ -9,6 +9,12 @@ import { siteConfig } from "@/config/site";
 
 import { globalCss, styled } from "@pigment-css/react";
 import type { ExtendTheme } from "@pigment-css/react/theme";
+
+// Variable font, don't need to specifiy the weights
+const publicSans = Public_Sans({
+  display: "swap",
+  subsets: ["latin"],
+});
 
 declare module "@pigment-css/react/theme" {
   interface ThemeTokens {
@@ -145,8 +151,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-    <html lang="en" className={GeistSans.className}>
+    <html lang="en" className={publicSans.className} suppressHydrationWarning>
       <Body>{children}</Body>
     </html>
   );
