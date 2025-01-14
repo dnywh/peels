@@ -122,6 +122,21 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  keywords: [
+    "food waste",
+    "food scraps",
+    "share waste",
+    "sharewaste",
+    "makesoil",
+    "compost near me",
+    "food scrap drop-off",
+  ],
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+    url: getBaseUrl(),
+  },
 };
 
 export default function RootLayout({

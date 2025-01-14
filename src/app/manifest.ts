@@ -7,8 +7,10 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: siteConfig.name,
     description: siteConfig.description,
     start_url: "/map",
-    theme_color: "#451900",
-    background_color: "#fff6f0",
+    // Ochre/800
+    // theme_color: "#451900", // Seems to take over on iOS, despite me defining a background_color
+    // Ochre/Special (Around Ochre/100 but a bit more saturated, from Brown Pages)
+    // background_color: "#fff6f0",
     display: "standalone",
     icons: [
       {
