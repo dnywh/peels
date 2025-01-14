@@ -134,28 +134,29 @@ export default function LocationSelect({
 
   useEffect(() => {
     if (!countryCode) {
-      // No country code provided, automatically update to the user's country based on IP address
-      (async () => {
+      let isMounted = true; // Track if component is mounted
+
+      async function initializeLocation() {
         try {
           const response = await geolocation.info();
-          console.log({ response });
 
-          if (response && response.country_code) {
-            console.log(
-              "No country code provided, automatically updating to:",
-              response.country_code
-            );
+          // Only update state if component is still mounted and user hasn't changed the value
+          if (isMounted && !countryCode && response?.country_code) {
+            console.log("Updating to detected country:", response.country_code);
             setCountryCode(response.country_code);
-          } else {
-            console.log(
-              "No country detected from IP, keeping initial selection"
-            );
           }
         } catch (error) {
-          console.error("Error fetching country code:", error);
-          // Don't set any fallback - keep the "Select a country" option
+          console.warn("Could not detect country from IP:", error);
+          // No fallback needed - keep initial selection
         }
-      })();
+      }
+
+      initializeLocation();
+
+      // Cleanup function
+      return () => {
+        isMounted = false;
+      };
     }
   }, [countryCode, setCountryCode]);
 

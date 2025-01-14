@@ -305,8 +305,8 @@ export default function MapPageClient({ user }) {
   // Add this new effect to handle initial location
   useEffect(() => {
     const listingSlug = searchParams.get("listing");
+    // Only fetch IP location if there's no listing in URL
     if (!listingSlug) {
-      // Only fetch IP location if there's no listing in URL
       // TODO: see if there is location data already set from local storage, and return that first if so
       // Perhaps do this on the homepage/first page loaded and then use that data for the map
       // And then store that data in local storage for future use in the same session/browser
@@ -314,43 +314,36 @@ export default function MapPageClient({ user }) {
         console.log("No listing slug. Initializing location");
 
         try {
-          const response = await geolocation.info();
+          // Create a timeout promise
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Location timeout")), 3000);
+          });
 
-          if (response.latitude && response.longitude) {
-            console.log(
-              "Using MapTiler IP lookup coordinates",
-              response.latitude,
-              response.longitude
-            );
+          // Race between the geolocation request and timeout
+          const response = await Promise.race([
+            geolocation.info(),
+            timeoutPromise,
+          ]);
+
+          if (response && response.latitude && response.longitude) {
             setInitialCoordinates({
               latitude: response.latitude,
               longitude: response.longitude,
-              zoom: 9, // Increase zoom when more listings are available
-            });
-          } else {
-            // Brisbane fallback coordinates
-            console.log("Using Brisbane fallback coordinates");
-            setInitialCoordinates({
-              latitude: -33.86785,
-              longitude: 151.20732,
-              zoom: 9,
+              zoom: 9, // TODO: Increase zoom when more listings are available. Also in MapRender
             });
           }
         } catch (error) {
-          console.warn("Could not determine location from MapTiler:", error);
-          // Brisbane fallback coordinates
-          console.log("Using Brisbane fallback coordinates");
-          setInitialCoordinates({
-            latitude: -33.86785,
-            longitude: 151.20732,
-            zoom: 9,
-          });
+          console.warn(
+            "Could not determine location from MapTiler:",
+            error.message
+          );
+          // No need to set fallback coordinates - MapRender will handle that
         }
       }
 
       initializeLocation();
     }
-  }, []); // Run once on mount
+  }, []);
 
   const loadListingBySlug = async (slug) => {
     const { data, error } = await supabase

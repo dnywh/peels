@@ -37,6 +37,13 @@ const attributionControlDesktopStyle = {
   marginBottom: "10px",
 };
 
+// Default coordinates for Brisbane, Australia
+const DEFAULT_COORDINATES = {
+  longitude: 153.0322,
+  latitude: -27.4683,
+  zoom: 9,
+};
+
 export default function MapRender({
   mapRef,
   listings,
@@ -244,16 +251,14 @@ export default function MapRender({
               longitude:
                 selectedListing?.longitude ||
                 initialCoordinates?.longitude ||
-                lastKnownPosition?.longitude ||
-                0,
+                DEFAULT_COORDINATES.longitude,
               latitude:
                 selectedListing?.latitude ||
                 initialCoordinates?.latitude ||
-                lastKnownPosition?.latitude ||
-                0,
+                DEFAULT_COORDINATES.latitude,
               zoom: selectedListing
                 ? 8
-                : initialCoordinates?.zoom || lastKnownPosition?.zoom || 1,
+                : initialCoordinates?.zoom || DEFAULT_COORDINATES.zoom,
             }}
             animationOptions={{ duration: 200 }}
             onMoveEnd={handleMapMove}
