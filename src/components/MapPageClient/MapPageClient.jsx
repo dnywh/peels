@@ -454,7 +454,7 @@ export default function MapPageClient({ user }) {
 
   // Mobile scroll listener
   useEffect(() => {
-    if (!isDesktop && snap !== 1) {
+    if (isDesktop || (!isDesktop && snap !== 1)) {
       setIsDrawerHeaderShown(false);
       return;
     }
@@ -464,16 +464,13 @@ export default function MapPageClient({ user }) {
     const handleScroll = () => {
       if (drawerContentRef.current) {
         const scrollTop = drawerContentRef.current.scrollTop;
-        // console.log("Mobile Scroll position:", scrollTop);
-        setIsDrawerHeaderShown(scrollTop > 16);
+        setIsDrawerHeaderShown(scrollTop > 16); // When to show sticky drawer header
       }
     };
 
-    const drawerContent = drawerContentRef.current;
-
-    if (drawerContent) {
+    if (drawerContentRef.current) {
       console.log("Adding mobile scroll listener");
-      drawerContent.addEventListener("scroll", handleScroll);
+      drawerContentRef.current.addEventListener("scroll", handleScroll);
     } else {
       console.warn(
         "drawerContentRef.current is null for mobile, cannot add scroll listener."
@@ -481,8 +478,8 @@ export default function MapPageClient({ user }) {
     }
 
     return () => {
-      if (drawerContent) {
-        drawerContent.removeEventListener("scroll", handleScroll);
+      if (drawerContentRef.current) {
+        drawerContentRef.current.removeEventListener("scroll", handleScroll);
       }
     };
   }, [snap]); // Only depends on snap for mobile
