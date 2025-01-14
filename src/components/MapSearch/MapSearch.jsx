@@ -10,6 +10,7 @@ function MapSearch({ onPick, mapController, ...props }) {
     <div style={props.style}>
       <GeocodingControl
         // ref={inputRef}
+        debounceSearch={250} // Default is 200
         apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
         // The below will be great for the map page where we don't want to bother with a country dropdown:
         mapController={mapController}
@@ -17,8 +18,8 @@ function MapSearch({ onPick, mapController, ...props }) {
         // Only applies if control is tied to the map via mapController. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
         // I can't figure this out. See MapRender component
         proximity={[
-          // { type: "map-center", minZoom: 12 },
-          { type: "client-geolocation", minZoom: 8 }, // Doesn't seem to work without mapController
+          { type: "map-center", minZoom: 12 },
+          // { type: "client-geolocation", minZoom: 8 }, // Doesn't seem to work without mapController
           // { type: "server-geolocation", minZoom: 8 },
         ]}
         types={[
