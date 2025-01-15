@@ -304,9 +304,8 @@ export default function MapRender({
             ))}
           </Map>
 
-          {/* Map search for small screens */}
           <MapSearch
-            onPick={handleSearchPick}
+            onPick={onSearchPick}
             mapController={mapController}
             style={{
               position: "absolute",

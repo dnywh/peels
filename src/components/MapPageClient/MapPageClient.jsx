@@ -524,6 +524,7 @@ export default function MapPageClient({ user }) {
   }, [isDesktop, isDrawerOpen]); // Depends on isDesktop and isDrawerOpen for desktop
 
   const handleSearchPick = useCallback((event) => {
+    console.log("handleSearchPick", event);
     // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
     // Return early if that's the case
     if (!event.feature?.center) return;

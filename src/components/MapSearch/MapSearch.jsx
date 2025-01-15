@@ -18,9 +18,9 @@ function MapSearch({ onPick, mapController, ...props }) {
         // Only applies if control is tied to the map via mapController. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
         // I can't figure this out. See MapRender component
         proximity={[
-          { type: "map-center", minZoom: 12 },
-          // { type: "client-geolocation", minZoom: 8 }, // Doesn't seem to work without mapController
-          // { type: "server-geolocation", minZoom: 8 },
+          // { type: "map-center" }, // Doesn't seem to work without mapController
+          { type: "server-geolocation" }, // The default, using as a backup
+          // { type: "client-geolocation"}, // Too aggressive with permissions
         ]}
         types={[
           "address",
@@ -30,12 +30,18 @@ function MapSearch({ onPick, mapController, ...props }) {
           "municipal_district",
           "municipality",
         ]}
-        placeholder="Search the map..."
-        errorMessage="Error TODO"
-        noResultsMessage="No results. Keep typing or refine your search"
         minLength={3}
-        showPlaceType={false}
-        onPick={onPick}
+        placeholder="Search"
+        errorMessage="Something went wrong. Try again?"
+        noResultsMessage="No results. Keep typing or refine your search"
+        collapsed={true}
+        // country="au" // Could be used from prop that loads the map, if needed. Too aggressive, though
+        // showPlaceType={false}
+        onPick={(event) => {
+          console.log("onPick", event);
+          onPick(event);
+        }}
+        // flyToSelected={true}
       />
     </div>
   );
