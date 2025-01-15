@@ -30,8 +30,9 @@ import { useDeviceContext } from "@/hooks/useDeviceContext";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
+const ZOOM_LEVEL_DEFAULT = 9;
 
-//ForIP geolocation API
+// For IP geolocation API
 config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
 const StyledMapPage = styled("main")({
@@ -231,6 +232,7 @@ const StyledDrawerInner = styled("div")(({ theme }) => ({
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
   const mapRef = useRef(null);
+  const searchInputRef = useRef(null);
   const drawerContentRef = useRef(null);
   const [initialCoordinates, setInitialCoordinates] = useState(null);
 
@@ -330,7 +332,7 @@ export default function MapPageClient({ user }) {
             setInitialCoordinates({
               latitude: response.latitude,
               longitude: response.longitude,
-              zoom: 9, // TODO: Increase zoom when more listings are available. Also in MapRender
+              zoom: ZOOM_LEVEL_DEFAULT, // TODO: Increase zoom when more listings are available. Also in MapRender
             });
           }
         } catch (error) {
@@ -524,14 +526,14 @@ export default function MapPageClient({ user }) {
   }, [isDesktop, isDrawerOpen]); // Depends on isDesktop and isDrawerOpen for desktop
 
   const handleSearchPick = useCallback((event) => {
-    console.log("handleSearchPick", event);
+    console.log("searchInputRef", searchInputRef);
     // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
     // Return early if that's the case
     if (!event.feature?.center) return;
 
     console.log("Search picked", event);
     // Blur the input
-    // inputRef.current.blur();
+    searchInputRef.current.blur();
 
     // Return those new coordinates
     const nextCoordinates = {
@@ -542,8 +544,8 @@ export default function MapPageClient({ user }) {
     console.log("Flying to", nextCoordinates);
     mapRef.current?.flyTo({
       center: [nextCoordinates.longitude, nextCoordinates.latitude],
-      duration: 1800,
-      zoom: 10, // TODO later: start at very zoomed out, zoom in until listings appear in bounding box
+      duration: 3200, // TODO: Make this dynamic based on distance from current location
+      zoom: ZOOM_LEVEL_DEFAULT, // Defaulting to a conservative amount of zoomed-out. TODO: set zoom level dynamically based on how many listings are around the area
     });
   }, []);
 
@@ -625,6 +627,7 @@ export default function MapPageClient({ user }) {
         >
           <MapRender
             mapRef={mapRef}
+            searchInputRef={searchInputRef}
             listings={listings}
             selectedListing={selectedListing}
             initialCoordinates={initialCoordinates}

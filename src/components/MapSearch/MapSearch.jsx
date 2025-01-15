@@ -5,11 +5,11 @@ import { GeocodingControl } from "@maptiler/geocoding-control/react";
 import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
 
 // TODO: Add a 'required' prop for forms that require a location
-function MapSearch({ onPick, mapController, ...props }) {
+function MapSearch({ onPick, mapController, searchInputRef, ...props }) {
   return (
     <div style={props.style}>
       <GeocodingControl
-        // ref={inputRef}
+        ref={searchInputRef ? searchInputRef : undefined}
         debounceSearch={250} // Default is 200
         apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
         // The below will be great for the map page where we don't want to bother with a country dropdown:
