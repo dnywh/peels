@@ -63,6 +63,7 @@ export default function MapRender({
   selectedPinId,
   setSelectedPinId,
   isDesktop,
+  countryCode,
 }) {
   const isFirstLoad = useRef(true);
   const [lastKnownPosition, setLastKnownPosition] = useState(null);
@@ -309,6 +310,7 @@ export default function MapRender({
             searchInputRef={searchInputRef}
             onPick={onSearchPick}
             mapController={mapController}
+            countryCode={countryCode}
             style={{
               position: "absolute",
               top: "0.75rem",

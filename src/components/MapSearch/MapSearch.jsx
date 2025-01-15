@@ -5,7 +5,13 @@ import { GeocodingControl } from "@maptiler/geocoding-control/react";
 import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
 
 // TODO: Add a 'required' prop for forms that require a location
-function MapSearch({ onPick, mapController, searchInputRef, ...props }) {
+function MapSearch({
+  onPick,
+  mapController,
+  searchInputRef,
+  countryCode,
+  ...props
+}) {
   return (
     <div style={props.style}>
       <GeocodingControl
@@ -26,6 +32,9 @@ function MapSearch({ onPick, mapController, searchInputRef, ...props }) {
           { type: "server-geolocation" }, // The default, using as a backup
           // { type: "client-geolocation"}, // Too aggressive with permissions
         ]}
+        // Limiting to country is a temporary solution until proximity feature is fixed: https://github.com/maptiler/maptiler-geocoding-control/issues/84
+        // A better, but still temporary approach, would be to use the 'bounds' prop to limit the search to the map's bounds
+        country={countryCode}
         types={[
           "address",
           "place",
@@ -38,7 +47,6 @@ function MapSearch({ onPick, mapController, searchInputRef, ...props }) {
         placeholder="Search"
         errorMessage="Something went wrong. Try again?"
         noResultsMessage="No results. Keep typing or refine your search"
-        // country="au" // Could be used from prop that loads the map, if needed. Too aggressive, though
         // showPlaceType={false}
         onPick={(event) => {
           onPick(event);

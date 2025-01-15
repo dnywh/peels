@@ -48,7 +48,8 @@ html.map {
   z-index: 3;
 }
 
-/* Temporary style overrides for MapTiler GeocodingControl in MapSearch component and ListingWrite (LocationSearch) */
+/* Temporary style overrides for MapTiler GeocodingControl in MapSearch component */
+/* Targeting the more general svelte or input also will affect ListingWrite (LocationSearch)  */
 input[aria-label="Search"] {
   /* Match visual margins of .maplibregl-ctrl-top-right */
   padding: 10px;

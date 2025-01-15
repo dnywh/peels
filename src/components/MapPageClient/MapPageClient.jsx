@@ -235,6 +235,7 @@ export default function MapPageClient({ user }) {
   const searchInputRef = useRef(null);
   const drawerContentRef = useRef(null);
   const [initialCoordinates, setInitialCoordinates] = useState(null);
+  const [countryCode, setCountryCode] = useState(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -329,6 +330,7 @@ export default function MapPageClient({ user }) {
           ]);
 
           if (response && response.latitude && response.longitude) {
+            setCountryCode(response.country_code); // Used in MapSearch until proximity feature is fixed
             setInitialCoordinates({
               latitude: response.latitude,
               longitude: response.longitude,
@@ -643,6 +645,7 @@ export default function MapPageClient({ user }) {
             selectedPinId={selectedPinId}
             setSelectedPinId={setSelectedPinId}
             isDesktop={isDesktop}
+            countryCode={countryCode}
           />
 
           <Drawer.Portal>
