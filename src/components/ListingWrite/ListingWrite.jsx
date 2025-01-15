@@ -23,6 +23,7 @@ import MultiInput from "@/components/MultiInput";
 import AvatarUploadManager from "@/components/AvatarUploadManager";
 import PhotosUploader from "@/components/PhotosUploader";
 import LinkButton from "@/components/LinkButton";
+import DeleteButtonWithDialog from "@/components/DeleteButtonWithDialog";
 import { styled } from "@pigment-css/react";
 
 import AdditionalSettings from "@/components/AdditionalSettings";
@@ -109,8 +110,18 @@ export default function ListingWrite({ initialListing, user, profile }) {
   const [legal, setLegal] = useState(initialListing ? true : false);
 
   // Other states
-  const [isDeleting, setIsDeleting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
+
+  async function handleDeleteListing(event) {
+    event.preventDefault();
+    console.log("Deleting listing with slug:", initialListing.slug);
+    const response = await deleteListingAction(initialListing.slug);
+    if (response.success) {
+      router.push(`/profile/account?message=${response.message}`);
+    } else {
+      setFeedbackMessage(response.message);
+    }
+  }
 
   // Form handling logic here
   async function handleSubmit(event) {
@@ -408,36 +419,16 @@ export default function ListingWrite({ initialListing, user, profile }) {
           >
             View listing
           </Button>
-          <Button
-            variant="danger"
-            width="contained"
-            onClick={() => setIsDeleting(true)}
-          >
-            Delete listing
-          </Button>
 
-          {isDeleting && (
-            <Form
-              onSubmit={async (event) => {
-                event.preventDefault();
-                console.log("Deleting listing with slug:", initialListing.slug);
-                const response = await deleteListingAction(initialListing.slug);
-                setIsDeleting(false);
-                if (response.success) {
-                  router.push(`/profile?message=${response.message}`);
-                } else {
-                  setFeedbackMessage(response.message);
-                }
-              }}
-            >
-              <p>
-                Are you sure you want to delete this listing? This action cannot
-                be undone.
-              </p>
-              <SubmitButton>Yes, delete my listing</SubmitButton>
-              <Button onClick={() => setIsDeleting(false)}>No, cancel</Button>
-            </Form>
-          )}
+          <DeleteButtonWithDialog
+            initialButtonText="Delete listing"
+            dialogTitle="Delete listing"
+            confirmButtonText="Yes, delete listing"
+            onSubmit={handleDeleteListing}
+          >
+            Are you sure you want to delete your listing? This action cannot be
+            undone.
+          </DeleteButtonWithDialog>
         </AdditionalSettings>
       )}
 

@@ -1,9 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-
 import Button from "@/components/Button";
-
 import { styled } from "@pigment-css/react";
 
 const DialogContent = styled(Dialog.Content)(({ theme }) => ({
@@ -55,7 +53,7 @@ function DeleteAccountButton({ listings, deleteAccountAction }) {
 
         <Dialog.Description>This action cannot be undone.</Dialog.Description>
 
-        <div className="mt-4 flex gap-4">
+        <div>
           <form action={deleteAccountAction}>
             <Button variant="danger" width="contained">
               Yes, delete my account {listings.length > 0 && `and listings`}
