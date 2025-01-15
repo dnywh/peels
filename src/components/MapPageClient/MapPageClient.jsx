@@ -526,14 +526,16 @@ export default function MapPageClient({ user }) {
   }, [isDesktop, isDrawerOpen]); // Depends on isDesktop and isDrawerOpen for desktop
 
   const handleSearchPick = useCallback((event) => {
-    console.log("searchInputRef", searchInputRef);
+    // console.log("searchInputRef", searchInputRef);
     // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
     // Return early if that's the case
     if (!event.feature?.center) return;
 
     console.log("Search picked", event);
     // Blur the input
-    searchInputRef.current.blur();
+    // Not needed because the Geocoding component handles this
+    // Delete ref and prop drilling if I don't end up using it for other reasons
+    // searchInputRef.current.blur();
 
     // Return those new coordinates
     const nextCoordinates = {

@@ -40,7 +40,12 @@ html.map {
 
 [data-vaul-drawer],
 [data-vaul-overlay] {
-  z-index: 2;
+  /* z-index stack should be ordered like so: */
+  /* 1. Drawer content */
+  /* 2. Map search input and map controls */
+  /* 3. Selected map pin */
+  /* 4. Unselected map pins */
+  z-index: 3;
 }
 
 /* Misc */
@@ -135,7 +140,7 @@ summary.maplibregl-ctrl-attrib-button {
 .maplibregl-ctrl-bottom-right,
 .maplibregl-ctrl-top-left,
 .maplibregl-ctrl-top-right {
-  z-index: 0 !important;
+  /* z-index: 1 !important; */
 }
 
 /* From Supabase Next starter */

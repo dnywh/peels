@@ -313,7 +313,8 @@ export default function MapRender({
               position: "absolute",
               top: "1rem",
               left: "1rem",
-              // zIndex: 0, // Setting the z-index of the map controls to 0 seems to fix the drawer content's touch responsiveness
+              fontSize: "20px",
+              zIndex: 1, // Setting the z-index of the map controls to 0 seems to fix the drawer content's touch responsiveness
             }}
           />
 
