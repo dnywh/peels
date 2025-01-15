@@ -23,10 +23,10 @@ import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import Description from "@/components/Description";
-
+import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 import AdditionalSettings from "@/components/AdditionalSettings";
 
-import DeleteAccountButton from "@/components/DeleteAccountButton";
+import ButtonToDialog from "@/components/ButtonToDialog";
 
 export default async function ProfilePage({ searchParams }) {
 
@@ -190,11 +190,29 @@ export default async function ProfilePage({ searchParams }) {
             </Form>
 
             <AdditionalSettings>
-                <SubmitButton variant="secondary" width="contained">Export data</SubmitButton>
+                <ButtonToDialog
+                    variant="secondary"
+                    initialButtonText="Export data"
+                    dialogTitle="Coming soon"
+                    cancelButtonText="Done"
+                >
+                    We’re still working on this feature. In the meantime, <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">reach out</EncodedEmailHyperlink> and ask us to export your data manually.
+                </ButtonToDialog>
                 <Form action={sendPasswordResetEmailAction}>
                     <SubmitButton variant="secondary" width="contained">Reset password</SubmitButton>
                 </Form>
-                <DeleteAccountButton listings={listings} deleteAccountAction={deleteAccountAction} />
+                <ButtonToDialog
+                    initialButtonText="Delete account"
+                    dialogTitle="Delete account"
+                    confirmButtonText={`Yes, delete my account ${listings.length > 0 && `and listing${listings.length > 1 ? "s" : ""}`}`}
+                    action={deleteAccountAction}
+                >
+                    Are you sure you want to delete your account? {listings?.length > 0 && (
+                        <>
+                            Your listing{listings.length > 1 ? "s" : ""} will also be deleted.
+                        </>
+                    )}
+                </ButtonToDialog>
             </AdditionalSettings>
         </>
     );

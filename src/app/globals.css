@@ -45,7 +45,7 @@ html.map {
   /* 2. Map search input and map controls */
   /* 3. Selected map pin */
   /* 4. Unselected map pins */
-  /* 5. Dialogs (e.g. DeleteButtonWithDialog) */
+  /* 5. Dialogs (e.g. ButtonToDialog) */
   z-index: 3;
 }
 

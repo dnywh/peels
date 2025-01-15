@@ -23,7 +23,7 @@ import MultiInput from "@/components/MultiInput";
 import AvatarUploadManager from "@/components/AvatarUploadManager";
 import PhotosUploader from "@/components/PhotosUploader";
 import LinkButton from "@/components/LinkButton";
-import DeleteButtonWithDialog from "@/components/DeleteButtonWithDialog";
+import ButtonToDialog from "@/components/ButtonToDialog";
 import { styled } from "@pigment-css/react";
 
 import AdditionalSettings from "@/components/AdditionalSettings";
@@ -420,7 +420,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             View listing
           </Button>
 
-          <DeleteButtonWithDialog
+          <ButtonToDialog
             initialButtonText="Delete listing"
             dialogTitle="Delete listing"
             confirmButtonText="Yes, delete listing"
@@ -428,7 +428,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
           >
             Are you sure you want to delete your listing? This action cannot be
             undone.
-          </DeleteButtonWithDialog>
+          </ButtonToDialog>
         </AdditionalSettings>
       )}
 
