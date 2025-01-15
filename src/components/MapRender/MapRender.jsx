@@ -311,9 +311,8 @@ export default function MapRender({
             mapController={mapController}
             style={{
               position: "absolute",
-              top: "1rem",
-              left: "1rem",
-              fontSize: "20px",
+              top: "0.75rem",
+              left: "0.75rem",
               zIndex: 1, // Setting the z-index of the map controls to 0 seems to fix the drawer content's touch responsiveness
             }}
           />

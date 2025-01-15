@@ -48,6 +48,18 @@ html.map {
   z-index: 3;
 }
 
+/* Temporary style overrides for MapTiler GeocodingControl in MapSearch component and ListingWrite (LocationSearch) */
+input[aria-label="Search"] {
+  /* Match visual margins of .maplibregl-ctrl-top-right */
+  padding: 10px;
+  /* Override the default font size of 14px from map search input, which causes Safari on iOS to zoom and disorientate the map */
+  font-size: 16px !important;
+}
+
+.maplibregl-ctrl-top-right {
+  margin: 0rem 0rem 0 0;
+}
+
 /* Misc */
 summary.maplibregl-ctrl-attrib-button {
   opacity: 0.24;
@@ -133,14 +145,6 @@ summary.maplibregl-ctrl-attrib-button {
     transform: translateX(24px) rotate(1.35deg); /* TODO: Link to pagePadding variable */
     opacity: 0;
   }
-}
-
-/* Setting the z-index of the drawer content seems to break its touch responsiveness, so I'm instead setting the z-index of the map controls to 0 */
-.maplibregl-ctrl-bottom-left,
-.maplibregl-ctrl-bottom-right,
-.maplibregl-ctrl-top-left,
-.maplibregl-ctrl-top-right {
-  /* z-index: 1 !important; */
 }
 
 /* From Supabase Next starter */

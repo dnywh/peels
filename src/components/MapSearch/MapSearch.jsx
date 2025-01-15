@@ -9,7 +9,10 @@ function MapSearch({ onPick, mapController, searchInputRef, ...props }) {
   return (
     <div style={props.style}>
       <GeocodingControl
+        // Should be customizable via props:
         clearOnBlur={true}
+        collapsed={true} // Visibly collapsed into square icon until hover or tap
+        // Should be fixed:
         ref={searchInputRef ? searchInputRef : undefined}
         debounceSearch={250} // Default is 200
         apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
@@ -35,17 +38,12 @@ function MapSearch({ onPick, mapController, searchInputRef, ...props }) {
         placeholder="Search"
         errorMessage="Something went wrong. Try again?"
         noResultsMessage="No results. Keep typing or refine your search"
-        // collapsed={true} // Visibly collapsed into square icon until hover or tap
         // country="au" // Could be used from prop that loads the map, if needed. Too aggressive, though
         // showPlaceType={false}
         onPick={(event) => {
-          console.log("onPick", event);
           onPick(event);
         }}
         // flyToSelected={true}
-        style={{
-          fontSize: "26px",
-        }}
       />
     </div>
   );
