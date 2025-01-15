@@ -8,6 +8,10 @@ import FormHeader from '@/components/FormHeader';
 import RadioGroup from '@/components/RadioGroup';
 import Radio from '@/components/Radio';
 
+// export const metadata = {
+//     title: 'New Listing',
+// }
+
 const listingTypes = [
     {
         key: 'host',

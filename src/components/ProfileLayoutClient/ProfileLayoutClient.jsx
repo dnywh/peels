@@ -20,7 +20,8 @@ const ProfilePageLayout = styled("div")({
   // Optically center the content once the screen width is greater than tab bar + left column + main column width
   // Calculate this dynamically rather than guessing the tab bar width (and gutters, etc) as 2rem
   "@media (min-width: 1200px)": {
-    transform: "translateX(-2rem)", // Should be more exactly calculated from TabBar width (and account for gutters, etc) and also shared with Listings page
+    // Turned off because it also affects dialogs (e.g. delete account dialog)
+    // transform: "translateX(-2rem)", // Should be more exactly calculated from TabBar width (and account for gutters, etc) and also shared with Listings page
   },
 });
 

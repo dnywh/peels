@@ -110,6 +110,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
   // Other states
   const [isDeleting, setIsDeleting] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   // Form handling logic here
   async function handleSubmit(event) {
@@ -420,8 +421,13 @@ export default function ListingWrite({ initialListing, user, profile }) {
               onSubmit={async (event) => {
                 event.preventDefault();
                 console.log("Deleting listing with slug:", initialListing.slug);
-                await deleteListingAction(initialListing.slug);
+                const response = await deleteListingAction(initialListing.slug);
                 setIsDeleting(false);
+                if (response.success) {
+                  router.push(`/profile?message=${response.message}`);
+                } else {
+                  setFeedbackMessage(response.message);
+                }
               }}
             >
               <p>
@@ -434,6 +440,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
           )}
         </AdditionalSettings>
       )}
+
+      {feedbackMessage && <p>{feedbackMessage}</p>}
     </>
   );
 }

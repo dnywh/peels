@@ -17,12 +17,14 @@ const DialogContent = styled(Dialog.Content)(({ theme }) => ({
   maxHeight: "85vh",
   padding: "25px",
   borderRadius: theme.corners.base,
+  zIndex: 1, // Stop AvatarButton from showing above overlay and dialog
 }));
 
 const DialogOverlay = styled(Dialog.Overlay)({
   backgroundColor: "rgba(0, 0, 0, 0.5)",
   position: "fixed",
   inset: 0,
+  zIndex: 1, // Stop AvatarButton from showing above overlay and dialog
 });
 
 function DeleteAccountButton({ listings, deleteAccountAction }) {

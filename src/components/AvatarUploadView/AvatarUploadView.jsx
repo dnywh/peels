@@ -26,7 +26,7 @@ const StyledImgContainer = styled("div")({
 const AvatarButton = styled(Button)({
   marginLeft: "0.35rem", // Optical offset for theme.rotations.avatar
   marginTop: "-1.25rem",
-  zIndex: 2,
+  zIndex: 1,
 });
 
 const LoadingSpinner = styled("div")(({ theme }) => ({

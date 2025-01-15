@@ -209,21 +209,18 @@ export const signOutAction = async () => {
 };
 
 export const deleteListingAction = async (slug: string) => {
-  // console.log({ slug });
   const supabase = await createClient();
   try {
-    const { data: listing } = await supabase
+    const { data: listing, error } = await supabase
       .from("listings")
       .delete()
       .eq("slug", slug);
-    // console.log({ listing });
 
-    // Redirect with a success message
-    return redirect(`/profile?message=Listing deleted successfully!`);
+    console.log("Listing deleted successfully:", listing);
+    return { success: true, message: "Listing deleted" };
   } catch (error) {
     console.error("Error deleting listing:", error);
-    // Optionally, you can redirect with an error message
-    return redirect(`/profile?error=Failed to delete listing.`);
+    return { success: false, message: "Failed to delete listing" };
   }
 };
 
