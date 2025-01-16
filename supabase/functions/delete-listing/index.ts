@@ -1,9 +1,18 @@
-// deleteListing/index.ts (Edge Function)
-import { createClient } from "@/utils/supabase/server";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-export default async function handler(req, res) {
-    const supabaseAdmin = createClient();
-    const { slug } = req.body; // Assuming slug is sent in the request body
+serve(async (req) => {
+    const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+        {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false,
+            },
+        },
+    );
+    const { slug } = await req.json();
 
     try {
         // Fetch the listing to get the avatar
@@ -14,23 +23,19 @@ export default async function handler(req, res) {
             .single();
 
         if (fetchError) {
-            return res.status(400).json({
-                success: false,
-                message: "Failed to fetch listing",
-            });
+            console.error("Listing fetch error:", fetchError);
+            throw fetchError;
         }
 
         // Delete avatar if it exists
         if (listing?.avatar) {
             const { error: storageError } = await supabaseAdmin.storage
-                .from("avatars")
+                .from("listing_avatars")
                 .remove([listing.avatar]);
 
             if (storageError) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Failed to delete avatar",
-                });
+                console.error("Avatar deletion error:", storageError);
+                throw storageError;
             }
         }
 
@@ -41,20 +46,19 @@ export default async function handler(req, res) {
             .eq("slug", slug);
 
         if (deleteError) {
-            return res.status(400).json({
-                success: false,
-                message: "Failed to delete listing",
-            });
+            console.error("Delete listing error:", deleteError);
+            throw deleteError;
         }
 
-        return res.status(200).json({
-            success: true,
-            message: "Listing deleted",
+        return new Response(JSON.stringify({ success: true }), {
+            headers: { "Content-Type": "application/json" },
+            status: 200,
         });
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
+        console.error("Final error:", error);
+        return new Response(JSON.stringify({ error: error.message }), {
+            headers: { "Content-Type": "application/json" },
+            status: 400,
         });
     }
-}
+});

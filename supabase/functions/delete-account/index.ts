@@ -53,11 +53,11 @@ serve(async (req) => {
       throw listingsError;
     }
 
-    // Delete avatars for each listing
+    // Delete avatars for each listing that the user owns
     for (const listing of listings) {
       if (listing.avatar) {
         const { error: listingStorageError } = await supabaseAdmin.storage
-          .from("avatars")
+          .from("listing_avatars")
           .remove([listing.avatar]);
 
         if (listingStorageError) {
