@@ -110,7 +110,9 @@ export default async function SignUp(props: {
           Sign up
         </SubmitButton>
       </Form>
-      {searchParams.error && <FormMessage message={searchParams.error} />}
+      {searchParams.error && (
+        <FormMessage message={{ error: searchParams.error }} />
+      )}
     </>
   );
 }
