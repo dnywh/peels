@@ -31,6 +31,24 @@ const buttonStyles = ({ theme }) => ({
 
   variants: [
     {
+      props: { size: "dropdown" },
+      style: {
+        border: "none",
+        borderRadius: theme.corners.base * 0.75,
+        height: "2.5rem",
+        fontSize: "0.875rem",
+        padding: `0 ${theme.spacing.unit * 1.5}px`,
+
+        "&:focus": {
+          outline: `none`,
+        },
+        "&[data-focus]": {
+          outline: `none`,
+          background: theme.colors.background.between,
+        },
+      },
+    },
+    {
       props: { width: "contained" },
       style: {
         alignSelf: "flex-start",
@@ -95,7 +113,7 @@ const buttonStyles = ({ theme }) => ({
         color: theme.colors.button.danger.text,
         borderColor: theme.colors.border.base,
         "&:hover&:not([disabled])": {
-          background: `color-mix(in srgb, ${theme.colors.button.danger.background}, ${theme.colors.button.danger.hover.tint} ${theme.colors.button.danger.hover.mix})`,
+          color: `color-mix(in srgb, ${theme.colors.button.danger.text}, ${theme.colors.button.danger.hover.tint} ${theme.colors.button.danger.hover.mix})`,
         },
       },
     },
@@ -119,12 +137,14 @@ export default function Button({
   href,
   children,
   tabIndex = 0,
+  dropdown,
   ...props
 }) {
   const sharedProps = {
     disabled,
     variant,
     tabIndex,
+    dropdown,
     ...props,
   };
 
