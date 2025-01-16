@@ -21,39 +21,39 @@ import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import MultiInput from "@/components/MultiInput";
 import AvatarUploadManager from "@/components/AvatarUploadManager";
-import PhotosUploader from "@/components/PhotosUploader";
 import LinkButton from "@/components/LinkButton";
 import ButtonToDialog from "@/components/ButtonToDialog";
-import { styled } from "@pigment-css/react";
-
+import ListingPhotosManager from "@/components/ListingPhotosManager";
 import AdditionalSettings from "@/components/AdditionalSettings";
 
-async function uploadPhoto(file) {
-  const supabase = createClient();
+import { styled } from "@pigment-css/react";
 
-  // Create a unique file name
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Math.random()}.${fileExt}`;
+// async function uploadPhoto(file) {
+//   const supabase = createClient();
 
-  // Upload the file
-  const { data, error } = await supabase.storage
-    .from("listing_photos")
-    .upload(fileName, file);
+//   // Create a unique file name
+//   const fileExt = file.name.split(".").pop();
+//   const fileName = `${Math.random()}.${fileExt}`;
 
-  if (error) throw error;
+//   // Upload the file
+//   const { data, error } = await supabase.storage
+//     .from("listing_photos")
+//     .upload(fileName, file);
 
-  // Return just the filename instead of full URL
-  return fileName;
-}
+//   if (error) throw error;
+
+//   // Return just the filename instead of full URL
+//   return fileName;
+// }
 
 // Add a helper function to get URLs when needed
-function getPhotoUrl(filename) {
-  const supabase = createClient();
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("listing_photos").getPublicUrl(filename);
-  return publicUrl;
-}
+// function getPhotoUrl(filename) {
+//   const supabase = createClient();
+//   const {
+//     data: { publicUrl },
+//   } = supabase.storage.from("listing_photos").getPublicUrl(filename);
+//   return publicUrl;
+// }
 
 // React component
 export default function ListingWrite({ initialListing, user, profile }) {
@@ -111,6 +111,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
   // Other states
   const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [pendingPhotos, setPendingPhotos] = useState([]);
 
   async function handleDeleteListing(event) {
     event.preventDefault();
@@ -151,7 +152,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
         country_code: countryCode,
         accepted_items: acceptedItems.filter((item) => item.trim() !== ""),
         rejected_items: rejectedItems.filter((item) => item.trim() !== ""),
-        photos,
+        photos: initialListing ? photos : pendingPhotos,
         links: links.filter((link) => link.trim() !== ""),
         visibility,
       };
@@ -166,6 +167,15 @@ export default function ListingWrite({ initialListing, user, profile }) {
         .single();
 
       if (error) throw error;
+
+      // If this was a new listing, we need to update the photo references
+      if (!initialListing && pendingPhotos.length > 0) {
+        const { error: updateError } = await supabase
+          .from("listings")
+          .update({ photos: pendingPhotos })
+          .eq("slug", data.slug);
+        if (updateError) throw updateError;
+      }
 
       console.log("Listing created/updated:", data);
 
@@ -347,12 +357,11 @@ export default function ListingWrite({ initialListing, user, profile }) {
             to Peels members.
           </p>
 
-          <PhotosUploader
-            title="Additional photos"
-            photos={photos}
-            optional={true}
-            onChange={handlePhotoChange}
-            getPhotoUrl={getPhotoUrl}
+          <ListingPhotosManager
+            initialPhotos={initialListing ? photos : pendingPhotos}
+            listingSlug={initialListing?.slug}
+            onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
+            isNewListing={!initialListing}
           />
 
           {listingType !== "residential" && (

@@ -24,7 +24,7 @@ import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import MultiInput from "@/components/MultiInput";
 import AvatarUploadView from "@/components/AvatarUploadView";
-import PhotosUploader from "@/components/PhotosUploader";
+
 import LinkButton from "@/components/LinkButton";
 import { styled } from "@pigment-css/react";
 
