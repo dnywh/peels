@@ -114,7 +114,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
   async function handleDeleteListing(event) {
     event.preventDefault();
-    console.log("Deleting listing with slug:", initialListing.slug);
+    // console.log("Deleting listing with slug:", initialListing.slug);
     const response = await deleteListingAction(initialListing.slug);
     if (response.success) {
       router.push(`/profile/account?message=${response.message}`);

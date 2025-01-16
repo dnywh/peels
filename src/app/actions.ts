@@ -209,14 +209,50 @@ export const signOutAction = async () => {
 };
 
 export const deleteListingAction = async (slug: string) => {
+  console.log("Deleting listing:", slug);
   const supabase = await createClient();
   try {
-    const { data: listing, error } = await supabase
+    // Fetch the listing to get the avatar
+    const { data: listing, error: fetchError } = await supabase
+      .from("listings")
+      .select("avatar")
+      .eq("slug", slug)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching listing:", fetchError);
+      return { success: false, message: "Failed to fetch listing" };
+    }
+
+    // Delete avatar if it exists
+    if (listing?.avatar) {
+      console.log("Deleting avatar:", listing.avatar);
+
+      const { error: storageError } = await supabase.storage
+        .from("avatars")
+        .remove([listing.avatar]);
+
+      if (storageError) {
+        console.error("Avatar deletion error:", storageError);
+        return { success: false, message: "Failed to delete avatar" };
+      }
+      console.log("Deleted avatar:", listing.avatar);
+    } else {
+      console.log("No avatar to delete");
+    }
+
+    // Delete the listing
+    const { data: deletedListing, error: deleteError } = await supabase
       .from("listings")
       .delete()
       .eq("slug", slug);
 
-    console.log("Listing deleted successfully:", listing);
+    if (deleteError) {
+      console.error("Error deleting listing:", deleteError);
+      return { success: false, message: "Failed to delete listing" };
+    }
+
+    console.log("Listing deleted successfully:", deletedListing);
     return { success: true, message: "Listing deleted" };
   } catch (error) {
     console.error("Error deleting listing:", error);

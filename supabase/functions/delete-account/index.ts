@@ -42,6 +42,32 @@ serve(async (req) => {
       console.log("Deleted avatar:", profile.avatar);
     }
 
+    // Fetch all listings for the user to delete their avatars
+    const { data: listings, error: listingsError } = await supabaseAdmin
+      .from("listings")
+      .select("avatar")
+      .eq("owner_id", user_id);
+
+    if (listingsError) {
+      console.error("Listings fetch error:", listingsError);
+      throw listingsError;
+    }
+
+    // Delete avatars for each listing
+    for (const listing of listings) {
+      if (listing.avatar) {
+        const { error: listingStorageError } = await supabaseAdmin.storage
+          .from("avatars")
+          .remove([listing.avatar]);
+
+        if (listingStorageError) {
+          console.error("Listing avatar deletion error:", listingStorageError);
+          throw listingStorageError;
+        }
+        console.log("Deleted listing avatar:", listing.avatar);
+      }
+    }
+
     // Delete auth user (cascade will handle the rest)
     const { error: deleteUserError } = await supabaseAdmin.auth.admin
       .deleteUser(user_id);
