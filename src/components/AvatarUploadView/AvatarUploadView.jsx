@@ -12,46 +12,26 @@ import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
 
 const StyledMenuItems = styled(MenuItems)(({ theme }) => ({
-  // className="w-52 origin-top-right rounded-xl border border-white/5 bg-white/5 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
   width: "auto",
   origin: "top center",
-  // rounded: "xl",
   background: theme.colors.background.top,
   padding: "0.5rem",
   borderRadius: theme.corners.base,
-  // text: "sm/6",
-  // textColor: "white",
   transition: "opacity 100ms ease-out, scale 100ms ease-out",
-
+  transformOrigin: "top center",
   display: "flex",
   flexDirection: "column",
 
   boxShadow: `0px 0px 3px 1px rgba(0, 0, 0, 0.06)`,
-  // gap: "1px",
 
-  "&[data-focus]": {
-    // outline: "2px solid var(--color-primary)",
-    // outlineOffset: "2px",
-  },
+  // "&[data-focus]": {
+  // },
 
   "&[data-closed]": {
     scale: "0.95",
     opacity: "0",
   },
 }));
-
-const StyledMenuItem = styled(MenuItem)({
-  // padding: "0.25rem 0.5rem",
-  // background: "white",
-  // borderRadius: "0.25rem",
-  // border: "1px solid grey",
-  // background: "red",
-  // "&[data-focus]": {
-  //   background: "lightgrey",
-  //   outline: "none",
-  //   border: "none",
-  // },
-});
 
 const StyledField = styled(Field)({
   alignItems: "center",
@@ -143,7 +123,7 @@ function AvatarUploadView({
             </MenuButton>
 
             <StyledMenuItems transition anchor={{ to: "bottom", gap: "4px" }}>
-              <StyledMenuItem>
+              <MenuItem>
                 <Button
                   onClick={handleFileSelect}
                   variant="secondary"
@@ -151,12 +131,12 @@ function AvatarUploadView({
                 >
                   Replace
                 </Button>
-              </StyledMenuItem>
-              <StyledMenuItem>
+              </MenuItem>
+              <MenuItem>
                 <Button onClick={onDelete} variant="danger" size="dropdown">
                   Delete
                 </Button>
-              </StyledMenuItem>
+              </MenuItem>
             </StyledMenuItems>
           </Menu>
         )}
