@@ -4,7 +4,7 @@ import Image from "next/image";
 // But this adds complication and all my URLs are already public
 
 // E.g.
-// import { getAvatarUrl } from "@/utils/avatarUtils";
+// import { getAvatarUrl } from "@/utils/mediaUtils";
 
 // function getListingAvatarUrl(filename) {
 //   const {

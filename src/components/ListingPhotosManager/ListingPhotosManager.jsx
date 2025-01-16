@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { uploadListingPhoto, deleteListingPhoto } from "@/utils/avatarUtils";
+import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
 import { styled } from "@pigment-css/react";
 import Button from "@/components/Button";
 import StorageImage from "@/components/StorageImage";

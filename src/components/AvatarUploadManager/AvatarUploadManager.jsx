@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AvatarUploadView from "@/components/AvatarUploadView";
-import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/avatarUtils";
+import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/mediaUtils";
 
 function AvatarUploadManager({
   initialAvatar,
