@@ -81,12 +81,8 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     return redirect(redirectUrl.toString());
   }
 
-  redirectUrl.searchParams.append(
-    "success",
-    `Thanks for signing up${
-      first_name ? `, ${first_name}!` : "!"
-    } Please check your email for a verification link.`,
-  );
+  // Success state
+  redirectUrl.searchParams.append("success", "true");
   return redirect(redirectUrl.toString());
 };
 

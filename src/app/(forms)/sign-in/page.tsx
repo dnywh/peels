@@ -11,7 +11,7 @@ import Hyperlink from "@/components/Hyperlink";
 
 import Link from "next/link";
 
-export default async function Login(props: {
+export default async function SignIn(props: {
   searchParams: Promise<{
     next?: string;
     error?: string;

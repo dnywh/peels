@@ -6,6 +6,7 @@ import SubmitButton from "@/components/SubmitButton";
 import Link from "next/link";
 import FieldHeader from "@/components/FieldHeader";
 import Hyperlink from "@/components/Hyperlink";
+import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
 import {
   // Field,
@@ -24,10 +25,10 @@ import Input from "@/components/Input";
 
 import { styled } from "@pigment-css/react";
 
-export default async function Signup(props: {
+export default async function SignUp(props: {
   searchParams: Promise<{
     error?: string;
-    success?: string;
+    success?: boolean;
     email?: string;
     first_name?: string;
     from?: string;
@@ -36,7 +37,27 @@ export default async function Signup(props: {
   // TODO: How are these searchParams working without special Next.js magic?
   // I could simplify my server -> client set up elsewhere if I just use this more seemingly 'native' way
   const searchParams = await props.searchParams;
-  // console.log("searchParams", searchParams);
+
+  // Handle success state
+  if (searchParams.success) {
+    return (
+      <FormHeader>
+        <h1>Success!</h1>
+        <p>
+          Thanks for signing up, {searchParams.first_name}! Please check your
+          email for a verification link.
+        </p>
+        <p>
+          Never received the email?{" "}
+          {/* TODO: Resend verification email to {searchParams.email}. */}
+          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+            Let us know
+          </EncodedEmailHyperlink>
+          .
+        </p>
+      </FormHeader>
+    );
+  }
 
   return (
     <>
@@ -89,8 +110,7 @@ export default async function Signup(props: {
           Sign up
         </SubmitButton>
       </Form>
-      {searchParams.error ||
-        (searchParams.success && <FormMessage message={searchParams} />)}
+      {searchParams.error && <FormMessage message={searchParams.error} />}
     </>
   );
 }
