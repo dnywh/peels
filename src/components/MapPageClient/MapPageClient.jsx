@@ -189,16 +189,22 @@ const StyledHeaderText = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.25rem",
+  width: "100%",
+  padding: "0 2.5rem", // Padding to account for the icon button
 
   "& h3, p": {
     lineHeight: "100%",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    display: "block",
+    textOverflow: "ellipsis",
+
+    fontSize: "0.85rem",
   },
   "& h3": {
-    fontSize: "1",
     color: theme.colors.text.secondary,
   },
   "& p": {
-    fontSize: "0.85rem",
     color: theme.colors.text.tertiary,
   },
 }));

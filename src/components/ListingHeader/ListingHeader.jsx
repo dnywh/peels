@@ -18,6 +18,9 @@ const StyledText = styled("div")(({ theme }) => ({
 
   "& h2": {
     lineHeight: "1.2",
+    overflowWrap: "break-word",
+    hyphens: "manual",
+    wordBreak: "break-word", // Above hyphens approach doesn't work, so this is a temporary solution
   },
 
   "& p": {
