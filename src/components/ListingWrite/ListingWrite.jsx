@@ -28,16 +28,19 @@ import ListingPhotosManager from "@/components/ListingPhotosManager";
 import AdditionalSettings from "@/components/AdditionalSettings";
 import Hyperlink from "@/components/Hyperlink";
 import InputHint from "@/components/InputHint";
+import Fieldset from "@/components/Fieldset";
 
-import { styled } from "@pigment-css/react";
-import { Fieldset } from "@headlessui/react";
+import FormMessage from "@/components/FormMessage";
 
-// React component
+// Component
 export default function ListingWrite({ initialListing, user, profile }) {
   const { type } = useParams();
   const router = useRouter();
 
   const listingType = initialListing?.type || type;
+
+  // Prepare error state
+  const [errors, setErrors] = useState({});
 
   // Populate editable fields
   const [avatar, setAvatar] = useState(
@@ -104,7 +107,27 @@ export default function ListingWrite({ initialListing, user, profile }) {
   // Form handling logic here
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log(visibility);
+
+    // Reset errors
+    setErrors({});
+    // Validate required field
+    const nextErrors = {};
+
+    if (!coordinates) {
+      nextErrors.location = "Please select a location.";
+    }
+
+    if (!legal) {
+      nextErrors.legal =
+        "You need to accept the terms of service and privacy policy to make a Peels listing.";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      console.log("Errors:", nextErrors);
+      return;
+    }
+
     try {
       const supabase = createClient();
       const {
@@ -163,20 +186,11 @@ export default function ListingWrite({ initialListing, user, profile }) {
       // window.location.href = `/listings/${data.slug}?success=Listing ${initialListing ? "updated" : "created"} successfully`
     } catch (error) {
       console.error("Error creating listing:", error);
+      setErrors({
+        submit: error.message,
+      });
     }
   }
-
-  const handlePhotoChange = async (event) => {
-    const files = Array.from(event.target.files);
-    try {
-      const uploadPromises = files.map(uploadPhoto);
-      const uploadedUrls = await Promise.all(uploadPromises);
-      setPhotos(uploadedUrls);
-    } catch (error) {
-      console.error("Error uploading photos:", error);
-      // Show error message to user
-    }
-  };
 
   //   Functions for adding and removing items
   const addAcceptedItem = () => {
@@ -250,7 +264,6 @@ export default function ListingWrite({ initialListing, user, profile }) {
             </Field>
           )}
 
-          {/* TODO: Handle database error when user doesn't enter a location */}
           <LocationSelect
             listingType={listingType}
             initialPlaceholderText={
@@ -266,6 +279,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             setCountryCode={setCountryCode}
             areaName={areaName}
             setAreaName={setAreaName}
+            error={errors.location}
           />
 
           {listingType === "business" ? (
@@ -402,7 +416,12 @@ export default function ListingWrite({ initialListing, user, profile }) {
         )}
 
         <FormSection>
-          <CheckboxUnit required={true} checked={legal} setChecked={setLegal}>
+          <CheckboxUnit
+            required={true}
+            checked={legal}
+            setChecked={setLegal}
+            error={errors.legal}
+          >
             I have read and accept the Peels{" "}
             {/* Wrap links in spans as an alterntive to passive={true} on the label. This allows the rest of the label text to still act as a trigger on the checkbox. */}
             <span onClick={(e) => e.stopPropagation()}>
@@ -419,13 +438,20 @@ export default function ListingWrite({ initialListing, user, profile }) {
           </CheckboxUnit>
         </FormSection>
 
-        {/* More form fields */}
+        {Object.keys(errors).length > 0 && (
+          <FormMessage
+            message={{
+              error: `Please fix the above error${
+                Object.keys(errors).length > 1 ? "s" : ""
+              } and then try again.`,
+            }}
+          />
+        )}
         <SubmitButton>
           {initialListing ? "Save changes" : "Add listing"}
         </SubmitButton>
       </Form>
 
-      {/* TODO: warn if unsaved changes? */}
       {initialListing && (
         <AdditionalSettings>
           <Button

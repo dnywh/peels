@@ -51,20 +51,20 @@ export default async function SignIn(props: {
             type="password"
             name="password"
             placeholder="Your password"
-            required
+            required={true}
           />
         </Field>
 
         {searchParams.next && (
           <input type="hidden" name="next" value={searchParams.next} />
         )}
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-          Sign in
-        </SubmitButton>
 
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}
+        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
+          Sign in
+        </SubmitButton>
       </Form>
       <FormFooter>
         <p>

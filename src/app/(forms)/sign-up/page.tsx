@@ -118,12 +118,13 @@ export default async function SignUp(props: {
           </FieldHeader>
           <Input name="invite_code" placeholder="Your invite code" required />
         </Field>
-        <SubmitButton formAction={signUpAction} pendingText="Signing up...">
-          Sign up
-        </SubmitButton>
+
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}
+        <SubmitButton formAction={signUpAction} pendingText="Signing up...">
+          Sign up
+        </SubmitButton>
       </Form>
       <FormFooter>
         <p>

@@ -75,6 +75,7 @@ const tokens = {
         100: 'hsla(22, 35%, 96%, 1)',
         150: 'hsla(22, 35%, 95%, 1)',
         500: 'hsla(22, 87%, 50%, 1)',
+        500_0625: 'hsla(22, 87%, 50%, 0.0625)',
         600: 'hsla(22, 87%, 44%, 1)',
         700: 'hsla(22, 97%, 25%, 1)',
         800: 'hsla(22, 100%, 14%, 1)'
@@ -99,6 +100,7 @@ export default withPigment(nextConfig, {
                 between: tokens.ochre[100],
                 pit: tokens.ochre[150],
                 overlay: tokens.black[33],
+                error: tokens.ochre[500_0625],
             },
             border: {
                 light: tokens.black[3],
@@ -149,6 +151,12 @@ export default withPigment(nextConfig, {
                     border: tokens.rock[100],
                 }
             },
+            input: {
+                invalid: {
+                    border: tokens.ochre[500],
+                    text: tokens.ochre[600],
+                },
+            },
             button: {
                 primary: {
                     background: tokens.kaki[700],
@@ -192,6 +200,7 @@ export default withPigment(nextConfig, {
                     primary: tokens.rock[900],
                     secondary: tokens.rock[800],
                     tertiary: tokens.rock[700],
+                    error: tokens.ochre[600],
                 },
                 brand: {
                     primary: tokens.ochre[800],

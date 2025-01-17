@@ -17,15 +17,7 @@ import MapPin from "@/components/MapPin";
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
-import Input from "@/components/Input";
-import SubmitButton from "@/components/SubmitButton";
-import Button from "@/components/Button";
-import Textarea from "@/components/Textarea";
-import MultiInput from "@/components/MultiInput";
-import AvatarUploadView from "@/components/AvatarUploadView";
-
-import LinkButton from "@/components/LinkButton";
-import { styled } from "@pigment-css/react";
+import InputHint from "@/components/InputHint";
 
 const ZOOM_LEVEL = 16;
 
@@ -88,8 +80,6 @@ async function getAreaName(longitude, latitude) {
     // Fallback to the most relevant feature's place name
     areaName = features[0].place_name || undefined;
   }
-
-  console.log({ areaName });
   return areaName;
 }
 
@@ -120,6 +110,7 @@ export default function LocationSelect({
   areaName,
   setAreaName,
   initialPlaceholderText,
+  error,
 }) {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
@@ -245,6 +236,7 @@ export default function LocationSelect({
           id="country"
           value={countryCode ? countryCode : "initial"}
           onChange={handleCountryChange}
+          required={true}
         >
           <option disabled={true} value="initial">
             Select a country
@@ -259,8 +251,15 @@ export default function LocationSelect({
         {/* TODO: Reuse MapSearch component */}
         {/* TODO: Add a 'required' prop for forms that require a location (doesn't work with GeocodingControl) */}
         {/* TODO: Handle database error when user doesn't enter a location */}
-        <div id="custom-geocoding-styles">
+        <div
+          id="custom-geocoding-styles"
+          className={error ? "error" : undefined}
+        >
           <GeocodingControl
+            // Add these two props to the custom component
+            error={error}
+            aria-invalid={error ? "true" : undefined}
+            // Continue with actual props
             id="autocomplete" // Doesn't work out of the box
             ref={inputRef}
             apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
@@ -281,7 +280,7 @@ export default function LocationSelect({
               "municipality",
             ]}
             placeholder={placeholderText}
-            errorMessage="Error TODO"
+            errorMessage="Something went wrong. Try again?"
             noResultsMessage="No results. Keep typing or refine your search"
             minLength={3}
             showPlaceType={false}
@@ -290,6 +289,7 @@ export default function LocationSelect({
             required={true}
           />
         </div>
+        {error && <InputHint variant="error">{error}</InputHint>}
       </Field>
 
       {mapShown && (

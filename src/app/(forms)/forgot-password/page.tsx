@@ -32,12 +32,12 @@ export default async function ForgotPassword(props: {
             required
           />
         </Field>
-        <SubmitButton formAction={forgotPasswordAction}>
-          Email me the link
-        </SubmitButton>
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}
+        <SubmitButton formAction={forgotPasswordAction}>
+          Email me the link
+        </SubmitButton>
       </Form>
     </>
   );

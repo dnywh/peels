@@ -17,6 +17,13 @@ const StyledField = styled(Field)(({ theme }) => ({
   border: `1px solid ${theme.colors.border.stark}`,
   borderRadius: `calc(${theme.corners.base} * 0.625)`,
   backgroundColor: theme.colors.background.slight,
+
+  "&[data-invalid]": {
+    borderColor: theme.colors.input.invalid.border,
+    borderWidth: "1.5px",
+    backgroundColor: theme.colors.background.error,
+    color: theme.colors.text.ui.error,
+  },
 }));
 
 const StyledLabel = styled(HeadlessLabel)(({ theme }) => ({
@@ -69,14 +76,16 @@ function CheckboxUnit({
   required = false,
   children,
   passiveLabel = false,
+  error,
 }) {
   return (
-    <StyledField>
+    <StyledField data-invalid={error ? true : undefined}>
       <StyledLabel passive={passiveLabel}>{children}</StyledLabel>
       <StyledCheckbox
         checked={checked}
         onChange={setChecked}
         required={required}
+        invalid={error ? "true" : undefined}
       >
         <Check viewBox="0 0 14 14" fill="none">
           <path
@@ -87,6 +96,7 @@ function CheckboxUnit({
           />
         </Check>
       </StyledCheckbox>
+      {/* {error && <InputHint variant="error">{error}</InputHint>} */}
     </StyledField>
   );
 }

@@ -19,8 +19,13 @@ const StyledInput = styled(HeadlessInput)(({ theme }) => ({
     outlineOffset: "2px",
     outlineColor: theme.colors.border.focus,
   },
+
+  "&[data-invalid]": {
+    borderColor: theme.colors.input.invalid.border,
+    borderWidth: "2px",
+  },
 }));
 
-export default function Input({ ...props }) {
-  return <StyledInput {...props} />;
+export default function Input({ error, ...props }) {
+  return <StyledInput invalid={error ? true : undefined} {...props} />;
 }

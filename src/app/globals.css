@@ -153,6 +153,13 @@ summary.maplibregl-ctrl-attrib-button {
 }
 
 /* Temporary styles for GeocodingControl  */
+#custom-geocoding-styles.error {
+  input {
+    border-color: hsla(22, 87%, 50%, 1) !important;
+    border-width: 1.5px !important;
+    background-color: hsla(22, 87%, 50%, 0.0625) !important;
+  }
+}
 
 #custom-geocoding-styles {
   form.svelte-bz0zu3 {
