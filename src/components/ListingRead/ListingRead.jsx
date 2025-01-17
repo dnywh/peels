@@ -18,7 +18,7 @@ import { Drawer } from "vaul";
 
 import StorageImage from "@/components/StorageImage";
 
-import StyledMap from "@/components/StyledMap";
+import PeelsMap from "@/components/PeelsMap";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
@@ -159,7 +159,7 @@ const ListingRead = memo(function Listing({
       {!isDrawer && (
         <section>
           <h3>Location</h3>
-          <StyledMap
+          <PeelsMap
             style={{ height: "320px" }}
             interactive={false}
             initialViewState={{
@@ -176,7 +176,7 @@ const ListingRead = memo(function Listing({
               <MapPin selected={true} type={listing.type} />
             </Marker>
             <NavigationControl showCompass={false} />
-          </StyledMap>
+          </PeelsMap>
 
           {listing.type === "residential" && (
             <p>

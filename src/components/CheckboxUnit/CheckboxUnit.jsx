@@ -9,6 +9,12 @@ import { styled } from "@pigment-css/react";
 
 const StyledField = styled(Field)(({ theme }) => ({
   display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing.forms.gap.field,
+}));
+
+const StyledFieldContents = styled("div")(({ theme }) => ({
+  display: "flex",
   flexDirection: "row",
   alignItems: "center",
   gap: "1rem",
@@ -79,24 +85,26 @@ function CheckboxUnit({
   error,
 }) {
   return (
-    <StyledField data-invalid={error ? true : undefined}>
-      <StyledLabel passive={passiveLabel}>{children}</StyledLabel>
-      <StyledCheckbox
-        checked={checked}
-        onChange={setChecked}
-        required={required}
-        invalid={error ? "true" : undefined}
-      >
-        <Check viewBox="0 0 14 14" fill="none">
-          <path
-            d="M3 8L6 11L11 3.5"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </Check>
-      </StyledCheckbox>
-      {/* {error && <InputHint variant="error">{error}</InputHint>} */}
+    <StyledField>
+      <StyledFieldContents data-invalid={error ? true : undefined}>
+        <StyledLabel passive={passiveLabel}>{children}</StyledLabel>
+        <StyledCheckbox
+          checked={checked}
+          onChange={setChecked}
+          required={required}
+          invalid={error ? "true" : undefined}
+        >
+          <Check viewBox="0 0 14 14" fill="none">
+            <path
+              d="M3 8L6 11L11 3.5"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </Check>
+        </StyledCheckbox>
+      </StyledFieldContents>
+      {error && <InputHint variant="error">{error}</InputHint>}
     </StyledField>
   );
 }

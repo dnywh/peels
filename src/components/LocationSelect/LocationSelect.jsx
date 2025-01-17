@@ -11,13 +11,28 @@ import { Marker, NavigationControl } from "react-map-gl/maplibre";
 
 import Select from "@/components/Select";
 
-import StyledMap from "@/components/StyledMap";
+import PeelsMap from "@/components/PeelsMap";
 import MapPin from "@/components/MapPin";
 
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import InputHint from "@/components/InputHint";
+
+import { styled } from "@pigment-css/react";
+
+const StyledFieldset = styled(Fieldset)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing.forms.gap.field,
+}));
+
+const StyledMapWrapper = styled("div")(({ theme }) => ({
+  borderRadius: `calc(${theme.corners.base} * 0.5)`,
+  border: `1.5px solid ${theme.colors.border.stark}`,
+  background: theme.colors.background.map,
+  overflow: "hidden",
+}));
 
 const ZOOM_LEVEL = 16;
 
@@ -228,7 +243,7 @@ export default function LocationSelect({
   );
 
   return (
-    <Fieldset>
+    <StyledFieldset>
       <Field>
         <Label htmlFor="country">Location</Label>
         {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
@@ -289,46 +304,49 @@ export default function LocationSelect({
             required={true}
           />
         </div>
-        {error && <InputHint variant="error">{error}</InputHint>}
+        <InputHint variant={error ? "error" : undefined}>
+          {error
+            ? error
+            : `Start typing, then select one of the suggested ${listingType === "residential" ? "options" : "addresses"} from the dropdown.`}
+        </InputHint>
       </Field>
 
       {mapShown && (
-        <>
+        <Field>
           {/* <p>Refine your pin location:</p> */}
-          <StyledMap
-            ref={mapRef}
-            initialViewState={{ ...coordinates, zoom: ZOOM_LEVEL }}
-            // maxBounds={bounds}
-            style={{ height: 420 }}
-          >
-            <Marker
-              draggable={true}
-              longitude={coordinates.longitude}
-              latitude={coordinates.latitude}
-              anchor="center"
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onClick={() => console.log("Tapped marker")}
+          <StyledMapWrapper>
+            <PeelsMap
+              ref={mapRef}
+              initialViewState={{ ...coordinates, zoom: ZOOM_LEVEL }}
+              height={`35dvh`}
+              // Allow interaction but just disable the input handlers that collide with the overall form experience (i.e. scrolling)
+              // dragRotate={false}
+              // dragPan={false}
+              scrollZoom={false}
+              // doubleClickZoom={false}
+              // boxZoom={false}
+              // cursor="default"
             >
-              <MapPin type={listingType} selected={true} />
-            </Marker>
-            <NavigationControl showZoom={true} showCompass={false} />
-          </StyledMap>
-          {coordinates && (
-            <p>
-              Coordinates provided, showing map automatically. Your location
-              will be shown as: <br />
-              <b>{areaName}</b>
-            </p>
-          )}
-          {/* TODO: Make the following conditionally show for individual hosts only */}
-          {/* Marker should show this visually, like Airbnb */}
-          <p>
-            Your location will be roughened to a 100m radius for your privacy.
-            That makes it People will need to ask you for your address.
-          </p>
-        </>
+              <Marker
+                draggable={true}
+                longitude={coordinates.longitude}
+                latitude={coordinates.latitude}
+                anchor="center"
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onClick={() => console.log("Tapped marker")}
+              >
+                <MapPin type={listingType} selected={true} />
+              </Marker>
+              <NavigationControl showZoom={true} showCompass={false} />
+            </PeelsMap>
+          </StyledMapWrapper>
+          <InputHint>
+            Drag the pin to refine{" "}
+            {listingType === "residential" && "or obscure"} your location.
+          </InputHint>
+        </Field>
       )}
-    </Fieldset>
+    </StyledFieldset>
   );
 }

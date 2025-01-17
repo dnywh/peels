@@ -9,6 +9,8 @@ function AvatarUploadManager({
   bucket,
   entityId,
   onAvatarChange,
+  inputHintShown,
+  ...props
 }) {
   const [avatar, setAvatar] = useState(initialAvatar || "");
 
@@ -47,6 +49,7 @@ function AvatarUploadManager({
       onDelete={handleAvatarDelete}
       getAvatarUrl={(filename) => getAvatarUrl(filename, bucket)}
       bucket={bucket}
+      inputHintShown={inputHintShown}
     />
   );
 }

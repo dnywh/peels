@@ -67,6 +67,7 @@ const tokens = {
         400: 'hsla(81, 95%, 36%, 1)'
     },
     ocean: {
+        200: 'hsla(192, 75%, 91%, 1)',
         500: 'hsla(193, 77%, 43%, 1)'
     },
     ochre: {
@@ -101,6 +102,7 @@ export default withPigment(nextConfig, {
                 pit: tokens.ochre[150],
                 overlay: tokens.black[33],
                 error: tokens.ochre[500_0625],
+                map: tokens.ocean[200],
             },
             border: {
                 light: tokens.black[3],
@@ -211,6 +213,9 @@ export default withPigment(nextConfig, {
             unit: "0.5rem", // 8px
             forms: {
                 maxWidth: "32rem",
+                gap: {
+                    field: "0.5rem",
+                }
             },
             tabBar: {
                 maxWidth: "26rem",

@@ -8,6 +8,7 @@ import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Button from "@/components/Button";
+import InputHint from "@/components/InputHint";
 
 import { styled } from "@pigment-css/react";
 
@@ -73,6 +74,7 @@ function AvatarUploadView({
   onDelete,
   getAvatarUrl,
   bucket,
+  inputHintShown = false,
 }) {
   // Hidden file input that we'll trigger programmatically
   const fileInputRef = useRef(null);
@@ -140,6 +142,12 @@ function AvatarUploadView({
               </MenuItem>
             </StyledMenuItems>
           </Menu>
+        )}
+        {inputHintShown && (
+          <InputHint variant="centered">
+            This picture is shown when communicating with other members. We
+            strongly recommend uploading one!
+          </InputHint>
         )}
       </StyledField>
     </Fieldset>

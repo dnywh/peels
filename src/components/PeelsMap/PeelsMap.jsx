@@ -9,7 +9,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 
-function StyledMap({ children, ...props }) {
+import { styled } from "@pigment-css/react";
+
+function PeelsMap({ height = `300`, children, ...props }) {
   useEffect(() => {
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -35,6 +37,7 @@ function StyledMap({ children, ...props }) {
         layers: layers("protomaps", "light"),
       }}
       renderWorldCopies={true}
+      style={{ width: "100%", height: height }}
       {...props}
     >
       {children}
@@ -42,4 +45,4 @@ function StyledMap({ children, ...props }) {
   );
 }
 
-export default StyledMap;
+export default PeelsMap;

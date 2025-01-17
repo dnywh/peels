@@ -119,7 +119,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
     if (!legal) {
       nextErrors.legal =
-        "You need to accept the terms of service and privacy policy to make a Peels listing.";
+        "You need to accept the terms of service and privacy policy.";
     }
 
     if (Object.keys(nextErrors).length > 0) {
@@ -235,6 +235,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             bucket="avatars"
             entityId={user.id}
             onAvatarChange={setAvatar}
+            inputHintShown={profile?.avatar ? undefined : true}
           />
         ) : (
           <AvatarUploadManager

@@ -57,7 +57,7 @@ const StyledMapPage = styled("main")({
   // },
 });
 
-const StyledMapRender = styled("div")(({ theme }) => ({
+const StyledMapWrapper = styled("div")(({ theme }) => ({
   // marginBottom: "80px", //Equal to height of tab bar
 
   // overflow: "hidden",
@@ -114,7 +114,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   // overscrollBehavior: "unset",
   // margin: "0 -1px", // mx-[-1px]
 
-  background: theme.colors.background.between,
+  background: theme.colors.background.slight,
 
   border: `0.5px solid ${theme.colors.border.base}`,
   boxShadow: `0px -3px 3px 1px rgba(0, 0, 0, 0.06)`,
@@ -610,7 +610,7 @@ export default function MapPageClient({ user }) {
 
   return (
     <StyledMapPage>
-      <StyledMapRender>
+      <StyledMapWrapper>
         <Drawer.Root
           // position={isDesktop ? "right" : undefined}
           direction={isDesktop ? "right" : undefined}
@@ -774,7 +774,7 @@ export default function MapPageClient({ user }) {
             </StyledDrawerContent>
           </Drawer.Portal>
         </Drawer.Root>
-      </StyledMapRender>
+      </StyledMapWrapper>
       {isDesktop && <MapSidebar user={user} covered={isDrawerOpen} />}
     </StyledMapPage>
   );
