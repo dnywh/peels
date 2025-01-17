@@ -253,6 +253,13 @@ export default function ListingWrite({ initialListing, user, profile }) {
           {/* TODO: Handle database error when user doesn't enter a location */}
           <LocationSelect
             listingType={listingType}
+            initialPlaceholderText={
+              listingType === "business"
+                ? "Your business’ address"
+                : listingType === "community"
+                  ? "Your community’s address"
+                  : "Your street or neighbourhood"
+            }
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             countryCode={countryCode}
@@ -290,7 +297,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 maxLength={512}
                 required={false}
                 resize="vertical"
-                placeholder={`About your ${listingType === "residential" ? "listing" : listingType === "community" ? "community project" : "business"}`}
+                placeholder={`About your ${listingType === "residential" ? "listing" : listingType}`}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
@@ -328,6 +335,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
             <MultiInput
               label="What scraps do you not accept?"
+              addButtonText="Add an item"
               placeholder="Something you don’t accept (e.g. ‘meat’)"
               secondaryPlaceholder="Something else"
               items={rejectedItems}

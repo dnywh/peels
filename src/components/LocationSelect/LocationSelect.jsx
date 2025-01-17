@@ -14,7 +14,6 @@ import Select from "@/components/Select";
 import StyledMap from "@/components/StyledMap";
 import MapPin from "@/components/MapPin";
 
-import Form from "@/components/Form";
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
@@ -120,13 +119,14 @@ export default function LocationSelect({
   setCountryCode,
   areaName,
   setAreaName,
+  initialPlaceholderText,
 }) {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
-    "Your street name or nearby"
+    initialPlaceholderText || "Your street name or nearby"
   );
 
   useEffect(() => {
@@ -259,33 +259,37 @@ export default function LocationSelect({
         {/* TODO: Reuse MapSearch component */}
         {/* TODO: Add a 'required' prop for forms that require a location (doesn't work with GeocodingControl) */}
         {/* TODO: Handle database error when user doesn't enter a location */}
-        <GeocodingControl
-          id="autocomplete" // Doesn't work out of the box
-          ref={inputRef}
-          apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
-          country={countryCode}
-          // The below will be great for the map page where we don't want to bother with a country dropdown:
-          // Only applies if control is tied to a map. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
-          // proximity={[
-          //     // { type: "map-center", minZoom: 12 },
-          //     { type: "client-geolocation", minZoom: 8 },
-          //     // { type: "server-geolocation", minZoom: 8 },
-          // ]}
-          types={[
-            "address",
-            "place",
-            "neighbourhood",
-            "locality",
-            "municipal_district",
-            "municipality",
-          ]}
-          placeholder={placeholderText}
-          errorMessage="Error TODO"
-          noResultsMessage="No results. Keep typing or refine your search"
-          minLength={3}
-          showPlaceType={false}
-          onPick={handlePick}
-        />
+        <div id="custom-geocoding-styles">
+          <GeocodingControl
+            id="autocomplete" // Doesn't work out of the box
+            ref={inputRef}
+            apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
+            country={countryCode}
+            // The below will be great for the map page where we don't want to bother with a country dropdown:
+            // Only applies if control is tied to a map. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
+            // proximity={[
+            //     // { type: "map-center", minZoom: 12 },
+            //     { type: "client-geolocation", minZoom: 8 },
+            //     // { type: "server-geolocation", minZoom: 8 },
+            // ]}
+            types={[
+              "address",
+              "place",
+              "neighbourhood",
+              "locality",
+              "municipal_district",
+              "municipality",
+            ]}
+            placeholder={placeholderText}
+            errorMessage="Error TODO"
+            noResultsMessage="No results. Keep typing or refine your search"
+            minLength={3}
+            showPlaceType={false}
+            onPick={handlePick}
+            // Testing...
+            required={true}
+          />
+        </div>
       </Field>
 
       {mapShown && (
