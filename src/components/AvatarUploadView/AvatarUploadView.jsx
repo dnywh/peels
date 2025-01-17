@@ -35,6 +35,7 @@ const StyledMenuItems = styled(MenuItems)(({ theme }) => ({
 
 const StyledField = styled(Field)({
   alignItems: "center",
+  marginTop: "0.5rem", // Optical offset for theme.rotations.avatar
 });
 
 const StyledImgContainer = styled("div")({

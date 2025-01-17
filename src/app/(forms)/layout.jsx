@@ -9,13 +9,13 @@ const AuthPage = styled("main")(({ theme }) => ({
 
   "@media (min-width: 768px)": {
     margin: "3rem auto",
-    padding: "3rem",
-    maxWidth: "32rem",
+    // maxWidth: "32rem",
+    width: "fit-content",
 
     background: theme.colors.background.top,
     border: `1px solid ${theme.colors.border.base}`,
     borderRadius: theme.corners.base,
-    padding: "1.5rem 1.5rem 3rem",
+    // padding: "1.5rem 1.5rem 3rem",
   },
 }));
 

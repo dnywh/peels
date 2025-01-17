@@ -22,14 +22,13 @@ const StyledIconButton = styled(IconButton)({
 const Header = styled("header")(({ theme }) => ({
   width: "100%",
   maxWidth: theme.spacing.forms.maxWidth,
+  padding: "0 0.25rem", // Inset a little bit from the maxWidth, visually
 
   display: "flex",
   flexDirection: "column",
   gap: "0.75rem",
   alignItems: "center",
-  textAlign: "center",
-  position: "relative",
-  textWrap: "balance",
+
   variants: [
     {
       props: { button: "none" },
@@ -38,18 +37,29 @@ const Header = styled("header")(({ theme }) => ({
       },
     },
   ],
+}));
+
+const Text = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.35rem",
+
+  textAlign: "center",
+  position: "relative",
+  textWrap: "balance",
 
   "& h1": {
-    fontSize: "3rem",
+    fontSize: "2.75rem",
     lineHeight: "1",
     fontWeight: "bold",
-    color: theme.colors.text.primary,
+    color: theme.colors.text.brand.primary,
   },
 
   "& p": {
     fontSize: "1rem",
+    lineHeight: "120%",
     fontWeight: "normal",
-    color: theme.colors.text.secondary,
+    color: theme.colors.text.ui.secondary,
   },
 }));
 
@@ -58,7 +68,7 @@ function FormHeader({ children, button = "back" }) {
     <Header button={button}>
       {button === "none" ? null : <StyledIconButton button={button} />}
       <PeelsLogo />
-      {children}
+      <Text>{children}</Text>
     </Header>
   );
 }

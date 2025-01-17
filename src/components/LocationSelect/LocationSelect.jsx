@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 
 import { GeocodingControl } from "@maptiler/geocoding-control/react";
-import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
+// import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
 
 import { countries } from "@/data/countries";
 

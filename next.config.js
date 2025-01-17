@@ -59,7 +59,9 @@ const tokens = {
         100: 'hsla(37, 5%, 83%, 1)',
         300: 'hsla(38, 5%, 71%, 1)',
         400: 'hsla(37, 5%, 61%, 1)',
-        800: 'hsla(37, 5%, 40%, 1)'
+        700: 'hsla(37, 5%, 40%, 1)',
+        800: 'hsla(37, 5%, 25%, 1)',
+        900: 'hsla(37, 5%, 12%, 1)',
     },
     forest: {
         400: 'hsla(81, 95%, 36%, 1)'
@@ -122,6 +124,17 @@ export default withPigment(nextConfig, {
                 },
                 border: tokens.white[100],
             },
+            checkbox: {
+                checked: {
+                    background: tokens.ochre[800],
+                    foreground: tokens.white[100],
+
+                },
+                unchecked: {
+                    background: tokens.ochre[50],
+                    foreground: tokens.white[100],
+                },
+            },
             radio: {
                 checked: {
                     background: tokens.ochre[150],
@@ -149,7 +162,7 @@ export default withPigment(nextConfig, {
                     background: tokens.white[100],
                     hover: {
                         tint: tokens.white[100],
-                        mix: `20%`,
+                        mix: `40%`,
                     },
                     text: tokens.ochre[800],
                 },
@@ -174,12 +187,21 @@ export default withPigment(nextConfig, {
                 link: tokens.ochre[700],
                 counter: tokens.rock[100],
                 overlay: tokens.white[100],
+                // Deprecate above in favour of below
+                ui: {
+                    primary: tokens.rock[900],
+                    secondary: tokens.rock[800],
+                    tertiary: tokens.rock[700],
+                },
+                brand: {
+                    primary: tokens.ochre[800],
+                }
             },
         },
         spacing: {
             unit: "0.5rem", // 8px
             forms: {
-                maxWidth: "28rem",
+                maxWidth: "32rem",
             },
             tabBar: {
                 maxWidth: "26rem",

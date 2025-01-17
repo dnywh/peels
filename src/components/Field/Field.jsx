@@ -4,6 +4,7 @@ import { styled } from "@pigment-css/react";
 const StyledField = styled(HeadlessField)({
   display: "flex",
   flexDirection: "column",
+  gap: "0.5rem",
 });
 
 export default function Field({ children, ...props }) {

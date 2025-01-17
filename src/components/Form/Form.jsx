@@ -3,9 +3,7 @@ import { styled } from "@pigment-css/react";
 const getSharedStyles = ({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "1rem",
-
-  width: "100%",
+  gap: "2rem",
   maxWidth: theme.spacing.forms.maxWidth,
 
   background: theme.colors.background.top,
@@ -16,7 +14,7 @@ const getSharedStyles = ({ theme }) => ({
   "@media (min-width: 768px)": {
     background: "inherit",
     border: "none",
-    borderRadius: "none",
+    borderRadius: "inherit",
     padding: "0",
   },
 });

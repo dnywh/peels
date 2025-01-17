@@ -13,6 +13,8 @@ import LocationSelect from "@/components/LocationSelect";
 import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
 import Form from "@/components/Form";
+import FormSection from "@/components/FormSection";
+import FormSectionHeader from "@/components/FormSectionHeader";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";
@@ -25,35 +27,10 @@ import ButtonToDialog from "@/components/ButtonToDialog";
 import ListingPhotosManager from "@/components/ListingPhotosManager";
 import AdditionalSettings from "@/components/AdditionalSettings";
 import Hyperlink from "@/components/Hyperlink";
+import InputHint from "@/components/InputHint";
 
 import { styled } from "@pigment-css/react";
-
-// async function uploadPhoto(file) {
-//   const supabase = createClient();
-
-//   // Create a unique file name
-//   const fileExt = file.name.split(".").pop();
-//   const fileName = `${Math.random()}.${fileExt}`;
-
-//   // Upload the file
-//   const { data, error } = await supabase.storage
-//     .from("listing_photos")
-//     .upload(fileName, file);
-
-//   if (error) throw error;
-
-//   // Return just the filename instead of full URL
-//   return fileName;
-// }
-
-// Add a helper function to get URLs when needed
-// function getPhotoUrl(filename) {
-//   const supabase = createClient();
-//   const {
-//     data: { publicUrl },
-//   } = supabase.storage.from("listing_photos").getPublicUrl(filename);
-//   return publicUrl;
-// }
+import { Fieldset } from "@headlessui/react";
 
 // React component
 export default function ListingWrite({ initialListing, user, profile }) {
@@ -254,8 +231,11 @@ export default function ListingWrite({ initialListing, user, profile }) {
           />
         )}
 
-        <div>
-          <h2>Basics</h2>
+        <FormSection>
+          <FormSectionHeader>
+            <h2>Basics</h2>
+          </FormSectionHeader>
+
           {listingType !== "residential" && (
             <Field>
               <Label htmlFor="name">Place name</Label>
@@ -294,6 +274,10 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
+              <InputHint>
+                What kind of food scraps or similar you have to give away,
+                collection details, and similar.
+              </InputHint>
             </Field>
           ) : (
             <Field>
@@ -302,7 +286,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               </Label>
               <Textarea
                 id="description"
-                rows={6}
+                rows={listingType === "residential" ? 4 : 5}
                 maxLength={512}
                 required={false}
                 resize="vertical"
@@ -310,17 +294,26 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
+              <InputHint>
+                {listingType === "community"
+                  ? "Opening hours, composting facilities, and similar."
+                  : "Composting facilities, gates to unlock, and similar."}{" "}
+                Save instructions about which scraps you take for the dedicated
+                section, below.
+              </InputHint>
             </Field>
           )}
-        </div>
+        </FormSection>
 
         {(listingType === "residential" || listingType === "community") && (
-          <div>
-            <h2>Composting details</h2>
-            <p>
-              Be specific so people know exactly what should be avoided. Enter
-              items separately so it’s easier to read.
-            </p>
+          <FormSection>
+            <FormSectionHeader>
+              <h2>Composting details</h2>
+              <p>
+                Be specific so people know exactly what should be avoided. Enter
+                items separately so it’s easier to read.
+              </p>
+            </FormSectionHeader>
 
             <MultiInput
               label="What scraps do you accept?"
@@ -342,27 +335,32 @@ export default function ListingWrite({ initialListing, user, profile }) {
               onClick={addRejectedItem}
               limit={6}
             />
-          </div>
+          </FormSection>
         )}
 
-        <div>
-          <h2>Media</h2>
-          <p>
-            Optionally show{" "}
-            {listingType === "residential"
-              ? "a bit more about your listing"
-              : listingType === "community"
-                ? "a bit more about your community project"
-                : "off your business"}{" "}
-            to Peels members.
-          </p>
+        <FormSection>
+          <FormSectionHeader>
+            <h2>Media</h2>
+            <p>
+              Optionally show{" "}
+              {listingType === "residential"
+                ? "a bit more about your listing"
+                : listingType === "community"
+                  ? "a bit more about your community project"
+                  : "off your business"}{" "}
+              to Peels members.
+            </p>
+          </FormSectionHeader>
 
-          <ListingPhotosManager
-            initialPhotos={initialListing ? photos : pendingPhotos}
-            listingSlug={initialListing?.slug}
-            onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
-            isNewListing={!initialListing}
-          />
+          <Fieldset>
+            <Label required={false}>Photos</Label>
+            <ListingPhotosManager
+              initialPhotos={initialListing ? photos : pendingPhotos}
+              listingSlug={initialListing?.slug}
+              onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
+              isNewListing={!initialListing}
+            />
+          </Fieldset>
 
           {listingType !== "residential" && (
             <MultiInput
@@ -377,12 +375,14 @@ export default function ListingWrite({ initialListing, user, profile }) {
               type="url"
             />
           )}
-        </div>
+        </FormSection>
 
         {initialListing && (
-          <div>
-            <h2>Visibility</h2>
-            <p>Switch this off if you need to take a break from Peels.</p>
+          <FormSection>
+            <FormSectionHeader>
+              <h2>Visibility</h2>
+              <p>Switch this off if you need to take a break from Peels.</p>
+            </FormSectionHeader>
             {/* onChange event is handled differently because Radix Switch provides a direct boolean value in its change handler. */}
             <SwitchToggle
               id="visibility"
@@ -390,27 +390,26 @@ export default function ListingWrite({ initialListing, user, profile }) {
               checked={visibility}
               onChange={(checked) => setVisibility(checked)}
             />
-          </div>
+          </FormSection>
         )}
 
-        <div>
-          <CheckboxUnit
-            id="legal"
-            checked={legal}
-            required={true}
-            onChange={(event) => setLegal(event.target.checked)}
-          >
+        <FormSection>
+          <CheckboxUnit required={true} checked={legal} setChecked={setLegal}>
             I have read and accept the Peels{" "}
-            <Hyperlink href={siteConfig.links.terms} target="_blank">
-              {" "}
-              Terms of service
-            </Hyperlink>{" "}
+            {/* Wrap links in spans as an alterntive to passive={true} on the label. This allows the rest of the label text to still act as a trigger on the checkbox. */}
+            <span onClick={(e) => e.stopPropagation()}>
+              <Hyperlink href={siteConfig.links.terms} target="_blank">
+                terms of service
+              </Hyperlink>
+            </span>{" "}
             and{" "}
-            <Hyperlink href={siteConfig.links.privacy} target="_blank">
-              Privacy policy
-            </Hyperlink>
+            <span onClick={(e) => e.stopPropagation()}>
+              <Hyperlink href={siteConfig.links.privacy} target="_blank">
+                privacy policy
+              </Hyperlink>
+            </span>
           </CheckboxUnit>
-        </div>
+        </FormSection>
 
         {/* More form fields */}
         <SubmitButton>

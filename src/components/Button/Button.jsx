@@ -20,7 +20,7 @@ const buttonStyles = ({ theme }) => ({
   borderColor: theme.colors.border.base,
   borderRadius: theme.corners.base,
   padding: `0 calc(${theme.spacing.unit} * 2)`,
-  transition: "background 150ms ease-in-out",
+  transition: "background 150ms ease-in-out, opacity 150ms ease-in-out",
 
   // Ellipsize text
   "& span": {
