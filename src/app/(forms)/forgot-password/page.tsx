@@ -29,7 +29,7 @@ export default async function ForgotPassword(props: {
             name="email"
             type="email"
             placeholder="you@example.com"
-            required
+            required={true}
           />
         </Field>
         {searchParams.error && (

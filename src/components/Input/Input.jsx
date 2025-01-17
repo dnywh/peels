@@ -26,6 +26,6 @@ const StyledInput = styled(HeadlessInput)(({ theme }) => ({
   },
 }));
 
-export default function Input({ error, ...props }) {
+export default function Input({ error = null, ...props }) {
   return <StyledInput invalid={error ? true : undefined} {...props} />;
 }
