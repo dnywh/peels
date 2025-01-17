@@ -62,7 +62,7 @@ export default async function SignIn(props: {
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
+        <SubmitButton pendingText="Signing in..." formAction={signInAction}>
           Sign in
         </SubmitButton>
       </Form>

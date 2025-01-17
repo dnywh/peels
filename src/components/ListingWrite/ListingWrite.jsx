@@ -423,7 +423,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             setChecked={setLegal}
             error={errors.legal}
           >
-            I have read and accept the Peels{" "}
+            I have read and agree to the Peels{" "}
             {/* Wrap links in spans as an alterntive to passive={true} on the label. This allows the rest of the label text to still act as a trigger on the checkbox. */}
             <span onClick={(e) => e.stopPropagation()}>
               <Hyperlink href={siteConfig.links.terms} target="_blank">
