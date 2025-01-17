@@ -3,6 +3,8 @@ import { styled } from "@pigment-css/react";
 const StyledFormMessage = styled("aside")<{
   variant?: "error" | "success" | undefined;
 }>(({ theme }) => ({
+  width: "100%",
+  // flex: 1,
   padding: "1.5rem 2rem",
   borderRadius: theme.corners.base,
   background: theme.colors.background.pit,
@@ -23,7 +25,7 @@ export type Message = {
   success?: string;
 };
 
-export function FormMessage({ message }: { message: Message }) {
+export default function FormMessage({ message }: { message: Message }) {
   return (
     <StyledFormMessage variant={"success" in message ? "success" : "error"}>
       {"success" in message && <p>{message.success}</p>}

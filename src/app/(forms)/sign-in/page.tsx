@@ -1,5 +1,4 @@
 import { signInAction } from "@/app/actions";
-import { FormMessage } from "@/components/form-message";
 import SubmitButton from "@/components/SubmitButton";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
@@ -8,8 +7,10 @@ import FormHeader from "@/components/FormHeader";
 import Field from "@/components/Field";
 import FieldHeader from "@/components/FieldHeader";
 import Hyperlink from "@/components/Hyperlink";
+import FormMessage from "@/components/FormMessage";
 
 import Link from "next/link";
+import FormFooter from "@/components/FormFooter";
 
 export default async function SignIn(props: {
   searchParams: Promise<{
@@ -23,14 +24,14 @@ export default async function SignIn(props: {
   return (
     <>
       {/* TODO: Make FormHeader action conditional based on whether this page (which should be a component) is rendered modally or as a page */}
-      <FormHeader action="back">
-        <h1>Sign in</h1>
-        <p>
-          Don't have an account? <Hyperlink href="/sign-up">Sign up</Hyperlink>
-        </p>
+      <FormHeader button="back">
+        <h1>Sign in to Peels</h1>
       </FormHeader>
 
       <Form>
+        {searchParams.success && (
+          <FormMessage message={{ success: searchParams.success }} />
+        )}
         <Field>
           <Label htmlFor="email">Email</Label>
           <Input
@@ -44,7 +45,7 @@ export default async function SignIn(props: {
         <Field>
           <FieldHeader>
             <Label htmlFor="password">Password</Label>
-            <Hyperlink href="/forgot-password">Forgot Password?</Hyperlink>
+            <Hyperlink href="/forgot-password">Forgot password?</Hyperlink>
           </FieldHeader>
           <Input
             type="password"
@@ -61,10 +62,15 @@ export default async function SignIn(props: {
           Sign in
         </SubmitButton>
 
-        <FormMessage
-          message={{ error: searchParams.error, success: searchParams.success }}
-        />
+        {searchParams.error && (
+          <FormMessage message={{ error: searchParams.error }} />
+        )}
       </Form>
+      <FormFooter>
+        <p>
+          First time here? <Hyperlink href="/sign-up">Sign up</Hyperlink>
+        </p>
+      </FormFooter>
     </>
   );
 }

@@ -1,16 +1,17 @@
 import IconButton from "@/components/IconButton";
+import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
 
 const StyledIconButton = styled(IconButton)({
   variants: [
     {
-      props: { action: "back" },
+      props: { button: "back" },
       style: {
         alignSelf: "flex-start",
       },
     },
     {
-      props: { action: "close" },
+      props: { button: "close" },
       style: {
         alignSelf: "flex-end",
       },
@@ -24,10 +25,19 @@ const Header = styled("header")(({ theme }) => ({
 
   display: "flex",
   flexDirection: "column",
-  gap: "0",
+  gap: "0.75rem",
   alignItems: "center",
   textAlign: "center",
   position: "relative",
+  textWrap: "balance",
+  variants: [
+    {
+      props: { button: "none" },
+      style: {
+        marginTop: "1rem", // Top of the form looks a bit empty without an IconButton, so add some padding in this case.
+      },
+    },
+  ],
 
   "& h1": {
     fontSize: "3rem",
@@ -43,10 +53,11 @@ const Header = styled("header")(({ theme }) => ({
   },
 }));
 
-function FormHeader({ children, action = "back" }) {
+function FormHeader({ children, button = "back" }) {
   return (
-    <Header>
-      <StyledIconButton action={action} />
+    <Header button={button}>
+      {button === "none" ? null : <StyledIconButton button={button} />}
+      <PeelsLogo />
       {children}
     </Header>
   );

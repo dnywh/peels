@@ -19,8 +19,17 @@ const buttonStyles = ({ theme }) => ({
   borderStyle: "solid",
   borderColor: theme.colors.border.base,
   borderRadius: theme.corners.base,
-  padding: `0 ${theme.spacing.unit * 2}px`,
+  padding: `0 calc(${theme.spacing.unit} * 2)`,
   transition: "background 150ms ease-in-out",
+
+  // Ellipsize text
+  "& span": {
+    display: "inline-block",
+    alignItems: "center",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+  },
 
   "&:focus": {
     outline: `3px solid ${theme.colors.focus.outline}`,
@@ -37,7 +46,7 @@ const buttonStyles = ({ theme }) => ({
         borderRadius: theme.corners.base * 0.75,
         height: "2.5rem",
         fontSize: "0.875rem",
-        padding: `0 ${theme.spacing.unit * 1.5}px`,
+        padding: `0 calc(${theme.spacing.unit} * 1.5)`,
 
         "&:focus": {
           outline: `none`,
@@ -66,7 +75,7 @@ const buttonStyles = ({ theme }) => ({
         height: "4rem",
         fontSize: "1.25rem",
         borderRadius: theme.corners.base * 1.5,
-        padding: `0 ${theme.spacing.unit * 4}px`,
+        padding: `0 calc(${theme.spacing.unit} * 4)`,
       },
     },
     {
@@ -81,7 +90,7 @@ const buttonStyles = ({ theme }) => ({
       style: {
         height: "2.5rem",
         fontSize: "0.875rem",
-        padding: `0 ${theme.spacing.unit * 1.5}px`,
+        padding: `0 calc(${theme.spacing.unit} * 1.5)`,
       },
     },
     {
@@ -151,11 +160,11 @@ export default function Button({
   // Render either a button or a link based on the presence of href
   return href ? (
     <StyledLink href={href} {...sharedProps}>
-      {children}
+      <span>{children}</span>
     </StyledLink>
   ) : (
     <StyledButton type="button" {...sharedProps}>
-      {children}
+      <span>{children}</span>
     </StyledButton>
   );
 }

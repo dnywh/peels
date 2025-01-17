@@ -14,12 +14,18 @@ const StyledRadio = styled(HeadlessRadio)(({ theme }) => ({
   backgroundColor: theme.colors.radio.unchecked.background,
   borderRadius: theme.corners.base,
   border: `2px solid ${theme.colors.radio.unchecked.border}`,
+  transition: "background-color 150ms ease-in-out, border 150ms ease-in-out",
+
   "&[data-checked]": {
     backgroundColor: theme.colors.radio.checked.background,
     border: `2px solid ${theme.colors.radio.checked.border}`,
     [`& ${StyledCheckCircleIcon}`]: {
       opacity: "1",
     },
+  },
+  "&[data-hover]:not([data-checked])": {
+    backgroundColor: theme.colors.radio.hover.background,
+    border: `2px solid ${theme.colors.radio.hover.border}`,
   },
 }));
 

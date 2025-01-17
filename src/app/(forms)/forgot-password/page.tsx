@@ -1,5 +1,7 @@
 import { forgotPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
+
+import FormHeader from "@/components/FormHeader";
+import FormMessage, { Message } from "@/components/FormMessage";
 import SubmitButton from "@/components/SubmitButton";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
@@ -12,20 +14,31 @@ export default async function ForgotPassword(props: {
 }) {
   const searchParams = await props.searchParams;
   return (
-    <Form>
-      <h1>Forgot password</h1>
-      <p>
-        Already have an account? <Link href="/sign-in">Sign in</Link>
-      </p>
-
-      <Field>
-        <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
-      </Field>
-      <SubmitButton formAction={forgotPasswordAction}>
-        Reset Password
-      </SubmitButton>
-      <FormMessage message={searchParams} />
-    </Form>
+    <>
+      <FormHeader button="back">
+        <h1>Forgot password</h1>
+        <p>
+          It happens to all of us. Enter your email below to receive a password
+          reset link.
+        </p>
+      </FormHeader>
+      <Form>
+        <Field>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+          />
+        </Field>
+        <SubmitButton formAction={forgotPasswordAction}>
+          Email me the link
+        </SubmitButton>
+        {searchParams.error && (
+          <FormMessage message={{ error: searchParams.error }} />
+        )}
+      </Form>
+    </>
   );
 }

@@ -1,12 +1,10 @@
 import { signUpAction } from "@/app/actions";
-import { FormMessage } from "@/components/form-message";
-import SubmitButton from "@/components/SubmitButton";
+
 // import Input from "@/components/Input";
 // import Label from "@/components/Label";
 import Link from "next/link";
-import FieldHeader from "@/components/FieldHeader";
-import Hyperlink from "@/components/Hyperlink";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+
+import { redirect } from "next/navigation";
 
 import {
   // Field,
@@ -22,8 +20,12 @@ import FormHeader from "@/components/FormHeader";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Input from "@/components/Input";
-
-import { styled } from "@pigment-css/react";
+import FormFooter from "@/components/FormFooter";
+import FormMessage from "@/components/FormMessage";
+import SubmitButton from "@/components/SubmitButton";
+import FieldHeader from "@/components/FieldHeader";
+import Hyperlink from "@/components/Hyperlink";
+import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
 export default async function SignUp(props: {
   searchParams: Promise<{
@@ -41,33 +43,43 @@ export default async function SignUp(props: {
   // Handle success state
   if (searchParams.success) {
     return (
-      <FormHeader>
-        <h1>Success!</h1>
-        <p>
-          Thanks for signing up, {searchParams.first_name}! Please check your
-          email for a verification link.
-        </p>
-        <p>
-          Never received the email?{" "}
-          {/* TODO: Resend verification email to {searchParams.email}. */}
-          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
-            Let us know
-          </EncodedEmailHyperlink>
-          .
-        </p>
-      </FormHeader>
+      <>
+        <FormHeader button="none">
+          <h1>Check your email</h1>
+        </FormHeader>
+        <Form as="container">
+          <>
+            <p>
+              Thanks for signing up
+              {searchParams.first_name && `, ${searchParams.first_name}`}!
+              Please check your email for a verification link.
+            </p>
+          </>
+        </Form>
+        <FormFooter>
+          <p>
+            Never received the email?{" "}
+            {/* TODO: Resend verification email to {searchParams.email}. */}
+            <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+              Let us know
+            </EncodedEmailHyperlink>
+            .
+          </p>
+        </FormFooter>
+      </>
     );
   }
 
   return (
     <>
       {/* TODO: Make FormHeader action conditional based on whether this page (which should be a component) is rendered modally or as a page */}
-      <FormHeader action="back">
-        <h1>Sign up{searchParams.from === "listing" && " to contact hosts"}</h1>
-        <p>
-          Already have an account?{" "}
-          <Hyperlink href="/sign-in">Sign in</Hyperlink>
-        </p>
+      <FormHeader button="back">
+        <h1>
+          Sign up to{" "}
+          {searchParams.from === "listing"
+            ? "contact hosts"
+            : "start composting"}
+        </h1>
       </FormHeader>
       <Form>
         <Field>
@@ -109,10 +121,16 @@ export default async function SignUp(props: {
         <SubmitButton formAction={signUpAction} pendingText="Signing up...">
           Sign up
         </SubmitButton>
+        {searchParams.error && (
+          <FormMessage message={{ error: searchParams.error }} />
+        )}
       </Form>
-      {searchParams.error && (
-        <FormMessage message={{ error: searchParams.error }} />
-      )}
+      <FormFooter>
+        <p>
+          Already have an account?{" "}
+          <Hyperlink href="/sign-in">Sign in</Hyperlink>
+        </p>
+      </FormFooter>
     </>
   );
 }

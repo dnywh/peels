@@ -103,6 +103,7 @@ function ListingPhotosManager({
         <Button
           as="span"
           variant="secondary"
+          size="small"
           disabled={isUploading || photos.length >= MAX_PHOTOS}
         >
           {isUploading ? "Uploading..." : "Add photos"}

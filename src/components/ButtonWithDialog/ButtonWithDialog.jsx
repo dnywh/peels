@@ -24,7 +24,7 @@ const DialogWrapper = styled("div")(({ theme }) => ({
   background: theme.colors.background.top,
   border: `1px solid ${theme.colors.border.base}`,
   borderRadius: theme.corners.base,
-  padding: theme.spacing.unit * 2,
+  padding: `calc(${theme.spacing.unit} * 2)`,
 }));
 
 // className="max-w-lg space-y-4 border bg-white p-12"
@@ -33,7 +33,7 @@ const StyledDialogPanel = styled(DialogPanel)(({ theme }) => ({
   background: theme.colors.background.top,
   border: `1px solid ${theme.colors.border.base}`,
   borderRadius: theme.corners.base,
-  padding: theme.spacing.unit * 2,
+  padding: `calc(${theme.spacing.unit} * 2)`,
 }));
 
 export default function ButtonWithDialog({

@@ -128,8 +128,12 @@ export default withPigment(nextConfig, {
                     border: tokens.ochre[700],
                 },
                 unchecked: {
-                    background: tokens.ochre[50],
+                    background: tokens.white[100],
                     border: tokens.rock[50],
+                },
+                hover: {
+                    background: tokens.ochre[100],
+                    border: tokens.rock[100],
                 }
             },
             button: {
@@ -173,7 +177,7 @@ export default withPigment(nextConfig, {
             },
         },
         spacing: {
-            unit: 8,
+            unit: "0.5rem", // 8px
             forms: {
                 maxWidth: "28rem",
             },
@@ -187,7 +191,7 @@ export default withPigment(nextConfig, {
             avatar: "-3deg",
         },
         corners: {
-            base: 16,
+            base: "1rem", // 16px
             avatar: "0.5rem",
         },
         typography: {

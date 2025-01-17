@@ -6,12 +6,12 @@ import { createClient } from "@/utils/supabase/client";
 import { deleteListingAction } from "@/app/actions";
 
 import { useSearchParams, useParams } from "next/navigation";
-import Link from "next/link";
+
+import { siteConfig } from "@/config/site";
 
 import LocationSelect from "@/components/LocationSelect";
 import SwitchToggle from "@/components/SwitchToggle";
 import CheckboxUnit from "@/components/CheckboxUnit";
-
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
@@ -21,10 +21,10 @@ import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import MultiInput from "@/components/MultiInput";
 import AvatarUploadManager from "@/components/AvatarUploadManager";
-import LinkButton from "@/components/LinkButton";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import ListingPhotosManager from "@/components/ListingPhotosManager";
 import AdditionalSettings from "@/components/AdditionalSettings";
+import Hyperlink from "@/components/Hyperlink";
 
 import { styled } from "@pigment-css/react";
 
@@ -401,14 +401,14 @@ export default function ListingWrite({ initialListing, user, profile }) {
             onChange={(event) => setLegal(event.target.checked)}
           >
             I have read and accept the Peels{" "}
-            <Link href="/terms-of-use" target="_blank">
+            <Hyperlink href={siteConfig.links.terms} target="_blank">
               {" "}
-              Terms of Use
-            </Link>{" "}
+              Terms of service
+            </Hyperlink>{" "}
             and{" "}
-            <Link href="/privacy-policy" target="_blank">
-              Privacy Policy
-            </Link>
+            <Hyperlink href={siteConfig.links.privacy} target="_blank">
+              Privacy policy
+            </Hyperlink>
           </CheckboxUnit>
         </div>
 

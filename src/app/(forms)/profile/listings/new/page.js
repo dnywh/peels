@@ -69,7 +69,7 @@ function AddListingContent() {
     // Show different form based on URL type
     return (
         <>
-            <FormHeader action="back">
+            <FormHeader button="back">
                 {type === 'host' ?
                     <h1>Where will you accept food scraps?</h1> :
                     <h1>What kind of listing?</h1>

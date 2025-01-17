@@ -32,7 +32,7 @@ export default async function NewListingFormContent({ params }) {
 
     return (
         <>
-            <FormHeader action="back">
+            <FormHeader button="back">
                 <h1>{config.title}</h1>
                 <p>{config.description}</p>
             </FormHeader>

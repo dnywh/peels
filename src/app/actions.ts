@@ -125,7 +125,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Could not reset password",
+      "Hmm. Something’s not right. Mind trying again?",
     );
   }
 
@@ -136,7 +136,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   return encodedRedirect(
     "success",
     "/forgot-password",
-    "Check your email for a link to reset your password.",
+    "Check your inbox for a password reset link, assuming that email is linked to a Peels account.",
   );
 };
 
@@ -149,7 +149,11 @@ export const sendPasswordResetEmailAction = async (formData: FormData) => {
   } = await supabase.auth.getUser();
 
   if (!user?.email) {
-    return encodedRedirect("error", "/sign-in", "User not found");
+    return encodedRedirect(
+      "error",
+      "/sign-in",
+      "We couldn’t find an account for that email address.",
+    );
   }
 
   const { data, error } = await supabase.auth
@@ -171,7 +175,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Password and confirm password are required",
+      "Password and confirm password are required.",
     );
   }
 
@@ -179,7 +183,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Passwords do not match",
+      "Passwords do not match.",
     );
   }
 
@@ -191,11 +195,15 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Password update failed",
+      "Hmm. Something’s not right. Mind trying again?",
     );
   }
 
-  encodedRedirect("success", "/reset-password", "Password updated");
+  encodedRedirect(
+    "success",
+    "/reset-password",
+    "Your password has been updated.",
+  );
 };
 
 export const signOutAction = async () => {
@@ -236,14 +244,17 @@ export const deleteListingAction = async (slug: string) => {
 
     if (!response.ok) {
       console.error("Error deleting listing:", data.message);
-      return { success: false, message: "Failed to delete listing" };
+      return { success: false, message: "Failed to delete listing." };
     } else {
       console.log("Listing successfully deleted:", slug);
-      return { success: true, message: "Listing deleted" };
+      return { success: true, message: "Your listing has been deleted." };
     }
   } catch (error) {
     console.error("Error deleting listing:", error);
-    return { success: false, message: "Failed to delete listing" };
+    return {
+      success: false,
+      message: "Hmm. Something’s not right. Mind trying again?",
+    };
   }
 };
 
@@ -279,7 +290,8 @@ export const deleteAccountAction = async () => {
     // const data = await response.json();
     // console.log("Response data:", data);
 
-    redirectPath = `/sign-in?success=Account successfully deleted`;
+    redirectPath =
+      `/sign-in?success=Your account has been deleted. Sorry to see you go.`;
 
     // if (!response.ok) {
     //   console.error("Delete account failed:", data);

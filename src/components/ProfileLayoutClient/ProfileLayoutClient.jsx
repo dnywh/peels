@@ -30,7 +30,7 @@ const ProfileMain = styled("main")(({ theme }) => ({
   borderRadius: theme.corners.base,
   backgroundColor: theme.colors.background.top,
 
-  padding: theme.spacing.unit * 3,
+  padding: `calc(${theme.spacing.unit} * 3)`,
 
   width: "100%",
 

@@ -52,7 +52,7 @@ const HeroButtons = styled("div")(({ theme }) => ({
   justifyContent: "center",
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing.unit * 2,
+  gap: `calc(${theme.spacing.unit} * 2)`,
 
   "@media (min-width: 768px)": {
     width: "fit-content",
