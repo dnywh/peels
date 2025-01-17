@@ -4,7 +4,7 @@ import { styled } from "@pigment-css/react";
 const StyledInputHint = styled(HeadlessDescription)(({ theme }) => ({
   fontSize: "0.875rem",
   fontWeight: "normal",
-  color: theme.colors.text.secondary,
+  color: theme.colors.text.tertiary,
   lineHeight: "130%",
 
   variants: [

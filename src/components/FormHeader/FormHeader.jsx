@@ -50,7 +50,8 @@ const Text = styled("div")(({ theme }) => ({
 
   "& h1": {
     fontSize: "2.75rem",
-    lineHeight: "1",
+    lineHeight: "100%",
+    letterSpacing: "-0.025em",
     fontWeight: "bold",
     color: theme.colors.text.brand.primary,
   },
