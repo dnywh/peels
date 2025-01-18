@@ -39,24 +39,24 @@ const buttonStyles = ({ theme }) => ({
   },
 
   variants: [
-    {
-      props: { size: "dropdown" },
-      style: {
-        border: "none",
-        borderRadius: theme.corners.base * 0.75,
-        height: "2.5rem",
-        fontSize: "0.875rem",
-        padding: `0 calc(${theme.spacing.unit} * 1.5)`,
+    // {
+    //   props: { size: "dropdown" },
+    //   style: {
+    //     border: "none",
+    //     borderRadius: theme.corners.base * 0.75,
+    //     height: "2.5rem",
+    //     fontSize: "0.875rem",
+    //     padding: `0 calc(${theme.spacing.unit} * 1.5)`,
 
-        "&:focus": {
-          outline: `none`,
-        },
-        "&[data-focus]": {
-          outline: `none`,
-          background: theme.colors.background.between,
-        },
-      },
-    },
+    //     "&:focus": {
+    //       outline: `none`,
+    //     },
+    //     "&[data-focus]": {
+    //       outline: `none`,
+    //       background: theme.colors.background.between,
+    //     },
+    //   },
+    // },
     {
       props: { width: "contained" },
       style: {
@@ -146,14 +146,14 @@ export default function Button({
   href,
   children,
   tabIndex = 0,
-  dropdown,
+  // size,
   ...props
 }) {
   const sharedProps = {
     disabled,
     variant,
     tabIndex,
-    dropdown,
+    // size,
     ...props,
   };
 

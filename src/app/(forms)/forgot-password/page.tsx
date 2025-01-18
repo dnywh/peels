@@ -21,9 +21,7 @@ export default async function ForgotPassword(props: {
           <h1>Email sent</h1>
         </FormHeader>
         <Form as="container">
-          <>
-            <p>{searchParams.success}</p>
-          </>
+          <p>{searchParams.success}</p>
         </Form>
       </>
     );
@@ -47,6 +45,7 @@ export default async function ForgotPassword(props: {
             required={true}
           />
         </Field>
+
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}

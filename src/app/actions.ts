@@ -179,6 +179,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
 // This action triggers the password reset email to be sent to the user
 // It's called from the ProfileAccountSettings component
+// Is this duplicative of the forgotPasswordAction?
 export const sendPasswordResetEmailAction = async (formData: FormData) => {
   const supabase = await createClient();
   const {
@@ -207,7 +208,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Password and confirm password are required.",
+      "Both those fields are required.",
     );
   }
 
@@ -215,7 +216,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Passwords do not match.",
+      "Those passwords don’t match.",
     );
   }
 
