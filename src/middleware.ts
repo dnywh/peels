@@ -31,8 +31,8 @@ export async function middleware(request: NextRequest) {
   if (
     !user && (
       request.nextUrl.pathname.startsWith("/chats") ||
-      request.nextUrl.pathname.startsWith("/profile") ||
-      request.nextUrl.pathname.startsWith("/reset-password")
+      request.nextUrl.pathname.startsWith("/profile")
+      // request.nextUrl.pathname.startsWith("/reset-password")  // Needed because signed in users also need to reset their password. But what happens when a signed out user tries this without a callback?
     )
   ) {
     return NextResponse.redirect(
