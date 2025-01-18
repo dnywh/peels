@@ -13,6 +13,21 @@ export default async function ForgotPassword(props: {
   searchParams: Promise<Message>;
 }) {
   const searchParams = await props.searchParams;
+
+  if (searchParams.success) {
+    return (
+      <>
+        <FormHeader button="none">
+          <h1>Email sent</h1>
+        </FormHeader>
+        <Form as="container">
+          <>
+            <p>{searchParams.success}</p>
+          </>
+        </Form>
+      </>
+    );
+  }
   return (
     <>
       <FormHeader button="back">
