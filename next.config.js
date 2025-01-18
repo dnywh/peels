@@ -109,6 +109,7 @@ export default withPigment(nextConfig, {
                 base: tokens.black[6],
                 elevated: tokens.black[6],
                 stark: tokens.rock[100],
+                collide: tokens.rock[50],
             },
             tab: {
                 active: tokens.forest[400],

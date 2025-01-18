@@ -13,24 +13,46 @@ import { styled } from "@pigment-css/react";
 const List = styled("ul")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: `calc(${theme.spacing.unit} * 2)`,
+  // gap: `calc(${theme.spacing.unit} * 1)`,
+}));
+
+const ListItemStatic = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  gap: theme.spacing.unit,
+  flex: 1,
 }));
 
 const ListItem = styled("li")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  gap: theme.spacing.unit,
+
+  borderStyle: "solid",
+  borderWidth: "0px",
+  borderColor: "transparent",
+  transition: "border-color 25ms linear",
+  // Assume middle row by default
+  borderWidth: "1px 0",
+  padding: "1rem 0",
+  margin: "-0.5px 0",
+
+  "&:first-child": {
+    borderWidth: `0 0 1px`,
+    padding: "0 0 1rem",
+  },
+
+  "&:last-child": {
+    borderWidth: `1px 0 0`,
+    padding: "1rem 0 0",
+  },
 
   variants: [
     {
       props: { editing: true },
       style: {
         flexDirection: "column",
-
-        "&:not(:last-child)": {
-          paddingBottom: "1rem",
-          borderBottom: `1px solid ${theme.colors.border.base}`,
-        },
+        borderColor: theme.colors.border.collide,
+        transition: "border-color 800ms linear",
       },
     },
   ],
@@ -50,6 +72,11 @@ const ButtonGroup = styled("div")(({ theme }) => ({
   gap: theme.spacing.unit,
 }));
 
+const PasswordPreview = styled("p")(({ theme }) => ({
+  color: theme.colors.text.ui.tertiary,
+  userSelect: "none",
+}));
+
 function ProfileAccountSettings({ user, profile }) {
   const [isFirstNameEditing, setIsFirstNameEditing] = useState(false);
   const [isPasswordEditing, setIsPasswordEditing] = useState(false);
@@ -61,12 +88,11 @@ function ProfileAccountSettings({ user, profile }) {
     <List>
       <ListItem editing={isEmailEditing}>
         {isEmailEditing ? (
-          <Form>
+          <Form nested={true}>
             <Field>
               <Label>Email</Label>
               <Input type="email" name="email" defaultValue={email} />
             </Field>
-
             <ButtonGroup>
               <SubmitButton>Update</SubmitButton>
               <Button
@@ -92,7 +118,7 @@ function ProfileAccountSettings({ user, profile }) {
 
       <ListItem editing={isFirstNameEditing}>
         {isFirstNameEditing ? (
-          <Form>
+          <Form nested={true}>
             <Field>
               <Label>First name</Label>
               <Input
@@ -131,27 +157,30 @@ function ProfileAccountSettings({ user, profile }) {
       </ListItem>
 
       <ListItem editing={isPasswordEditing}>
-        {isPasswordEditing ? (
-          <Form>
-            <Field>
-              <Label>Password</Label>
-              <Input
-                type="password"
-                name="password"
-                value="************"
-                disabled={true}
-              />
-              <InputHint>
-                Your password can only be changed via email.
-              </InputHint>
-              <p>
-                Tap the button below to send a password reset link to{" "}
-                {user.email}.
-              </p>
-            </Field>
+        <ListItemStatic>
+          <ListItemReadField>
+            <Label>Password</Label>
+            <PasswordPreview>••••••••••••</PasswordPreview>
+          </ListItemReadField>
 
+          {!isPasswordEditing && (
+            <Button
+              variant="secondary"
+              onClick={() => setIsPasswordEditing(true)}
+            >
+              Edit
+            </Button>
+          )}
+        </ListItemStatic>
+
+        {isPasswordEditing && (
+          <Form nested={true}>
+            <p>
+              Tap the button below to send a password reset link to {user.email}
+              .
+            </p>
             <ButtonGroup>
-              <SubmitButton>Email me the link</SubmitButton>
+              <SubmitButton>Send the link</SubmitButton>
               <Button
                 variant="secondary"
                 onClick={() => setIsPasswordEditing(false)}
@@ -160,19 +189,6 @@ function ProfileAccountSettings({ user, profile }) {
               </Button>
             </ButtonGroup>
           </Form>
-        ) : (
-          <>
-            <ListItemReadField>
-              <Label>Password</Label>
-              <p>************</p>
-            </ListItemReadField>
-            <Button
-              variant="secondary"
-              onClick={() => setIsPasswordEditing(true)}
-            >
-              Edit
-            </Button>
-          </>
         )}
       </ListItem>
     </List>
