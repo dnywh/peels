@@ -36,7 +36,10 @@ const SectionInner = styled("div")(({ theme }) => ({
   padding: `calc(${theme.spacing.unit} * 3)`,
 }));
 
-export default async function ProfilePage() {
+export default async function ProfilePage({ searchParams }) {
+  const message = (await searchParams)?.message
+  const error = (await searchParams)?.error
+
   const supabase = await createClient();
   // Get user data and listings in one query
   const {
@@ -57,6 +60,9 @@ export default async function ProfilePage() {
 
   return (
     <>
+      {message && <p>Message: {message}</p>}
+      {error && <p>Error: {error}</p>}
+
       <Section>
         <ProfileHeader profile={profile} user={user} />
       </Section>

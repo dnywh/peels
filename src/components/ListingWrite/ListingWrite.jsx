@@ -101,7 +101,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
     // console.log("Deleting listing with slug:", initialListing.slug);
     const response = await deleteListingAction(initialListing.slug);
     if (response.success) {
-      router.push(`/profile/account?message=${response.message}`);
+      router.push(`/profile/?message=${response.message}`);
     } else {
       setFeedbackMessage(response.message);
     }
