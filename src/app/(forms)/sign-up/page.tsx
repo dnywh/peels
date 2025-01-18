@@ -28,6 +28,7 @@ import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 import InputHint from "@/components/InputHint";
 import LegalAgreement from "@/components/LegalAgreement";
+import SignUpForm from "@/components/SignUpForm";
 
 export default async function SignUp(props: {
   searchParams: Promise<{
@@ -83,47 +84,15 @@ export default async function SignUp(props: {
             : "start composting"}
         </h1>
       </FormHeader>
-      <Form>
-        <Field>
-          <Label htmlFor="first_name">First name</Label>
-          <Input
-            name="first_name"
-            placeholder="Your first name or nickname"
-            required={true}
-            defaultValue={searchParams.first_name}
-          />
-          <InputHint>Or a pseudonym, if you prefer!</InputHint>
-        </Field>
-        <Field>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            name="email"
-            type="email"
-            placeholder="you@example.com"
-            required={true}
-            defaultValue={searchParams.email}
-          />
-        </Field>
-        <Field>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            type="password"
-            name="password"
-            placeholder="Your password"
-            minLength={6}
-            required
-          />
-        </Field>
 
-        <LegalAgreement required={true} />
+      <SignUpForm
+        defaultValues={{
+          first_name: searchParams.first_name,
+          email: searchParams.email,
+        }}
+        error={searchParams.error}
+      />
 
-        {searchParams.error && (
-          <FormMessage message={{ error: searchParams.error }} />
-        )}
-        <SubmitButton formAction={signUpAction} pendingText="Signing up...">
-          Sign up
-        </SubmitButton>
-      </Form>
       <FormFooter>
         <p>
           Already have an account?{" "}
