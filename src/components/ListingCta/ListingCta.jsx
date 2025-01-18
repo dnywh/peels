@@ -40,7 +40,7 @@ function ListingCta({ type, slug }) {
       <Button
         variant="primary"
         width="full"
-        href={`/sign-in?from=listing&slug=${slug}`}
+        href={`/sign-in?redirect_to=/listings/${slug}`}
       >
         Sign in to contact host
       </Button>

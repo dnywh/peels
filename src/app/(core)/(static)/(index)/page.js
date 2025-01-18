@@ -1,6 +1,7 @@
 import Button from "@/components/Button";
 import Link from "next/link";
 import PeelsLogo from "@/components/PeelsLogo";
+import Toast from "@/components/Toast";
 import { styled } from "@pigment-css/react";
 
 const Intro = styled("div")(({ theme }) => ({
@@ -89,22 +90,18 @@ const HeroParagraph = styled("p")(({ theme }) => ({
   },
 }));
 
-// import { createClient } from "@/utils/supabase/server";
-export default async function Index() {
-  // const supabase = await createClient();
 
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
 
-  // const { data: profile } = user ? await supabase
-  //   .from("profiles")
-  //   .select("first_name")
-  //   .eq("id", user.id)
-  //   .single() : { data: null };
+export default async function Index({ searchParams }) {
+  const code = (await searchParams)?.code
+  const error = (await searchParams)?.error
 
   return (
     <StyledMain>
+
+      {code && <Toast variant="success">Your email has been successfully updated</Toast>}
+      {error && <Toast variant="error">Something’s not right. Mind trying again?</Toast>}
+
       <Intro>
         <StyledPeelsLogo size={40} />
         <Heading1>Find a home for your food scraps, wherever you are.</Heading1>

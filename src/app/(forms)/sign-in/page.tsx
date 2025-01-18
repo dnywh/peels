@@ -9,12 +9,11 @@ import FieldHeader from "@/components/FieldHeader";
 import Hyperlink from "@/components/Hyperlink";
 import FormMessage from "@/components/FormMessage";
 
-import Link from "next/link";
 import FormFooter from "@/components/FormFooter";
 
 export default async function SignIn(props: {
   searchParams: Promise<{
-    next?: string;
+    redirect_to?: string;
     error?: string;
     success?: string;
   }>;
@@ -55,8 +54,12 @@ export default async function SignIn(props: {
           />
         </Field>
 
-        {searchParams.next && (
-          <input type="hidden" name="next" value={searchParams.next} />
+        {searchParams.redirect_to && (
+          <input
+            type="hidden"
+            name="redirect_to"
+            value={searchParams.redirect_to}
+          />
         )}
 
         {searchParams.error && (

@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(
       new URL(
-        `/sign-in?from=${request.nextUrl.pathname.slice(1)}`,
+        `/sign-in?redirect_to=${request.nextUrl.pathname}`,
         request.url,
       ),
     );
@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(
       new URL(
-        `/profile?from=${request.nextUrl.pathname.slice(1)}`,
+        `/profile?redirect_to=${request.nextUrl.pathname}`,
         request.url,
       ),
     );
