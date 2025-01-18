@@ -28,6 +28,7 @@ const StyledInput = styled(HeadlessInput)(({ theme }) => ({
   "&[disabled]": {
     color: theme.colors.input.disabled.text,
     cursor: "not-allowed",
+    userSelect: "none",
   },
 }));
 
