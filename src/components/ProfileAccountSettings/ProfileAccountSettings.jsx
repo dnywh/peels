@@ -86,36 +86,6 @@ function ProfileAccountSettings({ user, profile }) {
 
   return (
     <List>
-      <ListItem editing={isEmailEditing}>
-        {isEmailEditing ? (
-          <Form nested={true}>
-            <Field>
-              <Label>Email</Label>
-              <Input type="email" name="email" defaultValue={email} />
-            </Field>
-            <ButtonGroup>
-              <SubmitButton>Update</SubmitButton>
-              <Button
-                variant="secondary"
-                onClick={() => setIsEmailEditing(false)}
-              >
-                Cancel
-              </Button>
-            </ButtonGroup>
-          </Form>
-        ) : (
-          <>
-            <ListItemReadField>
-              <Label>Email</Label>
-              <p>{user.email}</p>
-            </ListItemReadField>
-            <Button variant="secondary" onClick={() => setIsEmailEditing(true)}>
-              Edit
-            </Button>
-          </>
-        )}
-      </ListItem>
-
       <ListItem editing={isFirstNameEditing}>
         {isFirstNameEditing ? (
           <Form nested={true}>
@@ -150,6 +120,36 @@ function ProfileAccountSettings({ user, profile }) {
               variant="secondary"
               onClick={() => setIsFirstNameEditing(true)}
             >
+              Edit
+            </Button>
+          </>
+        )}
+      </ListItem>
+
+      <ListItem editing={isEmailEditing}>
+        {isEmailEditing ? (
+          <Form nested={true}>
+            <Field>
+              <Label>Email</Label>
+              <Input type="email" name="email" defaultValue={email} />
+            </Field>
+            <ButtonGroup>
+              <SubmitButton>Update</SubmitButton>
+              <Button
+                variant="secondary"
+                onClick={() => setIsEmailEditing(false)}
+              >
+                Cancel
+              </Button>
+            </ButtonGroup>
+          </Form>
+        ) : (
+          <>
+            <ListItemReadField>
+              <Label>Email</Label>
+              <p>{user.email}</p>
+            </ListItemReadField>
+            <Button variant="secondary" onClick={() => setIsEmailEditing(true)}>
               Edit
             </Button>
           </>
