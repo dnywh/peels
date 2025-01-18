@@ -101,8 +101,6 @@ export const signInAction = async (formData: FormData, request: Request) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  console.log("redirectTo", redirectTo);
-
   return redirect(redirectTo || "/map");
 };
 

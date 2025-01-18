@@ -30,7 +30,16 @@ import { useDeviceContext } from "@/hooks/useDeviceContext";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
-const ZOOM_LEVEL_DEFAULT = 9;
+const ZOOM_LEVEL_DEFAULT = 11;
+
+// TEMPORARY: Copied up here for the hardcoded coordinates
+// TODO: Remove and allow dynamic location fetch from IP, keep the copy in MapRender
+// Default coordinates for Brisbane, Australia
+const DEFAULT_COORDINATES = {
+  longitude: 153.0322,
+  latitude: -27.415,
+  zoom: 9,
+};
 
 // For IP geolocation API
 config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
@@ -317,42 +326,51 @@ export default function MapPageClient({ user }) {
     const listingSlug = searchParams.get("listing");
     // Only fetch IP location if there's no listing in URL
     if (!listingSlug) {
-      // TODO: see if there is location data already set from local storage, and return that first if so
-      // Perhaps do this on the homepage/first page loaded and then use that data for the map
-      // And then store that data in local storage for future use in the same session/browser
-      async function initializeLocation() {
-        console.log("No listing slug. Initializing location");
+      // TEMPORARY: Hardcoded coordinates for Brisbane, Australia
+      setInitialCoordinates({
+        latitude: DEFAULT_COORDINATES.latitude,
+        longitude: DEFAULT_COORDINATES.longitude,
+        zoom: ZOOM_LEVEL_DEFAULT,
+      });
 
-        try {
-          // Create a timeout promise
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("Location timeout")), 3000);
-          });
+      // TODO: un-comment the below and remove the hardcoded coordinates
 
-          // Race between the geolocation request and timeout
-          const response = await Promise.race([
-            geolocation.info(),
-            timeoutPromise,
-          ]);
+      //   // TODO: see if there is location data already set from local storage, and return that first if so
+      //   // Perhaps do this on the homepage/first page loaded and then use that data for the map
+      //   // And then store that data in local storage for future use in the same session/browser
+      //   async function initializeLocation() {
+      //     console.log("No listing slug. Initializing location");
 
-          if (response && response.latitude && response.longitude) {
-            setCountryCode(response.country_code); // Used in MapSearch until proximity feature is fixed
-            setInitialCoordinates({
-              latitude: response.latitude,
-              longitude: response.longitude,
-              zoom: ZOOM_LEVEL_DEFAULT, // TODO: Increase zoom when more listings are available. Also in MapRender
-            });
-          }
-        } catch (error) {
-          console.warn(
-            "Could not determine location from MapTiler:",
-            error.message
-          );
-          // No need to set fallback coordinates - MapRender will handle that
-        }
-      }
+      //     try {
+      //       // Create a timeout promise
+      //       const timeoutPromise = new Promise((_, reject) => {
+      //         setTimeout(() => reject(new Error("Location timeout")), 3000);
+      //       });
 
-      initializeLocation();
+      //       // Race between the geolocation request and timeout
+      //       const response = await Promise.race([
+      //         geolocation.info(),
+      //         timeoutPromise,
+      //       ]);
+
+      //       if (response && response.latitude && response.longitude) {
+      //         setCountryCode(response.country_code); // Used in MapSearch until proximity feature is fixed
+      //         setInitialCoordinates({
+      //           latitude: response.latitude,
+      //           longitude: response.longitude,
+      //           zoom: ZOOM_LEVEL_DEFAULT, // TODO: Increase zoom when more listings are available. Also in MapRender
+      //         });
+      //       }
+      //     } catch (error) {
+      //       console.warn(
+      //         "Could not determine location from MapTiler:",
+      //         error.message
+      //       );
+      //       // No need to set fallback coordinates - MapRender will handle that
+      //     }
+      //   }
+
+      //   initializeLocation();
     }
   }, []);
 
