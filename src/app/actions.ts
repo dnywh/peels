@@ -6,6 +6,29 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@/utils/url";
 
+export const updateFirstNameAction = async (formData: FormData) => {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Update profile
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      first_name: formData.get("first_name")?.toString(),
+    })
+    .eq("id", user?.id);
+
+  if (error) {
+    console.error("Error updating first name:", error);
+    return { error: "Sorry, we couldn’t update your first name." };
+  }
+
+  return { success: true };
+};
+
 export const signUpAction = async (formData: FormData, request: Request) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();

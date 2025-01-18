@@ -8,6 +8,8 @@ import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import InputHint from "@/components/InputHint";
 
+import { updateFirstNameAction } from "@/app/actions";
+
 import { styled } from "@pigment-css/react";
 
 const List = styled("ul")(({ theme }) => ({
@@ -62,10 +64,6 @@ const ListItemReadField = styled(Field)(({ theme }) => ({
   flex: 1,
 }));
 
-const ListItemText = styled("div")(({ theme }) => ({
-  flex: 1,
-}));
-
 const ButtonGroup = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
@@ -81,30 +79,68 @@ function ProfileAccountSettings({ user, profile }) {
   const [isFirstNameEditing, setIsFirstNameEditing] = useState(false);
   const [isPasswordEditing, setIsPasswordEditing] = useState(false);
   const [isEmailEditing, setIsEmailEditing] = useState(false);
+
   const [firstName, setFirstName] = useState(profile?.first_name);
+  const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
+
   const [email, setEmail] = useState(user.email);
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
+
+  const handleFirstNameUpdate = async (formData) => {
+    setIsUpdating(true);
+    setUpdateError(null);
+    try {
+      const result = await updateFirstNameAction(formData);
+      if (result?.error) {
+        setUpdateError(result.error);
+      } else {
+        setFirstName(tempFirstName);
+        setIsFirstNameEditing(false);
+      }
+    } catch (error) {
+      console.error("Error updating first name:", error);
+      setUpdateError("Failed to update first name");
+      setTempFirstName(firstName);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleFirstNameCancel = () => {
+    setTempFirstName(firstName); // Revert to original value
+    setIsFirstNameEditing(false);
+    setUpdateError(null);
+  };
 
   return (
     <List>
       <ListItem editing={isFirstNameEditing}>
         {isFirstNameEditing ? (
-          <Form nested={true}>
+          <Form nested={true} action={handleFirstNameUpdate}>
             <Field>
               <Label>First name</Label>
               <Input
                 type="text"
                 name="first_name"
                 placeholder="Your first name or nickname"
+                required={true}
                 defaultValue={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => setTempFirstName(e.target.value)}
+                error={updateError}
               />
+              {updateError && (
+                <InputHint variant="error">{updateError}</InputHint>
+              )}
             </Field>
 
             <ButtonGroup>
               <SubmitButton>Update</SubmitButton>
               <Button
                 variant="secondary"
-                onClick={() => setIsFirstNameEditing(false)}
+                onClick={handleFirstNameCancel}
+                disabled={isUpdating}
               >
                 Cancel
               </Button>
@@ -132,9 +168,12 @@ function ProfileAccountSettings({ user, profile }) {
             <Field>
               <Label>Email</Label>
               <Input type="email" name="email" defaultValue={email} />
+              <InputHint>
+                We’ll send a verification link to this email.
+              </InputHint>
             </Field>
             <ButtonGroup>
-              <SubmitButton>Update</SubmitButton>
+              <SubmitButton>Send the link</SubmitButton>
               <Button
                 variant="secondary"
                 onClick={() => setIsEmailEditing(false)}
