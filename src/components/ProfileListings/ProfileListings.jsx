@@ -1,12 +1,11 @@
 "use client";
 import Link from "next/link";
 
-export default function ProfileListings({ listings, firstName }) {
+export default function ProfileListings({ firstName, listings }) {
   if (!listings) return null;
 
   return (
     <div>
-      <h2>Listings</h2>
       <ul>
         {listings.map(({ id, slug, type, name, visibility }) => (
           <li key={id}>

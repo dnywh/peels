@@ -1,22 +1,13 @@
-import { createClient } from "@/utils/supabase/server";
-import AvatarRead from "@/components/AvatarRead";
+import AvatarUploadManager from "@/components/AvatarUploadManager";
 
-export default async function ProfileHeader() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // You might want to fetch additional user data from your profiles table
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("first_name")
-    .eq("id", user.id)
-    .single();
-
+export default async function ProfileHeader({ profile, user }) {
   return (
     <>
-      <AvatarRead />
+      <AvatarUploadManager
+        initialAvatar={profile?.avatar || ""}
+        bucket="avatars"
+        entityId={user.id}
+      />
       {profile?.first_name && <h1>{profile?.first_name}</h1>}
     </>
   );

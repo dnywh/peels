@@ -11,7 +11,7 @@ import { siteConfig } from "@/config/site";
 
 import LocationSelect from "@/components/LocationSelect";
 import SwitchToggle from "@/components/SwitchToggle";
-import CheckboxUnit from "@/components/CheckboxUnit";
+import LegalAgreement from "@/components/LegalAgreement";
 import Form from "@/components/Form";
 import FormSection from "@/components/FormSection";
 import FormSectionHeader from "@/components/FormSectionHeader";
@@ -119,7 +119,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
     if (!legal) {
       nextErrors.legal =
-        "You need to accept the terms of service and privacy policy.";
+        "You need to accept the terms of use and privacy policy.";
     }
 
     if (Object.keys(nextErrors).length > 0) {
@@ -417,26 +417,12 @@ export default function ListingWrite({ initialListing, user, profile }) {
         )}
 
         <FormSection>
-          <CheckboxUnit
+          <LegalAgreement
             required={true}
             checked={legal}
             setChecked={setLegal}
             error={errors.legal}
-          >
-            I have read and agree to the Peels{" "}
-            {/* Wrap links in spans as an alterntive to passive={true} on the label. This allows the rest of the label text to still act as a trigger on the checkbox. */}
-            <span onClick={(e) => e.stopPropagation()}>
-              <Hyperlink href={siteConfig.links.terms} target="_blank">
-                terms of service
-              </Hyperlink>
-            </span>{" "}
-            and{" "}
-            <span onClick={(e) => e.stopPropagation()}>
-              <Hyperlink href={siteConfig.links.privacy} target="_blank">
-                privacy policy
-              </Hyperlink>
-            </span>
-          </CheckboxUnit>
+          />
         </FormSection>
 
         {Object.keys(errors).length > 0 && (

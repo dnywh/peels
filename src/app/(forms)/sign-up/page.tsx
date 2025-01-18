@@ -26,6 +26,8 @@ import SubmitButton from "@/components/SubmitButton";
 import FieldHeader from "@/components/FieldHeader";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import InputHint from "@/components/InputHint";
+import LegalAgreement from "@/components/LegalAgreement";
 
 export default async function SignUp(props: {
   searchParams: Promise<{
@@ -86,10 +88,11 @@ export default async function SignUp(props: {
           <Label htmlFor="first_name">First name</Label>
           <Input
             name="first_name"
-            placeholder="Your first name"
-            required
+            placeholder="Your first name or nickname"
+            required={true}
             defaultValue={searchParams.first_name}
           />
+          <InputHint>Or a pseudonym, if you prefer!</InputHint>
         </Field>
         <Field>
           <Label htmlFor="email">Email</Label>
@@ -97,7 +100,7 @@ export default async function SignUp(props: {
             name="email"
             type="email"
             placeholder="you@example.com"
-            required
+            required={true}
             defaultValue={searchParams.email}
           />
         </Field>
@@ -111,13 +114,8 @@ export default async function SignUp(props: {
             required
           />
         </Field>
-        <Field>
-          <FieldHeader>
-            <Label htmlFor="invite_code">Invite code</Label>
-            <Hyperlink href="/preview">Need one?</Hyperlink>
-          </FieldHeader>
-          <Input name="invite_code" placeholder="Your invite code" required />
-        </Field>
+
+        <LegalAgreement required={true} />
 
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />

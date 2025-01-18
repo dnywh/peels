@@ -82,13 +82,17 @@ function CheckboxUnit({
   required = false,
   children,
   passiveLabel = false,
-  error,
+  // error,
 }) {
   return (
     <StyledField>
-      <StyledFieldContents data-invalid={error ? true : undefined}>
-        <StyledLabel passive={passiveLabel}>{children}</StyledLabel>
-        <StyledCheckbox
+      <StyledFieldContents>
+        <StyledLabel htmlFor="checkbox" passive={passiveLabel}>
+          {children}
+        </StyledLabel>
+
+        <input type="checkbox" required={required} id="checkbox" />
+        {/* <StyledCheckbox
           checked={checked}
           onChange={setChecked}
           required={required}
@@ -102,9 +106,9 @@ function CheckboxUnit({
               strokeLinejoin="round"
             />
           </Check>
-        </StyledCheckbox>
+        </StyledCheckbox> */}
       </StyledFieldContents>
-      {error && <InputHint variant="error">{error}</InputHint>}
+      {/* {error && <InputHint variant="error">{error}</InputHint>} */}
     </StyledField>
   );
 }

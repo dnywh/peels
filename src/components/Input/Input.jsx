@@ -24,6 +24,11 @@ const StyledInput = styled(HeadlessInput)(({ theme }) => ({
     borderColor: theme.colors.input.invalid.border,
     borderWidth: "2px",
   },
+
+  "&[disabled]": {
+    color: theme.colors.input.disabled.text,
+    cursor: "not-allowed",
+  },
 }));
 
 export default function Input({ error = null, ...props }) {

@@ -158,6 +158,9 @@ export default withPigment(nextConfig, {
                     border: tokens.ochre[500],
                     text: tokens.ochre[600],
                 },
+                disabled: {
+                    text: tokens.rock[400],
+                }
             },
             button: {
                 primary: {
