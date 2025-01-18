@@ -130,7 +130,7 @@ function ProfileAccountSettings({ user, profile }) {
       }
     } catch (error) {
       console.error("Error updating password:", error);
-      password.setError("An unexpected error occurred");
+      password.setError("Sorry, something’s gone wrong. Please try again.");
     } finally {
       password.setIsUpdating(false);
     }
@@ -157,7 +157,7 @@ function ProfileAccountSettings({ user, profile }) {
       }
     } catch (error) {
       console.error("Error updating email:", error);
-      email.setError("An unexpected error occurred");
+      email.setError("Sorry, something’s gone wrong. Please try again.");
     } finally {
       email.setIsUpdating(false);
     }
@@ -183,7 +183,7 @@ function ProfileAccountSettings({ user, profile }) {
       }
     } catch (error) {
       console.error("Error updating first name:", error);
-      firstName.setError("An unexpected error occurred");
+      firstName.setError("Sorry, something’s gone wrong. Please try again.");
     } finally {
       firstName.setIsUpdating(false);
     }
