@@ -8,7 +8,11 @@ import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import InputHint from "@/components/InputHint";
 
-import { updateFirstNameAction } from "@/app/actions";
+import {
+  updateFirstNameAction,
+  sendPasswordResetEmailAction,
+  sendEmailChangeEmailAction,
+} from "@/app/actions";
 
 import { styled } from "@pigment-css/react";
 
@@ -86,22 +90,66 @@ function ProfileAccountSettings({ user, profile }) {
   const [email, setEmail] = useState(user.email);
 
   const [isUpdating, setIsUpdating] = useState(false);
-  const [updateError, setUpdateError] = useState(null);
+
+  const [firstNameUpdateError, setFirstNameUpdateError] = useState(null);
+
+  const [emailUpdateSuccess, setEmailUpdateSuccess] = useState(false);
+  const [emailUpdateError, setEmailUpdateError] = useState(null);
+
+  const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState(false);
+  const [passwordUpdateError, setPasswordUpdateError] = useState(null);
+
+  const handlePasswordUpdate = async (formData) => {
+    setIsUpdating(true);
+    setPasswordUpdateError(null);
+    try {
+      const result = await sendPasswordResetEmailAction(formData);
+      if (result?.error) {
+        setPasswordUpdateError(result.error);
+      } else {
+        setPasswordUpdateSuccess(true);
+      }
+    } catch (error) {
+      console.error("Error updating password:", error);
+      setPasswordUpdateError("Failed to update password");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleEmailUpdate = async (formData) => {
+    setIsUpdating(true);
+    setEmailUpdateError(null);
+    try {
+      const result = await sendEmailChangeEmailAction(formData);
+      if (result?.error) {
+        setEmailUpdateError(result.error);
+      } else {
+        setEmailUpdateSuccess(true);
+        // setIsEmailEditing(false);
+      }
+    } catch (error) {
+      console.error("Error updating email:", error);
+      setEmailUpdateError("Failed to update email");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const handleFirstNameUpdate = async (formData) => {
     setIsUpdating(true);
-    setUpdateError(null);
+    setFirstNameUpdateError(null);
     try {
       const result = await updateFirstNameAction(formData);
       if (result?.error) {
-        setUpdateError(result.error);
+        setFirstNameUpdateError(result.error);
       } else {
         setFirstName(tempFirstName);
         setIsFirstNameEditing(false);
       }
     } catch (error) {
       console.error("Error updating first name:", error);
-      setUpdateError("Failed to update first name");
+      setFirstNameUpdateError("Failed to update first name");
       setTempFirstName(firstName);
     } finally {
       setIsUpdating(false);
@@ -111,7 +159,7 @@ function ProfileAccountSettings({ user, profile }) {
   const handleFirstNameCancel = () => {
     setTempFirstName(firstName); // Revert to original value
     setIsFirstNameEditing(false);
-    setUpdateError(null);
+    setFirstNameUpdateError(null);
   };
 
   return (
@@ -128,10 +176,10 @@ function ProfileAccountSettings({ user, profile }) {
                 required={true}
                 defaultValue={firstName}
                 onChange={(e) => setTempFirstName(e.target.value)}
-                error={updateError}
+                error={firstNameUpdateError}
               />
-              {updateError && (
-                <InputHint variant="error">{updateError}</InputHint>
+              {firstNameUpdateError && (
+                <InputHint variant="error">{firstNameUpdateError}</InputHint>
               )}
             </Field>
 
@@ -164,21 +212,35 @@ function ProfileAccountSettings({ user, profile }) {
 
       <ListItem editing={isEmailEditing}>
         {isEmailEditing ? (
-          <Form nested={true}>
+          <Form nested={true} action={handleEmailUpdate}>
             <Field>
               <Label>Email</Label>
-              <Input type="email" name="email" defaultValue={email} />
+              <Input
+                type="email"
+                name="email"
+                defaultValue={email}
+                placeholder="you@example.com"
+                required={true}
+                error={emailUpdateError}
+              />
               <InputHint>
-                We’ll send a verification link to this email.
+                {emailUpdateError
+                  ? emailUpdateError
+                  : emailUpdateSuccess
+                    ? "Done. Check your email for the verification link."
+                    : "We’ll send a verification link to this email."}
               </InputHint>
             </Field>
             <ButtonGroup>
-              <SubmitButton>Send the link</SubmitButton>
+              {!emailUpdateSuccess && (
+                <SubmitButton>Send the link</SubmitButton>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setIsEmailEditing(false)}
+                disabled={isUpdating}
               >
-                Cancel
+                {emailUpdateSuccess ? "Close" : "Cancel"}
               </Button>
             </ButtonGroup>
           </Form>
@@ -213,18 +275,21 @@ function ProfileAccountSettings({ user, profile }) {
         </ListItemStatic>
 
         {isPasswordEditing && (
-          <Form nested={true}>
+          <Form nested={true} action={handlePasswordUpdate}>
             <p>
-              Tap the button below to send a password reset link to {user.email}
-              .
+              {passwordUpdateSuccess
+                ? "Done. Check your email for the password reset link."
+                : "Tap the button below to send a password reset link to your email."}
             </p>
             <ButtonGroup>
-              <SubmitButton>Send the link</SubmitButton>
+              {!passwordUpdateSuccess && (
+                <SubmitButton>Send the link</SubmitButton>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setIsPasswordEditing(false)}
               >
-                Cancel
+                {passwordUpdateSuccess ? "Close" : "Cancel"}
               </Button>
             </ButtonGroup>
           </Form>

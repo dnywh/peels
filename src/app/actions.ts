@@ -6,29 +6,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@/utils/url";
 
-export const updateFirstNameAction = async (formData: FormData) => {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Update profile
-  const { error } = await supabase
-    .from("profiles")
-    .update({
-      first_name: formData.get("first_name")?.toString(),
-    })
-    .eq("id", user?.id);
-
-  if (error) {
-    console.error("Error updating first name:", error);
-    return { error: "Sorry, we couldn’t update your first name." };
-  }
-
-  return { success: true };
-};
-
 export const signUpAction = async (formData: FormData, request: Request) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
@@ -163,28 +140,58 @@ export const forgotPasswordAction = async (formData: FormData) => {
   );
 };
 
-// This action triggers the password reset email to be sent to the user
-export const sendPasswordResetEmailAction = async (formData: FormData) => {
-  // console.log("Sending password reset email");
+export const updateFirstNameAction = async (formData: FormData) => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user?.email) {
-    return encodedRedirect(
-      "error",
-      "/sign-in",
-      "We couldn’t find an account for that email address.",
-    );
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      first_name: formData.get("first_name")?.toString(),
+    })
+    .eq("id", user?.id);
+
+  if (error) {
+    console.error("Error updating first name:", error);
+    return { error: "Sorry, we couldn’t update your first name." };
   }
 
-  const { data, error } = await supabase.auth
-    .resetPasswordForEmail(user?.email || "", {
-      redirectTo: `${
-        origin || getBaseUrl()
-      }/auth/callback?redirect_to=/reset-password-two`,
-    });
+  return { success: true };
+};
+
+export const sendEmailChangeEmailAction = async (formData: FormData) => {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({
+    email: formData.get("email") as string,
+  });
+
+  if (error) {
+    console.error("Error sending email change email:", error);
+    return { error: "Sorry, we couldn’t send an email change link." };
+  }
+
+  return { success: true };
+};
+
+// This action triggers the password reset email to be sent to the user
+// It's called from the ProfileAccountSettings component
+export const sendPasswordResetEmailAction = async (formData: FormData) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { error } = await supabase.auth
+    .resetPasswordForEmail(user?.email || "");
+
+  if (error) {
+    console.error("Error sending password reset email:", error);
+    return { error: "Sorry, we couldn’t send a password reset link." };
+  }
+
+  return { success: true };
 };
 
 // Whereas this action actually updates the user's password
