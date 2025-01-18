@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Button from "@/components/Button";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
@@ -79,92 +79,125 @@ const PasswordPreview = styled("p")(({ theme }) => ({
   userSelect: "none",
 }));
 
-function ProfileAccountSettings({ user, profile }) {
-  const [isFirstNameEditing, setIsFirstNameEditing] = useState(false);
-  const [isPasswordEditing, setIsPasswordEditing] = useState(false);
-  const [isEmailEditing, setIsEmailEditing] = useState(false);
+// New custom hook for managing edit states
+function useEditableField(initialState = false) {
+  const [isEditing, setIsEditing] = useState(initialState);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [lastSentAt, setLastSentAt] = useState(0);
 
-  const [firstName, setFirstName] = useState(profile?.first_name);
+  const reset = useCallback(() => {
+    setIsEditing(false);
+    setError(null);
+    setSuccess(false);
+  }, []);
+
+  return {
+    isEditing,
+    setIsEditing,
+    isUpdating,
+    setIsUpdating,
+    error,
+    setError,
+    success,
+    setSuccess,
+    lastSentAt,
+    setLastSentAt,
+    reset,
+  };
+}
+
+function ProfileAccountSettings({ user, profile }) {
+  // Use our custom hook for each editable field
+  const firstName = useEditableField();
+  const email = useEditableField();
+  const password = useEditableField();
+
   const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
 
-  const [email, setEmail] = useState(user.email);
-
-  const [isUpdatingFirstName, setIsUpdatingFirstName] = useState(false);
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
-
-  const [firstNameUpdateError, setFirstNameUpdateError] = useState(null);
-
-  const [emailUpdateSuccess, setEmailUpdateSuccess] = useState(false);
-  const [emailUpdateError, setEmailUpdateError] = useState(null);
-
-  const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState(false);
-  const [passwordUpdateError, setPasswordUpdateError] = useState(null);
-
   const handlePasswordUpdate = async (formData) => {
-    setIsUpdatingPassword(true);
-    setPasswordUpdateError(null);
+    password.setIsUpdating(true);
+    password.setError(null);
     try {
       const result = await sendPasswordResetEmailAction(formData);
       if (result?.error) {
-        setPasswordUpdateError(result.error);
+        password.setError(result.error);
       } else {
-        setPasswordUpdateSuccess(true);
+        password.setSuccess(true);
+        password.setLastSentAt(Date.now());
       }
     } catch (error) {
       console.error("Error updating password:", error);
+      password.setError("An unexpected error occurred");
     } finally {
-      setIsUpdatingPassword(false);
+      password.setIsUpdating(false);
     }
   };
 
   const handleEmailUpdate = async (formData) => {
-    setIsUpdatingEmail(true);
-    setEmailUpdateError(null);
+    const newEmail = formData.get("email")?.toString();
+
+    // Client-side validation for unchanged email
+    if (newEmail === user.email) {
+      email.setError("This is already your email address.");
+      return;
+    }
+
+    email.setIsUpdating(true);
+    email.setError(null);
+
     try {
       const result = await sendEmailChangeEmailAction(formData);
       if (result?.error) {
-        setEmailUpdateError(result.error);
+        email.setError(result.error);
       } else {
-        setEmailUpdateSuccess(true);
+        email.setSuccess(true);
       }
     } catch (error) {
       console.error("Error updating email:", error);
+      email.setError("An unexpected error occurred");
     } finally {
-      setIsUpdatingEmail(false);
+      email.setIsUpdating(false);
     }
   };
 
   const handleFirstNameUpdate = async (formData) => {
-    setIsUpdatingFirstName(true);
-    setFirstNameUpdateError(null);
+    const newFirstName = formData.get("first_name")?.toString().trim();
+
+    // Validate first name
+    if (!newFirstName) {
+      firstName.setError("You can’t have an empty first name.");
+      return;
+    }
+
+    firstName.setIsUpdating(true);
+    firstName.setError(null);
+
     try {
       const result = await updateFirstNameAction(formData);
       if (result?.error) {
-        setFirstNameUpdateError(result.error);
-        setTempFirstName(firstName);
+        firstName.setError(result.error);
       } else {
-        setFirstName(tempFirstName);
-        setIsFirstNameEditing(false);
+        setTempFirstName(newFirstName);
+        firstName.setIsEditing(false);
       }
     } catch (error) {
       console.error("Error updating first name:", error);
-      setTempFirstName(firstName);
+      firstName.setError("An unexpected error occurred");
     } finally {
-      setIsUpdatingFirstName(false);
+      firstName.setIsUpdating(false);
     }
   };
 
   const handleFirstNameCancel = () => {
-    setTempFirstName(firstName); // Revert to original value
-    setIsFirstNameEditing(false);
-    setFirstNameUpdateError(null);
+    firstName.reset();
   };
 
   return (
     <List>
-      <ListItem editing={isFirstNameEditing}>
-        {isFirstNameEditing ? (
+      <ListItem editing={firstName.isEditing}>
+        {firstName.isEditing ? (
           <Form nested={true} action={handleFirstNameUpdate}>
             <Field>
               <Label>First name</Label>
@@ -173,23 +206,25 @@ function ProfileAccountSettings({ user, profile }) {
                 name="first_name"
                 placeholder="Your first name or nickname"
                 required={true}
-                defaultValue={firstName}
-                onChange={(e) => setTempFirstName(e.target.value)}
-                error={firstNameUpdateError}
+                defaultValue={tempFirstName}
+                error={firstName.error}
               />
-              {firstNameUpdateError && (
-                <InputHint variant="error">{firstNameUpdateError}</InputHint>
+              {firstName.error && (
+                <InputHint variant="error">{firstName.error}</InputHint>
               )}
             </Field>
 
             <ButtonGroup>
-              <SubmitButton disabled={isUpdatingFirstName}>
-                {isUpdatingFirstName ? "Updating..." : "Update"}
+              <SubmitButton
+                disabled={firstName.isUpdating}
+                pendingText="Updating..."
+              >
+                Update
               </SubmitButton>
               <Button
                 variant="secondary"
                 onClick={handleFirstNameCancel}
-                disabled={isUpdatingFirstName}
+                disabled={firstName.isUpdating}
               >
                 Cancel
               </Button>
@@ -199,11 +234,11 @@ function ProfileAccountSettings({ user, profile }) {
           <>
             <ListItemReadField>
               <Label>First name</Label>
-              <p>{firstName}</p>
+              <p>{tempFirstName}</p>
             </ListItemReadField>
             <Button
               variant="secondary"
-              onClick={() => setIsFirstNameEditing(true)}
+              onClick={() => firstName.setIsEditing(true)}
             >
               Edit
             </Button>
@@ -211,37 +246,46 @@ function ProfileAccountSettings({ user, profile }) {
         )}
       </ListItem>
 
-      <ListItem editing={isEmailEditing}>
-        {isEmailEditing ? (
+      <ListItem editing={email.isEditing}>
+        {email.isEditing ? (
           <Form nested={true} action={handleEmailUpdate}>
             <Field>
               <Label>Email</Label>
               <Input
                 type="email"
                 name="email"
-                defaultValue={email}
+                defaultValue={user.email}
                 placeholder="you@example.com"
                 required={true}
-                error={emailUpdateError}
+                error={email.error}
               />
-              <InputHint>
-                {emailUpdateError
-                  ? emailUpdateError
-                  : emailUpdateSuccess
-                    ? "Done. Check your email for the verification link."
-                    : "We’ll send a verification link to this email."}
+              <InputHint
+                variant={
+                  email.error ? "error" : email.success ? "success" : "default"
+                }
+              >
+                {email.error
+                  ? email.error
+                  : email.success
+                    ? "Check your email for the verification link."
+                    : "We'll send a verification link to this email."}
               </InputHint>
             </Field>
             <ButtonGroup>
-              {!emailUpdateSuccess && (
-                <SubmitButton>Send the link</SubmitButton>
+              {!email.success && (
+                <SubmitButton
+                  disabled={email.isUpdating}
+                  pendingText="Sending..."
+                >
+                  Send the link
+                </SubmitButton>
               )}
               <Button
                 variant="secondary"
-                onClick={() => setIsEmailEditing(false)}
-                disabled={isUpdatingEmail}
+                onClick={() => email.reset()}
+                disabled={email.isUpdating}
               >
-                {emailUpdateSuccess ? "Close" : "Cancel"}
+                {email.success ? "Close" : "Cancel"}
               </Button>
             </ButtonGroup>
           </Form>
@@ -251,62 +295,66 @@ function ProfileAccountSettings({ user, profile }) {
               <Label>Email</Label>
               <p>{user.email}</p>
             </ListItemReadField>
-            <Button variant="secondary" onClick={() => setIsEmailEditing(true)}>
+            <Button
+              variant="secondary"
+              onClick={() => email.setIsEditing(true)}
+            >
               Edit
             </Button>
           </>
         )}
       </ListItem>
 
-      <ListItem editing={isPasswordEditing}>
-        <ListItemStatic>
-          {isPasswordEditing ? (
-            <Form nested={true} action={handlePasswordUpdate}>
-              <Field>
-                <Label>Password</Label>
-                <Input
-                  type="password"
-                  name="password"
-                  placeholder="••••••••••••"
-                  required={true}
-                  disabled={true}
-                />
-                <InputHint>
-                  {passwordUpdateSuccess
-                    ? "Done. Check your email for the password reset link."
-                    : "Change your password by sending a password reset link to your email, below."}
-                </InputHint>
-              </Field>
-              <ButtonGroup>
-                {!passwordUpdateSuccess && (
-                  <SubmitButton disabled={isUpdatingPassword}>
-                    {isUpdatingPassword ? "Sending..." : "Send the link"}
-                  </SubmitButton>
-                )}
-                <Button
-                  variant="secondary"
-                  onClick={() => setIsPasswordEditing(false)}
-                  disabled={isUpdatingPassword}
+      <ListItem editing={password.isEditing}>
+        {password.isEditing ? (
+          <Form nested={true} action={handlePasswordUpdate}>
+            <Field>
+              <Label>Password</Label>
+              <Input
+                type="password"
+                name="password"
+                placeholder="••••••••••••"
+                required={true}
+                disabled={true}
+              />
+              <InputHint>
+                {password.success
+                  ? "Done. Check your email for the password reset link."
+                  : "Change your password by sending a password reset link to your email, below."}
+              </InputHint>
+            </Field>
+            <ButtonGroup>
+              {!password.success && (
+                <SubmitButton
+                  disabled={password.isUpdating}
+                  pendingText="Sending..."
                 >
-                  {passwordUpdateSuccess ? "Close" : "Cancel"}
-                </Button>
-              </ButtonGroup>
-            </Form>
-          ) : (
-            <>
-              <ListItemReadField>
-                <Label>Password</Label>
-                <PasswordPreview>••••••••••••</PasswordPreview>
-              </ListItemReadField>
+                  Send the link
+                </SubmitButton>
+              )}
               <Button
                 variant="secondary"
-                onClick={() => setIsPasswordEditing(true)}
+                onClick={() => password.reset()}
+                disabled={password.isUpdating}
               >
-                Edit
+                {password.success ? "Close" : "Cancel"}
               </Button>
-            </>
-          )}
-        </ListItemStatic>
+            </ButtonGroup>
+          </Form>
+        ) : (
+          <>
+            <ListItemReadField>
+              <Label>Password</Label>
+              <PasswordPreview>••••••••••••</PasswordPreview>
+            </ListItemReadField>
+            <Button
+              variant="secondary"
+              onClick={() => password.setIsEditing(true)}
+            >
+              Edit
+            </Button>
+          </>
+        )}
       </ListItem>
     </List>
   );
