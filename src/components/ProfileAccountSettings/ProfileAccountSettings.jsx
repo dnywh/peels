@@ -15,6 +15,7 @@ import {
 } from "@/app/actions";
 
 import { styled } from "@pigment-css/react";
+import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 
 const List = styled("ul")(({ theme }) => ({
   display: "flex",
@@ -163,11 +164,9 @@ function ProfileAccountSettings({ user, profile }) {
   };
 
   const handleFirstNameUpdate = async (formData) => {
-    const newFirstName = formData.get("first_name")?.toString().trim();
-
-    // Validate first name
-    if (!newFirstName) {
-      firstName.setError("You can’t have an empty first name.");
+    const validation = validateFirstName(formData.get("first_name"));
+    if (!validation.isValid) {
+      firstName.setError(validation.error);
       return;
     }
 
@@ -179,7 +178,7 @@ function ProfileAccountSettings({ user, profile }) {
       if (result?.error) {
         firstName.setError(result.error);
       } else {
-        setTempFirstName(newFirstName);
+        setTempFirstName(validation.value);
         firstName.setIsEditing(false);
       }
     } catch (error) {
@@ -202,10 +201,8 @@ function ProfileAccountSettings({ user, profile }) {
             <Field>
               <Label>First name</Label>
               <Input
-                type="text"
                 name="first_name"
-                placeholder="Your first name or nickname"
-                required={true}
+                {...FIELD_CONFIGS.firstName}
                 defaultValue={tempFirstName}
                 error={firstName.error}
               />
@@ -252,11 +249,9 @@ function ProfileAccountSettings({ user, profile }) {
             <Field>
               <Label>Email</Label>
               <Input
-                type="email"
                 name="email"
                 defaultValue={user.email}
-                placeholder="you@example.com"
-                required={true}
+                {...FIELD_CONFIGS.email}
                 error={email.error}
               />
               <InputHint
@@ -311,10 +306,8 @@ function ProfileAccountSettings({ user, profile }) {
             <Field>
               <Label>Password</Label>
               <Input
-                type="password"
                 name="password"
-                placeholder="••••••••••••"
-                required={true}
+                {...FIELD_CONFIGS.password}
                 disabled={true}
               />
               <InputHint>
@@ -345,7 +338,9 @@ function ProfileAccountSettings({ user, profile }) {
           <>
             <ListItemReadField>
               <Label>Password</Label>
-              <PasswordPreview>••••••••••••</PasswordPreview>
+              <PasswordPreview>
+                {FIELD_CONFIGS.password.placeholder}
+              </PasswordPreview>
             </ListItemReadField>
             <Button
               variant="secondary"

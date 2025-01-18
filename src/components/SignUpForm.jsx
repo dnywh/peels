@@ -9,23 +9,23 @@ import SubmitButton from "@/components/SubmitButton";
 import LegalAgreement from "@/components/LegalAgreement";
 import FormMessage from "@/components/FormMessage";
 import { signUpAction } from "@/app/actions";
+import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
   const [firstNameError, setFirstNameError] = useState(null);
 
+  // Helper to determine if there are any field-level errors
+  const hasFieldErrors = Boolean(firstNameError);
+
   const handleSubmit = async (formData) => {
-    // Clear any previous errors
     setFirstNameError(null);
 
-    const firstName = formData.get("first_name")?.toString().trim();
-
-    // Validate first name
-    if (!firstName) {
-      setFirstNameError("You can't have an empty first name.");
-      return false; // Prevent form submission
+    const validation = validateFirstName(formData.get("first_name"));
+    if (!validation.isValid) {
+      setFirstNameError(validation.error);
+      return false;
     }
 
-    // If validation passes, proceed with the server action
     return signUpAction(formData);
   };
 
@@ -35,8 +35,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         <Label htmlFor="first_name">First name</Label>
         <Input
           name="first_name"
-          placeholder="Your first name or nickname"
-          required={true}
+          {...FIELD_CONFIGS.firstName}
           defaultValue={defaultValues.first_name}
           error={firstNameError}
         />
@@ -51,26 +50,28 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         <Label htmlFor="email">Email</Label>
         <Input
           name="email"
-          type="email"
-          placeholder="you@example.com"
-          required={true}
+          {...FIELD_CONFIGS.email}
           defaultValue={defaultValues.email}
         />
       </Field>
       <Field>
         <Label htmlFor="password">Password</Label>
-        <Input
-          type="password"
-          name="password"
-          placeholder="Your password"
-          minLength={6}
-          required
-        />
+        <Input name="password" {...FIELD_CONFIGS.password} />
       </Field>
 
       <LegalAgreement required={true} />
 
-      {error && <FormMessage message={{ error }} />}
+      {(error || hasFieldErrors) && (
+        <FormMessage
+          message={{
+            error:
+              error ||
+              (hasFieldErrors
+                ? "Please fix the above error and then try again."
+                : null),
+          }}
+        />
+      )}
       <SubmitButton pendingText="Signing up...">Sign up</SubmitButton>
     </Form>
   );
