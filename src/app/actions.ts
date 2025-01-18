@@ -106,6 +106,7 @@ export const signInAction = async (formData: FormData, request: Request) => {
   return redirect(redirectTo || "/map");
 };
 
+// Very similar to the sendPasswordResetEmailAction
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
@@ -177,17 +178,30 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
   return { success: true };
 };
 
-// This action triggers the password reset email to be sent to the user
-// It's called from the ProfileAccountSettings component
-// Is this duplicative of the forgotPasswordAction?
+// This action triggers the password reset email to be sent to the user, called from the ProfileAccountSettings component
+// See also the very similar forgotPasswordAction which this is based on
 export const sendPasswordResetEmailAction = async (formData: FormData) => {
   const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { error } = await supabase.auth
-    .resetPasswordForEmail(user?.email || "");
+  const email = user?.email;
+
+  if (!email) {
+    return {
+      error:
+        "Sorry, we’re having trouble sending a password reset link to your email address. Please reach out to support.",
+    };
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${
+      origin || getBaseUrl()
+    }/auth/callback?redirect_to=/reset-password`,
+  });
 
   if (error) {
     console.error("Error sending password reset email:", error);
@@ -228,7 +242,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Hmm. Something’s not right. Mind trying again?",
+      "Hmm. Something’s not right. Mind trying a different password?",
     );
   }
 

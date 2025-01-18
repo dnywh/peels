@@ -2,6 +2,9 @@ import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  // This part of middleware (the redirects) is custom and could/should be handled within each route instead.
+  // See the notes example for how to do this.
+
   const response = NextResponse.next();
   // Create a Supabase client configured to use cookies
   const supabase = createServerClient(
@@ -31,8 +34,8 @@ export async function middleware(request: NextRequest) {
   if (
     !user && (
       request.nextUrl.pathname.startsWith("/chats") ||
-      request.nextUrl.pathname.startsWith("/profile")
-      // request.nextUrl.pathname.startsWith("/reset-password")  // Needed because signed in users also need to reset their password. But what happens when a signed out user tries this without a callback?
+      request.nextUrl.pathname.startsWith("/profile") ||
+      request.nextUrl.pathname.startsWith("/reset-password") // Can be protected as signed out users who access this are authed via the special link in the email
     )
   ) {
     return NextResponse.redirect(
