@@ -242,7 +242,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Hmm. Something’s not right. Mind trying a different password?",
+      "Hmm. Something’s not right. You might be reusing a previous password, or might not have permission to reset this password. Contact support if you need help.",
     );
   }
 
