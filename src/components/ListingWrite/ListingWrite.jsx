@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
-import { deleteListingAction } from "@/app/actions";
+import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
+
+import { updateFirstNameAction, deleteListingAction } from "@/app/actions";
 
 import { useSearchParams, useParams } from "next/navigation";
 
@@ -47,6 +49,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
     initialListing ? initialListing.avatar : ""
   );
   const [name, setName] = useState(initialListing ? initialListing.name : "");
+
   const [description, setDescription] = useState(
     initialListing ? initialListing.description : ""
   );
@@ -110,8 +113,22 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
     // Reset errors
     setErrors({});
-    // Validate required field
+
+    // Validate required fields
     const nextErrors = {};
+
+    // For residential listings, validate first name
+    // For other listing types, validate place name
+    const nameToValidate = listingType === "residential" ? name : name;
+
+    const validation = validateFirstName(nameToValidate);
+    if (!validation.isValid) {
+      if (listingType === "residential") {
+        nextErrors.name = validation.error;
+      } else {
+        nextErrors.name = `You can’t have an empty ${listingType} name.`;
+      }
+    }
 
     if (!coordinates) {
       nextErrors.location = "Please select a location.";
@@ -129,6 +146,18 @@ export default function ListingWrite({ initialListing, user, profile }) {
     }
 
     try {
+      // For residential listings, update the profile first name if changed
+      if (listingType === "residential" && profile.first_name !== name) {
+        console.log("Updating first name from", profile.first_name, "to", name);
+        const formData = new FormData();
+        formData.append("first_name", name);
+        const result = await updateFirstNameAction(formData);
+        if (result?.error) {
+          setErrors({ name: result.error });
+          return;
+        }
+      }
+
       const supabase = createClient();
       const {
         data: { user },
@@ -141,7 +170,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
         owner_id: user.id,
         type: listingType,
         ...(listingType !== "residential" && avatar && { avatar }),
-        name,
+        // Only include name for non-residential listings
+        ...(listingType !== "residential" && { name }),
         description,
         location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
         // Temporarily store the coordinates as longitude and latitude floats in the database as well
@@ -251,17 +281,37 @@ export default function ListingWrite({ initialListing, user, profile }) {
             <h2>Basics</h2>
           </FormSectionHeader>
 
-          {listingType !== "residential" && (
+          {listingType === "residential" ? (
+            <Field>
+              <Label htmlFor="name">Your first name</Label>
+              <Input
+                name="first_name"
+                {...FIELD_CONFIGS.firstName}
+                defaultValue={profile.first_name}
+                onChange={(event) => setName(event.target.value)}
+                error={errors.name}
+              />
+              <InputHint>
+                {errors.name ? errors.name : FIELD_CONFIGS.firstName.hint}
+              </InputHint>
+            </Field>
+          ) : (
             <Field>
               <Label htmlFor="name">Place name</Label>
               <Input
                 id="name"
+                name="name"
                 required={true}
                 type="text"
+                minLength={FIELD_CONFIGS.firstName.minLength}
                 placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
+                error={errors.name}
               />
+              {errors.name && (
+                <InputHint variant="error">{errors.name}</InputHint>
+              )}
             </Field>
           )}
 

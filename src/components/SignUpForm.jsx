@@ -1,5 +1,8 @@
 "use client";
 import { useState } from "react";
+
+import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
+
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Input from "@/components/Input";
@@ -9,7 +12,6 @@ import SubmitButton from "@/components/SubmitButton";
 import LegalAgreement from "@/components/LegalAgreement";
 import FormMessage from "@/components/FormMessage";
 import { signUpAction } from "@/app/actions";
-import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
   const [firstNameError, setFirstNameError] = useState(null);

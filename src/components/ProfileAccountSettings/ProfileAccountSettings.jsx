@@ -263,7 +263,7 @@ function ProfileAccountSettings({ user, profile }) {
                   ? email.error
                   : email.success
                     ? "Check your email for the verification link."
-                    : "We'll send a verification link to this email."}
+                    : "We’ll send a verification link to this email."}
               </InputHint>
             </Field>
             <ButtonGroup>
