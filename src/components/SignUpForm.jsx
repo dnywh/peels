@@ -56,9 +56,19 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           defaultValue={defaultValues.email}
         />
       </Field>
+
       <Field>
         <Label htmlFor="password">Password</Label>
         <Input name="password" {...FIELD_CONFIGS.password} />
+      </Field>
+
+      <Field>
+        <Label htmlFor="invite_code">Invite code</Label>
+        <Input
+          name="invite_code"
+          placeholder="Your invite code"
+          required={true}
+        />
       </Field>
 
       <LegalAgreement required={true} defaultChecked={false} disabled={false} />
