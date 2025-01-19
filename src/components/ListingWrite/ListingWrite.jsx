@@ -152,11 +152,6 @@ export default function ListingWrite({ initialListing, user, profile }) {
       nextErrors.location = "Please select a location.";
     }
 
-    if (!legal) {
-      nextErrors.legal =
-        "You need to accept the terms of use and privacy policy.";
-    }
-
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       console.log("Errors:", nextErrors);
@@ -489,9 +484,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
         <FormSection>
           <LegalAgreement
             required={true}
-            checked={legal}
-            setChecked={setLegal}
-            error={errors.legal}
+            defaultChecked={initialListing ? true : undefined}
           />
         </FormSection>
 
