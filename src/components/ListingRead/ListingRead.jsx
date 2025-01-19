@@ -34,6 +34,14 @@ import Hyperlink from "@/components/Hyperlink";
 
 import ListingChatDrawer from "@/components/ListingChatDrawer";
 
+const Column = styled("section")({
+  // Inherit same flex properties as parent, given these columns should be invisible when drawer
+  // flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  gap: "3rem",
+});
+
 const ButtonGroup = styled("div")({
   display: "flex",
   flexWrap: "wrap",
@@ -133,160 +141,167 @@ const ListingRead = memo(function Listing({
 
   return (
     <Fragment key={listing.id}>
-      <ListingHeader
-        listing={listing}
-        listingName={listingDisplayName}
-        user={user}
-      />
+      <Column>
+        <ListingHeader
+          listing={listing}
+          listingName={listingDisplayName}
+          user={user}
+        />
 
-      <ListingChatDrawer
-        isNested={isDrawer}
-        user={user}
-        listing={listing}
-        isChatDrawerOpen={isChatDrawerOpen}
-        setIsChatDrawerOpen={setIsChatDrawerOpen}
-        existingThread={existingThread}
-        listingDisplayName={listingDisplayName}
-      />
+        <ListingChatDrawer
+          isNested={isDrawer}
+          user={user}
+          listing={listing}
+          isChatDrawerOpen={isChatDrawerOpen}
+          setIsChatDrawerOpen={setIsChatDrawerOpen}
+          existingThread={existingThread}
+          listingDisplayName={listingDisplayName}
+        />
 
-      {listing.description && (
-        <section>
-          <h3>{listing.type === "business" ? "Donation details" : "About"}</h3>
-          <ParagraphWithLineBreaks text={listing.description} />
-        </section>
-      )}
-
-      {!isDrawer && (
-        <section>
-          <h3>Location</h3>
-          <PeelsMap
-            style={{ height: "320px" }}
-            interactive={false}
-            initialViewState={{
-              longitude: listing.longitude,
-              latitude: listing.latitude,
-              zoom: initialZoomLevel,
-            }}
-          >
-            <Marker
-              longitude={listing.longitude}
-              latitude={listing.latitude}
-              anchor="center"
-            >
-              <MapPin selected={true} type={listing.type} />
-            </Marker>
-            <NavigationControl showCompass={false} />
-          </PeelsMap>
-
-          {listing.type === "residential" && (
-            <p>
-              {listingDisplayName} is a resident of{" "}
-              {listing.area_name ? listing.area_name : "this area"}. Ask them
-              for their exact location when you arrange a food scrap drop-off.
-            </p>
-          )}
-          {listing.type === "community" && listing.area_name && (
-            <p>
-              {listingDisplayName} is a located in {listing.area_name}.
-            </p>
-          )}
-          {listing.type === "business" && listing.area_name && (
-            <p>
-              {listingDisplayName} is a business located in {listing.area_name}.
-            </p>
-          )}
-
-          <ButtonGroup>
-            <Button
-              variant="secondary"
-              size="small"
-              href={`/map?listing=${listing.slug}`}
-            >
-              See nearby listings
-            </Button>
-            {listing.type !== "residential" && (
-              <>
-                <Button
-                  variant="secondary"
-                  size="small"
-                  href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
-                    listing.name
-                  )}`}
-                  target="_blank"
-                >
-                  Open in Apple Maps
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="small"
-                  href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
-                  target="_blank"
-                >
-                  Open in Google Maps
-                </Button>
-              </>
-            )}
-          </ButtonGroup>
-        </section>
-      )}
-
-      {listing.accepted_items?.length > 0 && (
-        <section>
-          <h3>Accepted</h3>
-          <ListingItemList items={listing.accepted_items} type="accepted" />
-        </section>
-      )}
-
-      {listing.rejected_items?.length > 0 && (
-        <section>
-          <h3>Not accepted</h3>
-          <ListingItemList items={listing.rejected_items} type="rejected" />
-        </section>
-      )}
-
-      {listing.photos?.length > 0 &&
-        (!listing.type === "residential" || user) && (
+        {listing.description && (
           <section>
-            <h3>Photos</h3>
-            <ul>
-              {listing.photos.map((photo, index) => (
-                <li key={index}>
-                  <StorageImage
-                    bucket="listing_photos"
-                    filename={photo}
-                    alt={`Photo ${index + 1}`}
-                    style={{ width: "100px", height: "100px" }}
-                  />
-                </li>
-              ))}
-            </ul>
+            <h3>
+              {listing.type === "business" ? "Donation details" : "About"}
+            </h3>
+            <ParagraphWithLineBreaks text={listing.description} />
           </section>
         )}
 
-      {listing.links?.length > 0 && (
-        <section>
-          <h3>Links</h3>
-          <ListingItemList items={listing.links} type="links" />
-        </section>
-      )}
+        {listing.accepted_items?.length > 0 && (
+          <section>
+            <h3>Accepted</h3>
+            <ListingItemList items={listing.accepted_items} type="accepted" />
+          </section>
+        )}
 
-      {!user && listing.type === "residential" && (
-        <p>
-          <Hyperlink href="/sign-in">Sign in</Hyperlink> to see more about this
-          host.
-        </p>
-      )}
+        {listing.rejected_items?.length > 0 && (
+          <section>
+            <h3>Not accepted</h3>
+            <ListingItemList items={listing.rejected_items} type="rejected" />
+          </section>
+        )}
+      </Column>
 
-      {isDrawer && (
-        <Button
-          variant="secondary"
-          size="small"
-          width="contained"
-          href={`/listings/${listing.slug}`}
-        >
-          View full listing
-        </Button>
-      )}
+      <Column>
+        {!isDrawer && (
+          <section>
+            <h3>Location</h3>
+            <PeelsMap
+              style={{ height: "320px" }}
+              interactive={false}
+              initialViewState={{
+                longitude: listing.longitude,
+                latitude: listing.latitude,
+                zoom: initialZoomLevel,
+              }}
+            >
+              <Marker
+                longitude={listing.longitude}
+                latitude={listing.latitude}
+                anchor="center"
+              >
+                <MapPin selected={true} type={listing.type} />
+              </Marker>
+              <NavigationControl showCompass={false} />
+            </PeelsMap>
+
+            {listing.type === "residential" && (
+              <p>
+                {listingDisplayName} is a resident of{" "}
+                {listing.area_name ? listing.area_name : "this area"}. Ask them
+                for their exact location when you arrange a food scrap drop-off.
+              </p>
+            )}
+            {listing.type === "community" && listing.area_name && (
+              <p>
+                {listingDisplayName} is a located in {listing.area_name}.
+              </p>
+            )}
+            {listing.type === "business" && listing.area_name && (
+              <p>
+                {listingDisplayName} is a business located in{" "}
+                {listing.area_name}.
+              </p>
+            )}
+
+            <ButtonGroup>
+              <Button
+                variant="secondary"
+                size="small"
+                href={`/map?listing=${listing.slug}`}
+              >
+                See nearby listings
+              </Button>
+              {listing.type !== "residential" && (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
+                      listing.name
+                    )}`}
+                    target="_blank"
+                  >
+                    Open in Apple Maps
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
+                    target="_blank"
+                  >
+                    Open in Google Maps
+                  </Button>
+                </>
+              )}
+            </ButtonGroup>
+          </section>
+        )}
+
+        {listing.photos?.length > 0 &&
+          (!listing.type === "residential" || user) && (
+            <section>
+              <h3>Photos</h3>
+              <ul>
+                {listing.photos.map((photo, index) => (
+                  <li key={index}>
+                    <StorageImage
+                      bucket="listing_photos"
+                      filename={photo}
+                      alt={`Photo ${index + 1}`}
+                      style={{ width: "100px", height: "100px" }}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+        {listing.links?.length > 0 && (
+          <section>
+            <h3>Links</h3>
+            <ListingItemList items={listing.links} type="links" />
+          </section>
+        )}
+
+        {!user && listing.type === "residential" && (
+          <p>
+            <Hyperlink href="/sign-in">Sign in</Hyperlink> to see more about
+            this host.
+          </p>
+        )}
+
+        {isDrawer && (
+          <Button
+            variant="secondary"
+            size="small"
+            width="contained"
+            href={`/listings/${listing.slug}`}
+          >
+            View full listing
+          </Button>
+        )}
+      </Column>
     </Fragment>
   );
 });

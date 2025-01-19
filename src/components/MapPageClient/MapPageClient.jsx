@@ -219,29 +219,25 @@ const StyledHeaderText = styled("div")(({ theme }) => ({
 }));
 
 const StyledDrawerInner = styled("div")(({ theme }) => ({
+  width: "100%",
+  // Normal classes
+  padding: "1rem",
+  paddingTop: "2rem",
+  marginTop: "-3.5rem", // To account for sticky header
+
   // Attempts to smooth drawer scroll
   // touchAction: "unset !important",
   // pointerEvents: "unset !important",
-  marginTop: "-3.5rem", // To account for sticky header
-
   overflowY: "auto",
 
   // Seems to help with drawer scroll getting stuck, possibly placebo
   // overscrollBehavior: "auto",
   // touchAction: "pan-y", // Prevents zoom gesture which stuffs up general layout, should be revisted for accessibility
 
-  // Normal classes
-  padding: "1rem",
-  paddingTop: "2rem",
-
+  // Set same flex properties in ListingRead > Column, given these columns should be invisible when drawer
   display: "flex",
   flexDirection: "column",
   gap: "3rem",
-
-  // margin: "auto",
-  width: "100%",
-  // padding: "1rem",
-  // backgroundColor: "red",
 }));
 
 // export default async function MapPage() {

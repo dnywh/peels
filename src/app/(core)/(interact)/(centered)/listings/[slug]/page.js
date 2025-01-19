@@ -15,6 +15,11 @@ const StyledMain = styled("main")({
     display: "flex",
     flexDirection: "column",
     gap: "3rem",
+
+    "@media (min-width: 1280px)": {
+        flexDirection: "row",
+        maxWidth: "1024px",
+    },
 });
 
 // Move data fetching to a reusable function

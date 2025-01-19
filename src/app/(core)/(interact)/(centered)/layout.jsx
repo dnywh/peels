@@ -3,7 +3,8 @@ import { TabBarProvider } from "@/contexts/TabBarContext";
 import { styled } from "@pigment-css/react";
 
 // This layout is used for pages that have centered, vertically-scrolling content
-const InteractPage = styled("div")(({ theme }) => ({
+// May need to be forked for
+const CenteredPage = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   padding: "0.5rem",
@@ -23,11 +24,11 @@ const InteractPage = styled("div")(({ theme }) => ({
 export default async function Layout({ children, params }) {
   return (
     <TabBarProvider>
-      <InteractPage>
+      <CenteredPage>
         <TabBar breakpoint="md" position="dynamic" />
         {children}
         <TabBar breakpoint="sm" />
-      </InteractPage>
+      </CenteredPage>
     </TabBarProvider>
   );
 }

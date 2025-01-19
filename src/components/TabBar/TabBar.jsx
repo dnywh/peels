@@ -54,7 +54,10 @@ const StyledTabBar = styled("div")(({ theme }) => ({
     },
     {
       props: { position: "inline", breakpoint: "md" },
-      style: { position: "sticky", top: "1.5rem" },
+      style: {
+        position: "sticky",
+        top: "1.5rem",
+      },
     },
     {
       props: { position: "dynamic", breakpoint: "md" },

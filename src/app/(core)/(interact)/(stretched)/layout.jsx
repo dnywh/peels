@@ -2,8 +2,8 @@ import TabBar from "@/components/TabBar";
 import { TabBarProvider } from "@/contexts/TabBarContext";
 import { styled } from "@pigment-css/react";
 
-// This layout is used for pages that have content that spans the full width and height of the screen
-const InteractPage = styled("div")(({ theme }) => ({
+// This layout is used for pages that have content that always spans the full viewport width and height of the screen
+const StretchedPage = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   height: "100dvh",
@@ -19,11 +19,11 @@ const InteractPage = styled("div")(({ theme }) => ({
 export default async function Layout({ children, params }) {
   return (
     <TabBarProvider>
-      <InteractPage>
+      <StretchedPage>
         <TabBar breakpoint="md" />
         {children}
         <TabBar breakpoint="sm" />
-      </InteractPage>
+      </StretchedPage>
     </TabBarProvider>
   );
 }
