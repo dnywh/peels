@@ -63,10 +63,13 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
     boxShadow: `inset 1em 1em ${theme.colors.checkbox.checked.foreground}`,
     /* Windows High Contrast Mode */
     backgroundColor: "CanvasText",
-    // Create the checkmark
-    clipPath: "polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%)",
-    // clip-path: ;
-    // transform: "scale(1)",
+
+    // Cut out the checkmark shape
+    // 1. Export the SVG at 100x100, with the desired shape taking up the entire canvas
+    // 2. Convert from SVG to CSS clipPath using percentages (that's why we export at 100x100)
+    // https://moderncss.dev/pure-css-custom-checkbox-style/
+    clipPath:
+      "polygon(97% 16%, 97% 27%, 40% 84%, 29% 84%, 3% 58%, 3% 47%, 14% 47%, 34% 67%, 86% 16%, 97% 16%)",
   },
 
   "&:checked": {
@@ -74,7 +77,7 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
   },
 
   "&:checked::before": {
-    transform: "scale(1)",
+    transform: "scale(1.15)",
     opacity: 1,
   },
 
