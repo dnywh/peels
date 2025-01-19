@@ -116,9 +116,9 @@ const Body = styled("body")(({ theme }) => ({
   // Prepare for bottom tab bar across all possible pages
   // paddingBottom: "5rem",
   // Turned off because it messes with pages that use the full height of the screen, e.g. chats
-  "@media (min-width: 768px)": {
-    paddingBottom: "0",
-  },
+  // "@media (min-width: 768px)": {
+  //   paddingBottom: "0",
+  // },
 }));
 
 export const metadata: Metadata = {

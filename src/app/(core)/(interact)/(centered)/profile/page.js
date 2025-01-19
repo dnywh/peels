@@ -26,7 +26,6 @@ export const metadata = {
 const Section = styled("section")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  maxWidth: "400px",
 }));
 
 const SectionInner = styled("div")(({ theme }) => ({
