@@ -130,6 +130,7 @@ export default withPigment(nextConfig, {
                 border: tokens.white[100],
             },
             checkbox: {
+                border: tokens.ochre[800],
                 checked: {
                     background: tokens.ochre[800],
                     foreground: tokens.white[100],

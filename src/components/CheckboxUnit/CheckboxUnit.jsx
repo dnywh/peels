@@ -43,11 +43,11 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
   appearance: "none",
   margin: 0,
   font: "inherit",
-  color: "currentColor",
-  width: "1.15em",
-  height: "1.15em",
-  border: "0.15em solid currentColor",
-  borderRadius: "0.15em",
+  color: theme.colors.checkbox.unchecked.foreground,
+  width: "1.25rem",
+  height: "1.25rem",
+  border: `0.15em solid ${theme.colors.checkbox.border}`,
+  borderRadius: "0.25em",
   transform: "translateY(-0.075em)",
 
   display: "grid",
@@ -57,10 +57,10 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
     content: "''",
     width: "0.65em",
     height: "0.65em",
-    transform: "scale(0.75)",
+    transform: "scale(0.675)",
     opacity: 0,
-    transition: "100ms transform ease-in-out, 100ms opacity ease-in-out",
-    boxShadow: "inset 1em 1em blue",
+    transition: "150ms transform ease-in-out, 100ms opacity ease-in-out",
+    boxShadow: `inset 1em 1em ${theme.colors.checkbox.checked.foreground}`,
     /* Windows High Contrast Mode */
     backgroundColor: "CanvasText",
     // Create the checkmark
@@ -69,13 +69,18 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
     // transform: "scale(1)",
   },
 
+  "&:checked": {
+    background: theme.colors.checkbox.checked.background,
+  },
+
   "&:checked::before": {
     transform: "scale(1)",
     opacity: 1,
   },
 
+  outline: "none",
   "&:focus": {
-    outline: `3px solid ${theme.colors.focus.outline}`,
+    outline: `2px solid ${theme.colors.focus.outline}`,
     outlineOffset: 0,
   },
 

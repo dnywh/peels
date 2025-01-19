@@ -61,12 +61,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         <Input name="password" {...FIELD_CONFIGS.password} />
       </Field>
 
-      <LegalAgreement
-        checked={true}
-        required={true}
-        defaultChecked={false}
-        disabled={true}
-      />
+      <LegalAgreement required={true} defaultChecked={false} disabled={false} />
 
       {(error || hasFieldErrors) && (
         <FormMessage
