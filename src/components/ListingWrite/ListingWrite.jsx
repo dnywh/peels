@@ -336,11 +336,13 @@ export default function ListingWrite({ initialListing, user, profile }) {
           <LocationSelect
             listingType={listingType}
             initialPlaceholderText={
-              listingType === "business"
-                ? "Your business’ address"
-                : listingType === "community"
-                  ? "Your community’s address"
-                  : "Your street or neighbourhood"
+              initialListing
+                ? areaName
+                : listingType === "business"
+                  ? "Your business’ address"
+                  : listingType === "community"
+                    ? "Your community’s address"
+                    : "Your street or neighbourhood"
             }
             coordinates={coordinates}
             setCoordinates={setCoordinates}

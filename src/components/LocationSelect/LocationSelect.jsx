@@ -174,7 +174,7 @@ export default function LocationSelect({
     inputRef.current.blur(); // Close and blur the input if it's open
     console.log("handling drag start");
     inputRef.current.setQuery("");
-    setPlaceholderText("Custom location"); //TODO: use reverse geocoding to get something like "Suburb, City"
+    setPlaceholderText("Custom location"); // Clear previous value
   }, []);
 
   const handleDragEnd = useCallback(
@@ -193,6 +193,7 @@ export default function LocationSelect({
         nextCoordinates.latitude
       );
       setAreaName(nextAreaName);
+      setPlaceholderText(nextAreaName);
     },
     [setCoordinates, setAreaName]
   );
