@@ -24,7 +24,7 @@ export default async function Layout({ children }) {
     <TabBarProvider>
       <StaticPage>
         <StyledAccountButton />
-        <TabBar breakpoint="md" position="floating" />
+        <TabBar breakpoint="md" position="fixed" />
         {children}
         <LegalFooter />
         <TabBar breakpoint="sm" />

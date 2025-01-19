@@ -40,7 +40,7 @@ const StyledTabBar = styled("div")(({ theme }) => ({
       },
     },
     {
-      props: { position: "floating", breakpoint: "md" },
+      props: { position: "fixed", breakpoint: "md" },
       style: {
         position: "fixed",
         top: "calc(1.5rem - 0.5rem)", // Visually indentical positioning to non-floating tab bar. Math: (non-floating inset - floating padding)
