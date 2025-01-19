@@ -20,7 +20,7 @@ const StyledListingCta = styled("aside")(({ theme }) => ({
   },
 }));
 
-function ListingCta({ type, slug }) {
+function ListingCta({ type, slug, visibility = true }) {
   if (type === "owner") {
     return (
       <StyledListingCta>
@@ -31,7 +31,12 @@ function ListingCta({ type, slug }) {
         >
           Edit listing
         </Button>
-        <p>This is your own listing. Lookin’ good!</p>
+        <p>
+          This is your own listing.{" "}
+          {visibility
+            ? "Lookin’ good!"
+            : "You’ve hidden it from the map, so only you can see this right now."}
+        </p>
       </StyledListingCta>
     );
   }

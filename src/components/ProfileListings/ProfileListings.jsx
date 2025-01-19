@@ -11,10 +11,8 @@ export default function ProfileListings({ firstName, listings }) {
           <li key={id}>
             <Link href={`/profile/listings/${slug}`}>
               <p>{type === "residential" ? firstName : name}</p>
-              <small>
-                {type.charAt(0).toUpperCase() + type.slice(1)} listing
-              </small>
-              {!visibility && <small>hidden</small>}
+              <p>{type.charAt(0).toUpperCase() + type.slice(1)} listing</p>
+              {!visibility && <p>Hidden from map</p>}
             </Link>
           </li>
         ))}

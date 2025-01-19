@@ -3,10 +3,10 @@ import { siteConfig } from "@/config/site";
 import CheckboxUnit from "@/components/CheckboxUnit";
 import Hyperlink from "@/components/Hyperlink";
 
-function LegalAgreement({ checked, required, disabled }) {
+function LegalAgreement({ defaultChecked, required, disabled }) {
   return (
     <CheckboxUnit
-      checked={checked}
+      defaultChecked={defaultChecked}
       disabled={disabled ? "disabled" : undefined}
       required={required}
     >

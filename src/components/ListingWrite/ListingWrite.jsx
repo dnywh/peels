@@ -12,7 +12,6 @@ import { useSearchParams, useParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
 
 import LocationSelect from "@/components/LocationSelect";
-import SwitchToggle from "@/components/SwitchToggle";
 import LegalAgreement from "@/components/LegalAgreement";
 import Form from "@/components/Form";
 import FormSection from "@/components/FormSection";
@@ -20,6 +19,7 @@ import FormSectionHeader from "@/components/FormSectionHeader";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";
+import Select from "@/components/Select";
 import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
@@ -469,15 +469,34 @@ export default function ListingWrite({ initialListing, user, profile }) {
           <FormSection>
             <FormSectionHeader>
               <h2>Visibility</h2>
-              <p>Switch this off if you need to take a break from Peels.</p>
+              <p>
+                Need a break from Peels? Temporarily hide your listing from the
+                map.
+              </p>
             </FormSectionHeader>
+
+            <Field>
+              <Label htmlFor="visibility">Map visibility</Label>
+              <Select
+                id="visibility"
+                value={initialListing ? visibility : "true"}
+                onChange={(event) =>
+                  setVisibility(event.target.value === "true")
+                }
+                required={true}
+              >
+                <option value="true">Show my listing on the map</option>
+                <option value="false">Hide my listing from the map</option>
+              </Select>
+            </Field>
+
             {/* onChange event is handled differently because Radix Switch provides a direct boolean value in its change handler. */}
-            <SwitchToggle
+            {/* <SwitchToggle
               id="visibility"
               label="Show on map"
               checked={visibility}
               onChange={(checked) => setVisibility(checked)}
-            />
+            /> */}
           </FormSection>
         )}
 

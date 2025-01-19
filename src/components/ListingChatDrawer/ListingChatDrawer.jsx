@@ -73,7 +73,11 @@ export default function ListingChatDrawer({
     >
       {user ? (
         listing.owner_id === user.id ? (
-          <ListingCta type="owner" slug={listing.slug} />
+          <ListingCta
+            type="owner"
+            slug={listing.slug}
+            visibility={listing.visibility}
+          />
         ) : (
           <Drawer.Trigger asChild>
             <Button>
