@@ -31,39 +31,40 @@ export default async function ResetPassword(props: {
   }
 
   return (
-    <Form>
+    <>
       <FormHeader button="none">
         <h1>Reset password</h1>
         <p>Please enter your new password below.</p>
       </FormHeader>
+      <Form>
+        <Field>
+          <Label htmlFor="password">New password</Label>
+          <Input
+            type="password"
+            name="password"
+            placeholder="New password"
+            minLength={FIELD_CONFIGS.password.minLength}
+            required={true}
+          />
+        </Field>
+        <Field>
+          <Label htmlFor="confirmPassword">Confirm password</Label>
+          <Input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm password"
+            minLength={FIELD_CONFIGS.password.minLength}
+            required={true}
+          />
+        </Field>
 
-      <Field>
-        <Label htmlFor="password">New password</Label>
-        <Input
-          type="password"
-          name="password"
-          placeholder="New password"
-          minLength={FIELD_CONFIGS.password.minLength}
-          required={true}
-        />
-      </Field>
-      <Field>
-        <Label htmlFor="confirmPassword">Confirm password</Label>
-        <Input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm password"
-          minLength={FIELD_CONFIGS.password.minLength}
-          required={true}
-        />
-      </Field>
-
-      {searchParams.error && (
-        <FormMessage message={{ error: searchParams.error }} />
-      )}
-      <SubmitButton formAction={resetPasswordAction}>
-        Reset password
-      </SubmitButton>
-    </Form>
+        {searchParams.error && (
+          <FormMessage message={{ error: searchParams.error }} />
+        )}
+        <SubmitButton formAction={resetPasswordAction}>
+          Reset password
+        </SubmitButton>
+      </Form>
+    </>
   );
 }

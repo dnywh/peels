@@ -1,6 +1,8 @@
 import { styled } from "@pigment-css/react";
 
 const getSharedStyles = ({ theme }) => ({
+  width: "100%", // Take full width of parent
+
   display: "flex",
   flexDirection: "column",
 
@@ -15,7 +17,6 @@ const getSharedStyles = ({ theme }) => ({
       props: { nested: false },
       style: {
         gap: "2rem",
-        maxWidth: theme.spacing.forms.maxWidth,
         background: theme.colors.background.top,
         border: `1px solid ${theme.colors.border.base}`,
         borderRadius: theme.corners.base,

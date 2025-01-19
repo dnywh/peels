@@ -4,7 +4,6 @@ const StyledFooter = styled("footer")(({ theme }) => ({
   width: "100%",
   textAlign: "center",
   textWrap: "balance",
-  maxWidth: theme.spacing.forms.maxWidth,
   color: theme.colors.text.secondary,
   paddingTop: "0",
   borderTop: "none",
