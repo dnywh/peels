@@ -59,7 +59,7 @@ const ChatWindow = memo(function ChatWindow({
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
-  const [messages, setMessages] = useState(existingThread?.chat_messages || []);
+  const [messages, setMessages] = useState([]);
 
   const [listingIsOwnedByUser, setListingIsOwnedByUser] = useState(false);
 
@@ -77,14 +77,14 @@ const ChatWindow = memo(function ChatWindow({
     }
   }, []);
 
-  // Only update when existingThread actually changes
+  // Update messages when existingThread changes
   useEffect(() => {
-    // console.log("Existing thread changed:", { existingThread, threadId });
-    if (existingThread && existingThread.id !== threadId) {
-      setThreadId(existingThread.id);
-      setMessages(existingThread.chat_messages || []);
+    if (existingThread?.chat_messages_with_senders) {
+      setMessages(existingThread.chat_messages_with_senders);
+    } else if (existingThread?.chat_messages) {
+      setMessages(existingThread.chat_messages);
     }
-  }, [existingThread, threadId]);
+  }, [existingThread]);
 
   async function initializeChat() {
     try {
