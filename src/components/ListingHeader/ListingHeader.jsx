@@ -16,7 +16,8 @@ const StyledText = styled("div")(({ theme }) => ({
   flexDirection: "column",
   gap: "0.35rem",
 
-  "& h2": {
+  "& h1": {
+    fontSize: "1.25rem",
     lineHeight: "1.2",
     overflowWrap: "break-word",
     hyphens: "manual",
@@ -44,7 +45,7 @@ function ListingHeader({ listing, listingName, user }) {
       />
 
       <StyledText>
-        <h2>{listingName}</h2>
+        <h1>{listingName}</h1>
         {/* Use getListingDisplayType() here? Or is it too limiting? */}
         {listing.type === "residential" && (
           <p>

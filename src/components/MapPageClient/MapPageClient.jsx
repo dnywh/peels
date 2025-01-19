@@ -240,6 +240,22 @@ const StyledDrawerInner = styled("div")(({ theme }) => ({
   gap: "3rem",
 }));
 
+const NoListingFound = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "2rem",
+  textAlign: "center",
+  textWrap: "balance",
+  padding: "2rem",
+  color: theme.colors.text.secondary,
+
+  "& div": {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.25rem",
+  },
+}));
+
 // export default async function MapPage() {
 export default function MapPageClient({ user }) {
   const mapRef = useRef(null);
@@ -386,7 +402,7 @@ export default function MapPageClient({ user }) {
       .single();
 
     if (error) {
-      console.error("Error fetching listing details:", error);
+      setSelectedListing({ error: true, message: "Listing not found" });
       return;
     }
 
@@ -453,7 +469,7 @@ export default function MapPageClient({ user }) {
       .single();
 
     if (error) {
-      console.error("Error fetching listing details:", error);
+      setSelectedListing({ error: true, message: "Listing not found" });
       return;
     }
 
@@ -734,56 +750,30 @@ export default function MapPageClient({ user }) {
               //     snap === snapPoints[1] && !isDesktop ? "auto" : "auto",
               // }}
               >
-                <ListingRead
-                  user={user}
-                  listing={selectedListing}
-                  setSelectedListing={handleCloseListing}
-                  isDrawer={true}
-                  isDesktop={isDesktop}
-                  isChatDrawerOpen={isChatDrawerOpen}
-                  setIsChatDrawerOpen={setIsChatDrawerOpen}
-                  pagePadding={pagePadding}
-                  sidebarWidth={sidebarWidth}
-                />
-                {/* <LoremIpsum /> */}
-
-                {/* {selectedListing ? (
-                  <>
-                    <ListingRead
-                      user={user}
-                      listing={selectedListing}
-                      setSelectedListing={handleCloseListing}
-                      modal={true}
-                    />
-                    <LoremIpsum />
-                  </>
+                {selectedListing?.error ? (
+                  <NoListingFound>
+                    <div>
+                      <h2>Coming up empty</h2>
+                      <p>
+                        The listing you’re looking for doesn’t exist or has been
+                        removed. Sorry to disappoint.
+                      </p>
+                    </div>
+                    <Button onClick={handleCloseListing}>Return to map</Button>
+                  </NoListingFound>
                 ) : (
-                  <>
-                    <MapSearch
-                      onPick={handleSearchPick}
-                      mapController={mapController}
-                    />
-                    {user && randomFact && (
-                      // TODO
-                      // If user has sent >0 messages, show a fun composting fact
-                      // Otherwise show the fundamentals (1, 2, 3) of Peels
-                      <>
-                        <p>{randomFact.fact}</p>
-                        {randomFact.source && (
-                          <p>Source: {randomFact.source}</p>
-                        )}
-                      </>
-                    )}
-                    {!user && (
-                      <>
-                        <h2>
-                          Find a home for your food scraps, wherever you are
-                        </h2>
-                        <GuestActions />
-                      </>
-                    )}
-                  </>
-                )} */}
+                  <ListingRead
+                    user={user}
+                    listing={selectedListing}
+                    setSelectedListing={handleCloseListing}
+                    isDrawer={true}
+                    isDesktop={isDesktop}
+                    isChatDrawerOpen={isChatDrawerOpen}
+                    setIsChatDrawerOpen={setIsChatDrawerOpen}
+                    pagePadding={pagePadding}
+                    sidebarWidth={sidebarWidth}
+                  />
+                )}
               </StyledDrawerInner>
             </StyledDrawerContent>
           </Drawer.Portal>
