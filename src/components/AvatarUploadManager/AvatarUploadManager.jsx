@@ -4,6 +4,9 @@ import { useState } from "react";
 import AvatarUploadView from "@/components/AvatarUploadView";
 import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/mediaUtils";
 
+const MAX_MB = 10;
+const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
+
 function AvatarUploadManager({
   initialAvatar,
   bucket,
@@ -17,6 +20,12 @@ function AvatarUploadManager({
   const handleAvatarChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Check total file size
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`Your photo is too large. The maximum file size is ${MAX_MB}MB.`);
+        return;
+      }
+
       try {
         if (avatar) {
           await deleteAvatar(avatar, bucket, entityId);

@@ -32,6 +32,8 @@ const PhotoItem = styled("div")({
 });
 
 const MAX_PHOTOS = 5;
+const MAX_MB = 10;
+const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
 
 function ListingPhotosManager({
   initialPhotos = [],
@@ -44,8 +46,23 @@ function ListingPhotosManager({
 
   const handlePhotoAdd = async (event) => {
     const files = Array.from(event.target.files);
+
+    // Check total number of photos
     if (files.length + photos.length > MAX_PHOTOS) {
       alert(`You can only upload up to ${MAX_PHOTOS} photos`);
+      return;
+    }
+
+    // Check total file size
+    const overSizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
+    if (overSizedFiles.length > 0) {
+      if (overSizedFiles.length === 1) {
+        alert(`Your photo is too large. The maximum file size is ${MAX_MB}MB.`);
+      } else {
+        alert(
+          `Some photos are too large. The maximum file size is ${MAX_MB}MB per photo.`
+        );
+      }
       return;
     }
 
