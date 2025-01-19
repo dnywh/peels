@@ -27,12 +27,21 @@ import MultiInput from "@/components/MultiInput";
 import AvatarUploadManager from "@/components/AvatarUploadManager";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import ListingPhotosManager from "@/components/ListingPhotosManager";
-import AdditionalSettings from "@/components/AdditionalSettings";
 import Hyperlink from "@/components/Hyperlink";
 import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 
 import FormMessage from "@/components/FormMessage";
+
+import { styled } from "@pigment-css/react";
+
+const AdditionalSettings = styled("footer")(({ theme }) => ({
+  borderTop: `1px solid ${theme.colors.border.base}`,
+  paddingTop: `calc(${theme.spacing.unit} * 3)`,
+  display: "flex",
+  flexDirection: "column",
+  gap: `calc(${theme.spacing.unit} * 1.5)`,
+}));
 
 // Component
 export default function ListingWrite({ initialListing, user, profile }) {
@@ -487,29 +496,29 @@ export default function ListingWrite({ initialListing, user, profile }) {
         <SubmitButton>
           {initialListing ? "Save changes" : "Add listing"}
         </SubmitButton>
+
+        {initialListing && (
+          <AdditionalSettings>
+            <Button
+              variant="secondary"
+              width="contained"
+              href={`/listings/${initialListing.slug}`}
+            >
+              View listing
+            </Button>
+
+            <ButtonToDialog
+              initialButtonText="Delete listing"
+              dialogTitle="Delete listing"
+              confirmButtonText="Yes, delete listing"
+              onSubmit={handleDeleteListing}
+            >
+              Are you sure you want to delete your listing? This action cannot
+              be undone.
+            </ButtonToDialog>
+          </AdditionalSettings>
+        )}
       </Form>
-
-      {initialListing && (
-        <AdditionalSettings>
-          <Button
-            variant="secondary"
-            width="contained"
-            href={`/listings/${initialListing.slug}`}
-          >
-            View listing
-          </Button>
-
-          <ButtonToDialog
-            initialButtonText="Delete listing"
-            dialogTitle="Delete listing"
-            confirmButtonText="Yes, delete listing"
-            onSubmit={handleDeleteListing}
-          >
-            Are you sure you want to delete your listing? This action cannot be
-            undone.
-          </ButtonToDialog>
-        </AdditionalSettings>
-      )}
 
       {feedbackMessage && <p>{feedbackMessage}</p>}
     </>
