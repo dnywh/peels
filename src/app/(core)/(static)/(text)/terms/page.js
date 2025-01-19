@@ -9,7 +9,7 @@ export default function Index() {
     <>
       <h1>Terms of use</h1>
       <p>
-        Peels is currently <Hyperlink href="/preview">invite only</Hyperlink>. Our terms
+        Peels is currently invite only. Our terms
         of use will be added here soon.
       </p>
     </>

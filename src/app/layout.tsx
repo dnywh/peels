@@ -112,17 +112,11 @@ fieldset {
 
 const Body = styled("body")(({ theme }) => ({
   backgroundColor: theme.colors.background.sunk,
-
-  // Prepare for bottom tab bar across all possible pages
-  // paddingBottom: "5rem",
-  // Turned off because it messes with pages that use the full height of the screen, e.g. chats
-  // "@media (min-width: 768px)": {
-  //   paddingBottom: "0",
-  // },
 }));
 
 export const metadata: Metadata = {
   // Force the Peels URL (NEXT_PUBLIC_APP_URL) instead of what might render as a preview deployment URL (VERCEL_URL)
+  // Might be related to build issue: metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "https://www.peels.app". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,

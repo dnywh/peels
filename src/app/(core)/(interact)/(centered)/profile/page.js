@@ -1,5 +1,4 @@
 
-// import { signOutAction } from "@/app/actions";
 import { signOutAction, deleteAccountAction, updateEmailAction, sendPasswordResetEmailAction } from "@/app/actions";
 import { createClient } from "@/utils/supabase/server";
 
@@ -8,14 +7,9 @@ import ProfileHeader from "@/components/ProfileHeader";
 import ProfileAccountSettings from "@/components/ProfileAccountSettings";
 import ProfileListings from "@/components/ProfileListings";
 import LegalFooter from "@/components/LegalFooter";
-import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
-
-import Form from "@/components/Form";
-import Input from "@/components/Input";
-
 
 import { styled } from "@pigment-css/react";
 
