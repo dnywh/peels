@@ -57,7 +57,13 @@ export default function ListingWrite({ initialListing, user, profile }) {
   const [avatar, setAvatar] = useState(
     initialListing ? initialListing.avatar : ""
   );
-  const [name, setName] = useState(initialListing ? initialListing.name : "");
+  const [name, setName] = useState(
+    listingType === "residential"
+      ? profile.first_name // Use profile.first_name for residential listings
+      : initialListing
+        ? initialListing.name
+        : "" // Use listing name for others
+  );
 
   const [description, setDescription] = useState(
     initialListing ? initialListing.description : ""
@@ -126,16 +132,19 @@ export default function ListingWrite({ initialListing, user, profile }) {
     // Validate required fields
     const nextErrors = {};
 
-    // For residential listings, validate first name
-    // For other listing types, validate place name
-    const nameToValidate = listingType === "residential" ? name : name;
-
-    const validation = validateFirstName(nameToValidate);
-    if (!validation.isValid) {
-      if (listingType === "residential") {
-        nextErrors.name = validation.error;
-      } else {
-        nextErrors.name = `You can’t have an empty ${listingType} name.`;
+    if (listingType === "residential") {
+      // Only validate and update first name if it was changed
+      if (name !== profile.first_name) {
+        const validation = validateFirstName(name);
+        if (!validation.isValid) {
+          nextErrors.name = validation.error;
+        }
+      }
+    } else {
+      // For business/community listings, validate the name field
+      const validation = validateFirstName(name);
+      if (!validation.isValid) {
+        nextErrors.name = `You can’t have an empty ${listingType !== "residential" && listingType} name.`;
       }
     }
 
