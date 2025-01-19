@@ -10,14 +10,14 @@ const StyledAccountButton = styled(AccountButton)({
   right: "1rem",
 });
 
-const StaticPage = styled("div")({
-  // Accounting for tab bar at bottom (should be dynamic)
-  padding: "1.5rem 1rem 5rem",
-  // height: "100dvh",
+const StaticPage = styled("div")(({ theme }) => ({
+  padding: "1.5rem 1rem 0",
+  marginBottom: `calc(${theme.spacing.tabBar.spaceFor} + 1rem)`,
   "@media (min-width: 768px)": {
-    padding: "5rem 8rem",
+    marginBottom: "0",
+    padding: "2rem 8rem 3rem",
   },
-});
+}));
 
 export default async function Layout({ children }) {
   return (

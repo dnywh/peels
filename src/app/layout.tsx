@@ -116,7 +116,7 @@ const Body = styled("body")(({ theme }) => ({
 
 export const metadata: Metadata = {
   // Force the Peels URL (NEXT_PUBLIC_APP_URL) instead of what might render as a preview deployment URL (VERCEL_URL)
-  // Might be related to build issue: metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "https://www.peels.app". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+  // Might be related to local-only build issue: metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "https://www.peels.app". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,

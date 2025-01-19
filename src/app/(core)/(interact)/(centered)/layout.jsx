@@ -9,7 +9,7 @@ const CenteredPage = styled("div")(({ theme }) => ({
   flexDirection: "column",
   padding: "0.5rem",
 
-  marginBottom: "6rem", // Accommodate TabBar
+  marginBottom: theme.spacing.tabBar.spaceFor, // Accommodate TabBar
 
   "@media (min-width: 768px)": {
     marginBottom: "0",

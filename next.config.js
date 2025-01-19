@@ -1,7 +1,12 @@
 import { withPigment, extendTheme } from "@pigment-css/nextjs-plugin";
+import createMDX from '@next/mdx'
+
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Configure `pageExtensions` to include markdown and MDX files
+    pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+    // Optionally, add any other Next.js config below
     images: {
         remotePatterns: [
             {
@@ -43,6 +48,11 @@ const nextConfig = {
         ]
     }
 };
+
+const withMDX = createMDX({
+    // Add markdown plugins here, as desired
+})
+
 
 const tokens = {
     white: {
@@ -88,7 +98,8 @@ const tokens = {
     }
 }
 
-export default withPigment(nextConfig, {
+export default withPigment(
+    withMDX(nextConfig), {
     theme: extendTheme({
         colors: {
             focus: {
@@ -217,7 +228,7 @@ export default withPigment(nextConfig, {
         spacing: {
             unit: "0.5rem", // 8px
             forms: {
-                maxWidth: "32rem",
+                maxWidth: "36rem",
                 gap: {
                     field: "0.5rem",
                 }
@@ -226,6 +237,7 @@ export default withPigment(nextConfig, {
                 maxWidth: "26rem",
                 marginX: "1.5rem",
                 marginBottom: "0.75rem",
+                spaceFor: "6rem"
             }
         },
         rotations: {

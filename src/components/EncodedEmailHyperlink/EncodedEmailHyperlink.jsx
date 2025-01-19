@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import Hyperlink from "@/components/Hyperlink";
 
 import { useState, useEffect } from "react";
