@@ -2,6 +2,7 @@ import { Textarea as HeadlessTextarea } from "@headlessui/react";
 import { styled } from "@pigment-css/react";
 
 const StyledTextarea = styled(HeadlessTextarea)(({ theme }) => ({
+  flex: 1, // Take full width of parent
   // TODO: Share programmatically with the other input components like Textarea
   border: `1px solid ${theme.colors.border.stark}`,
   borderRadius: `calc(${theme.corners.base} * 0.5)`,

@@ -2,17 +2,16 @@ import Textarea from "@/components/Textarea";
 import SubmitButton from "@/components/SubmitButton";
 import { styled } from "@pigment-css/react";
 
-const ChatComposerForm = styled("form")({
-  // flex: 1,
+const ChatComposerForm = styled("form")(({ theme }) => ({
+  // width: "100%",
   display: "flex",
   flexDirection: "row",
-  alignItems: "stretch",
+  alignItems: "center",
   justifyContent: "stretch",
   gap: "1rem",
-  backgroundColor: "#ffffff",
-  borderTop: "1px solid #e0e0e0",
+  borderTop: `1px solid ${theme.colors.border.base}`,
   padding: "1rem",
-});
+}));
 
 function ChatComposer({ onSubmit, message, handleMessageChange }) {
   return (
@@ -21,6 +20,7 @@ function ChatComposer({ onSubmit, message, handleMessageChange }) {
         placeholder="Send a message!..."
         value={message}
         onChange={handleMessageChange}
+        rows={1}
       />
       <SubmitButton pendingText="Sending...">Send</SubmitButton>
     </ChatComposerForm>
