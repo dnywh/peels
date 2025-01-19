@@ -91,7 +91,13 @@ function CheckboxUnit({
           {children}
         </StyledLabel>
 
-        <input type="checkbox" required={required} id="checkbox" />
+        <input
+          type="checkbox"
+          required={required}
+          id="checkbox"
+          checked={checked}
+          onChange={() => setChecked(!checked)}
+        />
         {/* <StyledCheckbox
           checked={checked}
           onChange={setChecked}
