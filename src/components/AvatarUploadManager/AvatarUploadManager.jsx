@@ -6,6 +6,7 @@ import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/mediaUtils";
 
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
+const overSizedFileAlertSingular = `Your photo is too large. The maximum file size is ${MAX_MB}MB.`;
 
 function AvatarUploadManager({
   initialAvatar,
@@ -22,7 +23,7 @@ function AvatarUploadManager({
     if (file) {
       // Check total file size
       if (file.size > MAX_FILE_SIZE) {
-        alert(`Your photo is too large. The maximum file size is ${MAX_MB}MB.`);
+        alert(overSizedFileAlertSingular);
         return;
       }
 
@@ -34,7 +35,12 @@ function AvatarUploadManager({
         setAvatar(filename);
         onAvatarChange?.(filename);
       } catch (error) {
-        console.error("Error handling avatar:", error);
+        // console.error("Error handling avatar:", error);
+        if (error?.statusCode === "413" || error?.error?.statusCode === "413") {
+          alert(overSizedFileAlertSingular);
+        } else {
+          alert("There was an error uploading your photo. Please try again.");
+        }
       }
     }
   };

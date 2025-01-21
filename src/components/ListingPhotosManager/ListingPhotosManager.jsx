@@ -88,11 +88,15 @@ function ListingPhotosManager({
         onPhotosChange?.(newPhotos);
       }
     } catch (error) {
-      // Weird that this is a 'statusCode' and not a 'code', like the RLS errors
-      if (error.statusCode === "413") {
+      console.error("Upload error details:", error);
+
+      // Handle different error structures from Supabase
+      if (error?.statusCode === "413" || error?.error?.statusCode === "413") {
         alert(overSizedFileAlertPlural);
+      } else if (error?.message?.includes("max_photos")) {
+        alert(`You can only upload up to ${MAX_PHOTOS} photos`);
       } else {
-        console.error("Error uploading photos:", error);
+        alert("There was an error uploading your photos. Please try again.");
       }
     } finally {
       setIsUploading(false);
