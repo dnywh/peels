@@ -124,7 +124,10 @@ export default async function ProfilePage({ searchParams }) {
               <ButtonToDialog
                 initialButtonText="Delete account"
                 dialogTitle="Delete account"
-                confirmButtonText={`Yes, delete my account ${listings.length > 0 && `and listing${listings.length > 1 ? "s" : ""}`}`}
+                confirmButtonText={listings.length > 0
+                  ? `Yes, delete my account and listing${listings.length > 1 ? "s" : ""}`
+                  : "Yes, delete my account"
+                }
                 action={deleteAccountAction}
               >
                 Are you sure you want to delete your account? {listings?.length > 0 && (

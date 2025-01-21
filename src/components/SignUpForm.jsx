@@ -61,7 +61,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         <Label htmlFor="password">Password</Label>
         <Input name="password" {...FIELD_CONFIGS.password} />
       </Field>
-
+      {/* 
       <Field>
         <Label htmlFor="invite_code">Invite code</Label>
         <Input
@@ -69,7 +69,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           placeholder="Your invite code"
           required={true}
         />
-      </Field>
+      </Field> */}
 
       <LegalAgreement required={true} defaultChecked={false} disabled={false} />
 

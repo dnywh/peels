@@ -33,13 +33,13 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     return redirect(redirectUrl.toString());
   }
 
-  if (inviteCode !== process.env.INVITE_CODE) {
-    redirectUrl.searchParams.append(
-      "error",
-      "Sorry, that invite code is invalid.",
-    );
-    return redirect(redirectUrl.toString());
-  }
+  // if (inviteCode !== process.env.INVITE_CODE) {
+  //   redirectUrl.searchParams.append(
+  //     "error",
+  //     "Sorry, that invite code is invalid.",
+  //   );
+  //   return redirect(redirectUrl.toString());
+  // }
 
   // Check if user exists in auth.users
   const { data: existingAuthUser, error: authError } = await supabase
