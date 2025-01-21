@@ -65,6 +65,17 @@ const ChatWindow = memo(function ChatWindow({
 
   const [messageSendError, setMessageSendError] = useState(null);
 
+  function handleChatSendError(error) {
+    // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
+    if (error.message.includes("violates row-level security policy")) {
+      setMessageSendError(
+        "You’ve sent too many messages. Please try again later."
+      );
+    } else {
+      setMessageSendError(error.message);
+    }
+  }
+
   // console.log("Chat window component rendering");
 
   // Check if the listing is owned by the user
@@ -105,7 +116,10 @@ const ChatWindow = memo(function ChatWindow({
         })
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        handleChatSendError(error);
+        return;
+      }
 
       if (thread) {
         setThreadId(thread.id);
@@ -130,12 +144,15 @@ const ChatWindow = memo(function ChatWindow({
         .select()
         .maybeSingle();
 
-      if (createError) throw createError;
+      if (createError) {
+        handleChatSendError(createError);
+        return;
+      }
 
       setThreadId(newThread.id);
       return newThread;
     } catch (error) {
-      console.error("Error in initializeChat:", error);
+      handleChatSendError(error);
       return null;
     }
   }
@@ -148,7 +165,7 @@ const ChatWindow = memo(function ChatWindow({
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.error("Error loading messages:", error);
+      handleChatSendError(error);
       return;
     }
 
@@ -172,7 +189,8 @@ const ChatWindow = memo(function ChatWindow({
         await sendMessage(thread.id);
       }
     } catch (error) {
-      console.error("Error in handleSubmit:", error);
+      handleChatSendError(error);
+      return;
     }
   }
 
@@ -187,16 +205,7 @@ const ChatWindow = memo(function ChatWindow({
       .select();
 
     if (error) {
-      // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
-      if (error.message.includes("violates row-level security policy")) {
-        setMessageSendError(
-          "You’ve sent too many messages. Please try again later."
-        );
-      } else {
-        setMessageSendError(error.message);
-      }
-
-      return;
+      handleChatSendError(error);
     }
 
     // Message sent, clear message and reload messages
