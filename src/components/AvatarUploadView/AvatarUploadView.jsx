@@ -145,8 +145,7 @@ function AvatarUploadView({
         )}
         {inputHintShown && (
           <InputHint variant="centered">
-            Consider putting a face to the name so members know who they’re
-            messaging with.
+            Consider uploading a photo so members know who they’re messaging.
           </InputHint>
         )}
       </StyledField>

@@ -49,7 +49,7 @@ export default async function SignIn(props: {
           <Input
             type="password"
             name="password"
-            placeholder="Your password"
+            placeholder="Your password" // Overwrites the placeholder in FIELD_CONFIGS.password (if that were to be imported above)
             required={true}
           />
         </Field>

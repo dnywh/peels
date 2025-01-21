@@ -313,7 +313,7 @@ function ProfileAccountSettings({ user, profile }) {
               <InputHint>
                 {password.success
                   ? "Done. Check your email for the password reset link."
-                  : "Change your password by sending a password reset link to your email, below."}
+                  : "You can change your password by sending a password reset link to your email, below."}
               </InputHint>
             </Field>
             <ButtonGroup>

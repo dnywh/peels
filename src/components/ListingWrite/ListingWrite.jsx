@@ -399,9 +399,9 @@ export default function ListingWrite({ initialListing, user, profile }) {
               <InputHint>
                 {listingType === "community"
                   ? "Opening hours, composting facilities, and similar."
-                  : "Composting facilities, gates to unlock, and similar."}{" "}
-                Save instructions about which scraps you take for the dedicated
-                section, below.
+                  : "Your composting set up, general availability, and similar."}{" "}
+                Write your instructions for which scraps you accept in the
+                dedicated selection, below.
               </InputHint>
             </Field>
           )}
@@ -419,6 +419,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
             <MultiInput
               label="What scraps do you accept?"
+              addButtonText="Add an item"
+              addAnotherButtonText="Add another item"
               placeholder="Something you accept (e.g. ‘fruit rinds’)"
               secondaryPlaceholder="Something else"
               items={acceptedItems}
@@ -431,6 +433,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             <MultiInput
               label="What scraps do you not accept?"
               addButtonText="Add an item"
+              addAnotherButtonText="Add another item"
               placeholder="Something you don’t accept (e.g. ‘meat’)"
               secondaryPlaceholder="Something else"
               items={rejectedItems}

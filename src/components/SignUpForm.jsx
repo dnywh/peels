@@ -59,7 +59,11 @@ export default function SignUpForm({ defaultValues = {}, error }) {
 
       <Field>
         <Label htmlFor="password">Password</Label>
-        <Input name="password" {...FIELD_CONFIGS.password} />
+        <Input
+          name="password"
+          {...FIELD_CONFIGS.password}
+          placeholder="Your new password" // Overwrites the placeholder in FIELD_CONFIGS.password
+        />
       </Field>
       {/* 
       <Field>
