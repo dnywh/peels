@@ -126,8 +126,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
     background: theme.colors.background.top,
     borderRadius: theme.corners.base,
     boxShadow: `-3px 0px 3px 1px rgba(0, 0, 0, 0.03)`,
-    // background: "blue",
-    // margin: "unset",
+
     height: "unset",
     top: "24px",
     right: "24px",
@@ -706,20 +705,17 @@ export default function MapPageClient({ user }) {
                 </StyledDrawerHeaderInner>
 
                 {!hasTouch && !isDesktop ? (
-                  <>
-                    <ButtonSet>
-                      <StyledIconButtonStationary
-                        action={
-                          snap === snapPoints[0] ? "maximize" : "minimize"
-                        }
-                        onClick={handleSnapChange}
-                      />
-                      <StyledIconButtonStationary
-                        action="close"
-                        onClick={handleCloseListing}
-                      />
-                    </ButtonSet>
-                  </>
+                  // TODO: also show this control on hasTouch if the user has accessibility mode enabled (is that a thing?)
+                  <ButtonSet>
+                    <StyledIconButtonStationary
+                      action={snap === snapPoints[0] ? "maximize" : "minimize"}
+                      onClick={handleSnapChange}
+                    />
+                    <StyledIconButtonStationary
+                      action="close"
+                      onClick={handleCloseListing}
+                    />
+                  </ButtonSet>
                 ) : (
                   <StyledIconButtonAbsolute
                     action="close"
