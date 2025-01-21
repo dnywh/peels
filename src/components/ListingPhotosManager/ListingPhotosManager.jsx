@@ -88,7 +88,7 @@ function ListingPhotosManager({
         onPhotosChange?.(newPhotos);
       }
     } catch (error) {
-      console.error("Upload error details:", error);
+      // console.error("Upload error details:", error);
 
       // Handle different error structures from Supabase
       if (error?.statusCode === "413" || error?.error?.statusCode === "413") {

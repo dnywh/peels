@@ -113,7 +113,8 @@ export default async function ProfilePage({ searchParams }) {
                 dialogTitle="Coming soon"
                 cancelButtonText="Done"
               >
-                We’re still working on this feature. In the meantime, <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">reach out</EncodedEmailHyperlink> and ask us to turn email notifications on or off manually.
+                {/* TODO: For hosts, strongly encourage per-listing visiblity setting rather than turning off all emails. In fact, should we even allow hosts to disable emails? */}
+                We’re still working on this feature. In the meantime, <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">reach out</EncodedEmailHyperlink> and ask us to turn email notifications on or off manually. {listings?.length > 0 && <>You can also hide your listing from the map, stopping new people from contacting you about your listing.</>}
               </ButtonToDialog>
             </li>
             <li>

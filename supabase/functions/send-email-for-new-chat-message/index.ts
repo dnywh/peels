@@ -131,39 +131,28 @@ function generateEmailContent(
     recipientName,
     messageContent,
     threadId,
-    senderAvatarUrl,
-    listingUrl,
   }: {
     senderName: string;
     recipientName: string;
     messageContent: string;
     threadId: string;
-    senderAvatarUrl: string | null;
-    listingUrl: string;
   },
 ) {
   // TODO: Only show listing URL if the recipient is NOT the owner of the listing
   return `
-  <header>Peels</header>
-  <h1>New message from ${senderName}</h1>
-  <p>Hi ${recipientName}, you've received a new message from ${senderName}:</p>
-    ${
-    senderAvatarUrl
-      ? `<img src="${senderAvatarUrl}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 0.5rem; transform: rotate(-3deg);" />`
-      : ""
-  }
-    <p>${messageContent}</p>
-    <hr/>
-    <p>You can reply to ${senderName}’s message by clicking the link below:</p>
-  <p><a href="https://peels.app/chats/${threadId}">Reply in app</a></p>
-  <p><a href="${listingUrl}">View listing</a></p>
-  <hr/>
+  <h2>New message on Peels</h2>
+  <p>Hi ${recipientName}, you’ve received a new message from ${senderName} on Peels:</p>
+
+  <blockquote>
+    <p><em>${messageContent}</em></p>
+  </blockquote>
+
+  <p><strong><a href="https://peels.app/chats/${threadId}">Reply to ${senderName}</a></strong></p>
+
+  <p>Best, <br/>Peels team</p>
+
   <footer>
-  Peels
-  <a href="https://peels.app/unsubscribe">Unsubscribe from new message notifications</a>
-  <a href="https://peels.app/settings/notifications">Edit notification preferences</a>
-  <a href="https://peels.app/privacy">Privacy</a>
-  <a href="https://peels.app/terms">Terms</a>
+    <p><small>You’ve received this email because you have an account on <a href="https://peels.app">Peels</a>. Prefer not to receive these types of emails? <a href="https://peels.app/profile">Edit your notification preferences</a>. See also our <a href="https://peels.app/support">support</a> and <a href="https://peels.app/privacy">privacy</a> pages.</small></p>
   </footer>`;
 }
 
