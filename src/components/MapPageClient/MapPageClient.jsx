@@ -48,31 +48,11 @@ const StyledMapPage = styled("main")({
   flex: 1,
   gap: "1.5rem",
   alignItems: "stretch",
-  // background: "red",
   display: "flex",
   flexDirection: "row",
-  // gap: "1.5rem",
-  // width: "100dvw",
-  // height: "100dvh",
-
-  // overflow: "hidden",
-  // touchAction: "none",
-  // pointerEvents: "none",
-
-  // Doesn't work:
-  // "& html": {
-  //   overflow: "hidden",
-  //   overscrollBehavior: "none",
-  // },
 });
 
 const StyledMapWrapper = styled("div")(({ theme }) => ({
-  // marginBottom: "80px", //Equal to height of tab bar
-
-  // overflow: "hidden",
-  // touchAction: "none",
-  // overscrollBehavior: "none",
-
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
@@ -86,6 +66,13 @@ const StyledMapWrapper = styled("div")(({ theme }) => ({
     border: `1px solid ${theme.colors.border.base}`,
     overflow: "hidden",
   },
+}));
+
+const DrawerHandleContainer = styled("div")(({ theme }) => ({
+  position: "absolute",
+  top: "0.5rem",
+  left: "50%",
+  transform: "translateX(-50%)",
 }));
 
 const ButtonSet = styled("div")({
@@ -110,7 +97,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   // flexDirection: "column",
   border: `2px solid ${theme.colors.border.base}`, // border-gray-200
   borderBottom: "none",
-  borderRadius: `${theme.corners.base}px ${theme.corners.base}px 0 0`,
+  borderRadius: `${theme.corners.base} ${theme.corners.base} 0 0`,
 
   position: "fixed",
   bottom: "0",
@@ -123,7 +110,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   // overscrollBehavior: "unset",
   // margin: "0 -1px", // mx-[-1px]
 
-  background: theme.colors.background.slight,
+  background: theme.colors.background.sunk,
 
   border: `0.5px solid ${theme.colors.border.base}`,
   boxShadow: `0px -3px 3px 1px rgba(0, 0, 0, 0.06)`,
@@ -707,9 +694,7 @@ export default function MapPageClient({ user }) {
                 <StyledDrawerHeaderInner
                   style={{
                     transition: "opacity 0.1s ease",
-                    // opacity: isDrawerHeaderShown ? 1 : 0,
                     opacity: isDrawerHeaderShown ? 1 : 0,
-                    // height: isDrawerHeaderShown ? "100px" : "0",
                   }}
                 >
                   <StyledHeaderText>
@@ -721,25 +706,40 @@ export default function MapPageClient({ user }) {
                 </StyledDrawerHeaderInner>
 
                 {!hasTouch && !isDesktop ? (
-                  <ButtonSet>
-                    <StyledIconButtonStationary
-                      action={snap === snapPoints[0] ? "maximize" : "minimize"}
-                      onClick={handleSnapChange}
-                    />
-                    <StyledIconButtonStationary
-                      action="close"
-                      onClick={handleCloseListing}
-                    />
-                  </ButtonSet>
+                  <>
+                    <ButtonSet>
+                      <StyledIconButtonStationary
+                        action={
+                          snap === snapPoints[0] ? "maximize" : "minimize"
+                        }
+                        onClick={handleSnapChange}
+                      />
+                      <StyledIconButtonStationary
+                        action="close"
+                        onClick={handleCloseListing}
+                      />
+                    </ButtonSet>
+                  </>
                 ) : (
                   <StyledIconButtonAbsolute
                     action="close"
                     onClick={handleCloseListing}
                   />
                 )}
+
+                {hasTouch && !isDesktop && (
+                  <DrawerHandleContainer
+                    style={{
+                      display: isDrawerHeaderShown ? "none" : "inherit",
+                    }}
+                  >
+                    <Drawer.Handle />
+                  </DrawerHandleContainer>
+                )}
               </StyledDrawerHeader>
 
               {/* Begin drawer main content */}
+
               {/* Page content */}
               <StyledDrawerInner
 
