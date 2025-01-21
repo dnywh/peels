@@ -34,6 +34,8 @@ const PhotoItem = styled("div")({
 const MAX_PHOTOS = 5;
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
+const overSizedFileAlertSingular = `Your photo is too large. The maximum file size is ${MAX_MB}MB.`;
+const overSizedFileAlertPlural = `One or more of your photos are too large. The maximum file size is ${MAX_MB}MB per photo.`;
 
 function ListingPhotosManager({
   initialPhotos = [],
@@ -57,11 +59,9 @@ function ListingPhotosManager({
     const overSizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
     if (overSizedFiles.length > 0) {
       if (overSizedFiles.length === 1) {
-        alert(`Your photo is too large. The maximum file size is ${MAX_MB}MB.`);
+        alert(overSizedFileAlertSingular);
       } else {
-        alert(
-          `Some photos are too large. The maximum file size is ${MAX_MB}MB per photo.`
-        );
+        alert(overSizedFileAlertPlural);
       }
       return;
     }
@@ -88,7 +88,12 @@ function ListingPhotosManager({
         onPhotosChange?.(newPhotos);
       }
     } catch (error) {
-      console.error("Error uploading photos:", error);
+      // Weird that this is a 'statusCode' and not a 'code', like the RLS errors
+      if (error.statusCode === "413") {
+        alert(overSizedFileAlertPlural);
+      } else {
+        console.error("Error uploading photos:", error);
+      }
     } finally {
       setIsUploading(false);
     }
