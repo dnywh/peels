@@ -65,6 +65,12 @@ const ChatWindow = memo(function ChatWindow({
 
   const [messageSendError, setMessageSendError] = useState(null);
 
+  const recipientName = useMemo(() => {
+    return !listingIsOwnedByUser
+      ? listing?.profiles?.first_name || existingThread?.owner_first_name
+      : existingThread?.initiator_first_name;
+  }, [message, user, listing, existingThread]);
+
   function handleChatSendError(error) {
     // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
     if (error.message.includes("violates row-level security policy")) {
@@ -93,6 +99,7 @@ const ChatWindow = memo(function ChatWindow({
   // Update messages when existingThread changes
   useEffect(() => {
     if (existingThread?.chat_messages_with_senders) {
+      console.log(existingThread);
       setMessages(existingThread.chat_messages_with_senders);
     } else if (existingThread?.chat_messages) {
       setMessages(existingThread.chat_messages);
@@ -249,10 +256,9 @@ const ChatWindow = memo(function ChatWindow({
         )}
 
         {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
+        {/* TODO: Extract and have a 'recipientName' const and a more malleable 'recipient and their listing name' as per above */}
         <p>
-          {!listingIsOwnedByUser
-            ? listing?.profiles?.first_name || existingThread?.owner_first_name
-            : existingThread?.initiator_first_name}
+          {recipientName}
 
           {!listingIsOwnedByUser &&
             listing?.type !== "residential" &&
@@ -281,6 +287,7 @@ const ChatWindow = memo(function ChatWindow({
         onSubmit={handleSubmit}
         message={message}
         handleMessageChange={handleMessageChange}
+        recipientName={recipientName}
         error={messageSendError}
       />
     </StyledChatWindow>

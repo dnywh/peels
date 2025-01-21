@@ -22,13 +22,19 @@ const ChatComposerInner = styled("form")(({ theme }) => ({
   gap: "1rem",
 }));
 
-function ChatComposer({ onSubmit, message, handleMessageChange, error }) {
+function ChatComposer({
+  onSubmit,
+  message,
+  handleMessageChange,
+  error,
+  recipientName,
+}) {
   return (
     <ChatComposerForm>
       {error && <FormMessage message={{ error: error }} />}
       <ChatComposerInner onSubmit={onSubmit}>
         <Textarea
-          placeholder="Send a message!..."
+          placeholder={`Send a message${recipientName && ` to ${recipientName}`}...`}
           value={message}
           onChange={handleMessageChange}
           rows={1}
