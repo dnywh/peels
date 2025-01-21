@@ -50,8 +50,9 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
   const listingType = initialListing?.type || type;
 
-  // Prepare error state
+  // Update error state to handle both field and global errors
   const [errors, setErrors] = useState({});
+  const [globalError, setGlobalError] = useState("");
 
   // Populate editable fields
   const [avatar, setAvatar] = useState(
@@ -126,8 +127,9 @@ export default function ListingWrite({ initialListing, user, profile }) {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    // Reset errors
+    // Reset all errors
     setErrors({});
+    setGlobalError("");
 
     // Validate required fields
     const nextErrors = {};
@@ -154,7 +156,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
-      console.log("Errors:", nextErrors);
+      console.log("Validation errors:", nextErrors);
       return;
     }
 
@@ -209,7 +211,22 @@ export default function ListingWrite({ initialListing, user, profile }) {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        // console.error("Supabase error:", error);
+
+        // Handle specific error cases
+        if (error.code === "42501") {
+          setGlobalError(
+            "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one."
+          );
+        } else if (error.code === "23505") {
+          // Unique constraint violation
+          setGlobalError("An identical listing already exists.");
+        } else {
+          setGlobalError("Something went wrong. Please try again later.");
+        }
+        return;
+      }
 
       // If this was a new listing, we need to update the photo references
       if (!initialListing && pendingPhotos.length > 0) {
@@ -229,9 +246,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
       // window.location.href = `/listings/${data.slug}?success=Listing ${initialListing ? "updated" : "created"} successfully`
     } catch (error) {
       console.error("Error creating listing:", error);
-      setErrors({
-        submit: error.message,
-      });
+      setGlobalError("An unexpected error occurred. Please try again later.");
     }
   }
 
@@ -507,41 +522,44 @@ export default function ListingWrite({ initialListing, user, profile }) {
           />
         </FormSection>
 
-        {Object.keys(errors).length > 0 && (
+        {(Object.keys(errors).length > 0 || globalError) && (
           <FormMessage
             message={{
-              error: `Please fix the above error${
-                Object.keys(errors).length > 1 ? "s" : ""
-              } and then try again.`,
+              error:
+                globalError ||
+                `Please fix the above error${
+                  Object.keys(errors).length > 1 ? "s" : ""
+                } and then try again.`,
             }}
           />
         )}
         <SubmitButton>
           {initialListing ? "Save changes" : "Add listing"}
         </SubmitButton>
-
-        {initialListing && (
-          <AdditionalSettings>
-            <Button
-              variant="secondary"
-              width="contained"
-              href={`/listings/${initialListing.slug}`}
-            >
-              View listing
-            </Button>
-
-            <ButtonToDialog
-              initialButtonText="Delete listing"
-              dialogTitle="Delete listing"
-              confirmButtonText="Yes, delete listing"
-              onSubmit={handleDeleteListing}
-            >
-              Are you sure you want to delete your listing? This action cannot
-              be undone.
-            </ButtonToDialog>
-          </AdditionalSettings>
-        )}
       </Form>
+
+      {/* TODO: Fix styling but do not move into above form, as that means nested forms (and an error) */}
+      {initialListing && (
+        <AdditionalSettings>
+          <Button
+            variant="secondary"
+            width="contained"
+            href={`/listings/${initialListing.slug}`}
+          >
+            View listing
+          </Button>
+
+          <ButtonToDialog
+            initialButtonText="Delete listing"
+            dialogTitle="Delete listing"
+            confirmButtonText="Yes, delete listing"
+            onSubmit={handleDeleteListing}
+          >
+            Are you sure you want to delete your listing? This action cannot be
+            undone.
+          </ButtonToDialog>
+        </AdditionalSettings>
+      )}
 
       {feedbackMessage && <p>{feedbackMessage}</p>}
     </>
