@@ -63,6 +63,8 @@ const ChatWindow = memo(function ChatWindow({
 
   const [listingIsOwnedByUser, setListingIsOwnedByUser] = useState(false);
 
+  const [messageSendError, setMessageSendError] = useState(null);
+
   // console.log("Chat window component rendering");
 
   // Check if the listing is owned by the user
@@ -155,6 +157,7 @@ const ChatWindow = memo(function ChatWindow({
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setMessageSendError(null);
 
     if (!message.trim()) return;
 
@@ -184,7 +187,15 @@ const ChatWindow = memo(function ChatWindow({
       .select();
 
     if (error) {
-      console.error("Error sending message:", error);
+      // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
+      if (error.message.includes("violates row-level security policy")) {
+        setMessageSendError(
+          "You’ve sent too many messages. Please try again later."
+        );
+      } else {
+        setMessageSendError(error.message);
+      }
+
       return;
     }
 
@@ -261,6 +272,7 @@ const ChatWindow = memo(function ChatWindow({
         onSubmit={handleSubmit}
         message={message}
         handleMessageChange={handleMessageChange}
+        error={messageSendError}
       />
     </StyledChatWindow>
   );
