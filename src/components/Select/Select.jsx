@@ -36,7 +36,7 @@ const StyledSelect = styled(HeadlessSelect)(({ theme }) => ({
   },
 }));
 
-function Select({ children, ...props }) {
+export default function Select({ children, ...props }) {
   return (
     <SilentContainer>
       <StyledSelect {...props}>{children}</StyledSelect>
@@ -44,5 +44,3 @@ function Select({ children, ...props }) {
     </SilentContainer>
   );
 }
-
-export default Select;

@@ -1,33 +1,10 @@
-import { signUpAction } from "@/app/actions";
-
-// import Input from "@/components/Input";
-// import Label from "@/components/Label";
-import Link from "next/link";
-
-import { redirect } from "next/navigation";
-
-import {
-  // Field,
-  Fieldset,
-  // Input,
-  Label,
-  Legend,
-  Select,
-  Textarea,
-} from "@headlessui/react";
-
 import FormHeader from "@/components/FormHeader";
 import Form from "@/components/Form";
-import Field from "@/components/Field";
-import Input from "@/components/Input";
 import FormFooter from "@/components/FormFooter";
-import FormMessage from "@/components/FormMessage";
-import SubmitButton from "@/components/SubmitButton";
-import FieldHeader from "@/components/FieldHeader";
+
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
-import InputHint from "@/components/InputHint";
-import LegalAgreement from "@/components/LegalAgreement";
+
 import SignUpForm from "@/components/SignUpForm";
 
 export default async function SignUp(props: {

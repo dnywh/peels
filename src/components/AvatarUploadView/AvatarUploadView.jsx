@@ -22,6 +22,7 @@ const StyledMenuItems = styled(MenuItems)(({ theme }) => ({
   transformOrigin: "top center",
   display: "flex",
   flexDirection: "column",
+  gap: `calc(${theme.spacing.unit} * 1)`,
 
   boxShadow: `0px 0px 3px 1px rgba(0, 0, 0, 0.06)`,
 
@@ -135,13 +136,13 @@ function AvatarUploadView({
                 <Button
                   onClick={handleFileSelect}
                   variant="secondary"
-                  size="dropdown"
+                  size="small"
                 >
                   Replace
                 </Button>
               </MenuItem>
               <MenuItem>
-                <Button onClick={onDelete} variant="danger" size="dropdown">
+                <Button onClick={onDelete} variant="danger" size="small">
                   Delete
                 </Button>
               </MenuItem>

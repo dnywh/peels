@@ -48,24 +48,6 @@ export default function ProfileActions({ listings }) {
 
       <ListItem>
         <ListItemText>
-          <h4>Export data</h4>
-          <p>Get a copy of your Peels data</p>
-        </ListItemText>
-        <ButtonToDialog
-          variant="secondary"
-          initialButtonText="Export data"
-          dialogTitle="Coming soon"
-          cancelButtonText="Done"
-        >
-          We’re still working on this feature. In the meantime,{" "}
-          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
-            reach out
-          </EncodedEmailHyperlink>{" "}
-          and ask us to export your data manually.
-        </ButtonToDialog>
-      </ListItem>
-      <ListItem>
-        <ListItemText>
           <h4>Manage emails</h4>
           <p>Control which emails you receive</p>
         </ListItemText>
@@ -89,6 +71,26 @@ export default function ProfileActions({ listings }) {
           )}
         </ButtonToDialog>
       </ListItem>
+
+      <ListItem>
+        <ListItemText>
+          <h4>Export data</h4>
+          <p>Get a copy of your Peels data</p>
+        </ListItemText>
+        <ButtonToDialog
+          variant="secondary"
+          initialButtonText="Export data"
+          dialogTitle="Coming soon"
+          cancelButtonText="Done"
+        >
+          We’re still working on this feature. In the meantime,{" "}
+          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+            reach out
+          </EncodedEmailHyperlink>{" "}
+          and ask us to export your data manually.
+        </ButtonToDialog>
+      </ListItem>
+
       <ListItem>
         <ListItemText>
           <h4>Delete account</h4>
