@@ -34,6 +34,7 @@ const Section = styled("section")(({ theme }) => ({
   },
 }));
 
+// This page could be static instead of dynamic by handling searchParams in a client component instead and using Suspense here. See the homepage and Toast component as an example.
 export default async function ProfilePage({ searchParams }) {
   const message = (await searchParams)?.message
   const error = (await searchParams)?.error

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Button from "@/components/Button";
 import Link from "next/link";
 import PeelsLogo from "@/components/PeelsLogo";
@@ -92,15 +93,14 @@ const HeroParagraph = styled("p")(({ theme }) => ({
 
 
 
-export default async function Index({ searchParams }) {
-  const code = (await searchParams)?.code
-  const error = (await searchParams)?.error
+export default function Index() {
 
   return (
     <StyledMain>
-
-      {code && <Toast variant="success">Your email has been successfully updated</Toast>}
-      {error && <Toast variant="error">Something’s not right. Mind trying again?</Toast>}
+      {/* Moved search params to Toast component so that this page can remain static. Just requires Suspense here to work*/}
+      <Suspense>
+        <Toast />
+      </Suspense>
 
       <Intro>
         <StyledPeelsLogo size={40} />
