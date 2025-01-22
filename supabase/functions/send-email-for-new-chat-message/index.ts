@@ -147,12 +147,12 @@ function generateEmailContent(
     <p><em>${messageContent}</em></p>
   </blockquote>
 
-  <p><strong><a href="https://peels.app/chats/${threadId}">Reply to ${senderName}</a></strong></p>
+  <p><strong><a href="https://peels.app/chats/${threadId}">Reply to ${senderName} on Peels</a></strong></p>
 
   <p>Best, <br/>Peels team</p>
 
   <footer>
-    <p><small>You’ve received this email because you have an account on <a href="https://peels.app">Peels</a>. Prefer not to receive these types of emails? <a href="https://peels.app/profile">Edit your notification preferences</a>. See also our <a href="https://peels.app/support">support</a> and <a href="https://peels.app/privacy">privacy</a> pages.</small></p>
+    <p><small>You can <a href="https://peels.app/profile">manage</a> which email notifications you receive from Peels. See also our <a href="https://peels.app/support">support</a> and <a href="https://peels.app/privacy">privacy</a> pages.</small></p>
   </footer>`;
 }
 
