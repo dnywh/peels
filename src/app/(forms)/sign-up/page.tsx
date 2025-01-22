@@ -61,12 +61,12 @@ export default async function SignUp(props: {
         </Form>
         <FormFooter>
           <p>
-            Never received the email?{" "}
+            Never received the email? Check your spam folder.{" "}
             {/* TODO: Resend verification email to {searchParams.email}. */}
             <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
-              Let us know
-            </EncodedEmailHyperlink>
-            .
+              Reach out
+            </EncodedEmailHyperlink>{" "}
+            if you still need help.
           </p>
         </FormFooter>
       </>

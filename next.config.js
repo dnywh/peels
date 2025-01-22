@@ -69,6 +69,7 @@ const tokens = {
         100: 'hsla(37, 5%, 83%, 1)',
         300: 'hsla(38, 5%, 71%, 1)',
         400: 'hsla(37, 5%, 61%, 1)',
+        600: 'hsla(37, 5%, 54%, 1)',
         700: 'hsla(37, 5%, 40%, 1)',
         800: 'hsla(37, 5%, 25%, 1)',
         900: 'hsla(37, 5%, 12%, 1)',
@@ -85,11 +86,13 @@ const tokens = {
         80: 'hsla(36, 26%, 96%, 1)',
         100: 'hsla(22, 35%, 96%, 1)',
         150: 'hsla(22, 35%, 95%, 1)',
+        200: 'hsla(22, 35%, 91%, 1)',
         500: 'hsla(22, 87%, 50%, 1)',
         500_0625: 'hsla(22, 87%, 50%, 0.0625)',
         600: 'hsla(22, 87%, 44%, 1)',
         700: 'hsla(22, 97%, 25%, 1)',
-        800: 'hsla(22, 100%, 14%, 1)'
+        800: 'hsla(22, 100%, 14%, 1)',
+        800_30: 'hsla(22, 100%, 14%, 0.3)',
     },
     kaki: {
         600: 'hsla(48, 97%, 64%, 1)',
@@ -121,6 +124,7 @@ export default withPigment(
                 elevated: tokens.black[6],
                 stark: tokens.rock[100],
                 collide: tokens.rock[50],
+                special: tokens.ochre[200],
             },
             tab: {
                 active: tokens.forest[400],
@@ -218,10 +222,12 @@ export default withPigment(
                     primary: tokens.rock[900],
                     secondary: tokens.rock[800],
                     tertiary: tokens.rock[700],
+                    quaternary: tokens.rock[600],
                     error: tokens.ochre[600],
                 },
                 brand: {
                     primary: tokens.ochre[800],
+                    quaternary: tokens.ochre[800_30],
                 }
             },
         },
@@ -245,7 +251,10 @@ export default withPigment(
         },
         corners: {
             base: "1rem", // 16px
-            avatar: "0.5rem",
+            avatar: {
+                small: "0.375rem",
+                large: "0.5rem",
+            },
         },
         typography: {
             fontFamily: "Inter, sans-serif",

@@ -34,14 +34,13 @@ const StyledText = styled("div")(({ theme }) => ({
 function ListingHeader({ listing, listingName, user }) {
   const avatarProps = getListingAvatar(listing, user);
 
-  console.log(listing);
   return (
     <StyledListingHeader>
       <Avatar
         bucket={avatarProps.bucket}
         filename={avatarProps.filename}
         alt={avatarProps.alt}
-        size={100}
+        size="large"
       />
 
       <StyledText>

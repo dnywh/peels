@@ -104,7 +104,12 @@ function AvatarUploadView({
         />
 
         <StyledImgContainer>
-          <Avatar bucket={bucket} filename={avatar} alt="Your avatar" />
+          <Avatar
+            bucket={bucket}
+            filename={avatar}
+            alt="Your avatar"
+            size="large"
+          />
 
           {loading && <LoadingSpinner>Uploading...</LoadingSpinner>}
         </StyledImgContainer>

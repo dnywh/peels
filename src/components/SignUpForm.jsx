@@ -84,7 +84,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
               error ||
               (hasFieldErrors
                 ? "Please fix the above error and then try again."
-                : null),
+                : "Hmm, something went wrong. Please try again."),
           }}
         />
       )}
