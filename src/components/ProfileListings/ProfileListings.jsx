@@ -3,6 +3,12 @@ import Link from "next/link";
 import { styled } from "@pigment-css/react";
 import Avatar from "@/components/Avatar";
 
+const ListingsList = styled("ul")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.25rem",
+}));
+
 const NewListingAvatar = styled("div")(({ theme }) => ({
   width: "32px", // Match the size of the avatar in the Avatar component
   height: "32px",
@@ -22,13 +28,15 @@ const NewListingAvatar = styled("div")(({ theme }) => ({
 }));
 
 const sharedLinkStyles = ({ theme }) => ({
+  padding: "0.75rem 1rem",
   display: "flex",
   flexDirection: "row",
   gap: "1.5rem",
-  borderRadius: theme.corners.base,
-  padding: "1rem",
+  borderRadius: `calc(${theme.corners.base} * 0.625)`,
   borderColor: theme.colors.border.special,
   alignItems: "center",
+  // Ensure each item takes up the same height
+  minHeight: "4.5rem",
 
   transition: "background-color 150ms ease-in-out",
   "&:hover": {
@@ -42,12 +50,11 @@ const AddYourFirstListingLink = styled(Link)(sharedLinkStyles, {
 });
 
 const AddAnotherListingLink = styled(Link)(sharedLinkStyles, {
-  border: "1px solid blue",
+  borderWidth: "2px",
+  borderStyle: "dashed",
 });
 
-const ExistingListingLink = styled(Link)(sharedLinkStyles, {
-  border: "1px solid green",
-});
+const ExistingListingLink = styled(Link)(sharedLinkStyles, {});
 
 const Text = styled("div")(({ theme }) => ({
   display: "flex",
@@ -59,11 +66,20 @@ const Text = styled("div")(({ theme }) => ({
   },
 
   "& p": {
+    fontSize: "0.875rem",
     color: theme.colors.text.ui.quaternary,
   },
 
   variants: [
     {
+      props: {
+        special: false,
+      },
+      style: {
+        "& p": {
+          lineHeight: "100%",
+        },
+      },
       props: {
         special: true,
       },
@@ -81,7 +97,7 @@ export default function ProfileListings({ firstName, listings }) {
   if (!listings) return null;
 
   return (
-    <ul>
+    <ListingsList>
       {listings.map(({ id, slug, type, name, visibility }) => (
         <li key={id}>
           <ExistingListingLink href={`/profile/listings/${slug}`}>
@@ -117,6 +133,6 @@ export default function ProfileListings({ firstName, listings }) {
           )}
         </li>
       )}
-    </ul>
+    </ListingsList>
   );
 }

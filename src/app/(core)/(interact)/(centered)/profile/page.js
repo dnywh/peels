@@ -26,7 +26,7 @@ const SectionInner = styled("div")(({ theme }) => ({
   backgroundColor: theme.colors.background.top,
   border: `1px solid ${theme.colors.border.base}`,
   borderRadius: theme.corners.base,
-  padding: `calc(${theme.spacing.unit} * 3)`,
+  padding: `calc(${theme.spacing.unit} * 1.5)`, // + 1.5 units internally, for consistency with other sections that may or may not have hover padding internally
 }));
 
 export default async function ProfilePage({ searchParams }) {
