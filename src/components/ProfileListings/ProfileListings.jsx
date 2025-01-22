@@ -7,6 +7,7 @@ const ListingsList = styled("ul")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.25rem",
+  marginTop: "-0.75rem", // Account for padding below
 }));
 
 const NewListingAvatar = styled("div")(({ theme }) => ({
@@ -28,7 +29,7 @@ const NewListingAvatar = styled("div")(({ theme }) => ({
 }));
 
 const sharedLinkStyles = ({ theme }) => ({
-  padding: "0.75rem 1rem",
+  padding: "0.75rem 1rem", // Visually match parent padding
   display: "flex",
   flexDirection: "row",
   gap: "1.5rem",
@@ -45,12 +46,12 @@ const sharedLinkStyles = ({ theme }) => ({
 });
 
 const AddYourFirstListingLink = styled(Link)(sharedLinkStyles, {
-  borderWidth: "2px",
+  borderWidth: "1.5px",
   borderStyle: "dashed",
 });
 
 const AddAnotherListingLink = styled(Link)(sharedLinkStyles, {
-  borderWidth: "2px",
+  borderWidth: "1.5px",
   borderStyle: "dashed",
 });
 

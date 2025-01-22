@@ -1,15 +1,12 @@
 
-import { signOutAction, deleteAccountAction, updateEmailAction, sendPasswordResetEmailAction } from "@/app/actions";
+
 import { createClient } from "@/utils/supabase/server";
 
 import ProfileHeader from "@/components/ProfileHeader";
-
 import ProfileAccountSettings from "@/components/ProfileAccountSettings";
 import ProfileListings from "@/components/ProfileListings";
+import ProfileActions from "@/components/ProfileActions";
 import LegalFooter from "@/components/LegalFooter";
-import Button from "@/components/Button";
-import ButtonToDialog from "@/components/ButtonToDialog";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
 import { styled } from "@pigment-css/react";
 
@@ -17,16 +14,24 @@ export const metadata = {
   title: 'Profile',
 }
 
-const Section = styled("section")(({ theme }) => ({
+const NakedSection = styled("section")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
 }));
 
-const SectionInner = styled("div")(({ theme }) => ({
+const Section = styled("section")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1.5rem",
   backgroundColor: theme.colors.background.top,
   border: `1px solid ${theme.colors.border.base}`,
   borderRadius: theme.corners.base,
-  padding: `calc(${theme.spacing.unit} * 1.5)`, // + 1.5 units internally, for consistency with other sections that may or may not have hover padding internally
+  padding: `calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // + 1.5 units internally, for consistency with other sections that may or may not have hover padding internally
+
+  "& h2": {
+    fontSize: "1.5rem",
+    marginLeft: `calc(${theme.spacing.unit} * 1.5)`, // Match above padding
+  },
 }));
 
 export default async function ProfilePage({ searchParams }) {
@@ -56,93 +61,28 @@ export default async function ProfilePage({ searchParams }) {
       {message && <p>Message: {message}</p>}
       {error && <p>Error: {error}</p>}
 
-      <Section>
+      <NakedSection>
         <ProfileHeader profile={profile} user={user} />
-      </Section>
+      </NakedSection>
 
       <Section>
         <h2>Listings</h2>
-        <SectionInner>
-          <ProfileListings firstName={profile?.first_name} listings={listings} />
-        </SectionInner>
+
+        <ProfileListings firstName={profile?.first_name} listings={listings} />
+
       </Section>
 
       <Section>
         <h2>Account</h2>
-        <SectionInner>
-          <ProfileAccountSettings user={user} profile={profile} />
-        </SectionInner>
+
+        <ProfileAccountSettings user={user} profile={profile} />
+
       </Section>
 
       <Section>
         <h2>Actions</h2>
-        <SectionInner>
-          <ul>
-            <li>
-              Sign out<br />
-              Goodbye for now!
-              <br />
-              <Button
-                variant="secondary"
-                onClick={signOutAction}
-              >
-                Sign out
-              </Button>
-            </li>
-
-            <li>
-              Export data<br />
-              Get a copy of your Peels data
-              <br />
-              <ButtonToDialog
-                variant="secondary"
-                initialButtonText="Export data"
-                dialogTitle="Coming soon"
-                cancelButtonText="Done"
-              >
-                We’re still working on this feature. In the meantime, <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">reach out</EncodedEmailHyperlink> and ask us to export your data manually.
-              </ButtonToDialog>
-            </li>
-            <li>
-              Manage emails<br />
-              Control which emails you receive
-              <br />
-              <ButtonToDialog
-                variant="secondary"
-                initialButtonText="Manage emails"
-                dialogTitle="Coming soon"
-                cancelButtonText="Done"
-              >
-                {/* TODO: For hosts, strongly encourage per-listing visiblity setting rather than turning off all emails. In fact, should we even allow hosts to disable emails? */}
-                We’re still working on this feature. In the meantime, <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">reach out</EncodedEmailHyperlink> and ask us to turn email notifications on or off manually. {listings?.length > 0 && <>You can also hide your listing from the map, stopping new people from contacting you about your listing.</>}
-              </ButtonToDialog>
-            </li>
-            <li>
-              Delete account<br />
-              Delete your account{listings?.length > 0 && `, ${listings.length > 1 ? "listings" : "listing"},`} and all your data
-              <br />
-              <ButtonToDialog
-                initialButtonText="Delete account"
-                dialogTitle="Delete account"
-                confirmButtonText={listings.length > 0
-                  ? `Yes, delete my account and listing${listings.length > 1 ? "s" : ""}`
-                  : "Yes, delete my account"
-                }
-                action={deleteAccountAction}
-              >
-                Are you sure you want to delete your account? {listings?.length > 0 && (
-                  <>
-                    Your listing{listings.length > 1 ? "s" : ""} will also be deleted.
-                  </>
-                )}
-              </ButtonToDialog>
-            </li>
-          </ul>
-        </SectionInner>
+        <ProfileActions listings={listings} />
       </Section>
-
-
-
 
       <LegalFooter />
     </>

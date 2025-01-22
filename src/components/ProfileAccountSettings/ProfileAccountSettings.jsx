@@ -20,6 +20,7 @@ import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 const List = styled("ul")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
+  padding: ` 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // Visually match parent padding
   // gap: `calc(${theme.spacing.unit} * 1)`,
 }));
 

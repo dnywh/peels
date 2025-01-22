@@ -7,12 +7,12 @@ const currentYear = new Date().getFullYear();
 const StyledFooter = styled("footer")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  gap: "1rem",
+  gap: "0.75rem",
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
   flexWrap: "wrap",
-  // padding: "1.5rem",
+  padding: "0 1.5rem",
   // marginTop: "10rem",
   color: theme.colors.text.quaternity,
   fontSize: "1rem",
@@ -23,6 +23,10 @@ const StyledFooter = styled("footer")(({ theme }) => ({
     "&:hover": {
       color: theme.colors.text.secondary,
     },
+  },
+
+  "@media (min-width: 768px)": {
+    gap: "1.25rem",
   },
 }));
 

@@ -2,7 +2,7 @@ import AvatarUploadManager from "@/components/AvatarUploadManager";
 import { styled } from "@pigment-css/react";
 
 const Heading1 = styled("h1")({
-  fontSize: "2rem",
+  fontSize: "2.25rem",
   fontWeight: "bold",
   textAlign: "center",
   textWrap: "balance",
