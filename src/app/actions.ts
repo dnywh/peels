@@ -182,8 +182,6 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 export const sendPasswordResetEmailAction = async (formData: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
-  const callbackUrl = formData.get("callbackUrl")?.toString();
-  console.log("callbackUrl", callbackUrl);
 
   const {
     data: { user },
@@ -199,18 +197,12 @@ export const sendPasswordResetEmailAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${
-      origin || getBaseUrl()
-    }/auth/callback?redirect_to=/reset-password`,
+    redirectTo: `${origin || getBaseUrl()}/auth/callback?type=recovery`,
   });
 
   if (error) {
     console.error("Error sending password reset email:", error);
     return { error: "Sorry, we couldn’t send a password reset link." };
-  }
-
-  if (callbackUrl) {
-    return redirect(callbackUrl);
   }
 
   return { success: true };
@@ -254,7 +246,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   encodedRedirect(
     "success",
     "/reset-password",
-    "Your password has been updated.",
+    "Got it! Your password has been updated.",
   );
 };
 
