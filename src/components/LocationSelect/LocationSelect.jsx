@@ -59,7 +59,14 @@ async function getAreaName(longitude, latitude) {
   // Helper function to find feature by place type
   const findFeatureByType = (features, types) => {
     return features.find((f) =>
-      types.some((type) => f.place_type?.includes(type))
+      types.some(
+        (type) =>
+          f.place_type?.includes(type) &&
+          // Some places are coming up as 'storage', with a correlation to prpoerties.osm:place_type being "unknown"
+          // E.g. see Jo's listing in Fitzroy
+          // Skip these
+          f.properties[`osm:place_type`] !== "unknown"
+      )
     );
   };
 
