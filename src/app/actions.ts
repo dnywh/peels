@@ -110,6 +110,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
   const callbackUrl = formData.get("callbackUrl")?.toString();
+  console.log("callbackUrl", callbackUrl);
 
   if (!email) {
     return encodedRedirect("error", "/forgot-password", "Email is required");
@@ -181,6 +182,8 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 export const sendPasswordResetEmailAction = async (formData: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
+  const callbackUrl = formData.get("callbackUrl")?.toString();
+  console.log("callbackUrl", callbackUrl);
 
   const {
     data: { user },
@@ -204,6 +207,10 @@ export const sendPasswordResetEmailAction = async (formData: FormData) => {
   if (error) {
     console.error("Error sending password reset email:", error);
     return { error: "Sorry, we couldn’t send a password reset link." };
+  }
+
+  if (callbackUrl) {
+    return redirect(callbackUrl);
   }
 
   return { success: true };
@@ -240,7 +247,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Hmm. Something’s not right. You might be reusing a previous password, or might not have permission to reset this password. Contact support if you need help.",
+      "Hmm. Something’s not right. You might not have permission to reset this password.",
     );
   }
 
