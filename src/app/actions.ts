@@ -118,7 +118,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${
       origin || getBaseUrl()
-    }/auth/callback?redirect_to=/reset-password`,
+    }/auth/callback?redirect_to=/profile/reset-password`,
   });
 
   if (error) {
@@ -198,7 +198,7 @@ export const sendPasswordResetEmailAction = async (formData: FormData) => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${
       origin || getBaseUrl()
-    }/auth/callback?redirect_to=/reset-password`,
+    }/auth/callback?redirect_to=/profile/reset-password`,
   });
 
   if (error) {
