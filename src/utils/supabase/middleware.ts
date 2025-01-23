@@ -40,7 +40,7 @@ export const updateSession = async (request: NextRequest) => {
     const user = await supabase.auth.getUser();
 
     // Redirect guests away from protected routes
-    const protectedRoutes = ["/profile", "/chats", "/reset-password"];
+    const protectedRoutes = ["/profile", "/chats"];
     for (const route of protectedRoutes) {
       if (request.nextUrl.pathname.startsWith(route) && user.error) {
         return NextResponse.redirect(
