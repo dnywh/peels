@@ -240,7 +240,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Hmm. Something’s not right. You might not have permission to reset this password.",
+      "Hmm. Something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
     );
   }
 
