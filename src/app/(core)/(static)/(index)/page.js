@@ -113,13 +113,13 @@ export default function Index() {
         </Button>
         {/* TODO: {user ? <Link href="/profile#TODO-listing-form-for-signed-in-users">Create a listing</Link> : <Link href="/sign-up">Sign up</Link>} */}
         <Button href="/sign-up" variant="secondary" size="massive">
-          Get involved
+          Join the community
         </Button>
       </HeroButtons>
 
       <Section>
         <HeroParagraph>
-          Peels connects folks with food scraps to those who can use them for compost, chooks, red wigglers, and more.
+          Peels connects folks with food scraps to those who compost.
         </HeroParagraph>
         <HeroParagraph>
           We’ve just started to build our community and would love to see you there. <Link href="/sign-up">Sign up</Link> to put your mark on the map.

@@ -28,7 +28,7 @@ const Section = styled("section")(({ theme }) => ({
   borderRadius: theme.corners.base,
   padding: `calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // + 1.5 units internally, for consistency with other sections that may or may not have hover padding internally
 
-  "& h2": {
+  "& > h2": {
     fontSize: "1.5rem",
     marginLeft: `calc(${theme.spacing.unit} * 1.5)`, // Match above padding
   },
@@ -68,16 +68,12 @@ export default async function ProfilePage({ searchParams }) {
 
       <Section>
         <h2>Listings</h2>
-
         <ProfileListings firstName={profile?.first_name} listings={listings} />
-
       </Section>
 
       <Section>
         <h2>Account</h2>
-
         <ProfileAccountSettings user={user} profile={profile} />
-
       </Section>
 
       <Section>
