@@ -15,8 +15,7 @@ export const validateFirstName = (firstName) => {
 export const FIELD_CONFIGS = {
     firstName: {
         type: "text",
-        placeholder: "Your first name or nickname",
-        hint: "Or a pseudonym, if you prefer!",
+        placeholder: "Your first name or a nickname",
         required: true,
         minLength: 2,
     },

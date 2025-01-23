@@ -190,7 +190,7 @@ export default function Index() {
         <Heading1>Find a home for your food scraps, wherever you are.</Heading1>
 
         <HeroParagraph>
-          Peels connects folks with food scraps to those who compost. It’s a free, non-commercial community project.
+          Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.
         </HeroParagraph>
 
         <HeroButtons>
@@ -249,7 +249,7 @@ export default function Index() {
           <StyledDetails name="faq">
             <summary>I’m not comfortable putting my address on a map. Can I still participate?</summary>
             <p>
-              Yes! We encourage folks with residential listings to ‘roughen’ their location to a street corner or similar, and use a nickname or psuedonym if they feel more comfortable doing so.
+              Yes! We encourage folks with residential listings to ‘roughen’ their location to a nearby street corner or similar, and use a pseudonym if they feel more comfortable doing so.
             </p>
             <p>Even if you choose to use your real name and upload a photo, only signed in Peels members can see those details.</p>
           </StyledDetails>

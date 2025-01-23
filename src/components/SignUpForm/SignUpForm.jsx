@@ -41,10 +41,8 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           defaultValue={defaultValues.first_name}
           error={firstNameError}
         />
-        {firstNameError ? (
+        {firstNameError && (
           <InputHint variant="error">{firstNameError}</InputHint>
-        ) : (
-          <InputHint>Or a pseudonym, if you prefer!</InputHint>
         )}
       </Field>
 
