@@ -178,36 +178,36 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
 // This action triggers the password reset email to be sent to the user, called from the ProfileAccountSettings component
 // See also the very similar forgotPasswordAction which this is based on
-export const sendPasswordResetEmailAction = async (formData: FormData) => {
-  const supabase = await createClient();
-  const origin = (await headers()).get("origin");
+// export const sendPasswordResetEmailAction = async (formData: FormData) => {
+//   const supabase = await createClient();
+//   const origin = (await headers()).get("origin");
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+//   const {
+//     data: { user },
+//   } = await supabase.auth.getUser();
 
-  const email = user?.email;
+//   const email = user?.email;
 
-  if (!email) {
-    return {
-      error:
-        "Sorry, we’re having trouble sending a password reset link to your email address. Please reach out to support.",
-    };
-  }
+//   if (!email) {
+//     return {
+//       error:
+//         "Sorry, we’re having trouble sending a password reset link to your email address. Please reach out to support.",
+//     };
+//   }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${
-      origin || getBaseUrl()
-    }/auth/callback?redirect_to=/profile/reset-password`,
-  });
+//   const { error } = await supabase.auth.resetPasswordForEmail(email, {
+//     redirectTo: `${
+//       origin || getBaseUrl()
+//     }/auth/callback?redirect_to=/profile/reset-password`,
+//   });
 
-  if (error) {
-    console.error("Error sending password reset email:", error);
-    return { error: "Sorry, we couldn’t send a password reset link." };
-  }
+//   if (error) {
+//     console.error("Error sending password reset email:", error);
+//     return { error: "Sorry, we couldn’t send a password reset link." };
+//   }
 
-  return { success: true };
-};
+//   return { success: true };
+// };
 
 // Whereas this action actually updates the user's password
 export const resetPasswordAction = async (formData: FormData) => {
@@ -219,7 +219,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (!newPassword || !confirmNewPassword) {
     encodedRedirect(
       "error",
-      "/reset-password",
+      "/profile/reset-password",
       "Both those fields are required.",
     );
   }
@@ -227,7 +227,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (newPassword !== confirmNewPassword) {
     encodedRedirect(
       "error",
-      "/reset-password",
+      "/profile/reset-password",
       "Those passwords don’t match.",
     );
   }
@@ -239,14 +239,14 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (error) {
     encodedRedirect(
       "error",
-      "/reset-password",
+      "/profile/reset-password",
       "Hmm. Something’s not right. You might not have permission to reset this password.",
     );
   }
 
   encodedRedirect(
     "success",
-    "/reset-password",
+    "/profile/reset-password",
     "Got it! Your password has been updated.",
   );
 };

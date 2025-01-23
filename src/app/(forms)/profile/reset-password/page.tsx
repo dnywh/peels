@@ -1,5 +1,6 @@
 import { resetPasswordAction } from "@/app/actions";
 import { FIELD_CONFIGS } from "@/lib/formValidation";
+import { headers } from "next/headers";
 
 import FormMessage, { Message } from "@/components/FormMessage";
 import FormHeader from "@/components/FormHeader";
@@ -14,6 +15,9 @@ export default async function ResetPassword(props: {
   searchParams: Promise<Message>;
 }) {
   const searchParams = await props.searchParams;
+  const headersList = await headers();
+  const referer = headersList.get("referer") || "";
+  const isFromProfile = referer.includes("/profile");
 
   if (searchParams.success) {
     return (
@@ -32,7 +36,7 @@ export default async function ResetPassword(props: {
 
   return (
     <>
-      <FormHeader button="none">
+      <FormHeader button={isFromProfile ? "back" : "none"}>
         <h1>Reset password</h1>
         <p>Please enter your new password below.</p>
       </FormHeader>

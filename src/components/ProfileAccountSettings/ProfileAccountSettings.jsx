@@ -10,7 +10,7 @@ import InputHint from "@/components/InputHint";
 
 import {
   updateFirstNameAction,
-  sendPasswordResetEmailAction,
+  // sendPasswordResetEmailAction,
   sendEmailChangeEmailAction,
 } from "@/app/actions";
 
@@ -114,28 +114,28 @@ function ProfileAccountSettings({ user, profile }) {
   // Use our custom hook for each editable field
   const firstName = useEditableField();
   const email = useEditableField();
-  const password = useEditableField();
+  // const password = useEditableField();
 
   const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
 
-  const handlePasswordUpdate = async (formData) => {
-    password.setIsUpdating(true);
-    password.setError(null);
-    try {
-      const result = await sendPasswordResetEmailAction(formData);
-      if (result?.error) {
-        password.setError(result.error);
-      } else {
-        password.setSuccess(true);
-        password.setLastSentAt(Date.now());
-      }
-    } catch (error) {
-      console.error("Error updating password:", error);
-      password.setError("Sorry, something’s gone wrong. Please try again.");
-    } finally {
-      password.setIsUpdating(false);
-    }
-  };
+  // const handlePasswordUpdate = async (formData) => {
+  //   password.setIsUpdating(true);
+  //   password.setError(null);
+  //   try {
+  //     const result = await sendPasswordResetEmailAction(formData);
+  //     if (result?.error) {
+  //       password.setError(result.error);
+  //     } else {
+  //       password.setSuccess(true);
+  //       password.setLastSentAt(Date.now());
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating password:", error);
+  //     password.setError("Sorry, something’s gone wrong. Please try again.");
+  //   } finally {
+  //     password.setIsUpdating(false);
+  //   }
+  // };
 
   const handleEmailUpdate = async (formData) => {
     const newEmail = formData.get("email")?.toString();
@@ -301,56 +301,18 @@ function ProfileAccountSettings({ user, profile }) {
         )}
       </ListItem>
 
-      <ListItem editing={password.isEditing}>
-        {password.isEditing ? (
-          <Form nested={true} action={handlePasswordUpdate}>
-            <Field>
-              <Label>Password</Label>
-              <Input
-                name="password"
-                {...FIELD_CONFIGS.password}
-                disabled={true}
-              />
-              <InputHint>
-                {password.success
-                  ? "Done. Check your email for the password reset link."
-                  : "You can change your password by sending a password reset link to your email, below."}
-              </InputHint>
-            </Field>
-            <ButtonGroup>
-              {!password.success && (
-                <SubmitButton
-                  disabled={password.isUpdating}
-                  pendingText="Sending..."
-                >
-                  Send the link
-                </SubmitButton>
-              )}
-              <Button
-                variant="secondary"
-                onClick={() => password.reset()}
-                disabled={password.isUpdating}
-              >
-                {password.success ? "Close" : "Cancel"}
-              </Button>
-            </ButtonGroup>
-          </Form>
-        ) : (
-          <>
-            <ListItemReadField>
-              <Label>Password</Label>
-              <PasswordPreview>
-                {FIELD_CONFIGS.password.placeholder}
-              </PasswordPreview>
-            </ListItemReadField>
-            <Button
-              variant="secondary"
-              onClick={() => password.setIsEditing(true)}
-            >
-              Edit
-            </Button>
-          </>
-        )}
+      <ListItem>
+        <>
+          <ListItemReadField>
+            <Label>Password</Label>
+            <PasswordPreview>
+              {FIELD_CONFIGS.password.placeholder}
+            </PasswordPreview>
+          </ListItemReadField>
+          <Button variant="secondary" href="/profile/reset-password">
+            Edit
+          </Button>
+        </>
       </ListItem>
     </List>
   );
