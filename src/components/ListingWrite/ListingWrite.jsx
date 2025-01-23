@@ -36,6 +36,8 @@ import FormMessage from "@/components/FormMessage";
 import { styled } from "@pigment-css/react";
 
 const AdditionalSettings = styled("footer")(({ theme }) => ({
+  width: "100%", // Take full width of the container
+
   borderTop: `1px solid ${theme.colors.border.base}`,
   paddingTop: `calc(${theme.spacing.unit} * 3)`,
   display: "flex",

@@ -24,7 +24,7 @@ export default async function ResetPassword(props: {
         <Form as="container">
           <p>{searchParams.success}</p>
           {/* User is authenticated at this point so we can redirect them to a protected route */}
-          <Button href="/map">Back to Peels</Button>
+          <Button href="/profile">Back to Peels</Button>
         </Form>
       </>
     );

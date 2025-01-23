@@ -17,20 +17,20 @@ const ListItem = styled("li")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   gap: "1.5rem",
-
-  "& h4": {
-    color: theme.colors.text.ui.primary,
-    fontWeight: "500", // TODO: Match the weight of the other headings, including labels
-  },
-
-  "& p": {
-    color: theme.colors.text.ui.quaternary,
-    fontSize: "0.875rem",
-  },
 }));
 
 const ListItemText = styled("div")(({ theme }) => ({
   flex: 1,
+
+  "& > h4": {
+    color: theme.colors.text.ui.primary,
+    fontWeight: "500", // TODO: Match the weight of the other headings, including labels
+  },
+
+  "& > p": {
+    color: theme.colors.text.ui.quaternary,
+    fontSize: "0.875rem",
+  },
 }));
 
 export default function ProfileActions({ listings }) {
