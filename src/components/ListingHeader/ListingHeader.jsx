@@ -3,7 +3,7 @@ import { styled } from "@pigment-css/react";
 import { getListingAvatar } from "@/utils/listing";
 
 import Avatar from "@/components/Avatar";
-import StubMarker from "@/components/StubMarker";
+import Lozenge from "@/components/Lozenge";
 
 const StyledListingHeader = styled("header")(({ theme }) => ({
   display: "flex",
@@ -33,7 +33,7 @@ const StyledText = styled("div")(({ theme }) => ({
   },
 }));
 
-const StyledStubMarker = styled(StubMarker)(({ theme }) => ({
+const StyledLozenge = styled(Lozenge)(({ theme }) => ({
   marginLeft: "-0.025rem",
 }));
 
@@ -80,7 +80,7 @@ function ListingHeader({ listing, listingName, user }) {
             )}
           </p>
         )}
-        {listing.is_stub && <StyledStubMarker />}
+        {listing.is_stub && <StyledLozenge>Stub</StyledLozenge>}
       </StyledText>
     </StyledListingHeader>
   );

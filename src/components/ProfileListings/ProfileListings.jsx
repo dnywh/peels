@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 import Avatar from "@/components/Avatar";
-import StubMarker from "@/components/StubMarker";
+import Lozenge from "@/components/Lozenge";
 
 const MAX_LISTINGS = 12; // TODO: Store this on Supabase and use in the related RLS policy, so they are always in sync
 
@@ -11,6 +11,17 @@ const ListingsList = styled("ul")(({ theme }) => ({
   flexDirection: "column",
   gap: "0.25rem",
   marginTop: "-0.75rem", // Account for padding below
+}));
+
+const LozengeContainer = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
+  alignItems: "flex-end",
+
+  "@media (min-width: 768px)": {
+    flexDirection: "row",
+  },
 }));
 
 const NewListingAvatar = styled("div")(({ theme }) => ({
@@ -110,9 +121,13 @@ export default function ProfileListings({ profile, listings }) {
             <Text>
               <h3>{type === "residential" ? profile.first_name : name}</h3>
               <p>{type.charAt(0).toUpperCase() + type.slice(1)} listing</p>
-              {!visibility && <p>Hidden from map</p>}
             </Text>
-            {is_stub && <StubMarker />}
+            {!visibility || is_stub ? (
+              <LozengeContainer>
+                {!visibility && <Lozenge>Hidden</Lozenge>}
+                {is_stub && <Lozenge>Stub</Lozenge>}
+              </LozengeContainer>
+            ) : null}
           </ExistingListingLink>
         </li>
       ))}

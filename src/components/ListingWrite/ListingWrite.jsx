@@ -30,7 +30,7 @@ import ListingPhotosManager from "@/components/ListingPhotosManager";
 import Hyperlink from "@/components/Hyperlink";
 import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
-import StubMarker from "@/components/StubMarker";
+import Lozenge from "@/components/Lozenge";
 
 import FormMessage from "@/components/FormMessage";
 
@@ -296,7 +296,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
   return (
     <>
-      {initialListing && initialListing.is_stub && <StubMarker />}
+      {initialListing && initialListing.is_stub && <Lozenge>Stub</Lozenge>}
       <Form onSubmit={handleSubmit}>
         {listingType === "residential" ? (
           <AvatarUploadManager
