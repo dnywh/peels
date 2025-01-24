@@ -499,7 +499,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             <FormSectionHeader>
               <h2>Visibility</h2>
               <p>
-                Need a break from Peels? Temporarily hide your listing from the
+                Need a break from Peels? Temporarily hide this listing from the
                 map.
               </p>
             </FormSectionHeader>
@@ -514,8 +514,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 }
                 required={true}
               >
-                <option value="true">Show my listing on the map</option>
-                <option value="false">Hide my listing from the map</option>
+                <option value="true">Show this listing on the map</option>
+                <option value="false">Hide this listing from the map</option>
               </Select>
             </Field>
 
@@ -540,7 +540,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               <Label htmlFor="stub">Stub settings</Label>
               <Select
                 id="stub"
-                value={initialListing ? isStub : initialListing.is_stub}
+                value={initialListing ? initialListing.is_stub : isStub}
                 onChange={(event) => setIsStub(event.target.value)}
                 required={true}
               >

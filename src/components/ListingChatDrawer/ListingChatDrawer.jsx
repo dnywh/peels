@@ -71,9 +71,6 @@ export default function ListingChatDrawer({
 
   const modality = isNested ? (isDesktop ? false : true) : true;
 
-  console.log("Listing object:", listing);
-  console.log("listing is stub?", listing.is_stub);
-
   return (
     <DrawerComponent
       modal={modality}

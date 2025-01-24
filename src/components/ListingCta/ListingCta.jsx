@@ -23,8 +23,6 @@ const StyledListingCta = styled("aside")(({ theme }) => ({
 }));
 
 function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
-  console.log({ isStub });
-
   if (viewer === "owner") {
     return (
       <StyledListingCta>

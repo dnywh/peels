@@ -68,7 +68,7 @@ export default async function ProfilePage({ searchParams }) {
 
       <Section>
         <h2>Listings</h2>
-        <ProfileListings firstName={profile?.first_name} listings={listings} />
+        <ProfileListings profile={profile} listings={listings} />
       </Section>
 
       <Section>

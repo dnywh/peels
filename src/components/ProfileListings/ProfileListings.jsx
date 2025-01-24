@@ -4,6 +4,8 @@ import { styled } from "@pigment-css/react";
 import Avatar from "@/components/Avatar";
 import StubMarker from "@/components/StubMarker";
 
+const MAX_LISTINGS = 12; // TODO: Store this on Supabase and use in the related RLS policy, so they are always in sync
+
 const ListingsList = styled("ul")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -96,7 +98,7 @@ const Text = styled("div")(({ theme }) => ({
   ],
 }));
 
-export default function ProfileListings({ firstName, listings }) {
+export default function ProfileListings({ profile, listings }) {
   if (!listings) return null;
 
   return (
@@ -106,7 +108,7 @@ export default function ProfileListings({ firstName, listings }) {
           <ExistingListingLink href={`/profile/listings/${slug}`}>
             <Avatar size="small" alt={`Listing photo`} />
             <Text>
-              <h3>{type === "residential" ? firstName : name}</h3>
+              <h3>{type === "residential" ? profile.firstName : name}</h3>
               <p>{type.charAt(0).toUpperCase() + type.slice(1)} listing</p>
               {!visibility && <p>Hidden from map</p>}
             </Text>
@@ -114,8 +116,8 @@ export default function ProfileListings({ firstName, listings }) {
           </ExistingListingLink>
         </li>
       ))}
-      {/* Only show the "add a/another listing" link if there are less than 3 listings */}
-      {listings.length < 3 && (
+      {/* Only show the "add a/another listing" link if there are less than the maximum amount of allowed listings OR the user is an admin*/}
+      {listings.length < MAX_LISTINGS || profile.is_admin ? (
         <li>
           {listings.length === 0 ? (
             <AddYourFirstListingLink href="/profile/listings/new">
@@ -136,7 +138,7 @@ export default function ProfileListings({ firstName, listings }) {
             </AddAnotherListingLink>
           )}
         </li>
-      )}
+      ) : null}
     </ListingsList>
   );
 }
