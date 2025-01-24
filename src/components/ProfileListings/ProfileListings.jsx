@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 import Avatar from "@/components/Avatar";
+import StubMarker from "@/components/StubMarker";
 
 const ListingsList = styled("ul")(({ theme }) => ({
   display: "flex",
@@ -60,6 +61,7 @@ const ExistingListingLink = styled(Link)(sharedLinkStyles, {});
 const Text = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
+  flex: 1,
 
   "& h3": {
     color: theme.colors.text.ui.primary,
@@ -99,7 +101,7 @@ export default function ProfileListings({ firstName, listings }) {
 
   return (
     <ListingsList>
-      {listings.map(({ id, slug, type, name, visibility }) => (
+      {listings.map(({ id, slug, type, name, visibility, is_stub }) => (
         <li key={id}>
           <ExistingListingLink href={`/profile/listings/${slug}`}>
             <Avatar size="small" alt={`Listing photo`} />
@@ -108,6 +110,7 @@ export default function ProfileListings({ firstName, listings }) {
               <p>{type.charAt(0).toUpperCase() + type.slice(1)} listing</p>
               {!visibility && <p>Hidden from map</p>}
             </Text>
+            {is_stub && <StubMarker />}
           </ExistingListingLink>
         </li>
       ))}

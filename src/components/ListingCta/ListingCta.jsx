@@ -1,6 +1,8 @@
 import Hyperlink from "@/components/Hyperlink";
+import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
+import PeelsLogo from "@/components/PeelsLogo";
 
 const StyledListingCta = styled("aside")(({ theme }) => ({
   backgroundColor: theme.colors.background.slight,
@@ -15,7 +17,7 @@ const StyledListingCta = styled("aside")(({ theme }) => ({
   textAlign: "center",
 
   "& p": {
-    color: theme.colors.text.quaternity,
+    color: theme.colors.text.ui.tertiary,
     textWrap: "balance",
   },
 }));
@@ -34,7 +36,7 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
           Edit listing
         </Button>
         <p>
-          This is your own listing.{" "}
+          This is your own listing{isStub && ", marked as a stub"}.{" "}
           {visibility
             ? "Lookin’ good!"
             : "You’ve hidden it from the map, so only you can see this right now."}
@@ -45,7 +47,18 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
   if (isStub) {
     return (
       <StyledListingCta>
-        <p>This listing is a stub. Others can claim it as their own.</p>
+        <PeelsLogo color="quaternary" />
+        <p>
+          This is a stub created by the Peels team. Double-check the listing
+          information before visiting.
+        </p>
+        <p>
+          Are you the owner?{" "}
+          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+            Reach out
+          </EncodedEmailHyperlink>{" "}
+          to claim this listing or request changes.
+        </p>
       </StyledListingCta>
     );
   }

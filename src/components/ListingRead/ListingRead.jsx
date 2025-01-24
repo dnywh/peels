@@ -226,21 +226,15 @@ const ListingRead = memo(function Listing({
               <NavigationControl showCompass={false} />
             </PeelsMap>
 
-            {listing.type === "residential" && (
+            {listing.type === "residential" ? (
               <p>
                 {listingDisplayName} is a resident of{" "}
                 {listing.area_name ? listing.area_name : "this area"}. Ask them
                 for their exact location when you arrange a food scrap drop-off.
               </p>
-            )}
-            {listing.type === "community" && listing.area_name && (
+            ) : (
               <p>
-                {listingDisplayName} is a located in {listing.area_name}.
-              </p>
-            )}
-            {listing.type === "business" && listing.area_name && (
-              <p>
-                {listingDisplayName} is a business located in{" "}
+                {listingDisplayName} is a {listing.type} located in{" "}
                 {listing.area_name}.
               </p>
             )}

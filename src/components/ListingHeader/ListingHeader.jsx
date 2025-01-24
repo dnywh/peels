@@ -1,7 +1,9 @@
 import { styled } from "@pigment-css/react";
 
-import Avatar from "@/components/Avatar";
 import { getListingAvatar } from "@/utils/listing";
+
+import Avatar from "@/components/Avatar";
+import StubMarker from "@/components/StubMarker";
 
 const StyledListingHeader = styled("header")(({ theme }) => ({
   display: "flex",
@@ -31,6 +33,10 @@ const StyledText = styled("div")(({ theme }) => ({
   },
 }));
 
+const StyledStubMarker = styled(StubMarker)(({ theme }) => ({
+  marginLeft: "-0.025rem",
+}));
+
 function ListingHeader({ listing, listingName, user }) {
   const avatarProps = getListingAvatar(listing, user);
 
@@ -45,6 +51,7 @@ function ListingHeader({ listing, listingName, user }) {
 
       <StyledText>
         <h1>{listingName}</h1>
+
         {/* Use getListingDisplayType() here? Or is it too limiting? */}
         {listing.type === "residential" && (
           <p>
@@ -73,6 +80,7 @@ function ListingHeader({ listing, listingName, user }) {
             )}
           </p>
         )}
+        {listing.is_stub && <StyledStubMarker />}
       </StyledText>
     </StyledListingHeader>
   );

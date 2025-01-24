@@ -105,6 +105,10 @@ export default withPigment(
     withMDX(nextConfig), {
     theme: extendTheme({
         colors: {
+            logo: {
+                primary: tokens.ochre[800],
+                quaternary: tokens.ochre[800_30],
+            },
             focus: {
                 outline: tokens.ocean[500],
             },
