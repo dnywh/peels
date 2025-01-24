@@ -279,10 +279,19 @@ const ListingRead = memo(function Listing({
           </ListingReadSection>
         )}
 
-        {listing.photos?.length > 0 &&
-          (!listing.type === "residential" || user) && (
-            <ListingReadSection overflowX="visible">
-              <h3>Photos</h3>
+        {listing.photos?.length > 0 && (
+          <ListingReadSection
+            overflowX={
+              !user && listing.type === "residential" ? undefined : "visible"
+            }
+          >
+            <h3>Photos</h3>
+            {!user && listing.type === "residential" ? (
+              <p>
+                <Hyperlink href="/sign-in">Sign in</Hyperlink> to see this
+                host’s photos.
+              </p>
+            ) : (
               <PhotosList>
                 {listing.photos.map((photo, index) => (
                   <li key={index}>
@@ -296,22 +305,14 @@ const ListingRead = memo(function Listing({
                   </li>
                 ))}
               </PhotosList>
-            </ListingReadSection>
-          )}
+            )}
+          </ListingReadSection>
+        )}
 
         {listing.links?.length > 0 && (
           <ListingReadSection>
             <h3>Links</h3>
             <ListingItemList items={listing.links} type="links" />
-          </ListingReadSection>
-        )}
-
-        {!user && listing.type === "residential" && (
-          <ListingReadSection>
-            <p>
-              <Hyperlink href="/sign-in">Sign in</Hyperlink> to see more about
-              this host.
-            </p>
           </ListingReadSection>
         )}
 
