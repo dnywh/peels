@@ -32,17 +32,35 @@ import Hyperlink from "@/components/Hyperlink";
 
 import ListingChatDrawer from "@/components/ListingChatDrawer";
 
-const Column = styled("section")({
+const Column = styled("div")({
   // Inherit same flex properties as parent, given these columns should be invisible when drawer
-  // flex: 1,
   display: "flex",
   flexDirection: "column",
   gap: "3rem",
   maxWidth: "720px",
+});
+
+const ListingReadSection = styled("section")({
+  padding: " 0 1rem", // Pad by default ,override on Photos section
 
   "& p + p": {
+    // Add paragraph spacing
     marginTop: "0.5rem",
   },
+
+  variants: [
+    {
+      props: { overflowX: "visible" },
+      style: {
+        padding: "0", // Pad by default, override on Photos section
+        overflowX: "visible",
+
+        "& h3": {
+          padding: "0 1rem", // Account for removed padding on parent
+        },
+      },
+    },
+  ],
 });
 
 const ButtonGroup = styled("div")({
@@ -55,6 +73,7 @@ const PhotosList = styled("ul")(({ theme }) => ({
   display: "flex",
   gap: "0.5rem",
   overflowX: "scroll",
+  padding: "0 1rem", // Pad by default, override on Photos section
 
   "& li": {
     flexShrink: 0,
@@ -161,32 +180,32 @@ const ListingRead = memo(function Listing({
         />
 
         {listing.description && (
-          <section>
+          <ListingReadSection>
             <h3>
               {listing.type === "business" ? "Donation details" : "About"}
             </h3>
             <ParagraphWithLineBreaks text={listing.description} />
-          </section>
+          </ListingReadSection>
         )}
 
         {listing.accepted_items?.length > 0 && (
-          <section>
+          <ListingReadSection>
             <h3>Accepted</h3>
             <ListingItemList items={listing.accepted_items} type="accepted" />
-          </section>
+          </ListingReadSection>
         )}
 
         {listing.rejected_items?.length > 0 && (
-          <section>
+          <ListingReadSection>
             <h3>Not accepted</h3>
             <ListingItemList items={listing.rejected_items} type="rejected" />
-          </section>
+          </ListingReadSection>
         )}
       </Column>
 
       <Column>
         {!isDrawer && (
-          <section>
+          <ListingReadSection>
             <h3>Location</h3>
             <PeelsMap
               style={{ height: "320px" }}
@@ -257,12 +276,12 @@ const ListingRead = memo(function Listing({
                 </>
               )}
             </ButtonGroup>
-          </section>
+          </ListingReadSection>
         )}
 
         {listing.photos?.length > 0 &&
           (!listing.type === "residential" || user) && (
-            <section>
+            <ListingReadSection overflowX="visible">
               <h3>Photos</h3>
               <PhotosList>
                 {listing.photos.map((photo, index) => (
@@ -271,38 +290,42 @@ const ListingRead = memo(function Listing({
                       bucket="listing_photos"
                       filename={photo}
                       alt={`Listing photo ${index + 1}`}
-                      width={300}
-                      height={220}
+                      width={280}
+                      height={210}
                     />
                   </li>
                 ))}
               </PhotosList>
-            </section>
+            </ListingReadSection>
           )}
 
         {listing.links?.length > 0 && (
-          <section>
+          <ListingReadSection>
             <h3>Links</h3>
             <ListingItemList items={listing.links} type="links" />
-          </section>
+          </ListingReadSection>
         )}
 
         {!user && listing.type === "residential" && (
-          <p>
-            <Hyperlink href="/sign-in">Sign in</Hyperlink> to see more about
-            this host.
-          </p>
+          <ListingReadSection>
+            <p>
+              <Hyperlink href="/sign-in">Sign in</Hyperlink> to see more about
+              this host.
+            </p>
+          </ListingReadSection>
         )}
 
         {isDrawer && (
-          <Button
-            variant="secondary"
-            size="small"
-            width="contained"
-            href={`/listings/${listing.slug}`}
-          >
-            View full listing
-          </Button>
+          <ListingReadSection>
+            <Button
+              variant="secondary"
+              size="small"
+              width="contained"
+              href={`/listings/${listing.slug}`}
+            >
+              View full listing
+            </Button>
+          </ListingReadSection>
         )}
       </Column>
     </Fragment>

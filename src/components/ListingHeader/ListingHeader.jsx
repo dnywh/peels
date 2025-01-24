@@ -7,8 +7,8 @@ const StyledListingHeader = styled("header")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  gap: "2rem", // Acount for rotated avatar
-  paddingLeft: "0.75rem", // Acount for rotated avatar
+  gap: "2rem", // Account for rotated avatar
+  padding: "0 1rem 0 1.75rem", // Match ListingReadSection but also account for rotated avatar
 }));
 
 const StyledText = styled("div")(({ theme }) => ({

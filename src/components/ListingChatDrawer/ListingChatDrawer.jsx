@@ -14,6 +14,14 @@ const StyledDrawerOverlay = styled(Drawer.Overlay)({
   inset: "0",
 });
 
+const ListingCtaContainer = styled("div")({
+  padding: "0 1rem", // Match padding from other parts of ListingRead
+
+  "& > *": {
+    width: "100%",
+  },
+});
+
 const StyledDrawerContent = styled(Drawer.Content)({
   background: "rgb(243, 243, 243)",
   borderRadius: "10px 10px 0 0",
@@ -71,26 +79,28 @@ export default function ListingChatDrawer({
       onOpenChange={setIsChatDrawerOpen}
       {...props}
     >
-      {user ? (
-        listing.owner_id === user.id ? (
-          <ListingCta
-            type="owner"
-            slug={listing.slug}
-            visibility={listing.visibility}
-          />
+      <ListingCtaContainer>
+        {user ? (
+          listing.owner_id === user.id ? (
+            <ListingCta
+              type="owner"
+              slug={listing.slug}
+              visibility={listing.visibility}
+            />
+          ) : (
+            <Drawer.Trigger asChild>
+              <Button>
+                Contact{" "}
+                {listing.type === "residential"
+                  ? listing.profiles.first_name
+                  : listing.name}
+              </Button>
+            </Drawer.Trigger>
+          )
         ) : (
-          <Drawer.Trigger asChild>
-            <Button>
-              Contact{" "}
-              {listing.type === "residential"
-                ? listing.profiles.first_name
-                : listing.name}
-            </Button>
-          </Drawer.Trigger>
-        )
-      ) : (
-        <ListingCta type="guest" slug={listing.slug} />
-      )}
+          <ListingCta type="guest" slug={listing.slug} />
+        )}
+      </ListingCtaContainer>
 
       <Drawer.Portal>
         <StyledDrawerOverlay />

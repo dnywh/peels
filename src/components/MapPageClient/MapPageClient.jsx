@@ -204,7 +204,7 @@ const StyledHeaderText = styled("div")(({ theme }) => ({
 const StyledDrawerInner = styled("div")(({ theme }) => ({
   width: "100%",
   // Normal classes
-  padding: "1rem",
+  padding: "1rem 0", // Commented out X axis to allow overflow for things like photo x-scroll
   paddingTop: "2rem",
   marginTop: "-3.5rem", // To account for sticky header
 
@@ -212,6 +212,7 @@ const StyledDrawerInner = styled("div")(({ theme }) => ({
   // touchAction: "unset !important",
   // pointerEvents: "unset !important",
   overflowY: "auto",
+  overflowX: "hidden", // Prevent horizontal scrolling
 
   // Seems to help with drawer scroll getting stuck, possibly placebo
   // overscrollBehavior: "auto",
@@ -682,6 +683,7 @@ export default function MapPageClient({ user }) {
                   style={{
                     transition: "opacity 0.1s ease",
                     opacity: isDrawerHeaderShown ? 1 : 0,
+                    pointerEvents: isDrawerHeaderShown ? "auto" : "none", // Allow text underneath to be selected if not shown
                   }}
                 >
                   <StyledHeaderText>

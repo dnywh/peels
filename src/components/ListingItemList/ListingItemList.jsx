@@ -26,6 +26,13 @@ const StyledListingItemList = styled("ol")(({ theme }) => ({
     display: "flex",
     gap: "0.75rem",
     alignItems: "center",
+
+    "& a": {
+      // Clip text if necessary
+      overflow: "hidden",
+      whiteSpace: "nowrap",
+      textOverflow: "ellipsis",
+    },
   },
 
   "& li:not(:last-child)": {
