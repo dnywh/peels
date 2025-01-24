@@ -1,10 +1,10 @@
-import StorageImage from "@/components/StorageImage";
+import RemoteImage from "@/components/RemoteImage";
 import { styled } from "@pigment-css/react";
 
 const LARGE_SIZE = 112;
 const SMALL_SIZE = 32;
 
-const StyledStorageImage = styled(StorageImage)(({ theme }) => ({
+const StyledRemoteImage = styled(RemoteImage)(({ theme }) => ({
   overflow: "hidden",
   objectFit: "cover",
   flexShrink: 0,
@@ -31,10 +31,10 @@ const StyledStorageImage = styled(StorageImage)(({ theme }) => ({
 
 function Avatar({ size = "large", ...props }) {
   return (
-    <StyledStorageImage
+    <StyledRemoteImage
       // Pass size prop on to be styled
       size={size}
-      // Need width and height to be passed to the StorageImage component in pixel dimensions
+      // Need width and height to be passed to the RemoteImage component in pixel dimensions
       width={size === "large" ? LARGE_SIZE : SMALL_SIZE}
       height={size === "large" ? LARGE_SIZE : SMALL_SIZE}
       {...props}

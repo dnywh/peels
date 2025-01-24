@@ -4,7 +4,7 @@ import { useState } from "react";
 import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
 import { styled } from "@pigment-css/react";
 import Button from "@/components/Button";
-import StorageImage from "@/components/StorageImage";
+import RemoteImage from "@/components/RemoteImage";
 
 const PhotoGrid = styled("div")({
   display: "grid",
@@ -140,7 +140,7 @@ function ListingPhotosManager({
         <PhotoGrid>
           {photos.map((filename, index) => (
             <PhotoItem key={index}>
-              <StorageImage
+              <RemoteImage
                 bucket="listing_photos"
                 filename={filename}
                 alt={`Photo ${index + 1}`}

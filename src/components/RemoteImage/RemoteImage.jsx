@@ -27,7 +27,7 @@ import Image from "next/image";
 //   return publicUrl;
 // }
 
-export default function StorageImage({
+export default function RemoteImage({
   bucket,
   filename,
   alt,
@@ -36,7 +36,7 @@ export default function StorageImage({
   height,
   ...props
 }) {
-  // console.log("StorageImage received:", { bucket, filename });
+  // console.log("RemoteImage received:", { bucket, filename });
   // Handle missing filename or public folder images
   if (!filename || bucket === "public") {
     const imagePath = !filename ? "/avatars/default.png" : `/${filename}`;

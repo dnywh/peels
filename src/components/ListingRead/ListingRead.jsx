@@ -14,7 +14,7 @@ import { createClient } from "@/utils/supabase/client";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
 import { Drawer } from "vaul";
 
-import StorageImage from "@/components/StorageImage";
+import RemoteImage from "@/components/RemoteImage";
 
 import PeelsMap from "@/components/PeelsMap";
 import MapPin from "@/components/MapPin";
@@ -64,7 +64,7 @@ const PhotosList = styled("ul")(({ theme }) => ({
   },
 }));
 
-const ListingPhotoStorageImage = styled(StorageImage)(({ theme }) => ({
+const ListingPhotoRemoteImage = styled(RemoteImage)(({ theme }) => ({
   mixBlendMode: "multiply", // So box-shadow on parent is visible
   // width: "100px",
   // height: "10rem",
@@ -267,7 +267,7 @@ const ListingRead = memo(function Listing({
               <PhotosList>
                 {listing.photos.map((photo, index) => (
                   <li key={index}>
-                    <ListingPhotoStorageImage
+                    <ListingPhotoRemoteImage
                       bucket="listing_photos"
                       filename={photo}
                       alt={`Listing photo ${index + 1}`}

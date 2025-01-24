@@ -1,4 +1,4 @@
-import StorageImage from "@/components/StorageImage";
+import RemoteImage from "@/components/RemoteImage";
 import { formatDate } from "@/utils/dateUtils";
 import { styled } from "@pigment-css/react";
 
@@ -50,7 +50,7 @@ function ChatMessage({ direction, message }) {
   return (
     <StyledChatMessageContainer direction={direction}>
       {message.sender_avatar && (
-        <StorageImage
+        <RemoteImage
           bucket="avatars"
           filename={message.sender_avatar}
           alt={`Avatar for ${message.sender_first_name}`}
