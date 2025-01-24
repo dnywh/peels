@@ -20,8 +20,10 @@ const StyledListingCta = styled("aside")(({ theme }) => ({
   },
 }));
 
-function ListingCta({ type, slug, visibility = true }) {
-  if (type === "owner") {
+function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
+  console.log({ isStub });
+
+  if (viewer === "owner") {
     return (
       <StyledListingCta>
         <Button
@@ -40,6 +42,14 @@ function ListingCta({ type, slug, visibility = true }) {
       </StyledListingCta>
     );
   }
+  if (isStub) {
+    return (
+      <StyledListingCta>
+        <p>This listing is a stub. Others can claim it as their own.</p>
+      </StyledListingCta>
+    );
+  }
+
   return (
     <StyledListingCta>
       <Button

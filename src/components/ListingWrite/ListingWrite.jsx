@@ -108,6 +108,11 @@ export default function ListingWrite({ initialListing, user, profile }) {
   const [visibility, setVisibility] = useState(
     initialListing ? initialListing.visibility : true
   );
+
+  const [isStub, setIsStub] = useState(
+    initialListing ? initialListing.is_stub : false
+  );
+
   const [legal, setLegal] = useState(initialListing ? true : false);
 
   // Other states
@@ -201,6 +206,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
         rejected_items: rejectedItems.filter((item) => item.trim() !== ""),
         photos: initialListing ? photos : pendingPhotos,
         links: links.filter((link) => link.trim() !== ""),
+        // Only include is_stub if the user is an admin
+        ...(profile.is_admin && { is_stub: isStub }),
         visibility,
       };
 
@@ -517,6 +524,37 @@ export default function ListingWrite({ initialListing, user, profile }) {
               checked={visibility}
               onChange={(checked) => setVisibility(checked)}
             /> */}
+          </FormSection>
+        )}
+
+        {profile?.is_admin && (
+          <FormSection>
+            <FormSectionHeader>
+              <h2>Admin</h2>
+              <p>Admin-only controls for this listing.</p>
+            </FormSectionHeader>
+
+            <Field>
+              <Label htmlFor="stub">Stub settings</Label>
+              <Select
+                id="stub"
+                value={initialListing ? isStub : initialListing.is_stub}
+                onChange={(event) => setIsStub(event.target.value)}
+                required={true}
+              >
+                <option value="false">
+                  This is a normal listing owned by you
+                </option>
+                <option value="true">
+                  This listing is a stub that others can claim
+                </option>
+              </Select>
+              <InputHint>
+                {isStub
+                  ? "This listing will not contain your contact information. Others can claim it as their own and take it over."
+                  : "This listing will be presented normally. Other Peels members can contact you."}
+              </InputHint>
+            </Field>
           </FormSection>
         )}
 

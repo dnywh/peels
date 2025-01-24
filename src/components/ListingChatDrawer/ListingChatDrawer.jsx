@@ -71,6 +71,9 @@ export default function ListingChatDrawer({
 
   const modality = isNested ? (isDesktop ? false : true) : true;
 
+  console.log("Listing object:", listing);
+  console.log("listing is stub?", listing.is_stub);
+
   return (
     <DrawerComponent
       modal={modality}
@@ -83,9 +86,10 @@ export default function ListingChatDrawer({
         {user ? (
           listing.owner_id === user.id ? (
             <ListingCta
-              type="owner"
+              viewer="owner"
               slug={listing.slug}
               visibility={listing.visibility}
+              isStub={listing.is_stub}
             />
           ) : (
             <Drawer.Trigger asChild>
@@ -98,7 +102,12 @@ export default function ListingChatDrawer({
             </Drawer.Trigger>
           )
         ) : (
-          <ListingCta type="guest" slug={listing.slug} />
+          <ListingCta
+            viewer="guest"
+            slug={listing.slug}
+            visibility={listing.visibility}
+            isStub={listing.is_stub}
+          />
         )}
       </ListingCtaContainer>
 
