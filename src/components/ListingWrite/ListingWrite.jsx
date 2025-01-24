@@ -438,7 +438,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               minRequired={1}
               handleItemChange={handleAcceptedItemChange}
               onClick={addAcceptedItem}
-              limit={6}
+              limit={12}
             />
 
             <MultiInput
@@ -450,7 +450,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               items={rejectedItems}
               handleItemChange={handleRejectedItemChange}
               onClick={addRejectedItem}
-              limit={6}
+              limit={16}
             />
           </FormSection>
         )}

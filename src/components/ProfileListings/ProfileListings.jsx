@@ -108,7 +108,7 @@ export default function ProfileListings({ profile, listings }) {
           <ExistingListingLink href={`/profile/listings/${slug}`}>
             <Avatar size="small" alt={`Listing photo`} />
             <Text>
-              <h3>{type === "residential" ? profile.firstName : name}</h3>
+              <h3>{type === "residential" ? profile.first_name : name}</h3>
               <p>{type.charAt(0).toUpperCase() + type.slice(1)} listing</p>
               {!visibility && <p>Hidden from map</p>}
             </Text>
