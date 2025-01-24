@@ -144,7 +144,8 @@ function ListingPhotosManager({
                 bucket="listing_photos"
                 filename={filename}
                 alt={`Photo ${index + 1}`}
-                size={300}
+                width={300}
+                height={300}
               />
               <Button
                 variant="danger"

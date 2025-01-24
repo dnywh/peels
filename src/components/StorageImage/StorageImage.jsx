@@ -32,7 +32,8 @@ export default function StorageImage({
   filename,
   alt,
   style,
-  size = 100,
+  width,
+  height,
   ...props
 }) {
   // console.log("StorageImage received:", { bucket, filename });
@@ -44,8 +45,8 @@ export default function StorageImage({
         src={imagePath}
         alt={alt}
         style={style}
-        width={size}
-        height={size}
+        width={width}
+        height={height}
         {...props}
       />
     );
@@ -57,8 +58,8 @@ export default function StorageImage({
       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${filename}`}
       alt={alt}
       style={style}
-      width={size}
-      height={size}
+      width={width}
+      height={height}
       {...props}
     />
   );

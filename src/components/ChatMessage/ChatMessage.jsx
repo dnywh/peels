@@ -54,7 +54,8 @@ function ChatMessage({ direction, message }) {
           bucket="avatars"
           filename={message.sender_avatar}
           alt={`Avatar for ${message.sender_first_name}`}
-          style={{ width: "64px", height: "64px" }}
+          width={64}
+          height={64}
         />
       )}
       <StyledChatMessage direction={direction}>

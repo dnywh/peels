@@ -38,6 +38,11 @@ const Column = styled("section")({
   display: "flex",
   flexDirection: "column",
   gap: "3rem",
+  maxWidth: "720px",
+
+  "& p + p": {
+    marginTop: "0.5rem",
+  },
 });
 
 const ButtonGroup = styled("div")({
@@ -45,6 +50,28 @@ const ButtonGroup = styled("div")({
   flexWrap: "wrap",
   gap: "0.5rem",
 });
+
+const PhotosList = styled("ul")(({ theme }) => ({
+  display: "flex",
+  gap: "0.5rem",
+  overflowX: "scroll",
+
+  "& li": {
+    flexShrink: 0,
+    borderRadius: "0.25rem",
+    boxShadow: `0 0 0 2px ${theme.colors.border.elevated} inset`,
+    overflow: "hidden",
+  },
+}));
+
+const ListingPhotoStorageImage = styled(StorageImage)(({ theme }) => ({
+  mixBlendMode: "multiply", // So box-shadow on parent is visible
+  // width: "100px",
+  // height: "10rem",
+  objectFit: "cover",
+  backgroundColor: theme.colors.background.map,
+  cursor: "zoom-in",
+}));
 
 // A much fancier version than just using whiteSpace: "pre-wrap", which renders looking like a completely new empty paragraph in between lines
 const ParagraphWithLineBreaks = ({ text }) => {
@@ -237,18 +264,19 @@ const ListingRead = memo(function Listing({
           (!listing.type === "residential" || user) && (
             <section>
               <h3>Photos</h3>
-              <ul>
+              <PhotosList>
                 {listing.photos.map((photo, index) => (
                   <li key={index}>
-                    <StorageImage
+                    <ListingPhotoStorageImage
                       bucket="listing_photos"
                       filename={photo}
-                      alt={`Photo ${index + 1}`}
-                      style={{ width: "100px", height: "100px" }}
+                      alt={`Listing photo ${index + 1}`}
+                      width={300}
+                      height={220}
                     />
                   </li>
                 ))}
-              </ul>
+              </PhotosList>
             </section>
           )}
 
