@@ -68,7 +68,7 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
         width="full"
         href={`/sign-in?redirect_to=/listings/${slug}`}
       >
-        Sign in to contact host
+        Sign in to contact
       </Button>
       <p>
         First time here? <Hyperlink href="/sign-up">Sign up</Hyperlink>

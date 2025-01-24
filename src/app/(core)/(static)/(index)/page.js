@@ -39,6 +39,7 @@ const DetailsContainer = styled("div")(({ theme }) => ({
   borderRadius: theme.corners.base,
   padding: `0 ${theme.spacing.unit}`,
   width: "100%",
+  boxShadow: `0px 0px 0px 1px ${theme.colors.border.light}`,
 }));
 
 const StyledDetails = styled("details")(({ theme }) => ({
