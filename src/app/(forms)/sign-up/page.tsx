@@ -32,7 +32,8 @@ export default async function SignUp(props: {
             <p>
               Thanks for signing up
               {searchParams.first_name && `, ${searchParams.first_name}`}!
-              Please check your email for a verification link.
+              Please check your email for a verification link. This link will
+              expire in an hour from now.
             </p>
           </>
         </Form>
