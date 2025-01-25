@@ -228,15 +228,18 @@ const NoListingFound = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "2rem",
-  textAlign: "center",
-  textWrap: "balance",
   padding: "2rem",
   color: theme.colors.text.secondary,
 
-  "& div": {
+  "& > header": {
     display: "flex",
     flexDirection: "column",
     gap: "0.25rem",
+
+    "& > *": {
+      textAlign: "center",
+      textWrap: "balance",
+    },
   },
 }));
 
@@ -736,15 +739,15 @@ export default function MapPageClient({ user }) {
               >
                 {selectedListing?.error ? (
                   <NoListingFound>
-                    <div>
+                    <header>
                       <h2>Coming up empty</h2>
                       <p>
                         The listing you’re looking for doesn’t exist or has been
                         removed. Sorry to disappoint.
                       </p>
-                    </div>
-                    <Button variant="primary" onClick={handleCloseListing}>
-                      Return to map
+                    </header>
+                    <Button variant="secondary" onClick={handleCloseListing}>
+                      Close
                     </Button>
                   </NoListingFound>
                 ) : (

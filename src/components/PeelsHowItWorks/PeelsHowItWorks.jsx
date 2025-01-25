@@ -2,9 +2,18 @@ import PhotoThumbnail from "@/components/PhotoThumbnail";
 import { styled } from "@pigment-css/react";
 
 const featuredListingPhotos = [
-  "284dad8e-36d5-421f-b831-b9922cb90bd4.jpg",
-  "ae184537-0f9f-43ab-9bd7-b0351c4836a6.jpeg",
-  "f418551d-f2bd-43f9-8f00-8ff37c98910d.jpg",
+  {
+    fileName: "284dad8e-36d5-421f-b831-b9922cb90bd4.jpg",
+    listingId: "1234",
+  },
+  {
+    fileName: "ae184537-0f9f-43ab-9bd7-b0351c4836a6.jpeg",
+    listingId: "2345",
+  },
+  {
+    fileName: "f418551d-f2bd-43f9-8f00-8ff37c98910d.jpg",
+    listingId: "3456",
+  },
 ];
 
 const tempListingPhotos = [
@@ -126,9 +135,18 @@ function PeelsHowItWorks() {
         </p>
 
         <PhotoRow>
-          <PhotoThumbnail fileName={tempListingPhotos[0]} />
-          <PhotoThumbnail fileName={tempListingPhotos[1]} />
-          <PhotoThumbnail fileName={tempListingPhotos[2]} />
+          <PhotoThumbnail
+            fileName={featuredListingPhotos[0].fileName}
+            listingId={featuredListingPhotos[0].listingId}
+          />
+          <PhotoThumbnail
+            fileName={featuredListingPhotos[1].fileName}
+            listingId={featuredListingPhotos[1].listingId}
+          />
+          <PhotoThumbnail
+            fileName={featuredListingPhotos[2].fileName}
+            listingId={featuredListingPhotos[2].listingId}
+          />
         </PhotoRow>
       </Step>
     </OrderedList>
