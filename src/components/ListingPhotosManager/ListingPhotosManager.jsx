@@ -5,6 +5,7 @@ import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
 import { styled } from "@pigment-css/react";
 import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
+import Compressor from "compressorjs";
 
 const PhotoGrid = styled("div")({
   display: "grid",
@@ -46,6 +47,19 @@ function ListingPhotosManager({
   const [photos, setPhotos] = useState(initialPhotos);
   const [isUploading, setIsUploading] = useState(false);
 
+  const compressFile = (file) => {
+    return new Promise((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.8, // Good balance between quality and compression
+        maxWidth: 2048, // Reasonable max dimension for property photos
+        maxHeight: 2048,
+        convertSize: 1000000, // Convert PNGs to JPEGs if they're over ~1MB
+        success: (result) => resolve(result),
+        error: (err) => reject(err),
+      });
+    });
+  };
+
   const handlePhotoAdd = async (event) => {
     const files = Array.from(event.target.files);
 
@@ -68,18 +82,28 @@ function ListingPhotosManager({
 
     setIsUploading(true);
     try {
+      // Compress all files before upload
+      const compressedFiles = await Promise.all(
+        files.map((file) => compressFile(file))
+      );
+      console.log(
+        "Original vs Compressed sizes:",
+        files.map((f, i) => ({
+          original: Math.round(f.size / 1024) + "KB",
+          compressed: Math.round(compressedFiles[i].size / 1024) + "KB",
+        }))
+      );
+
       if (isNewListing) {
-        // For new listings, just upload to storage and track filenames
-        const uploadPromises = files.map(
-          (file) => uploadListingPhoto(file) // No listingSlug for new listings
+        const uploadPromises = compressedFiles.map((file) =>
+          uploadListingPhoto(file)
         );
         const newFilenames = await Promise.all(uploadPromises);
         const newPhotos = [...photos, ...newFilenames];
         setPhotos(newPhotos);
         onPhotosChange?.(newPhotos);
       } else {
-        // For existing listings, upload and update the database
-        const uploadPromises = files.map((file) =>
+        const uploadPromises = compressedFiles.map((file) =>
           uploadListingPhoto(file, listingSlug)
         );
         const newFilenames = await Promise.all(uploadPromises);
