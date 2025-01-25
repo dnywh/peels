@@ -35,6 +35,7 @@ const PhotoItem = styled("div")({
 const MAX_PHOTOS = 5;
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
+const MAX_DIMENSION = 2048; // Reasonable max dimension for listing photos
 const overSizedFileAlertSingular = `Your photo is too large. The maximum file size is ${MAX_MB}MB.`;
 const overSizedFileAlertPlural = `One or more of your photos are too large. The maximum file size is ${MAX_MB}MB per photo.`;
 
@@ -51,8 +52,8 @@ function ListingPhotosManager({
     return new Promise((resolve, reject) => {
       new Compressor(file, {
         quality: 0.8, // Good balance between quality and compression
-        maxWidth: 2048, // Reasonable max dimension for property photos
-        maxHeight: 2048,
+        maxWidth: MAX_DIMENSION, // Reasonable max dimension for property photos
+        maxHeight: MAX_DIMENSION,
         convertSize: 1000000, // Convert PNGs to JPEGs if they're over ~1MB
         success: (result) => resolve(result),
         error: (err) => reject(err),
