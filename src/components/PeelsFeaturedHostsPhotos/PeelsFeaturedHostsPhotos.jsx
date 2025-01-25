@@ -6,6 +6,7 @@ import PhotoThumbnail from "@/components/PhotoThumbnail";
 import { styled } from "@pigment-css/react";
 
 const featuredListingsForPhotos = [
+  "foo", //Test: doesn't exist
   "Y97gKnA5sl63", //Test: Community, no photos yet
   "MFDxSoGZbTDv", // Test: Residential, no photos yet
   "9xvN9zxH0rzZ", // Test: Business, no photos yet
@@ -71,12 +72,15 @@ function PeelsFeaturedHostsPhotos() {
         .in("slug", featuredListingsForPhotos)
         .neq("type", "residential")
         .neq("visibility", false)
-        .neq("photos", "{}");
+        .neq("photos", "{}")
+        .order("created_at", { ascending: false });
       if (error) {
         console.error("Error loading featured listings:", error);
         return;
       }
-      setFeaturedListings(data);
+      // Randomize the array before setting state
+      const shuffledData = [...data].sort(() => Math.random() - 0.5);
+      setFeaturedListings(shuffledData);
     };
 
     loadListings();
