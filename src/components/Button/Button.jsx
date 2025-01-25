@@ -7,6 +7,7 @@ const buttonStyles = ({ theme }) => ({
   flexShrink: "0",
   border: "none",
   borderRadius: `calc(${theme.corners.base} * 1)`,
+  color: theme.colors.button.secondary.text, // Default color needed for sub-button components like IconButton that don't specifiy a variant
   fontSize: "1rem",
   height: "3rem",
   cursor: "pointer",
