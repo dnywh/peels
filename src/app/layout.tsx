@@ -108,6 +108,12 @@ fieldset {
 * {
   letter-spacing: -0.015em
 }
+
+// Allow animating things like details summary
+// See: https://youtu.be/Vzj3jSUbMtI?si=3xNf56u0E29aNjhr&t=219
+:root {
+  interpolate-size: allow-keywords;
+}
 `;
 
 const Body = styled("body")(({ theme }) => ({
