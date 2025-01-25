@@ -6,11 +6,6 @@ import PhotoThumbnail from "@/components/PhotoThumbnail";
 import { styled } from "@pigment-css/react";
 
 const featuredListingsForPhotos = [
-  "foo", //Test: doesn't exist
-  "Y97gKnA5sl63", //Test: Community, no photos yet
-  "MFDxSoGZbTDv", // Test: Residential, no photos yet
-  "9xvN9zxH0rzZ", // Test: Business, no photos yet
-  "FQ0bZPjrjdvg", // Test: Community, visibility hidden
   "oLbJwGqRQrzo",
   "KX5eqmXGadu2",
   "fmpYQJpmXLLn",
