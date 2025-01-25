@@ -7,6 +7,12 @@ const featuredListingPhotos = [
   "f418551d-f2bd-43f9-8f00-8ff37c98910d.jpg",
 ];
 
+const tempListingPhotos = [
+  "pcf-hot-compost-piles.jpeg",
+  "noah-chickens.jpeg",
+  "pcf-crew.jpeg",
+];
+
 const OrderedList = styled("ol")(({ theme }) => ({
   marginTop: "2rem",
 
@@ -116,9 +122,9 @@ function PeelsHowItWorks() {
         </p>
 
         <PhotoRow>
-          <PhotoThumbnail fileName={featuredListingPhotos[0]} />
-          <PhotoThumbnail fileName={featuredListingPhotos[1]} />
-          <PhotoThumbnail fileName={featuredListingPhotos[2]} />
+          <PhotoThumbnail fileName={tempListingPhotos[0]} />
+          <PhotoThumbnail fileName={tempListingPhotos[1]} />
+          <PhotoThumbnail fileName={tempListingPhotos[2]} />
         </PhotoRow>
       </Step>
     </OrderedList>
