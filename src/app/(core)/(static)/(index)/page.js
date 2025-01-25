@@ -18,8 +18,8 @@ const StyledMain = styled("main")({
   justifyContent: "center",
 
 
-  paddingTop: "15vh",
-  gap: "6rem",
+  paddingTop: "10vh",
+  gap: "5rem", // Match section paddingTop
   marginBottom: "5rem",
 
   "@media (min-width: 768px)": {
@@ -69,10 +69,8 @@ const Intro = styled("div")(({ theme }) => ({
   },
 }));
 
-
-
 const HeroButtons = styled("div")(({ theme }) => ({
-  marginTop: "2rem",
+  marginTop: "1rem",
   width: "100%",
   maxWidth: theme.spacing.tabBar.maxWidth, // Visually match width of tab bar on mobile
   justifyContent: "center",
@@ -81,6 +79,7 @@ const HeroButtons = styled("div")(({ theme }) => ({
   gap: `calc(${theme.spacing.unit} * 2)`,
 
   "@media (min-width: 768px)": {
+    marginTop: "2rem",
     width: "fit-content",
     maxWidth: "none",
     flexDirection: "row",
@@ -94,7 +93,7 @@ const Section = styled("section")(({ theme }) => ({
   gap: "1.55rem",
   maxWidth: "720px",
 
-  paddingTop: `6rem`, // Match page gap
+  paddingTop: `5rem`, // Match page gap
   borderTop: `1px solid ${theme.colors.border.light}`,
 
   "@media (min-width: 768px)": {
@@ -109,6 +108,11 @@ const sharedSectionTextBlockStyles = {
   alignItems: "center",
   justifyContent: "center",
   gap: "0.5rem",
+
+  "& > *": {
+    textAlign: "center",
+    textWrap: "balance",
+  },
 };
 
 const HeadingBlock = styled("div")(({ theme }) => ({
@@ -116,12 +120,6 @@ const HeadingBlock = styled("div")(({ theme }) => ({
 
   maxWidth: "720px",
   padding: `0 calc(${theme.spacing.unit} * 1.5)`,
-
-  "& > *": {
-    textAlign: "center",
-    textWrap: "balance",
-  },
-
 
   "& h2": {
     fontSize: "2.25rem",

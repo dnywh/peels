@@ -66,7 +66,7 @@ const PhotoRow = styled("ul")(({ theme }) => ({
   marginTop: "2rem",
   display: "flex",
   flexDirection: "row",
-  gap: "1rem",
+  gap: "0.75rem",
   justifyContent: "center",
 
   "& li": {
@@ -89,6 +89,10 @@ const PhotoRow = styled("ul")(({ theme }) => ({
         transform: "rotate(2deg) translateY(0.5rem) scale(1.05)",
       },
     },
+  },
+
+  "@media (min-width: 768px)": {
+    gap: "2rem",
   },
 }));
 

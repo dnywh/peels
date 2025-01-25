@@ -15,6 +15,14 @@ const ListingPhotoRemoteImage = styled(RemoteImage)(({ theme }) => ({
   objectFit: "cover",
   backgroundColor: theme.colors.background.map,
   cursor: "zoom-in",
+
+  width: "calc(280px * 0.7)",
+  height: "calc(210px * 0.7)",
+
+  "@media (min-width: 768px)": {
+    width: "280px",
+    height: "210px",
+  },
 }));
 
 function PhotoThumbnail({ fileName }) {

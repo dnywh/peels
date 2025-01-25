@@ -42,9 +42,11 @@ html.map {
 
 [data-vaul-drawer],
 [data-vaul-overlay] {
-  /* z-index stack should be ordered like so, from top to bottom: */
+  /* z-index stack should be ordered like so, from top of stack to bottom: */
   /* 1. Dialogs (e.g. ButtonToDialog) and their overlays */
   /* 2. Drawer content */
+  /* NEW: Tab Bar on mobile (check placement) */
+  /* NEW: "Return to listing" button */
   /* 3. Map search input and output (the results list) */
   /* 4. Map controls */
   /* 5. Any selected map pin */

@@ -43,13 +43,16 @@ const StyledTabBar = styled("div")(({ theme }) => ({
       props: { position: "fixed", breakpoint: "md" },
       style: {
         position: "fixed",
-        top: "calc(1.5rem - 0.5rem)", // Visually indentical positioning to non-floating tab bar. Math: (non-floating inset - floating padding)
-        left: "calc(1.5rem - 0.5rem)",
-        padding: "0.5rem",
+        top: "calc(1.5rem - 0.75rem)", // Visually indentical positioning to non-floating tab bar. Math: (non-floating inset - floating padding)
+        left: "calc(1.5rem - 0.75rem)",
+        padding: "0.75rem",
 
-        borderRadius: "10px",
+        borderRadius: "1rem",
         bottom: "unset",
         right: "unset",
+        backgroundColor: `color-mix(in srgb, ${theme.colors.background.sunk} 80%, transparent)`, // Match the page background
+        backdropFilter: "blur(1.5rem)",
+        zIndex: 3, // Sit above media like the homepage photos
       },
     },
     {
