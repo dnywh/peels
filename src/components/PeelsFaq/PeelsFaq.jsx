@@ -38,6 +38,23 @@ const StyledDetails = styled("details")(({ theme }) => ({
     blockSize: "auto",
   },
 
+  "& > summary:after": {
+    content: "'+'",
+    position: "absolute",
+    // top: "0",
+    top: "0.925rem", // Can't figure out how to center vertically, so doing it optically
+    right: "0",
+    // transform: "translateY(50%)",
+    lineHeight: "1",
+    fontSize: "2rem",
+    fontWeight: "150",
+    color: theme.colors.background.counter,
+  },
+
+  "&[open] > summary:after": {
+    content: "'–'",
+  },
+
   "& > p": {
     // marginBottom: "0",
     // paddingBlockStart: "1rem",
@@ -74,8 +91,8 @@ const StyledDetails = styled("details")(({ theme }) => ({
 
     "&::marker, &::-webkit-details-marker": {
       flexShrink: "0",
-      // content: "none",
-      // display: "none",
+      content: "none",
+      display: "none",
       color: theme.colors.text.ui.quaternary,
       fontSize: "0.75em",
       fontWeight: "100",
