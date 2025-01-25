@@ -1,3 +1,4 @@
+import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
 export const metadata = {
@@ -8,11 +9,11 @@ export default function Support() {
   return (
     <>
       <h1>Support</h1>
-      <p>
-        We’ll soon fill this page out with some proper support mechanisms and
-        resources. In the meantime, please{" "}
+
+      <p>Our <Hyperlink href="/#faq-section">About</Hyperlink> page has answers to some common questions.
+        For anything else, please{" "}
         <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">email us directly</EncodedEmailHyperlink>
-        {" "}if you need help.
+        .
       </p>
     </>
   );

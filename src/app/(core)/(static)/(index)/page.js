@@ -1,41 +1,42 @@
 import { Suspense } from 'react';
 
+import Link from "next/link";
+
 import Button from "@/components/Button";
 import PeelsLogo from "@/components/PeelsLogo";
 import Toast from "@/components/Toast";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import PeelsHowItWorks from "@/components/PeelsHowItWorks";
 import PeelsFaq from "@/components/PeelsFaq";
 
 
 import { styled } from "@pigment-css/react";
 
-const HeadingBlock = styled("div")(({ theme }) => ({
+const StyledMain = styled("main")({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  textAlign: "center",
-  // gap: "1rem",
 
-  maxWidth: "720px",
-  padding: `0 calc(${theme.spacing.unit} * 1.5)`,
 
-  "& h2": {
-    fontSize: "2rem",
-    fontWeight: "700",
-    color: theme.colors.text.brand.primary,
-    textWrap: "balance",
+  paddingTop: "15vh",
+  gap: "6rem",
+  marginBottom: "5rem",
+
+  "@media (min-width: 768px)": {
+    paddingTop: "24vh",
+    gap: "12vh", // Or ~12rem
   },
+});
 
-  "& p": {
-    fontSize: "1rem",
-    color: theme.colors.text.ui.quaternary,
-    textWrap: "balance",
+
+const IntroPeelsLogo = styled(PeelsLogo)({
+  display: "block",
+  "@media (min-width: 768px)": {
+    display: "none",
   },
-}));
-
-
+});
 
 const Intro = styled("div")(({ theme }) => ({
   display: "flex",
@@ -44,44 +45,79 @@ const Intro = styled("div")(({ theme }) => ({
   justifyContent: "center",
   textAlign: "center",
   gap: "1.5rem",
-  maxWidth: "1024px",
+
+  "& > h1": {
+    maxWidth: "24ch",
+    fontSize: "2.75rem",
+    letterSpacing: "-0.03em",
+    lineHeight: "1.05",
+    fontWeight: "775",
+    color: theme.colors.text.primary,
+
+    "@media (min-width: 768px)": {
+      fontSize: "4.75rem",
+    },
+  },
+
+  "& > p": {
+    maxWidth: "56ch",
+    textWrap: "balance",
+    fontSize: "1.25rem",
+    color: theme.colors.text.ui.quaternary,
+
+    "@media (min-width: 768px)": {
+      fontSize: "1.5rem",
+    },
+  },
 }));
 
-const StyledPeelsLogo = styled(PeelsLogo)({
-  display: "block",
-  "@media (min-width: 768px)": {
-    display: "none",
-  },
-});
 
-const StyledMain = styled("main")({
+const HeadingBlock = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
+  gap: "0.5rem",
 
-  paddingTop: "15vh",
-  gap: "8rem",
-  marginBottom: "5rem",
+  maxWidth: "720px",
+  padding: `0 calc(${theme.spacing.unit} * 1.5)`,
 
-  "@media (min-width: 768px)": {
-    paddingTop: "16vh",
+  "& > *": {
+    textAlign: "center",
+    textWrap: "balance",
   },
-});
 
-const Heading1 = styled("h1")(({ theme }) => ({
-  fontSize: "2.75rem",
-  letterSpacing: "-0.03em",
-  lineHeight: "1.05",
-  fontWeight: "775",
-  color: theme.colors.text.primary,
+
+  "& h2": {
+    fontSize: "2.25rem",
+    lineHeight: "115%",
+    fontWeight: "720",
+    color: theme.colors.text.brand.primary,
+
+  },
+
+  "& p": {
+    fontSize: "1.15rem",
+    color: theme.colors.text.ui.quaternary,
+  },
+
+  "& a": {
+    color: "inherit",
+    transition: "color 150ms ease-in-out",
+    "&:hover": {
+      color: theme.colors.text.primary,
+    },
+  },
 
   "@media (min-width: 768px)": {
-    fontSize: "4.5rem",
+    "& h2": {
+      fontSize: "2.75rem",
+    },
   },
 }));
 
 const HeroButtons = styled("div")(({ theme }) => ({
+  marginTop: "2rem",
   width: "100%",
   maxWidth: theme.spacing.tabBar.maxWidth, // Visually match width of tab bar on mobile
   justifyContent: "center",
@@ -102,29 +138,16 @@ const Section = styled("section")(({ theme }) => ({
   alignItems: "center",
   gap: "1.55rem",
   maxWidth: "720px",
-}));
 
-const HeroParagraph = styled("p")(({ theme }) => ({
-  fontSize: "1rem",
-  // letterSpacing: "-0.02em",
-  // lineHeight: "1.5",
-  // fontWeight: "500",
-  textWrap: "balance",
-  color: theme.colors.text.ui.quaternary,
-
-  "& a": {
-    // color: theme.colors.text.secondary,
-    color: "inherit",
-    transition: "color 150ms ease-in-out",
-    "&:hover": {
-      color: theme.colors.text.primary,
-    },
-  },
+  paddingTop: `6rem`, // Match page gap
+  borderTop: `1px solid ${theme.colors.border.light}`,
 
   "@media (min-width: 768px)": {
-    fontSize: "1.25rem",
-  },
+    paddingTop: `12vh`, // Match page gap
+
+  }
 }));
+
 
 
 
@@ -138,12 +161,12 @@ export default function Index() {
       </Suspense>
 
       <Intro>
-        <StyledPeelsLogo size={40} />
-        <Heading1>Find a home for your food scraps, wherever you are.</Heading1>
+        <IntroPeelsLogo size={40} />
+        <h1>Find a home for your food scraps, wherever you are</h1>
 
-        <HeroParagraph>
+        <p>
           Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.
-        </HeroParagraph>
+        </p>
 
         <HeroButtons>
           <Button href="/map" variant="primary" size="massive">
@@ -156,15 +179,25 @@ export default function Index() {
         </HeroButtons>
       </Intro>
 
-
-
       <Section>
+        <HeadingBlock>
+          <h2>Here’s how Peels works</h2>
+          <p>Sharing food scraps with neighbours, community gardens, or even local businesses is easy. Here’s how.</p>
+        </HeadingBlock>
+        <PeelsHowItWorks />
+      </Section>
+
+
+
+      <Section id="faq-section">
         <HeadingBlock>
           <h2>You might be wondering...</h2>
           <p>Doesn’t this already exist? What’s your mission? You’ve got questions, we’ve (hopefully) got answers.</p>
         </HeadingBlock>
-
         <PeelsFaq />
+        <HeadingBlock>
+          <p>Head to our <Link href="/support">Support</Link> page if you have more questions.</p>
+        </HeadingBlock>
       </Section>
     </StyledMain>
   );

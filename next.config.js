@@ -61,6 +61,7 @@ const tokens = {
     black: {
         3: 'hsla(0, 0%, 0%, 0.03)',
         6: 'hsla(0, 0%, 0%, 0.06)',
+        15: 'hsla(0, 0%, 0%, 0.15)',
         33: 'hsla(0, 0%, 0%, 0.33)',
         100: 'hsla(0, 0%, 0%, 1)',
     },
@@ -121,6 +122,7 @@ export default withPigment(
                 overlay: tokens.black[33],
                 error: tokens.ochre[500_0625],
                 map: tokens.ocean[200],
+                counter: tokens.black[15],
             },
             border: {
                 light: tokens.black[3],

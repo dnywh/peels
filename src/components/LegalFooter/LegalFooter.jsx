@@ -1,10 +1,19 @@
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
+import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
 
 const currentYear = new Date().getFullYear();
 
 const StyledFooter = styled("footer")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "1.5rem",
+}));
+
+const StyledNav = styled("nav")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   gap: "0.75rem",
@@ -30,17 +39,20 @@ const StyledFooter = styled("footer")(({ theme }) => ({
   },
 }));
 
-function LegalFooter() {
+function LegalFooter({ logo = false }) {
   return (
     <StyledFooter>
-      <p>
-        © {currentYear} {siteConfig.name}
-      </p>
-      <Link href={siteConfig.links.about}>About</Link>
-      <Link href={siteConfig.links.terms}>Terms</Link>
-      <Link href={siteConfig.links.privacy}>Privacy</Link>
-      <Link href={siteConfig.links.support}>Support</Link>
-      <Link href={siteConfig.links.colophon}>Colophon</Link>
+      {logo && <PeelsLogo color="quaternary" />}
+      <StyledNav>
+        <p>
+          © {currentYear} {siteConfig.name}
+        </p>
+        <Link href={siteConfig.links.about}>About</Link>
+        <Link href={siteConfig.links.terms}>Terms</Link>
+        <Link href={siteConfig.links.privacy}>Privacy</Link>
+        <Link href={siteConfig.links.support}>Support</Link>
+        <Link href={siteConfig.links.colophon}>Colophon</Link>
+      </StyledNav>
     </StyledFooter>
   );
 }
