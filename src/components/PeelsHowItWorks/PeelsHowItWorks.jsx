@@ -1,26 +1,5 @@
-import PhotoThumbnail from "@/components/PhotoThumbnail";
 import { styled } from "@pigment-css/react";
-
-const featuredListingPhotos = [
-  {
-    fileName: "284dad8e-36d5-421f-b831-b9922cb90bd4.jpg",
-    listingId: "1234",
-  },
-  {
-    fileName: "ae184537-0f9f-43ab-9bd7-b0351c4836a6.jpeg",
-    listingId: "2345",
-  },
-  {
-    fileName: "f418551d-f2bd-43f9-8f00-8ff37c98910d.jpg",
-    listingId: "3456",
-  },
-];
-
-const tempListingPhotos = [
-  "pcf-hot-compost-piles.jpeg",
-  "noah-chickens.jpeg",
-  "pcf-crew.jpeg",
-];
+import PeelsFeaturedHostsPhotos from "@/components/PeelsFeaturedHostsPhotos";
 
 const OrderedList = styled("ol")(({ theme }) => ({
   marginTop: "2rem",
@@ -71,40 +50,6 @@ const OrderedList = styled("ol")(({ theme }) => ({
   },
 }));
 
-const PhotoRow = styled("ul")(({ theme }) => ({
-  marginTop: "2rem",
-  display: "flex",
-  flexDirection: "row",
-  gap: "0.75rem",
-  justifyContent: "center",
-
-  "& li": {
-    transition: "transform 200ms cubic-bezier(0.4, 0, 0.2, 1)",
-    "&:first-of-type": {
-      transform: "rotate(-2deg) translateY(0.5rem) scale(1)",
-      "&:hover": {
-        transform: "rotate(-2deg) translateY(0.5rem) scale(1.05)",
-      },
-    },
-    "&:nth-of-type(2)": {
-      transform: "scale(1)",
-      "&:hover": {
-        transform: "scale(1.05)",
-      },
-    },
-    "&:last-of-type": {
-      transform: "rotate(2deg) translateY(0.5rem) scale(1)",
-      "&:hover": {
-        transform: "rotate(2deg) translateY(0.5rem) scale(1.05)",
-      },
-    },
-  },
-
-  "@media (min-width: 768px)": {
-    gap: "2rem",
-  },
-}));
-
 function Step({ title, children }) {
   return (
     <li>
@@ -133,21 +78,7 @@ function PeelsHowItWorks() {
         <p>
           That’s all there is to it! Get out there and meet your neighbours.
         </p>
-
-        <PhotoRow>
-          <PhotoThumbnail
-            fileName={featuredListingPhotos[0].fileName}
-            listingId={featuredListingPhotos[0].listingId}
-          />
-          <PhotoThumbnail
-            fileName={featuredListingPhotos[1].fileName}
-            listingId={featuredListingPhotos[1].listingId}
-          />
-          <PhotoThumbnail
-            fileName={featuredListingPhotos[2].fileName}
-            listingId={featuredListingPhotos[2].listingId}
-          />
-        </PhotoRow>
+        <PeelsFeaturedHostsPhotos />
       </Step>
     </OrderedList>
   );
