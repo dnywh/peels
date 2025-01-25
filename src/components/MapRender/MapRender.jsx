@@ -23,7 +23,19 @@ import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
 
 const snapPoints = ["148px", "355px", 1];
-const todo = false; // Temporarily turning off this feature to inspect scroll bugs
+
+const ReturnToListingButton = styled(Button)({
+  position: "absolute",
+  top: "20px",
+  left: "50%",
+  transform: "translateX(-50%)",
+  zIndex: 1, // Could be interfering with drawer scroll, try setting to 0
+
+  "@media (min-width: 768px)": {
+    top: "auto",
+    bottom: "20px",
+  },
+});
 
 const attributionControlMobileStyle = {
   // Optically position attribution control above-right of TabBar
@@ -49,6 +61,7 @@ export default function MapRender({
   searchInputRef,
   listings,
   selectedListing,
+  listingSlug,
   initialCoordinates,
   onBoundsChange,
   isLoading,
@@ -281,7 +294,6 @@ export default function MapRender({
               }
             />
 
-            {/* <Button>Open or close drawer</Button> */}
             {listings.map((listing) => (
               <DrawerTrigger key={listing.id}>
                 <Marker
@@ -319,25 +331,16 @@ export default function MapRender({
             }}
           />
 
-          {selectedListing && !isListingInView && todo && (
-            <button
+          {/* selectedListing purposefully does not clear when returning to listing, as it clashes with the router. So we need to check for listingSlug too */}
+          {selectedListing && listingSlug && !isListingInView && (
+            <ReturnToListingButton
               onClick={handleFlyToListing}
-              style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                padding: "8px 16px",
-                backgroundColor: "white",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                cursor: "pointer",
-                zIndex: 1, // Could be interfering with drawer scroll, try setting to 0
-              }}
+              variant="secondary"
+              size="small"
+              width="contained"
             >
               Return to listing
-            </button>
+            </ReturnToListingButton>
           )}
         </>
       )}

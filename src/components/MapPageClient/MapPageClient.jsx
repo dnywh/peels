@@ -264,7 +264,7 @@ export default function MapPageClient({ user }) {
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
   const [isDrawerHeaderShown, setIsDrawerHeaderShown] = useState(false);
   const [selectedPinId, setSelectedPinId] = useState(null);
-
+  const [listingSlug, setListingSlug] = useState(null);
   const { isDesktop, hasTouch } = useDeviceContext();
 
   useEffect(() => {
@@ -278,7 +278,8 @@ export default function MapPageClient({ user }) {
 
   useEffect(() => {
     console.log("Managing HTML classes", { hasTouch, snap });
-    const listingSlug = searchParams.get("listing");
+    // const listingSlug = searchParams.get("listing");
+    setListingSlug(searchParams.get("listing"));
 
     if (isDesktop) return;
 
@@ -571,11 +572,7 @@ export default function MapPageClient({ user }) {
     setSelectedPinId(null);
     setSnap(snapPoints[0]); // Helps to remove conditional CSS class from html
 
-    // Explicitly remove the class
-    // This is ignored for some reason on popstate, so commenting out to make clear.
-    // console.log("Removing drawer-fully-open class");
-    // document.documentElement.classList.remove("drawer-fully-open");
-
+    // setSelectedListing(null); // This is purposefully not set to null, as it clashes with the router, which handles clearing listing state
     router.push("/map", { scroll: false, shallow: true });
   }, [router]);
 
@@ -645,6 +642,7 @@ export default function MapPageClient({ user }) {
             searchInputRef={searchInputRef}
             listings={listings}
             selectedListing={selectedListing}
+            listingSlug={listingSlug}
             initialCoordinates={initialCoordinates}
             onBoundsChange={handleBoundsChange}
             isLoading={isLoading}
@@ -745,7 +743,9 @@ export default function MapPageClient({ user }) {
                         removed. Sorry to disappoint.
                       </p>
                     </div>
-                    <Button onClick={handleCloseListing}>Return to map</Button>
+                    <Button variant="primary" onClick={handleCloseListing}>
+                      Return to map
+                    </Button>
                   </NoListingFound>
                 ) : (
                   <ListingRead
