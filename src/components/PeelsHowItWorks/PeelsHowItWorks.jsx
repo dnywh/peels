@@ -75,10 +75,10 @@ function PeelsHowItWorks() {
           Or collect, if you’ve reached out to a local business with scraps to
           give away.
         </p>
+        <PeelsFeaturedHostsPhotos />
         <p>
           That’s all there is to it! Get out there and meet your neighbours.
         </p>
-        <PeelsFeaturedHostsPhotos />
       </Step>
     </OrderedList>
   );

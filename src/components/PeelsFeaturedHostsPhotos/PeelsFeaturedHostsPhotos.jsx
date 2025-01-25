@@ -6,12 +6,18 @@ import PhotoThumbnail from "@/components/PhotoThumbnail";
 import { styled } from "@pigment-css/react";
 
 const featuredListingsForPhotos = [
+  "Y97gKnA5sl63", //Test: Community, no photos yet
+  "MFDxSoGZbTDv", // Test: Residential, no photos yet
+  "9xvN9zxH0rzZ", // Test: Business, no photos yet
+  "FQ0bZPjrjdvg", // Test: Community, visibility hidden
   "oLbJwGqRQrzo",
   "KX5eqmXGadu2",
   "fmpYQJpmXLLn",
-  // "4y9eRikD5Dku",
-  // "o2TTKU3vmBP9",
+  "4y9eRikD5Dku",
+  "o2TTKU3vmBP9",
 ];
+
+const MAX_PHOTOS_TO_SHOW = 3;
 
 const tempListingPhotos = [
   "pcf-hot-compost-piles.jpeg",
@@ -20,7 +26,7 @@ const tempListingPhotos = [
 ];
 
 const PhotoRow = styled("ul")(({ theme }) => ({
-  marginTop: "2rem",
+  margin: "2rem 0",
   display: "flex",
   flexDirection: "row",
   gap: "0.75rem",
@@ -61,8 +67,11 @@ function PeelsFeaturedHostsPhotos() {
     const loadListings = async () => {
       const { data, error } = await supabase
         .from("listings")
-        .select("*")
-        .in("slug", featuredListingsForPhotos);
+        .select()
+        .in("slug", featuredListingsForPhotos)
+        .neq("type", "residential")
+        .neq("visibility", false)
+        .neq("photos", "{}");
       if (error) {
         console.error("Error loading featured listings:", error);
         return;
@@ -75,7 +84,7 @@ function PeelsFeaturedHostsPhotos() {
 
   return (
     <PhotoRow>
-      {featuredListings.map((listing) => (
+      {featuredListings.slice(0, MAX_PHOTOS_TO_SHOW).map((listing) => (
         <PhotoThumbnail
           key={listing.slug}
           fileName={listing.photos[0]}
