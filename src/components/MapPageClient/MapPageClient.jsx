@@ -79,13 +79,18 @@ const ButtonSet = styled("div")({
   position: "absolute",
   right: "0.75rem",
 });
+const sharedButtonStyles = {
+  pointerEvents: "all", // Ignore pointer-events: none on parent
+};
 
 const StyledIconButtonAbsolute = styled(IconButton)({
+  ...sharedButtonStyles,
   position: "absolute",
   right: "0.75rem",
 });
 
 const StyledIconButtonStationary = styled(IconButton)({
+  ...sharedButtonStyles,
   position: "relative",
 });
 
@@ -679,12 +684,16 @@ export default function MapPageClient({ user }) {
               </VisuallyHidden.Root>
               {/* <IconButton onClick={handleChatClose}>Close</IconButton> */}
 
-              <StyledDrawerHeader>
+              <StyledDrawerHeader
+                style={{
+                  pointerEvents: isDrawerHeaderShown ? "auto" : "none", // Allow text underneath to be selected if not shown
+                  userSelect: isDrawerHeaderShown ? "auto" : "none", // Allow text underneath to be selected if not shown
+                }}
+              >
                 <StyledDrawerHeaderInner
                   style={{
-                    transition: "opacity 0.1s ease",
+                    transition: "opacity 75ms ease",
                     opacity: isDrawerHeaderShown ? 1 : 0,
-                    pointerEvents: isDrawerHeaderShown ? "auto" : "none", // Allow text underneath to be selected if not shown
                   }}
                 >
                   <StyledHeaderText>
