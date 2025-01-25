@@ -92,6 +92,7 @@ const Section = styled("section")(({ theme }) => ({
   alignItems: "center",
   gap: "1.55rem",
   maxWidth: "720px",
+  width: "100%",
 
   paddingTop: `5rem`, // Match page gap
   borderTop: `1px solid ${theme.colors.border.light}`,
