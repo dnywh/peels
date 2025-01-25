@@ -22,40 +22,21 @@ function AvatarUploadManager({
 
   const processAvatar = (file) => {
     return new Promise((resolve, reject) => {
-      console.log("Input file dimensions:", {
-        type: file.type,
-        size: Math.round(file.size / 1024) + "KB",
-      });
-
       new Compressor(file, {
         quality: 0.8,
         maxWidth: MAX_DIMENSION,
         maxHeight: MAX_DIMENSION,
-        // Let's try without forcing exact dimensions first
-        // width: MAX_DIMENSION,
-        // height: MAX_DIMENSION,
-        // resize: "cover",
-        // minWidth: MAX_DIMENSION,
-        // minHeight: MAX_DIMENSION,
-        convertSize: 500000,
+        convertSize: 500000, // Convert PNGs to JPEGs if over ~500KB
+        // Force square crop from center
+        width: MAX_DIMENSION,
+        height: MAX_DIMENSION,
+        resize: "cover", // This ensures the image fills the square
         success: (result) => {
-          // Create a temporary URL to get the image dimensions
-          const url = URL.createObjectURL(result);
-          const img = new Image();
-
-          img.onload = () => {
-            console.log("Processed image details:", {
-              original: Math.round(file.size / 1024) + "KB",
-              compressed: Math.round(result.size / 1024) + "KB",
-              width: img.width,
-              height: img.height,
-              type: result.type,
-            });
-            URL.revokeObjectURL(url);
-            resolve(result);
-          };
-
-          img.src = url;
+          console.log("Avatar compression results:", {
+            original: Math.round(file.size / 1024) + "KB",
+            compressed: Math.round(result.size / 1024) + "KB",
+          });
+          resolve(result);
         },
         error: (err) => reject(err),
       });
