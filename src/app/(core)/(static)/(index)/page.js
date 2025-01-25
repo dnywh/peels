@@ -5,8 +5,6 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import PeelsLogo from "@/components/PeelsLogo";
 import Toast from "@/components/Toast";
-import Hyperlink from "@/components/Hyperlink";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 import PeelsHowItWorks from "@/components/PeelsHowItWorks";
 import PeelsFaq from "@/components/PeelsFaq";
 
@@ -72,49 +70,6 @@ const Intro = styled("div")(({ theme }) => ({
 }));
 
 
-const HeadingBlock = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "0.5rem",
-
-  maxWidth: "720px",
-  padding: `0 calc(${theme.spacing.unit} * 1.5)`,
-
-  "& > *": {
-    textAlign: "center",
-    textWrap: "balance",
-  },
-
-
-  "& h2": {
-    fontSize: "2.25rem",
-    lineHeight: "115%",
-    fontWeight: "720",
-    color: theme.colors.text.brand.primary,
-
-  },
-
-  "& p": {
-    fontSize: "1.15rem",
-    color: theme.colors.text.ui.quaternary,
-  },
-
-  "& a": {
-    color: "inherit",
-    transition: "color 150ms ease-in-out",
-    "&:hover": {
-      color: theme.colors.text.primary,
-    },
-  },
-
-  "@media (min-width: 768px)": {
-    "& h2": {
-      fontSize: "2.75rem",
-    },
-  },
-}));
 
 const HeroButtons = styled("div")(({ theme }) => ({
   marginTop: "2rem",
@@ -148,6 +103,62 @@ const Section = styled("section")(({ theme }) => ({
   }
 }));
 
+const sharedSectionTextBlockStyles = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "0.5rem",
+};
+
+const HeadingBlock = styled("div")(({ theme }) => ({
+  ...sharedSectionTextBlockStyles,
+
+  maxWidth: "720px",
+  padding: `0 calc(${theme.spacing.unit} * 1.5)`,
+
+  "& > *": {
+    textAlign: "center",
+    textWrap: "balance",
+  },
+
+
+  "& h2": {
+    fontSize: "2.25rem",
+    lineHeight: "115%",
+    fontWeight: "720",
+    color: theme.colors.text.brand.primary,
+
+  },
+
+  "& p": {
+    fontSize: "1.15rem",
+    color: theme.colors.text.ui.quaternary,
+  },
+
+
+
+  "@media (min-width: 768px)": {
+    "& h2": {
+      fontSize: "2.75rem",
+    },
+  },
+}));
+
+const FooterBlock = styled("footer")(({ theme }) => ({
+  ...sharedSectionTextBlockStyles,
+  "& p": {
+    color: theme.colors.text.ui.quaternary,
+  },
+
+  "& a": {
+    color: "inherit",
+    transition: "color 150ms ease-in-out",
+    "&:hover": {
+      color: theme.colors.text.primary,
+    },
+  },
+}));
 
 
 
@@ -195,9 +206,9 @@ export default function Index() {
           <p>Doesn’t this already exist? What’s your mission? You’ve got questions, we’ve (hopefully) got answers.</p>
         </HeadingBlock>
         <PeelsFaq />
-        <HeadingBlock>
+        <FooterBlock>
           <p>Head to our <Link href="/support">Support</Link> page if you have more questions.</p>
-        </HeadingBlock>
+        </FooterBlock>
       </Section>
     </StyledMain>
   );
