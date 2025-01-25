@@ -595,6 +595,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
           </Button>
 
           <ButtonToDialog
+            variant="danger"
             initialButtonText="Delete listing"
             dialogTitle="Delete listing"
             confirmButtonText="Yes, delete listing"

@@ -102,6 +102,7 @@ export default function ProfileActions({ listings }) {
           </p>
         </ListItemText>
         <ButtonToDialog
+          variant="danger"
           initialButtonText="Delete account"
           dialogTitle="Delete account"
           confirmButtonText={

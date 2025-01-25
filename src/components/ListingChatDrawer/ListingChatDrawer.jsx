@@ -90,7 +90,7 @@ export default function ListingChatDrawer({
             />
           ) : (
             <Drawer.Trigger asChild>
-              <Button>
+              <Button variant="primary">
                 Contact{" "}
                 {listing.type === "residential"
                   ? listing.profiles.first_name
