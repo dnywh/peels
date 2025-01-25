@@ -51,31 +51,39 @@ const StyledDetails = styled("details")(({ theme }) => ({
     },
   },
 
-  "& summary::marker, & summary::-webkit-details-marker": {
-    color: "red",
-    flexShrink: "0",
-    // display: "none",
-  },
-
-  "& summary": {
+  "& > summary": {
     cursor: "pointer",
     borderRadius: theme.corners.base,
     transition: "opacity 150ms ease-in-out",
-    listStylePosition: "outside",
 
-    "&:hover": {
-      opacity: 0.65,
-    },
+    // marginInlineStart: "1rem",
+    // listStylePosition: "outside",
+    // listStyleType: "none",
+
+    position: "relative",
 
     fontSize: "1.2rem",
     fontWeight: "550",
     color: theme.colors.text.ui.primary,
     padding: `calc(${theme.spacing.unit} * 3) 2rem calc(${theme.spacing.unit} * 3) 1rem`,
 
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: "1rem",
+    // display: "flex",
+    // flexDirection: "row",
+    // alignItems: "center",
+    // gap: "1rem",
+
+    "&::marker, &::-webkit-details-marker": {
+      flexShrink: "0",
+      // content: "none",
+      // display: "none",
+      color: theme.colors.text.ui.quaternary,
+      fontSize: "0.75em",
+      fontWeight: "100",
+    },
+
+    "&:hover": {
+      opacity: 0.65,
+    },
   },
 }));
 
