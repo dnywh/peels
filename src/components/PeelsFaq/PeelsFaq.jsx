@@ -9,14 +9,12 @@ const DetailsContainer = styled("div")(({ theme }) => ({
   flexDirection: "column",
   backgroundColor: theme.colors.background.top,
   borderRadius: theme.corners.base,
-  padding: `0 ${theme.spacing.unit}`,
+  // padding: `0 ${theme.spacing.unit}`,
   width: "100%",
   boxShadow: `0px 0px 0px 1px ${theme.colors.border.light}`,
 }));
 
 const StyledDetails = styled("details")(({ theme }) => ({
-  padding: `0 calc(${theme.spacing.unit} * 1.5)`,
-
   "&:not(:last-of-type)": {
     borderBottom: `1px solid ${theme.colors.border.light}`,
   },
@@ -24,14 +22,14 @@ const StyledDetails = styled("details")(({ theme }) => ({
   overflow: "hidden",
 
   // Parent of all the details content
-  // Turn on shadow dom in Chrome to see this in dev tools
-  "&::details-content": {
+  // Turn on shadow DOM settings in Chrome dev tools to inspect this
+  "&::details-content, &::-webkit-details-content": {
     color: theme.colors.text.ui.secondary,
     blockSize: "0",
     transition:
       "block-size 200ms cubic-bezier(0.4, 0, 0.2, 1), content-visibility 200ms cubic-bezier(0.4, 0, 0.2, 1)",
     transitionBehavior: "allow-discrete",
-    padding: `0 2rem 0 1rem`, // Match the summary X padding
+    // padding: `0  calc(${theme.spacing.unit} * 2)`, // Does not render on Safari, done elsewhere in the interim
   },
 
   "&[open]::details-content": {
@@ -40,12 +38,7 @@ const StyledDetails = styled("details")(({ theme }) => ({
 
   "& > summary:after": {
     content: "'+'",
-    position: "absolute",
-    // top: "0",
-    top: "0.925rem", // Can't figure out how to center vertically, so doing it optically
-    right: "0",
-    // transform: "translateY(50%)",
-    lineHeight: "1",
+    lineHeight: "80%",
     fontSize: "2rem",
     fontWeight: "150",
     color: theme.colors.background.counter,
@@ -58,6 +51,7 @@ const StyledDetails = styled("details")(({ theme }) => ({
   "& > p": {
     // marginBottom: "0",
     // paddingBlockStart: "1rem",
+    padding: `0  calc(${theme.spacing.unit} * 3)`, // Match summary padding-x. Interim solution until Safari supports targeting details-content
 
     "& + p": {
       marginTop: "0.5rem",
@@ -73,29 +67,31 @@ const StyledDetails = styled("details")(({ theme }) => ({
     borderRadius: theme.corners.base,
     transition: "opacity 150ms ease-in-out",
 
+    textBoxTrim: "both cap alphabetic",
+
     // marginInlineStart: "1rem",
     // listStylePosition: "outside",
     // listStyleType: "none",
 
-    position: "relative",
+    // position: "relative",
 
     fontSize: "1.2rem",
     fontWeight: "550",
     color: theme.colors.text.ui.primary,
-    padding: `calc(${theme.spacing.unit} * 3) 2rem calc(${theme.spacing.unit} * 3) 1rem`,
+    padding: `calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 3)`, // Match details p padding-x
 
-    // display: "flex",
-    // flexDirection: "row",
-    // alignItems: "center",
-    // gap: "1rem",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: "2rem",
 
     "&::marker, &::-webkit-details-marker": {
-      flexShrink: "0",
+      // flexShrink: "0",
       content: "none",
       display: "none",
-      color: theme.colors.text.ui.quaternary,
-      fontSize: "0.75em",
-      fontWeight: "100",
+      // color: theme.colors.text.ui.quaternary,
+      // fontSize: "0.75em",
+      // fontWeight: "100",
     },
 
     "&:hover": {
