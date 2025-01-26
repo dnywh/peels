@@ -60,6 +60,10 @@ export async function deleteAvatar(filePath, bucket, id) {
     }
 }
 
+export function getListingPhotoUrl(filename, bucket) {
+    return `https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/${bucket}/${filename}`;
+}
+
 export function getAvatarUrl(filename, bucket) {
     // Just using hardcoded URLs for now
     return `https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/${bucket}/${filename}`;

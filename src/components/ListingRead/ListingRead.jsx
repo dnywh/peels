@@ -14,23 +14,23 @@ import { createClient } from "@/utils/supabase/client";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
 import { Drawer } from "vaul";
 
-import RemoteImage from "@/components/RemoteImage";
-
-import PeelsMap from "@/components/PeelsMap";
-import MapPin from "@/components/MapPin";
-import Button from "@/components/Button";
-import { styled } from "@pigment-css/react";
 import { useSearchParams, useRouter } from "next/navigation";
+
+import { getListingDisplayName } from "@/utils/listing";
 
 import turfDistance from "@turf/distance";
 
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
-import { getListingDisplayName } from "@/utils/listing";
-
+import ListingPhotoGallery from "@/components/ListingPhotoGallery";
+import RemoteImage from "@/components/RemoteImage";
+import PeelsMap from "@/components/PeelsMap";
+import MapPin from "@/components/MapPin";
+import Button from "@/components/Button";
+import ListingChatDrawer from "@/components/ListingChatDrawer";
 import Hyperlink from "@/components/Hyperlink";
 
-import ListingChatDrawer from "@/components/ListingChatDrawer";
+import { styled } from "@pigment-css/react";
 
 const Column = styled("div")({
   // Inherit same flex properties as parent, given these columns should be invisible when drawer
@@ -285,19 +285,22 @@ const ListingRead = memo(function Listing({
                 host’s photos.
               </p>
             ) : (
-              <PhotosList>
-                {listing.photos.map((photo, index) => (
-                  <li key={index}>
-                    <ListingPhotoRemoteImage
-                      bucket="listing_photos"
-                      filename={photo}
-                      alt={`Listing photo ${index + 1}`}
-                      width={280}
-                      height={210}
-                    />
-                  </li>
-                ))}
-              </PhotosList>
+              <>
+                <ListingPhotoGallery photos={listing.photos} />
+                <PhotosList>
+                  {listing.photos.map((photo, index) => (
+                    <li key={index}>
+                      <ListingPhotoRemoteImage
+                        bucket="listing_photos"
+                        filename={photo}
+                        alt={`Listing photo ${index + 1}`}
+                        width={280}
+                        height={210}
+                      />
+                    </li>
+                  ))}
+                </PhotosList>
+              </>
             )}
           </ListingReadSection>
         )}
