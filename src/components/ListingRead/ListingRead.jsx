@@ -68,20 +68,6 @@ const ButtonGroup = styled("div")({
   gap: "0.5rem",
 });
 
-const PhotosList = styled("ul")(({ theme }) => ({
-  display: "flex",
-  gap: "0.5rem",
-  overflowX: "scroll",
-  padding: "0 1rem", // Pad by default, override on Photos section
-
-  "& li": {
-    flexShrink: 0,
-    borderRadius: "0.25rem",
-    boxShadow: `0 0 0 2px ${theme.colors.border.elevated} inset`,
-    overflow: "hidden",
-  },
-}));
-
 const ListingPhotoRemoteImage = styled(RemoteImage)(({ theme }) => ({
   mixBlendMode: "multiply", // So box-shadow on parent is visible
   // width: "100px",
@@ -287,19 +273,6 @@ const ListingRead = memo(function Listing({
             ) : (
               <>
                 <ListingPhotoGallery photos={listing.photos} />
-                <PhotosList>
-                  {listing.photos.map((photo, index) => (
-                    <li key={index}>
-                      <ListingPhotoRemoteImage
-                        bucket="listing_photos"
-                        filename={photo}
-                        alt={`Listing photo ${index + 1}`}
-                        width={280}
-                        height={210}
-                      />
-                    </li>
-                  ))}
-                </PhotosList>
               </>
             )}
           </ListingReadSection>
