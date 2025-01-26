@@ -372,16 +372,8 @@ export default function MapPageClient({ user }) {
 
   const loadListingBySlug = async (slug) => {
     const { data, error } = await supabase
-      .from("listings")
-      .select(
-        `
-        *,
-        profiles (
-          first_name,
-          avatar
-        )
-      `
-      )
+      .from("listings_with_owner_data")
+      .select()
       .eq("slug", slug)
       .single();
 

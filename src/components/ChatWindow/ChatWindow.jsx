@@ -66,10 +66,16 @@ const ChatWindow = memo(function ChatWindow({
   const [messageSendError, setMessageSendError] = useState(null);
 
   const recipientName = useMemo(() => {
-    return !listingIsOwnedByUser
-      ? listing?.profiles?.first_name || existingThread?.owner_first_name
-      : existingThread?.initiator_first_name;
-  }, [message, user, listing, existingThread]);
+    if (!listing || !user) return "";
+
+    // If user is the listing owner, show the initiator's name
+    if (listingIsOwnedByUser) {
+      return existingThread?.initiator_first_name || "";
+    }
+
+    // Otherwise, show the owner's name (and listing name for business/community)
+    return listing.owner?.first_name || "Private Host";
+  }, [listing, user, listingIsOwnedByUser, existingThread]);
 
   function handleChatSendError(error) {
     // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
@@ -259,10 +265,9 @@ const ChatWindow = memo(function ChatWindow({
         {/* TODO: Extract and have a 'recipientName' const and a more malleable 'recipient and their listing name' as per above */}
         <p>
           {recipientName}
-
-          {!listingIsOwnedByUser &&
-            listing?.type !== "residential" &&
-            `, ${listing?.name}`}
+          {!listingIsOwnedByUser && listing?.type !== "residential" && (
+            <>, {listing.name}</>
+          )}
         </p>
 
         {!listingIsOwnedByUser && (

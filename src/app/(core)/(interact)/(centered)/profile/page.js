@@ -44,7 +44,7 @@ export default async function ProfilePage({ searchParams }) {
   } = await supabase.auth.getUser();
 
   const { data: listings } = await supabase
-    .from("listings_with_residential_data")
+    .from("listings_with_owner_data")
     .select()
     .eq("owner_id", user.id);
 

@@ -35,14 +35,8 @@ async function getListingData(slug) {
     const { data: { user } } = await supabase.auth.getUser();
 
     const { data: listing } = await supabase
-        .from('listings')
-        .select(`
-      *,
-      profiles (
-        first_name,
-        avatar
-      )
-    `)
+        .from('listings_with_owner_data')
+        .select()
         .match({ slug })
         .single();
 

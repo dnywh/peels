@@ -11,8 +11,8 @@ export function getListingDisplayName(listing, user) {
     if (listing.type === "residential") {
         // Show "Private Host" to non-authenticated users
         if (!user) return "Private Host";
-        // Show first name to authenticated users
-        return listing.profiles?.first_name || "Private Host";
+        // Use the data from our view’s owner object
+        return listing.owner?.first_name || "Private Host";
     }
 
     // For business and community listings, always show the listing name
@@ -33,16 +33,11 @@ export function getListingAvatar(listing, user) {
             };
         }
 
-        // For authenticated users, we need the profile avatar
-        // This assumes the profiles table is properly joined in the query
-        // via listing.owner_id = profiles.id
-        const profileAvatar = listing.owner?.avatar;
-        const profileName = listing.owner?.first_name || 'Owner';
-
+        // Use the data from our view’s owner object
         return {
             bucket: "avatars",
-            filename: profileAvatar || null,
-            alt: `${profileName}'s avatar`
+            filename: listing.owner?.avatar || null,
+            alt: `${listing.owner?.first_name}’s avatar`
         };
     }
 
@@ -50,7 +45,7 @@ export function getListingAvatar(listing, user) {
     return {
         bucket: "listing_avatars",
         filename: listing.avatar || null,
-        alt: `${listing.name}'s avatar`
+        alt: `${listing.name}’s avatar`
     };
 }
 
