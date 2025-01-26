@@ -17,9 +17,16 @@ const StyledMain = styled("main")({
     gap: "3rem",
 
     "@media (min-width: 1280px)": {
-        flexDirection: "row",
         maxWidth: "1024px",
+        display: "grid",
+        gridTemplateColumns: "7fr 5fr",
     },
+    "@media (min-width: 1920px)": {
+        maxWidth: "1536px",
+        gridTemplateColumns: "8fr 4fr",
+        gap: "5rem",
+    },
+
 });
 
 // Move data fetching to a reusable function

@@ -26,12 +26,14 @@ const StyledListingItemList = styled("ol")(({ theme }) => ({
     display: "flex",
     gap: "0.75rem",
     alignItems: "center",
+    containerType: "inline-size", // Needed to stop <a> text from making this container grow
 
     "& a": {
       // Clip text if necessary
       overflow: "hidden",
       whiteSpace: "nowrap",
       textOverflow: "ellipsis",
+      // maxWidth: "40ch",
     },
   },
 

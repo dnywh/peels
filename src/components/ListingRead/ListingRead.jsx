@@ -37,7 +37,6 @@ const Column = styled("div")({
   display: "flex",
   flexDirection: "column",
   gap: "3rem",
-  maxWidth: "720px",
 });
 
 const ListingReadSection = styled("section")({
