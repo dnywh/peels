@@ -11,15 +11,10 @@ const featuredListingsForPhotos = [
   "fmpYQJpmXLLn",
   "4y9eRikD5Dku",
   "o2TTKU3vmBP9",
+  "NPISVZDjJYsl",
 ];
 
 const MAX_PHOTOS_TO_SHOW = 3;
-
-const tempListingPhotos = [
-  "pcf-hot-compost-piles.jpeg",
-  "noah-chickens.jpeg",
-  "pcf-crew.jpeg",
-];
 
 const PhotoRow = styled("ul")(({ theme }) => ({
   margin: "2rem 0",
