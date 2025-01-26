@@ -278,6 +278,14 @@ const ListingRead = memo(function Listing({
           </ListingReadSection>
         )}
 
+        {/* TODO: Other listings also managed by this owner */}
+        {/* {listing.other_listings?.length > 0 && (
+          <ListingReadSection>
+            <h3>Other listings</h3>
+            <ListingItemList items={listing.other_listings} type="other_listings" />
+          </ListingReadSection>
+        )} */}
+
         {listing.links?.length > 0 && (
           <ListingReadSection>
             <h3>Links</h3>
