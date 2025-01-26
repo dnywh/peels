@@ -74,7 +74,7 @@ const ChatWindow = memo(function ChatWindow({
     }
 
     // Otherwise, show the owner's name (and listing name for business/community)
-    return listing.owner?.first_name || "Private Host";
+    return listing.owner_first_name || "Private Host";
   }, [listing, user, listingIsOwnedByUser, existingThread]);
 
   function handleChatSendError(error) {

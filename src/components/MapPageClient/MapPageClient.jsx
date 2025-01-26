@@ -429,18 +429,11 @@ export default function MapPageClient({ user }) {
     if (selectedListing?.id === listingId && isDrawerOpen) {
       return;
     }
-    // Otherwise load the listing details for the new marker
+
+    // Use the same view as initial load slug
     const { data, error } = await supabase
-      .from("listings")
-      .select(
-        `
-        *,
-        profiles (
-          first_name,
-          avatar
-        )
-      `
-      )
+      .from("listings_with_owner_data")
+      .select()
       .eq("id", listingId)
       .single();
 

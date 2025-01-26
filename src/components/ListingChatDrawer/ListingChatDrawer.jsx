@@ -98,7 +98,7 @@ export default function ListingChatDrawer({
           ) : (
             <Drawer.Trigger asChild>
               <Button variant="primary">
-                Contact {listing.owner?.first_name || "Host"}
+                Contact {listing.owner_first_name || "Host"}
               </Button>
             </Drawer.Trigger>
           )
@@ -127,4 +127,19 @@ export default function ListingChatDrawer({
       </Drawer.Portal>
     </DrawerComponent>
   );
+}
+
+export function getListingDisplayName(listing, user) {
+  if (!listing) return "";
+
+  // For residential listings
+  if (listing.type === "residential") {
+    // Show "Private Host" to non-authenticated users
+    if (!user) return "Private Host";
+    // Use the flattened column directly
+    return listing.owner_first_name || "Private Host";
+  }
+
+  // For business and community listings, always show the listing name
+  return listing.name || "";
 }
