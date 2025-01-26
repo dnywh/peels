@@ -88,13 +88,17 @@ export default function ListingChatDrawer({
               visibility={listing.visibility}
               isStub={listing.is_stub}
             />
+          ) : listing.is_stub ? (
+            <ListingCta
+              viewer="guest"
+              slug={listing.slug}
+              visibility={listing.visibility}
+              isStub={true}
+            />
           ) : (
             <Drawer.Trigger asChild>
               <Button variant="primary">
-                Contact{" "}
-                {listing.type === "residential"
-                  ? listing.owner?.first_name
-                  : listing.name}
+                Contact {listing.owner?.first_name || "Host"}
               </Button>
             </Drawer.Trigger>
           )
