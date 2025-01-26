@@ -1,11 +1,18 @@
 import "photoswipe/dist/photoswipe.css";
 import { Gallery, Item } from "react-photoswipe-gallery";
 
-import { getListingPhotoUrl } from "@/utils/mediaUtils";
+// import { getListingPhotoUrl } from "@/utils/mediaUtils";
 
 import RemoteImage from "@/components/RemoteImage";
+// import IconButton from "@/components/IconButton";
 
 import { styled } from "@pigment-css/react";
+
+// const GalleryCloseButton = styled(IconButton)(({ theme }) => ({
+//   position: "absolute",
+//   top: "0.5rem",
+//   right: "0.5rem",
+// }));
 
 const PhotosList = styled("ul")(({ theme }) => ({
   display: "flex",
@@ -24,12 +31,12 @@ const PhotosList = styled("ul")(({ theme }) => ({
       "transform 200ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms cubic-bezier(0.4, 0, 0.2, 1)",
     "&:hover": {
       transform: "scale(0.98)",
-      opacity: 0.8,
+      opacity: 0.86,
     },
   },
 }));
 
-const ListingPhotoRemoteImage = styled(RemoteImage)(({ theme }) => ({
+const ListingPhotoRemoteImageThumnail = styled(RemoteImage)(({ theme }) => ({
   mixBlendMode: "multiply", // So box-shadow on parent is visible
   // width: "100px",
   // height: "10rem",
@@ -44,12 +51,31 @@ const ListingPhotoRemoteImageEnlarged = styled(RemoteImage)(({ theme }) => ({
   boxShadow: "0 0 0 3px rgba(0, 0, 0, 0.20)",
   width: "100%",
   height: "100%",
+  objectFit: "contain",
 }));
+
+const options = {
+  bgOpacity: 0.82,
+  padding: { top: 16, bottom: 16, left: 0, right: 0 },
+  counter: false,
+  // Animation
+  // easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+  hideAnimationDuration: 300,
+  showAnimationDuration: 300,
+  zoomAnimationDuration: 300,
+  preloaderDelay: 0, // Should show loading spinner?
+  //
+  trapFocus: true, // TODO: Mobile doesn't seem to respect this
+  returnFocus: false, // TODO: Mobile doesn't seem to respect this, but only on map view
+  // Click actions
+  bgClickAction: "close",
+};
 
 function ListingPhotoGallery({ photos }) {
   return (
     <PhotosList>
-      <Gallery>
+      <Gallery options={options}>
+        {/* <GalleryCloseButton action="close" /> */}
         {photos.map((photo, index) => (
           <Item
             key={index}
@@ -70,7 +96,7 @@ function ListingPhotoGallery({ photos }) {
             {({ ref, open }) => (
               // Thumbnail
               <li key={index} ref={ref} onClick={open}>
-                <ListingPhotoRemoteImage
+                <ListingPhotoRemoteImageThumnail
                   bucket="listing_photos"
                   filename={photo}
                   alt={`Listing photo ${index + 1}`}
