@@ -1,5 +1,3 @@
-
-
 import { createClient } from "@/utils/supabase/server";
 
 import ProfileHeader from "@/components/ProfileHeader";
@@ -46,7 +44,7 @@ export default async function ProfilePage({ searchParams }) {
   } = await supabase.auth.getUser();
 
   const { data: listings } = await supabase
-    .from("listings")
+    .from("listings_with_residential_data")
     .select()
     .eq("owner_id", user.id);
 
@@ -68,7 +66,7 @@ export default async function ProfilePage({ searchParams }) {
 
       <Section>
         <h2>Listings</h2>
-        <ProfileListings profile={profile} listings={listings} />
+        <ProfileListings user={user} profile={profile} listings={listings} />
       </Section>
 
       <Section>

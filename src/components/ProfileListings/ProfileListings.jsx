@@ -1,8 +1,12 @@
 "use client";
 import Link from "next/link";
-import { styled } from "@pigment-css/react";
+
+import { getListingAvatar } from "@/utils/listing";
+
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
+
+import { styled } from "@pigment-css/react";
 
 const MAX_LISTINGS = 12; // TODO: Store this on Supabase and use in the related RLS policy, so they are always in sync
 
@@ -109,28 +113,43 @@ const Text = styled("div")(({ theme }) => ({
   ],
 }));
 
-export default function ProfileListings({ profile, listings }) {
+export default function ProfileListings({ user, profile, listings }) {
   if (!listings) return null;
 
   return (
     <ListingsList>
-      {listings.map(({ id, slug, type, name, visibility, is_stub }) => (
-        <li key={id}>
-          <ExistingListingLink href={`/profile/listings/${slug}`}>
-            <Avatar size="small" alt={`Listing photo`} />
-            <Text>
-              <h3>{type === "residential" ? profile.first_name : name}</h3>
-              <p>{type.charAt(0).toUpperCase() + type.slice(1)} listing</p>
-            </Text>
-            {!visibility || is_stub ? (
-              <LozengeContainer>
-                {!visibility && <Lozenge>Hidden</Lozenge>}
-                {is_stub && <Lozenge>Stub</Lozenge>}
-              </LozengeContainer>
-            ) : null}
-          </ExistingListingLink>
-        </li>
-      ))}
+      {listings.map((listing) => {
+        const avatarProps = getListingAvatar(listing, user);
+        return (
+          <li key={listing.id}>
+            <ExistingListingLink href={`/profile/listings/${listing.slug}`}>
+              <Avatar
+                bucket={avatarProps.bucket}
+                filename={avatarProps.filename}
+                alt={avatarProps.alt}
+                size="small"
+              />
+              <Text>
+                <h3>
+                  {listing.type === "residential"
+                    ? profile.first_name
+                    : listing.name}
+                </h3>
+                <p>
+                  {listing.type.charAt(0).toUpperCase() + listing.type.slice(1)}{" "}
+                  listing
+                </p>
+              </Text>
+              {!listing.visibility || listing.is_stub ? (
+                <LozengeContainer>
+                  {!listing.visibility && <Lozenge>Hidden</Lozenge>}
+                  {listing.is_stub && <Lozenge>Stub</Lozenge>}
+                </LozengeContainer>
+              ) : null}
+            </ExistingListingLink>
+          </li>
+        );
+      })}
       {/* Only show the "add a/another listing" link if there are less than the maximum amount of allowed listings OR the user is an admin*/}
       {listings.length < MAX_LISTINGS || profile.is_admin ? (
         <li>

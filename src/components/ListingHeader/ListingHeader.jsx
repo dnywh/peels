@@ -1,9 +1,9 @@
-import { styled } from "@pigment-css/react";
-
 import { getListingAvatar } from "@/utils/listing";
 
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
+
+import { styled } from "@pigment-css/react";
 
 const StyledListingHeader = styled("header")(({ theme }) => ({
   display: "flex",

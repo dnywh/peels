@@ -24,31 +24,35 @@ export function getListingAvatar(listing, user) {
 
     // For residential listings
     if (listing.type === "residential") {
-        // Show private avatar to non-authenticated users, if the profile has one
-        if (!user && listing.profiles.avatar) {
+        // Show private avatar to non-authenticated users
+        if (!user) {
             return {
                 bucket: "public",
                 filename: "avatars/private.jpg",
                 alt: "A blurred avatar for Private Host. Sign in to see their full information."
             };
         }
-        // Show actual avatar to authenticated users
+
+        // For authenticated users, we need the profile avatar
+        // This assumes the profiles table is properly joined in the query
+        // via listing.owner_id = profiles.id
+        const profileAvatar = listing.owner?.avatar;
+        const profileName = listing.owner?.first_name || 'Owner';
+
         return {
             bucket: "avatars",
-            filename: listing.profiles.avatar,
-            alt: `${listing.profiles.first_name}’s avatar`
+            filename: profileAvatar || null,
+            alt: `${profileName}'s avatar`
         };
     }
 
     // For business and community listings
     return {
         bucket: "listing_avatars",
-        filename: listing.avatar,
-        alt: `${listing.name}’s avatar`
+        filename: listing.avatar || null,
+        alt: `${listing.name}'s avatar`
     };
 }
-
-
 
 export function getListingDisplayType(listing) {
     if (!listing) return '';
