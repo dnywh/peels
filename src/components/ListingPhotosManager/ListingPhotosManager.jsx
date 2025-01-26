@@ -6,6 +6,7 @@ import { styled } from "@pigment-css/react";
 import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
 import Compressor from "compressorjs";
+import Dropzone from "react-dropzone";
 
 const PhotoGrid = styled("div")({
   display: "grid",
@@ -32,6 +33,28 @@ const PhotoItem = styled("div")({
   },
 });
 
+const DropOverlay = styled("div")({
+  // position: "absolute",
+  // top: 0,
+  // left: 0,
+  // right: 0,
+  // bottom: 0,
+  padding: "1rem",
+  background: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "0.5rem",
+  border: "1px dashed #000",
+
+  "& div": {
+    padding: "2rem",
+    background: "white",
+    borderRadius: "0.5rem",
+    textAlign: "center",
+  },
+});
+
 const MAX_PHOTOS = 5;
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
@@ -47,6 +70,7 @@ function ListingPhotosManager({
 }) {
   const [photos, setPhotos] = useState(initialPhotos);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const compressFile = (file) => {
     return new Promise((resolve, reject) => {
@@ -61,29 +85,31 @@ function ListingPhotosManager({
     });
   };
 
-  const handlePhotoAdd = async (event) => {
-    const files = Array.from(event.target.files);
+  const handleDrop = async (acceptedFiles) => {
+    console.log("Dropped files:", acceptedFiles);
 
-    // Check total number of photos
+    // Convert FileList to Array and process as if they came from input
+    const files = Array.from(acceptedFiles);
+
+    // Reuse existing photo handling logic
     if (files.length + photos.length > MAX_PHOTOS) {
       alert(`You can only upload up to ${MAX_PHOTOS} photos`);
       return;
     }
 
-    // Check total file size
+    // Rest of the handlePhotoAdd logic
     const overSizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
     if (overSizedFiles.length > 0) {
-      if (overSizedFiles.length === 1) {
-        alert(overSizedFileAlertSingular);
-      } else {
-        alert(overSizedFileAlertPlural);
-      }
+      alert(
+        overSizedFiles.length === 1
+          ? overSizedFileAlertSingular
+          : overSizedFileAlertPlural
+      );
       return;
     }
 
     setIsUploading(true);
     try {
-      // Compress all files before upload
       const compressedFiles = await Promise.all(
         files.map((file) => compressFile(file))
       );
@@ -95,23 +121,13 @@ function ListingPhotosManager({
         }))
       );
 
-      if (isNewListing) {
-        const uploadPromises = compressedFiles.map((file) =>
-          uploadListingPhoto(file)
-        );
-        const newFilenames = await Promise.all(uploadPromises);
-        const newPhotos = [...photos, ...newFilenames];
-        setPhotos(newPhotos);
-        onPhotosChange?.(newPhotos);
-      } else {
-        const uploadPromises = compressedFiles.map((file) =>
-          uploadListingPhoto(file, listingSlug)
-        );
-        const newFilenames = await Promise.all(uploadPromises);
-        const newPhotos = [...photos, ...newFilenames];
-        setPhotos(newPhotos);
-        onPhotosChange?.(newPhotos);
-      }
+      const uploadPromises = compressedFiles.map((file) =>
+        uploadListingPhoto(file, !isNewListing ? listingSlug : undefined)
+      );
+      const newFilenames = await Promise.all(uploadPromises);
+      const newPhotos = [...photos, ...newFilenames];
+      setPhotos(newPhotos);
+      onPhotosChange?.(newPhotos);
     } catch (error) {
       // console.error("Upload error details:", error);
 
@@ -140,50 +156,66 @@ function ListingPhotosManager({
   };
 
   return (
-    <div>
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handlePhotoAdd}
-        disabled={isUploading || photos.length >= MAX_PHOTOS}
-        style={{ display: "none" }}
-        id="photo-upload"
-      />
-      <label htmlFor="photo-upload">
-        <Button
-          as="span"
-          variant="secondary"
-          size="small"
-          disabled={isUploading || photos.length >= MAX_PHOTOS}
-        >
-          {isUploading ? "Uploading..." : "Add photos"}
-        </Button>
-      </label>
+    <Dropzone
+      onDrop={handleDrop}
+      onDragEnter={() => setIsDragging(true)}
+      onDragLeave={() => setIsDragging(false)}
+      noClick
+      noKeyboard
+    >
+      {({ getRootProps, getInputProps, isDragActive }) => (
+        <div {...getRootProps()}>
+          {isDragActive && (
+            <DropOverlay>
+              <p>Drop your photos here</p>
+            </DropOverlay>
+          )}
 
-      {photos.length > 0 && (
-        <PhotoGrid>
-          {photos.map((filename, index) => (
-            <PhotoItem key={index}>
-              <RemoteImage
-                bucket="listing_photos"
-                filename={filename}
-                alt={`Photo ${index + 1}`}
-                width={300}
-                height={300}
-              />
-              <Button
-                variant="danger"
-                size="small"
-                onClick={() => handlePhotoDelete(filename)}
-              >
-                Delete
-              </Button>
-            </PhotoItem>
-          ))}
-        </PhotoGrid>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleDrop}
+            disabled={isUploading || photos.length >= MAX_PHOTOS}
+            style={{ display: "none" }}
+            id="photo-upload"
+          />
+          <label htmlFor="photo-upload">
+            <Button
+              as="span"
+              variant="secondary"
+              size="small"
+              disabled={isUploading || photos.length >= MAX_PHOTOS}
+            >
+              {isUploading ? "Uploading..." : "Add photos"}
+            </Button>
+          </label>
+
+          {photos.length > 0 && (
+            <PhotoGrid>
+              {photos.map((filename, index) => (
+                <PhotoItem key={index}>
+                  <RemoteImage
+                    bucket="listing_photos"
+                    filename={filename}
+                    alt={`Photo ${index + 1}`}
+                    width={300}
+                    height={300}
+                  />
+                  <Button
+                    variant="danger"
+                    size="small"
+                    onClick={() => handlePhotoDelete(filename)}
+                  >
+                    Delete
+                  </Button>
+                </PhotoItem>
+              ))}
+            </PhotoGrid>
+          )}
+        </div>
       )}
-    </div>
+    </Dropzone>
   );
 }
 
