@@ -11,7 +11,7 @@ export function getListingDisplayName(listing, user) {
     if (listing.type === "residential") {
         // Show "Private Host" to non-authenticated users
         if (!user) return "Private Host";
-        // Use the data from our view’s owner object
+        // Show first name to authenticated users
         return listing.owner_first_name || "Private Host";
     }
 
@@ -33,7 +33,7 @@ export function getListingAvatar(listing, user) {
             };
         }
 
-        // Use the data from our view’s owner object
+        // Show actual avatar to authenticated users
         return {
             bucket: "avatars",
             filename: listing.owner_avatar || null,
