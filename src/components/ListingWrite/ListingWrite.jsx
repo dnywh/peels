@@ -36,6 +36,8 @@ import FormMessage from "@/components/FormMessage";
 
 import { styled } from "@pigment-css/react";
 
+const DESCRIPTION_MAX_CHARACTERS = 640;
+
 const AdditionalSettings = styled("footer")(({ theme }) => ({
   width: "100%", // Take full width of the container
 
@@ -380,7 +382,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               <Textarea
                 id="description"
                 rows={6}
-                maxLength={512}
+                maxLength={DESCRIPTION_MAX_CHARACTERS}
                 required={true}
                 resize="vertical"
                 placeholder="Your donation details"
@@ -400,7 +402,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               <Textarea
                 id="description"
                 rows={listingType === "residential" ? 4 : 5}
-                maxLength={512}
+                maxLength={DESCRIPTION_MAX_CHARACTERS}
                 required={false}
                 resize="vertical"
                 placeholder={`About your ${listingType === "residential" ? "listing" : listingType}`}
