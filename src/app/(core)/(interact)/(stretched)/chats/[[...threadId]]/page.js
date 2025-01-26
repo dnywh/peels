@@ -25,14 +25,16 @@ export default async function ChatsPage(props) {
         .select(`
             *,
             chat_messages_with_senders (*),
-            listing:listings (
+            listing:listings_with_owner_data (
                 name,
+                owner_first_name,
                 type,
                 slug,
                 visibility
             )
         `)
-        .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`);
+        .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`)
+        .order("created_at", { ascending: false });
 
     // Validate thread access if threadId exists
     if (threadId && !threads?.some(t => t.id === threadId)) {

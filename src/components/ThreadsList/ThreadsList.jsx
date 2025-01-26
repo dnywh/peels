@@ -72,40 +72,44 @@ function ThreadsList({ user, threads, currentThreadId }) {
   return (
     <ThreadsSidebar>
       <h1>Chats</h1>
-      {threads.map((thread) => {
-        const otherPersonName =
-          thread.initiator_id === user.id
-            ? thread.owner_first_name
-            : thread.initiator_first_name;
+      {threads.length > 0 ? (
+        threads.map((thread) => {
+          const otherPersonName =
+            thread.initiator_id === user.id
+              ? thread.owner_first_name
+              : thread.initiator_first_name;
 
-        const displayName =
-          thread.listing?.type !== "residential" &&
-          thread.owner_id ===
-            (thread.initiator_id === user.id
-              ? thread.owner_id
-              : thread.initiator_id)
-            ? `${otherPersonName}, ${thread.listing.name}`
-            : otherPersonName;
+          const displayName =
+            thread.listing?.type !== "residential" &&
+            thread.owner_id ===
+              (thread.initiator_id === user.id
+                ? thread.owner_id
+                : thread.initiator_id)
+              ? `${otherPersonName}, ${thread.listing.name}`
+              : otherPersonName;
 
-        return (
-          <ThreadPreview
-            key={thread.id}
-            selected={thread.id === currentThreadId}
-            onClick={() => handleThreadSelect(thread)}
-          >
-            <h3>{displayName}</h3>
-            {thread.chat_messages_with_senders?.length > 0 && (
-              <LastMessage>
-                {
-                  thread.chat_messages_with_senders[
-                    thread.chat_messages_with_senders.length - 1
-                  ].content
-                }
-              </LastMessage>
-            )}
-          </ThreadPreview>
-        );
-      })}
+          return (
+            <ThreadPreview
+              key={thread.id}
+              selected={thread.id === currentThreadId}
+              onClick={() => handleThreadSelect(thread)}
+            >
+              <h3>{displayName}</h3>
+              {thread.chat_messages_with_senders?.length > 0 && (
+                <LastMessage>
+                  {
+                    thread.chat_messages_with_senders[
+                      thread.chat_messages_with_senders.length - 1
+                    ].content
+                  }
+                </LastMessage>
+              )}
+            </ThreadPreview>
+          );
+        })
+      ) : (
+        <p>No chats yet</p>
+      )}
     </ThreadsSidebar>
   );
 }
