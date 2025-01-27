@@ -2,6 +2,10 @@ import { createClient } from "@/utils/supabase/server";
 import ListingWrite from "@/components/ListingWrite";
 import FormHeader from '@/components/FormHeader';
 
+export const metadata = {
+    title: 'Add Listing', // TODO: Generate metadata to include the type of listing, see edit listing page
+}
+
 const typeConfig = {
     residential: {
         title: 'Add your listing',

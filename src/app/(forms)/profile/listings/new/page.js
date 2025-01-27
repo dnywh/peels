@@ -8,9 +8,9 @@ import FormHeader from '@/components/FormHeader';
 import RadioGroup from '@/components/RadioGroup';
 import Radio from '@/components/Radio';
 
-// export const metadata = {
-//     title: 'New Listing',
-// }
+export const metadata = {
+    title: 'Add Listing', // TODO: Generate metadata to include the type of listing, see edit listing page
+}
 
 const listingTypes = [
     {

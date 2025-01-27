@@ -52,7 +52,6 @@ export default async function EditListingPage({ params }) {
     return (
         <>
             <FormHeader button="back">
-                {/* <h1>{listing.type === "residential" ? profile.first_name : listing.name}</h1> */}
                 <h1>Edit listing</h1>
             </FormHeader>
 

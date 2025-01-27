@@ -490,6 +490,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             />
           </FieldsetWithGap>
 
+          {/* TODO: Selecting field should highlight button, just like every other input */}
           {listingType !== "residential" && (
             <MultiInput
               label="External links"
@@ -529,14 +530,6 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 <option value="false">Hide this listing from the map</option>
               </Select>
             </Field>
-
-            {/* onChange event is handled differently because Radix Switch provides a direct boolean value in its change handler. */}
-            {/* <SwitchToggle
-              id="visibility"
-              label="Show on map"
-              checked={visibility}
-              onChange={(checked) => setVisibility(checked)}
-            /> */}
           </FormSection>
         )}
 
