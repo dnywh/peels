@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "@hello-pangea/dnd": "^17.0.0",
     "@heroicons/react": "^2.2.0",
     "@maptiler/geocoding-control": "^2.0.1",
     "@maptiler/sdk": "^2.5.1",
@@ -42,7 +43,6 @@
     "protomaps-themes-base": "^4.3.0",
     "public-ip": "^7.0.1",
     "react": "19.0.0",
-    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "19.0.0",
     "react-dropzone": "^14.3.5",
     "react-map-gl": "^7.1.8",

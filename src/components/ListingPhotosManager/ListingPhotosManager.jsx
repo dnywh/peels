@@ -6,7 +6,8 @@ import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
 import Compressor from "compressorjs";
 import Dropzone from "react-dropzone";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+// import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import { styled } from "@pigment-css/react";
 
