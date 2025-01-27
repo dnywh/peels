@@ -1,11 +1,12 @@
 import { Public_Sans } from "next/font/google";
 import "@pigment-css/react/styles.css";
 import "./globals.css";
-
-import Link from "next/link";
 import { Metadata } from "next";
 import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site";
+
+import Link from "next/link";
+import { Analytics } from "@vercel/analytics/react";
 
 import { globalCss, styled } from "@pigment-css/react";
 import type { ExtendTheme } from "@pigment-css/react/theme";
@@ -156,6 +157,7 @@ export default function RootLayout({
     // Re-add suppressHydrationWarning? What was it in for?
     <html lang="en" className={publicSans.className}>
       <Body>{children}</Body>
+      <Analytics />
     </html>
   );
 }
