@@ -57,7 +57,11 @@ export function getListingDisplayType(listing) {
         // Show "Local resident" 
         return "Local resident";
     }
+    // For community listings
+    if (listing.type === "community") {
+        return "Community spot";
+    }
 
-    // We can rely on just the listing type for business and community listings
+    // We can rely on just the listing type for business listings (and anything else that doesn't have a specific display type)
     return `Local ${listing.type}`;
 }
