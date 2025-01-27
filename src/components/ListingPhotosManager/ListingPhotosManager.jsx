@@ -6,23 +6,42 @@ import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
 import Compressor from "compressorjs";
 import Dropzone from "react-dropzone";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import { styled } from "@pigment-css/react";
 
-const PhotoGrid = styled("div")({
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-  gap: "1rem",
-  marginTop: "1rem",
+const DropzoneContents = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem", // Match Fieldset gap
+});
+
+const PhotoList = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
+  // marginTop: "1rem",
+  flexWrap: "nowrap",
 });
 
 const PhotoItem = styled("div")({
   position: "relative",
-  aspectRatio: "1",
+  aspectRatio: "4/3",
+  maxWidth: "300px",
+
+  // Add subtle hover state
+  "&:hover": {
+    cursor: "grab",
+  },
+
+  "&:active": {
+    cursor: "grabbing",
+  },
 
   "& img": {
     width: "100%",
     height: "100%",
+    aspectRatio: "4/3",
     objectFit: "cover",
     borderRadius: "0.5rem",
   },
@@ -41,8 +60,10 @@ const DropOverlay = styled("aside")(({ theme }) => ({
   justifyContent: "center",
   borderRadius: "0.5rem",
   border: `2.5px dashed ${theme.colors.border.special}`,
-  marginTop: "1rem",
   padding: "5rem 1rem",
+  maxWidth: "300px", // Match PhotoItem maxWidth
+  height: "100%", // Match PhotoItem height
+  aspectRatio: "4/3", // Match PhotoItem aspectRatio
 
   "& p": {
     textAlign: "center",
@@ -152,11 +173,85 @@ function ListingPhotosManager({
     }
   };
 
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const items = Array.from(photos);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    console.log("Photos reordered:", items);
+    setPhotos(items);
+    onPhotosChange?.(items);
+  };
+
   return (
     <>
       <Dropzone onDrop={handleDrop} noClick noKeyboard>
         {({ getRootProps, getInputProps, isDragActive }) => (
-          <div {...getRootProps()}>
+          <DropzoneContents {...getRootProps()}>
+            {photos.length > 0 && (
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable
+                  droppableId="photos"
+                  direction="vertical"
+                  // Things that react-beautiful-dnd gets mad about me NOT defining...
+                  isDropDisabled={false}
+                  isCombineEnabled={false}
+                  ignoreContainerClipping={false}
+                >
+                  {(provided) => (
+                    <PhotoList
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
+                      {photos.map((filename, index) => (
+                        <Draggable
+                          key={filename}
+                          draggableId={filename}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <PhotoItem
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                ...provided.draggableProps.style,
+                                opacity: snapshot.isDragging ? 0.8 : 1,
+                              }}
+                            >
+                              <RemoteImage
+                                bucket="listing_photos"
+                                filename={filename}
+                                alt={`Photo ${index + 1}`}
+                                width={400}
+                                height={300}
+                              />
+                              <Button
+                                variant="danger"
+                                size="small"
+                                onClick={() => handlePhotoDelete(filename)}
+                              >
+                                Delete
+                              </Button>
+                            </PhotoItem>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </PhotoList>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            )}
+
+            {isDragActive && (
+              <DropOverlay>
+                <p>Drop photos here</p>
+              </DropOverlay>
+            )}
+
             <input
               {...getInputProps()}
               type="file"
@@ -168,46 +263,23 @@ function ListingPhotosManager({
             />
             <label htmlFor="photo-upload">
               <Button
+                id="photo-upload-button"
+                name="photo-upload-button"
                 as="span"
                 variant="secondary"
                 size="small"
                 disabled={isUploading || photos.length >= MAX_PHOTOS}
               >
-                {isUploading ? "Uploading..." : "Add photos"}
+                {isUploading
+                  ? "Uploading..."
+                  : photos.length > 0
+                    ? "Add more photos"
+                    : "Add photos"}
               </Button>
             </label>
-
-            {isDragActive && (
-              <DropOverlay>
-                <p>Drop photos here</p>
-              </DropOverlay>
-            )}
-          </div>
+          </DropzoneContents>
         )}
       </Dropzone>
-
-      {photos.length > 0 && (
-        <PhotoGrid>
-          {photos.map((filename, index) => (
-            <PhotoItem key={index}>
-              <RemoteImage
-                bucket="listing_photos"
-                filename={filename}
-                alt={`Photo ${index + 1}`}
-                width={300}
-                height={300}
-              />
-              <Button
-                variant="danger"
-                size="small"
-                onClick={() => handlePhotoDelete(filename)}
-              >
-                Delete
-              </Button>
-            </PhotoItem>
-          ))}
-        </PhotoGrid>
-      )}
     </>
   );
 }

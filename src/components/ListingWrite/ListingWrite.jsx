@@ -38,6 +38,12 @@ import { styled } from "@pigment-css/react";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
+const FieldsetWithGap = styled(Fieldset)({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
+});
+
 const AdditionalSettings = styled("footer")(({ theme }) => ({
   width: "100%", // Take full width of the container
 
@@ -324,8 +330,9 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
           {listingType === "residential" ? (
             <Field>
-              <Label htmlFor="name">Your first name</Label>
+              <Label htmlFor="first_name">Your first name</Label>
               <Input
+                id="first_name"
                 name="first_name"
                 {...FIELD_CONFIGS.firstName}
                 defaultValue={profile.first_name}
@@ -471,15 +478,17 @@ export default function ListingWrite({ initialListing, user, profile }) {
             </p>
           </FormSectionHeader>
 
-          <Fieldset>
-            <Label required={false}>Photos</Label>
+          <FieldsetWithGap>
+            <Label htmlFor="photo-upload-button" required={false}>
+              Photos
+            </Label>
             <ListingPhotosManager
               initialPhotos={initialListing ? photos : pendingPhotos}
               listingSlug={initialListing?.slug}
               onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
               isNewListing={!initialListing}
             />
-          </Fieldset>
+          </FieldsetWithGap>
 
           {listingType !== "residential" && (
             <MultiInput
