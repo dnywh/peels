@@ -8,9 +8,10 @@ import FormHeader from '@/components/FormHeader';
 import RadioGroup from '@/components/RadioGroup';
 import Radio from '@/components/Radio';
 
-export const metadata = {
-    title: 'Add Listing', // TODO: Generate metadata to include the type of listing, see edit listing page
-}
+// Not possible because this page is marked as "use client". Nest children in client components and then add the metadata
+// export const metadata = {
+//     title: 'Add Listing', // TODO: Generate metadata to include the type of listing, see edit listing page
+// }
 
 const listingTypes = [
     {
