@@ -109,7 +109,7 @@ export async function uploadListingPhoto(file, listingSlug = null) {
     return fileName;
 }
 
-export async function deleteListingPhoto(filePath, listingSlug) {
+export async function deleteListingPhoto(filePath, listingSlug = null) {
     const supabase = createClient();
 
     try {
@@ -119,23 +119,28 @@ export async function deleteListingPhoto(filePath, listingSlug) {
             .remove([filePath]);
         if (storageError) throw storageError;
 
-        // Update the photos array
-        const { data: listing } = await supabase
-            .from('listings')
-            .select('photos')
-            .eq('slug', listingSlug)
-            .single();
+        // Only update the database if we have a listing slug
+        if (listingSlug) {
+            const { data: listing } = await supabase
+                .from('listings')
+                .select('photos')
+                .eq('slug', listingSlug)
+                .single();
 
-        const updatedPhotos = listing.photos.filter(photo => photo !== filePath);
+            const updatedPhotos = listing.photos.filter(photo => photo !== filePath);
 
-        const { error: updateError } = await supabase
-            .from('listings')
-            .update({ photos: updatedPhotos })
-            .eq('slug', listingSlug);
-        if (updateError) throw updateError;
+            const { error: updateError } = await supabase
+                .from('listings')
+                .update({ photos: updatedPhotos })
+                .eq('slug', listingSlug);
+            if (updateError) throw updateError;
 
-        console.log('Photo deleted successfully:', filePath);
-        return updatedPhotos;
+            console.log('Photo deleted and database updated:', filePath);
+            return updatedPhotos;
+        }
+
+        console.log('Photo deleted from storage:', filePath);
+        return null;
     } catch (error) {
         console.error('Error deleting photo:', error);
         throw error;

@@ -164,12 +164,20 @@ function ListingPhotosManager({
 
   const handlePhotoDelete = async (photoToDelete) => {
     try {
-      await deleteListingPhoto(photoToDelete, listingSlug);
+      // Immediately remove from react-beautiful-dnd's context
       const newPhotos = photos.filter((photo) => photo !== photoToDelete);
       setPhotos(newPhotos);
       onPhotosChange?.(newPhotos);
+
+      // Then attempt the delete operation
+      await deleteListingPhoto(photoToDelete, listingSlug);
     } catch (error) {
       console.error("Error deleting photo:", error);
+
+      // If the delete fails, revert the UI state
+      setPhotos(photos);
+      onPhotosChange?.(photos);
+      alert("Failed to delete photo. Please try again.");
     }
   };
 
