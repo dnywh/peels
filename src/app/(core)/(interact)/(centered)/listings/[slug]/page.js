@@ -64,6 +64,8 @@ export default async function ListingPage({ params }) {
     const { slug } = await params;
     const { user, listing } = await getListingData(slug);
 
+    // TODO: Return 'Success' toast for new listings
+
     if (!listing) {
         notFound();
     }

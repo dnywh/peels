@@ -78,6 +78,10 @@ function prettifyLink(link) {
     link = link.replace(/^www\./, ""); // Remove www. if present
     link = link.split("?")[0]; // Remove query parameters
   }
+  if (link.includes("mailto")) {
+    link = link.replace("mailto:", "");
+    return link;
+  }
   return link;
 }
 

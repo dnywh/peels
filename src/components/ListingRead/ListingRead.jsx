@@ -219,8 +219,13 @@ const ListingRead = memo(function Listing({
               </p>
             ) : (
               <p>
-                {listingDisplayName} is a {listing.type} located in{" "}
-                {listing.area_name}.
+                {listingDisplayName} is{" "}
+                {listing.type === "business"
+                  ? "a business"
+                  : listing.type === "community"
+                    ? "a community spot"
+                    : ""}{" "}
+                located in {listing.area_name}.
               </p>
             )}
 
