@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
-import { styled } from "@pigment-css/react";
 import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
 import Compressor from "compressorjs";
 import Dropzone from "react-dropzone";
+
+import { styled } from "@pigment-css/react";
 
 const PhotoGrid = styled("div")({
   display: "grid",
@@ -33,27 +34,23 @@ const PhotoItem = styled("div")({
   },
 });
 
-const DropOverlay = styled("div")({
-  // position: "absolute",
-  // top: 0,
-  // left: 0,
-  // right: 0,
-  // bottom: 0,
-  padding: "1rem",
-  background: "rgba(0, 0, 0, 0.5)",
+const DropOverlay = styled("aside")(({ theme }) => ({
+  background: theme.colors.background.between,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   borderRadius: "0.5rem",
-  border: "1px dashed #000",
+  border: `2.5px dashed ${theme.colors.border.special}`,
+  marginTop: "1rem",
+  padding: "5rem 1rem",
 
-  "& div": {
-    padding: "2rem",
-    background: "white",
-    borderRadius: "0.5rem",
+  "& p": {
     textAlign: "center",
+    whiteSpace: "nowrap",
+    color: theme.colors.text.ui.tertiary,
+    fontWeight: "600",
   },
-});
+}));
 
 const MAX_PHOTOS = 5;
 const MAX_MB = 10;
@@ -156,66 +153,62 @@ function ListingPhotosManager({
   };
 
   return (
-    <Dropzone
-      onDrop={handleDrop}
-      onDragEnter={() => setIsDragging(true)}
-      onDragLeave={() => setIsDragging(false)}
-      noClick
-      noKeyboard
-    >
-      {({ getRootProps, getInputProps, isDragActive }) => (
-        <div {...getRootProps()}>
-          {isDragActive && (
-            <DropOverlay>
-              <p>Drop your photos here</p>
-            </DropOverlay>
-          )}
-
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleDrop}
-            disabled={isUploading || photos.length >= MAX_PHOTOS}
-            style={{ display: "none" }}
-            id="photo-upload"
-          />
-          <label htmlFor="photo-upload">
-            <Button
-              as="span"
-              variant="secondary"
-              size="small"
+    <>
+      <Dropzone onDrop={handleDrop} noClick noKeyboard>
+        {({ getRootProps, getInputProps, isDragActive }) => (
+          <div {...getRootProps()}>
+            <input
+              {...getInputProps()}
+              type="file"
+              accept="image/*"
+              multiple
               disabled={isUploading || photos.length >= MAX_PHOTOS}
-            >
-              {isUploading ? "Uploading..." : "Add photos"}
-            </Button>
-          </label>
+              style={{ display: "none" }}
+              id="photo-upload"
+            />
+            <label htmlFor="photo-upload">
+              <Button
+                as="span"
+                variant="secondary"
+                size="small"
+                disabled={isUploading || photos.length >= MAX_PHOTOS}
+              >
+                {isUploading ? "Uploading..." : "Add photos"}
+              </Button>
+            </label>
 
-          {photos.length > 0 && (
-            <PhotoGrid>
-              {photos.map((filename, index) => (
-                <PhotoItem key={index}>
-                  <RemoteImage
-                    bucket="listing_photos"
-                    filename={filename}
-                    alt={`Photo ${index + 1}`}
-                    width={300}
-                    height={300}
-                  />
-                  <Button
-                    variant="danger"
-                    size="small"
-                    onClick={() => handlePhotoDelete(filename)}
-                  >
-                    Delete
-                  </Button>
-                </PhotoItem>
-              ))}
-            </PhotoGrid>
-          )}
-        </div>
+            {isDragActive && (
+              <DropOverlay>
+                <p>Drop photos here</p>
+              </DropOverlay>
+            )}
+          </div>
+        )}
+      </Dropzone>
+
+      {photos.length > 0 && (
+        <PhotoGrid>
+          {photos.map((filename, index) => (
+            <PhotoItem key={index}>
+              <RemoteImage
+                bucket="listing_photos"
+                filename={filename}
+                alt={`Photo ${index + 1}`}
+                width={300}
+                height={300}
+              />
+              <Button
+                variant="danger"
+                size="small"
+                onClick={() => handlePhotoDelete(filename)}
+              >
+                Delete
+              </Button>
+            </PhotoItem>
+          ))}
+        </PhotoGrid>
       )}
-    </Dropzone>
+    </>
   );
 }
 
