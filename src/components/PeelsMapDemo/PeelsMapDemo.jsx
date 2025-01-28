@@ -9,23 +9,55 @@ import ListingRead from "@/components/ListingRead";
 
 import { styled } from "@pigment-css/react";
 
-const MapPinContainer = styled("div")(({ theme }) => ({
+const Container = styled("div")(({ theme }) => ({
+  width: "100%",
+
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+
+  "@media (min-width: 768px)": {
+    flexDirection: "row",
+  },
+}));
+
+const MapContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   gap: "1rem",
 
   alignItems: "center",
   justifyContent: "center",
+
+  position: "relative",
+  width: "100%",
+  maxWidth: "512px",
+  height: "200px",
+  background: theme.colors.background.map,
+
+  // Add debug crosshair at center
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: "20px",
+    height: "20px",
+    transform: "translate(-50%, -50%)",
+    border: "1px solid red",
+    borderRadius: "50%",
+  },
 }));
 
 const MarkerDemo = styled("div")(({ theme }) => ({
-  position: "relative", // Needed for the child map pin to be positioned correctly
-}));
-
-const MapPinDemo = styled(MapPin)(({ theme }) => ({
-  // position: "absolute",
-  // top: "0",
-  // left: "0",
+  // First centre each marker
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  // Then set their offset
+  transform:
+    "translate(calc(-50% + var(--x-offset) * 1%), calc(-50% + var(--y-offset) * 1%))",
 }));
 
 const ListingDemo = styled("div")(({ theme }) => ({
@@ -35,48 +67,103 @@ const ListingDemo = styled("div")(({ theme }) => ({
   borderRadius: "1rem",
   maxHeight: "50vh",
   overflow: "hidden",
-
   width: "100%",
   maxWidth: "512px",
-  transform: "scale(0.95) rotate(1deg)",
+  transform: `scale(0.95) rotate(var(--rotation-angle))`,
+  transition: "opacity 0.5s ease-out, transform 0.5s ease-out",
+
+  "&[data-transitioning='true']": {
+    opacity: 0,
+    transform: `scale(0.93) rotate(var(--rotation-angle))`,
+  },
 }));
 
 export default function PeelsMapDemo() {
-  const [selectedListing, setSelectedListing] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [rotationAngle, setRotationAngle] = useState(0);
 
-  const loadListingBySlug = async (slug) => {
-    const listing = exampleListings.find((listing) => listing.slug === slug);
-    setSelectedListing(listing);
+  const loadListingByIndex = async (index) => {
+    setIsTransitioning(true);
+
+    // Wait for fade out
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    setSelectedIndex(index);
+
+    // Generate new rotation angle only after fade out, before fade in
+    const newRotation = Math.random() * 4 - 2; // Random value between -2 and +2
+    setRotationAngle(newRotation);
+
+    // Reset transition state after a brief delay
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 50);
   };
 
-  // Load listing by slug on mount
+  // Initial load effect - runs once
   useEffect(() => {
-    loadListingBySlug(exampleListings[0].slug);
-  }, []);
+    // Start with a random index
+    const randomIndex = Math.floor(Math.random() * exampleListings.length);
+    loadListingByIndex(randomIndex);
+  }, []); // Empty dependency array for initial load only
+
+  // Cycling effect - separate from initial load
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Move to next index, loop back to 0 if we're at the end
+      const nextIndex = (selectedIndex + 1) % exampleListings.length;
+      console.log("Cycling to listing index:", nextIndex);
+      loadListingByIndex(nextIndex);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [selectedIndex]); // Need selectedIndex to calculate next index
+
+  const getGaussianRandom = () => {
+    // Box-Muller transform for normal distribution
+    const u1 = Math.random();
+    const u2 = Math.random();
+    const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    // Scale to roughly -30 to +30 with most points clustered near center
+    return z * 15;
+  };
 
   return (
-    <>
-      <MapPinContainer>
-        {exampleListings.map((listing, index) => (
-          <MarkerDemo
-            key={listing.slug}
-            onClick={() => loadListingBySlug(listing.slug)}
-          >
-            <MapPinDemo
-              selected={selectedListing?.slug === listing.slug}
-              type={listing.type}
-            />
-          </MarkerDemo>
-        ))}
-      </MapPinContainer>
+    <Container>
+      <MapContainer>
+        {exampleListings.map((listing, index) => {
+          console.log(`Marker ${index} position:`, {
+            x: listing.map_position.x,
+            y: listing.map_position.y,
+            name: listing.name,
+          });
 
-      <ListingDemo>
+          return (
+            <MarkerDemo
+              key={index}
+              onClick={() => loadListingByIndex(index)}
+              style={{
+                "--x-offset": listing.map_position.x,
+                "--y-offset": listing.map_position.y,
+              }}
+            >
+              <MapPin selected={selectedIndex === index} type={listing.type} />
+            </MarkerDemo>
+          );
+        })}
+      </MapContainer>
+
+      <ListingDemo
+        data-transitioning={isTransitioning}
+        style={{ "--rotation-angle": `${rotationAngle}deg` }}
+      >
         <ListingRead
-          listing={selectedListing}
+          listing={exampleListings[selectedIndex]}
           presentation="demo"
           user={null}
         />
       </ListingDemo>
-    </>
+    </Container>
   );
 }

@@ -153,7 +153,7 @@ const ListingRead = memo(function Listing({
   }
 
   return (
-    <Fragment key={listing?.id ? listing.id : listing?.slug}>
+    <Fragment key={listing?.id ? listing.id : undefined}>
       <Column>
         <ListingHeader
           listing={listing}
