@@ -1,5 +1,6 @@
 export const exampleListings = [
     {
+        is_demo: true,
         name: "Some Community A",
         accepted_items: [
             "Any biodegradable kitchen scraps."
@@ -10,11 +11,13 @@ export const exampleListings = [
             "NO green biodegradable bags as they take too long to decompose "
         ],
         type: "community",
-        avatar: "c0f8c777-6223-4637-88c9-a29a3a426c9f.jpeg",
+        avatar: "chook-2.jpg",
         slug: "abv",
         area_name: "Newport",
+        description: "test description here."
     },
     {
+        is_demo: true,
         name: "Some Resident A",
         accepted_items: [
             "Any biodegradable kitchen scraps."
@@ -25,11 +28,13 @@ export const exampleListings = [
             "NO green biodegradable bags as they take too long to decompose "
         ],
         type: "residential",
-        avatar: "c0f8c777-6223-4637-88c9-a29a3a426c9f.jpeg",
+        avatar: "chook-3.jpg",
         slug: "3gw4",
         area_name: "Newport",
+        description: "test description here."
     },
     {
+        is_demo: true,
         name: "Some Business",
         accepted_items: [
             "Any biodegradable kitchen scraps."
@@ -40,8 +45,9 @@ export const exampleListings = [
             "NO green biodegradable bags as they take too long to decompose "
         ],
         type: "business",
-        avatar: "c0f8c777-6223-4637-88c9-a29a3a426c9f.jpeg",
+        avatar: "chook-3.jpg",
         slug: "hdrzh",
         area_name: "Newport",
+        description: "test description here."
     },
 ];

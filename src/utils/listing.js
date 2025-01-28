@@ -22,6 +22,15 @@ export function getListingDisplayName(listing, user) {
 export function getListingAvatar(listing, user) {
     if (!listing) return null;
 
+    if (listing?.is_demo) {
+        console.log("this is a demo!");
+        return {
+            bucket: "demo",
+            filename: listing?.avatar,
+            alt: `${listing?.name}’s avatar`
+        };
+    }
+
     // For residential listings
     if (listing.type === "residential") {
         // Show private avatar to non-authenticated users

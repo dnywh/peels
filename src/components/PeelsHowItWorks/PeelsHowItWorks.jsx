@@ -9,15 +9,17 @@ const OrderedList = styled("ol")(({ theme }) => ({
   flexDirection: "column",
   gap: "5rem",
   alignItems: "center",
-  textAlign: "center",
   counterReset: "step-counter",
 
   "& > li": {
+    width: "100%",
+
     listStyle: "none",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: "0.5rem",
+
     "&:before": {
       content: "counter(step-counter)",
       counterIncrement: "step-counter",
@@ -33,6 +35,11 @@ const OrderedList = styled("ol")(({ theme }) => ({
       fontWeight: "700",
     },
 
+    "& > h3, & > p": {
+      textAlign: "center",
+      textWrap: "balance",
+    },
+
     "& > h3": {
       fontSize: "1.75rem",
       fontWeight: "700",
@@ -46,7 +53,6 @@ const OrderedList = styled("ol")(({ theme }) => ({
       color: theme.colors.text.ui.quaternary,
       // But make a little narrower than the homepage
       maxWidth: "44ch",
-      textWrap: "balance",
     },
   },
 }));

@@ -37,9 +37,12 @@ const Column = styled("div")({
   display: "flex",
   flexDirection: "column",
   gap: "3rem",
+
+  // width: "100%",
 });
 
 const ListingReadSection = styled("section")({
+  // width: "100%",
   padding: " 0 1rem", // Pad by default ,override on Photos section
 
   "& p + p": {
@@ -97,11 +100,13 @@ const ListingRead = memo(function Listing({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
+  // Skip loading thread and other real-data specific logic if in demo mode
   const [existingThread, setExistingThread] = useState(null);
   const supabase = createClient();
 
   // Load existing thread if any
   useEffect(() => {
+    if (presentation === "demo") return;
     async function loadExistingThread() {
       // console.log("Loading existing thread for listing:", listing.slug);
 
@@ -140,12 +145,18 @@ const ListingRead = memo(function Listing({
     setMapZoomLevel(initialZoomLevel);
   }, []);
 
-  const listingDisplayName = getListingDisplayName(listing, user);
+  const listingDisplayName =
+    presentation === "demo"
+      ? listing?.name
+      : getListingDisplayName(listing, user);
 
-  if (!listing) return null;
+  if (!listing && presentation !== "demo") {
+    console.log("Listing not found");
+    return null;
+  }
 
   return (
-    <Fragment key={listing.id}>
+    <Fragment key={listing?.id ? listing.id : listing?.slug}>
       <Column>
         <ListingHeader
           listing={listing}
@@ -153,36 +164,38 @@ const ListingRead = memo(function Listing({
           user={user}
         />
 
-        <ListingChatDrawer
-          isNested={presentation === "drawer" ? true : false}
-          user={user}
-          listing={listing}
-          isChatDrawerOpen={isChatDrawerOpen}
-          setIsChatDrawerOpen={setIsChatDrawerOpen}
-          existingThread={existingThread}
-          listingDisplayName={listingDisplayName}
-        />
+        {presentation !== "demo" && (
+          <ListingChatDrawer
+            isNested={presentation === "drawer" ? true : false}
+            user={user}
+            listing={listing}
+            isChatDrawerOpen={isChatDrawerOpen}
+            setIsChatDrawerOpen={setIsChatDrawerOpen}
+            existingThread={existingThread}
+            listingDisplayName={listingDisplayName}
+          />
+        )}
 
-        {listing.description && (
+        {listing?.description && (
           <ListingReadSection>
             <h3>
               {listing.type === "business" ? "Donation details" : "About"}
             </h3>
-            <ParagraphWithLineBreaks text={listing.description} />
+            <ParagraphWithLineBreaks text={listing?.description} />
           </ListingReadSection>
         )}
 
-        {listing.accepted_items?.length > 0 && (
+        {listing?.accepted_items?.length > 0 && (
           <ListingReadSection>
             <h3>Accepted</h3>
-            <ListingItemList items={listing.accepted_items} type="accepted" />
+            <ListingItemList items={listing?.accepted_items} type="accepted" />
           </ListingReadSection>
         )}
 
-        {listing.rejected_items?.length > 0 && (
+        {listing?.rejected_items?.length > 0 && (
           <ListingReadSection>
             <h3>Not accepted</h3>
-            <ListingItemList items={listing.rejected_items} type="rejected" />
+            <ListingItemList items={listing?.rejected_items} type="rejected" />
           </ListingReadSection>
         )}
       </Column>

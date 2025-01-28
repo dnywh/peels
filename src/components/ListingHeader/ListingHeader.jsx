@@ -6,6 +6,8 @@ import Lozenge from "@/components/Lozenge";
 import { styled } from "@pigment-css/react";
 
 const StyledListingHeader = styled("header")(({ theme }) => ({
+  // width: "100%",
+
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
@@ -38,14 +40,20 @@ const StyledLozenge = styled(Lozenge)(({ theme }) => ({
 }));
 
 function ListingHeader({ listing, listingName, user }) {
-  const avatarProps = getListingAvatar(listing, user);
+  const avatarProps = listing?.is_demo
+    ? {
+        bucket: "demo",
+        filename: listing?.avatar,
+        alt: `${listing?.name}’s avatar`,
+      }
+    : getListingAvatar(listing, user);
 
   return (
     <StyledListingHeader>
       <Avatar
-        bucket={avatarProps.bucket}
-        filename={avatarProps.filename}
-        alt={avatarProps.alt}
+        bucket={avatarProps?.bucket}
+        filename={avatarProps?.filename}
+        alt={avatarProps?.alt || "The avatar for this listing"}
         size="large"
       />
 
@@ -53,34 +61,34 @@ function ListingHeader({ listing, listingName, user }) {
         <h1>{listingName}</h1>
 
         {/* Use getListingDisplayType() here? Or is it too limiting? */}
-        {listing.type === "residential" && (
+        {listing?.type === "residential" && (
           <p>
-            {listing.area_name ? (
-              <>Resident of {listing.area_name}</>
+            {listing?.area_name ? (
+              <>Resident of {listing?.area_name}</>
             ) : (
               "Local resident"
             )}
           </p>
         )}
-        {listing.type === "community" && (
+        {listing?.type === "community" && (
           <p>
-            {listing.area_name ? (
-              <>Community in {listing.area_name}</>
+            {listing?.area_name ? (
+              <>Community in {listing?.area_name}</>
             ) : (
               "Local community"
             )}
           </p>
         )}
-        {listing.type === "business" && (
+        {listing?.type === "business" && (
           <p>
-            {listing.area_name ? (
-              <>Business in {listing.area_name}</>
+            {listing?.area_name ? (
+              <>Business in {listing?.area_name}</>
             ) : (
               "Local business"
             )}
           </p>
         )}
-        {listing.is_stub && <StyledLozenge>Stub</StyledLozenge>}
+        {listing?.is_stub && <StyledLozenge>Stub</StyledLozenge>}
       </StyledText>
     </StyledListingHeader>
   );

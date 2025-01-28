@@ -28,6 +28,19 @@ const MapPinDemo = styled(MapPin)(({ theme }) => ({
   // left: "0",
 }));
 
+const ListingDemo = styled("div")(({ theme }) => ({
+  marginTop: "2rem",
+  backgroundColor: theme.colors.background.top,
+  padding: "2.5rem 1rem",
+  borderRadius: "1rem",
+  maxHeight: "50vh",
+  overflow: "hidden",
+
+  width: "100%",
+  maxWidth: "512px",
+  transform: "scale(0.95) rotate(1deg)",
+}));
+
 export default function PeelsMapDemo() {
   const [selectedListing, setSelectedListing] = useState(null);
 
@@ -57,12 +70,13 @@ export default function PeelsMapDemo() {
         ))}
       </MapPinContainer>
 
-      <p>Selected listing: {selectedListing?.name}</p>
-      <ListingRead
-        selectedListing={selectedListing}
-        setSelectedListing={setSelectedListing}
-        presentation="demo"
-      />
+      <ListingDemo>
+        <ListingRead
+          listing={selectedListing}
+          presentation="demo"
+          user={null}
+        />
+      </ListingDemo>
     </>
   );
 }
