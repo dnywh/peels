@@ -15,8 +15,8 @@ export const exampleListings = [
         area_name: "Newport",
         description: "test description here.",
         map_position: {
-            x: -100, // 20% left from center
-            y: -15  // 15% up from center
+            x: -30, // 30% left from center
+            y: -20  // 20% up from center
         }
     },
     {
@@ -35,8 +35,8 @@ export const exampleListings = [
         area_name: "Newport",
         description: "test description here.",
         map_position: {
-            x: 85,  // 25% right from center
-            y: -10  // 10% up from center
+            x: 40,  // 40% right from center
+            y: -20  // 20% up from center
         }
     },
     {
@@ -55,8 +55,8 @@ export const exampleListings = [
         area_name: "Newport",
         description: "test description here.",
         map_position: {
-            x: -90, // 10% left from center
-            y: 20   // 20% down from center
+            x: -50, // 50% left from center
+            y: 30   // 30% down from center
         }
     },
     {
@@ -75,8 +75,8 @@ export const exampleListings = [
         area_name: "Newport",
         description: "test description here.",
         map_position: {
-            x: 65,  // 15% right from center
-            y: 15   // 15% down from center
+            x: 55,  // 55% right from center
+            y: 60   // 60% down from center
         }
     },
     {

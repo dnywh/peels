@@ -55,9 +55,13 @@ const MarkerDemo = styled("div")(({ theme }) => ({
   position: "absolute",
   top: "50%",
   left: "50%",
-  // Then set their offset
-  transform:
-    "translate(calc(-50% + var(--x-offset) * 1%), calc(-50% + var(--y-offset) * 1%))",
+  // Use the container's dimensions for offset calculation
+  transform: `
+    translate(
+      calc(-50% + (var(--x-offset) * 1px)), 
+      calc(-50% + (var(--y-offset) * 1px))
+    )
+  `,
 }));
 
 const ListingDemo = styled("div")(({ theme }) => ({
@@ -133,19 +137,26 @@ export default function PeelsMapDemo() {
     <Container>
       <MapContainer>
         {exampleListings.map((listing, index) => {
-          console.log(`Marker ${index} position:`, {
-            x: listing.map_position.x,
-            y: listing.map_position.y,
-            name: listing.name,
-          });
+          // Convert percentage to pixels based on container dimensions
+          const containerWidth = 512; // maxWidth of MapContainer
+          const containerHeight = 200; // height of MapContainer
+          const xPixels = (listing.map_position.x / 100) * (containerWidth / 2);
+          const yPixels =
+            (listing.map_position.y / 100) * (containerHeight / 2);
+
+          // console.log(`Marker ${index} pixels:`, {
+          //   x: xPixels,
+          //   y: yPixels,
+          //   name: listing.name,
+          // });
 
           return (
             <MarkerDemo
               key={index}
               onClick={() => loadListingByIndex(index)}
               style={{
-                "--x-offset": listing.map_position.x,
-                "--y-offset": listing.map_position.y,
+                "--x-offset": xPixels,
+                "--y-offset": yPixels,
               }}
             >
               <MapPin selected={selectedIndex === index} type={listing.type} />
