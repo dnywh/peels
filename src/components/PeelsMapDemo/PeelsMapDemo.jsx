@@ -65,16 +65,23 @@ const MarkerDemo = styled("div")(({ theme }) => ({
 }));
 
 const ListingDemo = styled("div")(({ theme }) => ({
-  marginTop: "2rem",
+  marginTop: "-4rem",
   backgroundColor: theme.colors.background.top,
   padding: "2.5rem 1rem",
   borderRadius: "1rem",
   maxHeight: "50vh",
   overflow: "hidden",
-  width: "100%",
-  maxWidth: "512px",
-  transform: `scale(0.95) rotate(var(--rotation-angle))`,
-  transition: "opacity 0.5s ease-out, transform 0.5s ease-out",
+  width: "95vw",
+  maxWidth: "400px",
+  transform: `scale(0.93) rotate(var(--rotation-angle))`,
+  transition: "opacity 200ms ease-out, transform 200ms ease-out",
+
+  "@media (min-width: 768px)": {
+    marginTop: "0",
+    marginLeft: "-4rem",
+    transform: `scale(0.95) rotate(var(--rotation-angle))`,
+    maxHeight: "unset",
+  },
 
   "&[data-transitioning='true']": {
     opacity: 0,
