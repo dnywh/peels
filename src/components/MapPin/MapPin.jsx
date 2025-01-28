@@ -1,4 +1,3 @@
-import React from "react";
 import MapBusinessIcon from "../MapBusinessIcon";
 import MapCommunityIcon from "../MapCommunityIcon";
 import MapResidentialIcon from "../MapResidentialIcon";

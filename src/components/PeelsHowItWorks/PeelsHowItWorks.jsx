@@ -1,4 +1,5 @@
 import { styled } from "@pigment-css/react";
+import PeelsMapDemo from "@/components/PeelsMapDemo";
 import PeelsFeaturedHostsPhotos from "@/components/PeelsFeaturedHostsPhotos";
 
 const OrderedList = styled("ol")(({ theme }) => ({
@@ -64,6 +65,7 @@ function PeelsHowItWorks() {
     <OrderedList>
       <Step number={1} title="Find a host">
         <p>Select a marker on the map.</p>
+        <PeelsMapDemo />
       </Step>
 
       <Step number={2} title="Contact">

@@ -748,13 +748,9 @@ export default function MapPageClient({ user }) {
                   <ListingRead
                     user={user}
                     listing={selectedListing}
-                    setSelectedListing={handleCloseListing}
-                    isDrawer={true}
-                    isDesktop={isDesktop}
+                    presentation="drawer"
                     isChatDrawerOpen={isChatDrawerOpen}
                     setIsChatDrawerOpen={setIsChatDrawerOpen}
-                    pagePadding={pagePadding}
-                    sidebarWidth={sidebarWidth}
                   />
                 )}
               </StyledDrawerInner>
