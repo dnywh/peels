@@ -110,14 +110,22 @@ function PeelsFaq() {
           <Hyperlink href="https://dannywhite.net" target="_blank">
             Danny White
           </Hyperlink>
-          , an Australian product designer with 10 years experience working on
-          products including Airbnb, ChatGPT, Kickstarter, and Facebook.
+          , a product designer with 10 years experience working on products
+          including Airbnb, ChatGPT, Kickstarter, and Facebook. He helped start
+          the composting program at Pocket City Farms and previously built a
+          traveller’s guide to reducing food waste.
         </p>
         <p>
-          Danny is passionate about food waste and composting. He helped start
-          the composting program at Pocket City Farms, has worked on organic
-          farms around the world, and has previously built a traveller’s guide
-          to reducing food waste.
+          <Hyperlink
+            href="https://www.linkedin.com/in/camerondelmoro"
+            target="_blank"
+          >
+            Cameron Del Moro
+          </Hyperlink>{" "}
+          is heading our waste education outreach efforts. He’s an environmental
+          advisor with over 10 years experience working on waste reduction at
+          Gold Coast Airport, Gold Coast Council, Brisbane City Council, and
+          other local government areas.
         </p>
       </StyledDetails>
       <StyledDetails name="faq">
@@ -132,8 +140,8 @@ function PeelsFaq() {
           can think of Peels as a direct replacement for ShareWaste.
         </p>
         <p>
-          We’ve got plans to build out general area guides for composting and
-          other features in the not too distant future.
+          We’ve got plenty of other ideas in the pipeline, including general
+          area guides for composting. Stay tuned for those.
         </p>
       </StyledDetails>
       <StyledDetails name="faq">
