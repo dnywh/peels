@@ -100,16 +100,17 @@ const ListingRead = memo(function Listing({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
-  // Skip loading thread and other real-data specific logic if in demo mode
   const [existingThread, setExistingThread] = useState(null);
-  const supabase = createClient();
+  const [mapZoomLevel, setMapZoomLevel] = useState(null);
 
-  // Load existing thread if any
+  // Only initialize Supabase if not in demo mode
+  const supabase = presentation !== "demo" ? createClient() : null;
+
+  // Load existing thread if any (only for non-demo mode)
   useEffect(() => {
-    if (presentation === "demo") return;
-    async function loadExistingThread() {
-      // console.log("Loading existing thread for listing:", listing.slug);
+    if (presentation === "demo" || !supabase || !user || !listing) return;
 
+    async function loadExistingThread() {
       const { data: thread, error } = await supabase
         .from("chat_threads_with_participants")
         .select(
@@ -133,12 +134,8 @@ const ListingRead = memo(function Listing({
       setExistingThread(thread);
     }
 
-    if (user && listing) {
-      loadExistingThread();
-    }
-  }, [listing?.id, user?.id]);
-
-  const [mapZoomLevel, setMapZoomLevel] = useState(null);
+    loadExistingThread();
+  }, [listing?.id, user?.id, presentation, supabase]);
 
   const initialZoomLevel = 14;
   useEffect(() => {
@@ -312,7 +309,7 @@ const ListingRead = memo(function Listing({
             </ListingReadSection>
           )}
 
-          {presentation !== "drawer" && (
+          {presentation === "drawer" && (
             <ListingReadSection>
               <Button
                 variant="secondary"
