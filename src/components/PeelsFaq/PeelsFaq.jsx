@@ -140,8 +140,8 @@ function PeelsFaq() {
           can think of Peels as a direct replacement for ShareWaste.
         </p>
         <p>
-          We’ve got plans to build out general area guides for composting and
-          other features in the not too distant future.
+          We’ve got plenty of other ideas in the pipeline, including general
+          area guides for composting. Stay tuned for those.
         </p>
       </StyledDetails>
       <StyledDetails name="faq">
