@@ -20,11 +20,12 @@ const StyledMain = styled("main")({
 
   paddingTop: "10vh",
   gap: "5rem", // Match section paddingTop
-  marginBottom: "5rem",
+  marginBottom: "5rem", // Match gap
 
   "@media (min-width: 768px)": {
     paddingTop: "24vh",
     gap: "12vh", // Or ~12rem
+    marginBottom: "12vh", // Match gap
   },
 });
 
