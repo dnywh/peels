@@ -191,7 +191,7 @@ export default function Index() {
 
       <Section>
         <HeadingBlock>
-          <h2>Here’s how Peels works</h2>
+          <h2>Here’s how it works</h2>
           <p>Sharing food scraps with neighbours, community gardens, or even local businesses is easy. Here’s how.</p>
         </HeadingBlock>
         <PeelsHowItWorks />

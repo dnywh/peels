@@ -180,6 +180,27 @@ function PeelsFaq() {
         </p>
       </StyledDetails>
       <StyledDetails name="faq">
+        <summary>How can I promote Peels to my community?</summary>
+        <p>
+          First off, thank you! Peels only works with a thriving map of
+          listings, so getting the word out is crucial.
+        </p>
+        <p>
+          Check out our{" "}
+          <Hyperlink
+            href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/promo-kit.zip`}
+          >
+            promo kit
+          </Hyperlink>{" "}
+          which includes social media tiles and and a printable poster in both
+          letter and A4 sizes. Don’t hesistate to{" "}
+          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+            reach out
+          </EncodedEmailHyperlink>{" "}
+          for something more specific to your community.
+        </p>
+      </StyledDetails>
+      <StyledDetails name="faq">
         <summary>
           I represent local or state government. How can I get involved?
         </summary>
@@ -188,8 +209,8 @@ function PeelsFaq() {
           always keen to work with more (around the world, too!). Please{" "}
           <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
             email us
-          </EncodedEmailHyperlink>{" "}
-          if you’d like to get involved.
+          </EncodedEmailHyperlink>
+          .
         </p>
       </StyledDetails>
     </DetailsContainer>
