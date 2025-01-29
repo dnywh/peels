@@ -45,17 +45,15 @@ const StyledMessagesContainer = styled("div")({
 
 // Memoize the ChatWindow component
 const ChatWindow = memo(function ChatWindow({
+  isDrawer = false,
   user,
   listing,
-  listingName,
-  setIsChatDrawerOpen,
   existingThread = null,
-  isDrawer = false,
+  demo = false,
 }) {
-  console.log({ listing });
   const router = useRouter();
   // Move Supabase client creation outside of render
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = demo ? null : useMemo(() => createClient(), []);
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
@@ -88,10 +86,9 @@ const ChatWindow = memo(function ChatWindow({
     }
   }
 
-  // console.log("Chat window component rendering");
-
   // Check if the listing is owned by the user
   useEffect(() => {
+    if (demo) return;
     // console.log("Existing thread owned by user?", { existingThread, threadId });
     console.log("existingThread", existingThread);
     if (existingThread && existingThread.owner_id === user.id) {
@@ -113,6 +110,8 @@ const ChatWindow = memo(function ChatWindow({
   }, [existingThread]);
 
   async function initializeChat() {
+    if (demo) return;
+
     try {
       console.log("Initializing chat:", {
         listing_id: listing?.id,
@@ -171,6 +170,8 @@ const ChatWindow = memo(function ChatWindow({
   }
 
   async function loadMessages(threadId) {
+    if (demo) return;
+
     const { data: messages, error } = await supabase
       // TODO: Check, is there a mismatch or duplication of efforts/data between the  `listing:listings_with_owner_data` join in [[...threadId]] page.js and the data retrieved here?
       .from("chat_messages_with_senders")
@@ -183,6 +184,7 @@ const ChatWindow = memo(function ChatWindow({
       return;
     }
 
+    console.log("Messages loaded:", messages);
     setMessages(messages || []);
   }
 
@@ -283,7 +285,13 @@ const ChatWindow = memo(function ChatWindow({
           messages.map((message) => (
             <ChatMessage
               key={message.id}
-              direction={message.sender_id === user.id ? "sent" : "received"}
+              direction={
+                demo
+                  ? "received"
+                  : message.sender_id === user.id
+                    ? "sent"
+                    : "received"
+              }
               message={message}
             />
           ))}

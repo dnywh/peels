@@ -117,10 +117,8 @@ export default function ListingChatDrawer({
         <StyledDrawerContent data-vaul-no-drag={!hasTouch ? true : undefined}>
           <ChatWindow
             isDrawer={true}
-            setIsChatDrawerOpen={setIsChatDrawerOpen}
             user={user}
             listing={listing}
-            listingDisplayName={listingDisplayName}
             existingThread={existingThread}
           />
         </StyledDrawerContent>
