@@ -10,6 +10,8 @@ import ListingRead from "@/components/ListingRead";
 
 import { styled } from "@pigment-css/react";
 
+const INTERVAL_DURATION = 7000;
+
 const Wrapper = styled("div")(({ theme }) => ({
   width: "100vw",
 
@@ -92,7 +94,7 @@ const ListingContainer = styled("div")(({ theme }) => ({
 
 const ListingBackground = styled("div")(({ theme }) => ({
   background: theme.colors.background.pit,
-  border: `3px dashed ${theme.colors.border.light}`,
+  border: `5px dashed ${theme.colors.border.light}`,
   borderRadius: `calc(${theme.corners.base} * 2)`,
 
   position: "absolute",
@@ -178,9 +180,8 @@ export default function PeelsMapDemo() {
     const interval = setInterval(() => {
       // Move to next index, loop back to 0 if we're at the end
       const nextIndex = (selectedIndex + 1) % demoListings.length;
-      console.log("Cycling to listing index:", nextIndex);
       loadListingByIndex(nextIndex);
-    }, 8000);
+    }, INTERVAL_DURATION);
 
     return () => clearInterval(interval);
   }, [selectedIndex]); // Need selectedIndex to calculate next index
