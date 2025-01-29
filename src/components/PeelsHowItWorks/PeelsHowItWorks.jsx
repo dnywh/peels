@@ -79,12 +79,12 @@ function PeelsHowItWorks() {
   return (
     <OrderedList>
       <Step number={1} title="Find a host">
-        <p>Select a marker on the map, and see who’s nearby.</p>
+        <p>Select a marker on the map to see who’s nearby.</p>
         <PeelsMapDemo />
       </Step>
 
       <Step number={2} title="Contact" id="contact">
-        <p>Arrange to drop-off your food scraps via chat, if necessary.</p>
+        <p>Arrange to drop-off or collect your scraps via chat.</p>
       </Step>
 
       <Step number={3} title="Drop-off">

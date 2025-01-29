@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 
 import { demoListings } from "@/data/demo/listings";
 
+import PeelsLogo from "@/components/PeelsLogo";
 import MapPin from "@/components/MapPin";
 import ListingRead from "@/components/ListingRead";
 
 import { styled } from "@pigment-css/react";
 
-const Container = styled("div")(({ theme }) => ({
+const Wrapper = styled("div")(({ theme }) => ({
   width: "100vw",
 
   display: "flex",
@@ -20,6 +21,7 @@ const Container = styled("div")(({ theme }) => ({
   maskImage: "linear-gradient(black 80%, transparent 95%)",
 
   "@media (min-width: 768px)": {
+    marginLeft: "-5rem", // Optical offset
     marginTop: "1.5rem",
     flexDirection: "row",
     // maskImage: "none",
@@ -47,7 +49,7 @@ const MapContainer = styled("div")(({ theme }) => ({
   "@media (min-width: 768px)": {
     maxWidth: "640px",
     height: "512px",
-    marginLeft: "6rem", // Match margins on ListingDemo
+    marginLeft: "5rem", // Match margins on ListingDemo
   },
   // Add debug crosshair at center
   // "&::after": {
@@ -77,11 +79,43 @@ const MarkerDemo = styled("div")(({ theme }) => ({
   `,
 }));
 
-const ListingDemo = styled("div")(({ theme }) => ({
+const ListingContainer = styled("div")(({ theme }) => ({
   marginTop: "-7rem",
+  position: "relative",
 
+  "@media (min-width: 768px)": {
+    marginTop: "0",
+    marginLeft: "-4rem", // Match map container margin
+    marginRight: "1rem", // For awkward viewport widths
+  },
+}));
+
+const ListingBackground = styled("div")(({ theme }) => ({
+  background: theme.colors.background.pit,
+  border: `3px dashed ${theme.colors.border.light}`,
+  borderRadius: `calc(${theme.corners.base} * 2)`,
+
+  position: "absolute",
+  top: "0",
+  left: "0",
+  right: "0",
+  bottom: "0",
+
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+
+  transform: `scale(0.65) rotate(-1.5deg)`,
+
+  "& > svg": {
+    opacity: "0.45",
+  },
+}));
+
+const ListingDemo = styled("div")(({ theme }) => ({
   backgroundColor: theme.colors.background.top,
-  height: "50vh",
+  height: "512px",
   overflow: "hidden",
   width: "95vw",
   maxWidth: "400px",
@@ -93,9 +127,6 @@ const ListingDemo = styled("div")(({ theme }) => ({
   borderRadius: `${theme.corners.base}`,
 
   "@media (min-width: 768px)": {
-    marginTop: "0",
-    marginLeft: "-4rem", // Match map container margin
-    marginRight: "2rem",
     transform: `scale(0.95) rotate(var(--rotation-angle))`,
     height: "640px",
   },
@@ -154,17 +185,8 @@ export default function PeelsMapDemo() {
     return () => clearInterval(interval);
   }, [selectedIndex]); // Need selectedIndex to calculate next index
 
-  const getGaussianRandom = () => {
-    // Box-Muller transform for normal distribution
-    const u1 = Math.random();
-    const u2 = Math.random();
-    const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-    // Scale to roughly -30 to +30 with most points clustered near center
-    return z * 15;
-  };
-
   return (
-    <Container>
+    <Wrapper>
       <MapContainer>
         {demoListings.map((listing, index) => {
           // Convert percentage to pixels based on container dimensions
@@ -173,12 +195,6 @@ export default function PeelsMapDemo() {
           const xPixels = (listing.map_position.x / 100) * (containerWidth / 2);
           const yPixels =
             (listing.map_position.y / 100) * (containerHeight / 2);
-
-          // console.log(`Marker ${index} pixels:`, {
-          //   x: xPixels,
-          //   y: yPixels,
-          //   name: listing.name,
-          // });
 
           return (
             <MarkerDemo
@@ -198,16 +214,21 @@ export default function PeelsMapDemo() {
         })}
       </MapContainer>
 
-      <ListingDemo
-        data-transitioning={isTransitioning}
-        style={{ "--rotation-angle": `${rotationAngle}deg` }}
-      >
-        <ListingRead
-          listing={demoListings[selectedIndex]}
-          presentation="demo"
-          user={null}
-        />
-      </ListingDemo>
-    </Container>
+      <ListingContainer>
+        <ListingBackground>
+          <PeelsLogo size={96} color="quaternary" />
+        </ListingBackground>
+        <ListingDemo
+          data-transitioning={isTransitioning}
+          style={{ "--rotation-angle": `${rotationAngle}deg` }}
+        >
+          <ListingRead
+            listing={demoListings[selectedIndex]}
+            presentation="demo"
+            user={null}
+          />
+        </ListingDemo>
+      </ListingContainer>
+    </Wrapper>
   );
 }

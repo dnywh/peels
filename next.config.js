@@ -88,12 +88,12 @@ const tokens = {
         100: 'hsla(22, 35%, 96%, 1)',
         150: 'hsla(22, 35%, 95%, 1)',
         200: 'hsla(22, 35%, 91%, 1)',
+        300: 'hsla(22, 26%, 85%, 1)',
         500: 'hsla(22, 87%, 50%, 1)',
         500_0625: 'hsla(22, 87%, 50%, 0.0625)',
         600: 'hsla(22, 87%, 44%, 1)',
         700: 'hsla(22, 97%, 25%, 1)',
         800: 'hsla(22, 100%, 14%, 1)',
-        800_30: 'hsla(22, 100%, 14%, 0.3)',
     },
     kaki: {
         600: 'hsla(48, 97%, 64%, 1)',
@@ -108,7 +108,7 @@ export default withPigment(
         colors: {
             logo: {
                 primary: tokens.ochre[800],
-                quaternary: tokens.ochre[800_30],
+                quaternary: tokens.ochre[300],
             },
             focus: {
                 outline: tokens.ocean[500],
@@ -233,7 +233,7 @@ export default withPigment(
                 },
                 brand: {
                     primary: tokens.ochre[800],
-                    quaternary: tokens.ochre[800_30],
+                    quaternary: tokens.ochre[300],
                 }
             },
         },
