@@ -16,9 +16,12 @@ const Container = styled("div")(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
+  // https://css-tricks.com/almanac/properties/m/mask-image/
+  maskImage: "linear-gradient(black 80%, transparent 95%)",
 
   "@media (min-width: 768px)": {
     flexDirection: "row",
+    // maskImage: "none",
   },
 }));
 
@@ -32,10 +35,21 @@ const MapContainer = styled("div")(({ theme }) => ({
 
   position: "relative",
   width: "100%",
-  maxWidth: "512px",
-  height: "200px",
-  background: theme.colors.background.map,
+  maxWidth: "640px",
+  height: "320px",
+  borderRadius: "1rem",
+  // background: theme.colors.background.map,
+  // background: `linear-gradient(to bottom, ${theme.colors.background.sunk}, #fff)`,
+  backgroundImage: "url('/map-tiles/sample.png')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  // backgroundBlendMode: "multiply",
+  maskImage: "radial-gradient(black 0%, transparent 74%)",
 
+  "@media (min-width: 768px)": {
+    maxWidth: "640px",
+    height: "512px",
+  },
   // Add debug crosshair at center
   "&::after": {
     content: '""',
@@ -65,7 +79,7 @@ const MarkerDemo = styled("div")(({ theme }) => ({
 }));
 
 const ListingDemo = styled("div")(({ theme }) => ({
-  marginTop: "-4rem",
+  marginTop: "-8rem",
   backgroundColor: theme.colors.background.top,
   padding: "2.5rem 1rem",
   borderRadius: "1rem",
@@ -85,7 +99,7 @@ const ListingDemo = styled("div")(({ theme }) => ({
 
   "&[data-transitioning='true']": {
     opacity: 0,
-    transform: `scale(0.93) rotate(var(--rotation-angle))`,
+    transform: `scale(0.875) rotate(var(--rotation-angle))`,
   },
 }));
 
@@ -126,7 +140,7 @@ export default function PeelsMapDemo() {
       const nextIndex = (selectedIndex + 1) % exampleListings.length;
       console.log("Cycling to listing index:", nextIndex);
       loadListingByIndex(nextIndex);
-    }, 2000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [selectedIndex]); // Need selectedIndex to calculate next index

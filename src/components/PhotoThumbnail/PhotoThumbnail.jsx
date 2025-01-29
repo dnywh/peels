@@ -26,7 +26,6 @@ const ListingPhotoRemoteImage = styled(RemoteImage)(({ theme }) => ({
   mixBlendMode: "multiply", // So box-shadow on parent is visible
   objectFit: "cover",
   backgroundColor: theme.colors.background.map,
-  // cursor: "zoom-in",
 }));
 
 const Caption = styled("div")(({ theme }) => ({
