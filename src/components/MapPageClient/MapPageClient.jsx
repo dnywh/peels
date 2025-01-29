@@ -21,7 +21,6 @@ import GuestActions from "@/components/GuestActions";
 import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
 import MapSidebar from "@/components/MapSidebar";
-import LoremIpsum from "../LoremIpsum";
 
 import { styled } from "@pigment-css/react";
 import { getListingDisplayName, getListingDisplayType } from "@/utils/listing";
