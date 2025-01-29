@@ -116,16 +116,8 @@ function PeelsFaq() {
           traveller’s guide to reducing food waste.
         </p>
         <p>
-          <Hyperlink
-            href="https://www.linkedin.com/in/camerondelmoro"
-            target="_blank"
-          >
-            Cameron Del Moro
-          </Hyperlink>{" "}
-          is heading our waste education outreach efforts. He’s an environmental
-          advisor with over 10 years experience working on waste reduction at
-          Gold Coast Airport, Gold Coast Council, Brisbane City Council, and
-          other local government areas.
+          We plan for Peels to be around for the long-haul, so are planning on
+          open sourcing and accepting community code contributions by midyear.
         </p>
       </StyledDetails>
       <StyledDetails name="faq">
