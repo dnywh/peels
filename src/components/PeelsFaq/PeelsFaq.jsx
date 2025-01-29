@@ -116,8 +116,9 @@ function PeelsFaq() {
           traveller’s guide to reducing food waste.
         </p>
         <p>
-          We plan for Peels to be around for the long-haul, so are planning on
-          open sourcing and accepting community code contributions by midyear.
+          We plan for Peels to be around for the long haul, so will open source
+          the project and welcome community code contributions from later this
+          year.
         </p>
       </StyledDetails>
       <StyledDetails name="faq">
