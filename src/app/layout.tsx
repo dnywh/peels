@@ -115,6 +115,11 @@ fieldset {
 :root {
   interpolate-size: allow-keywords;
 }
+
+// Smooth scrolling everywhere
+html {
+  scroll-behavior: smooth;
+}
 `;
 
 const Body = styled("body")(({ theme }) => ({

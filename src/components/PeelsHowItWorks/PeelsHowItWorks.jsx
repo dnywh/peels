@@ -1,10 +1,11 @@
-import { styled } from "@pigment-css/react";
+import Link from "next/link";
 import PeelsMapDemo from "@/components/PeelsMapDemo";
 import PeelsFeaturedHostsPhotos from "@/components/PeelsFeaturedHostsPhotos";
+import { styled } from "@pigment-css/react";
 
 const OrderedList = styled("ol")(({ theme }) => ({
   marginTop: "2rem",
-
+  width: "100%",
   display: "flex",
   flexDirection: "column",
   gap: "5rem",
@@ -53,13 +54,21 @@ const OrderedList = styled("ol")(({ theme }) => ({
       color: theme.colors.text.ui.quaternary,
       // But make a little narrower than the homepage
       maxWidth: "44ch",
+
+      "& > a": {
+        color: "inherit",
+        transition: "color 150ms ease-in-out",
+        "&:hover": {
+          color: theme.colors.text.primary,
+        },
+      },
     },
   },
 }));
 
-function Step({ title, children }) {
+function Step({ title, children, ...props }) {
   return (
-    <li>
+    <li {...props}>
       <h3>{title}</h3>
       {children}
     </li>
@@ -70,12 +79,12 @@ function PeelsHowItWorks() {
   return (
     <OrderedList>
       <Step number={1} title="Find a host">
-        <p>Select a marker on the map.</p>
+        <p>Select a marker on the map, and see who’s nearby.</p>
         <PeelsMapDemo />
       </Step>
 
-      <Step number={2} title="Contact">
-        <p>Arrange a drop-off via chat, if necessary.</p>
+      <Step number={2} title="Contact" id="contact">
+        <p>Arrange to drop-off your food scraps via chat, if necessary.</p>
       </Step>
 
       <Step number={3} title="Drop-off">
@@ -85,7 +94,8 @@ function PeelsHowItWorks() {
         </p>
         <PeelsFeaturedHostsPhotos />
         <p>
-          That’s all there is to it! Get out there and meet your neighbours.
+          That’s all there is to it! <Link href="/sign-up">Get out there</Link>{" "}
+          and meet your neighbours.
         </p>
       </Step>
     </OrderedList>

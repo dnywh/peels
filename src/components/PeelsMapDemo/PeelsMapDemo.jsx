@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-import { exampleListings } from "@/data/example-listings";
+import { demoListings } from "@/data/demo/listings";
 
 import MapPin from "@/components/MapPin";
 import ListingRead from "@/components/ListingRead";
@@ -10,7 +10,7 @@ import ListingRead from "@/components/ListingRead";
 import { styled } from "@pigment-css/react";
 
 const Container = styled("div")(({ theme }) => ({
-  width: "100%",
+  width: "100vw",
 
   display: "flex",
   flexDirection: "column",
@@ -20,6 +20,7 @@ const Container = styled("div")(({ theme }) => ({
   maskImage: "linear-gradient(black 80%, transparent 95%)",
 
   "@media (min-width: 768px)": {
+    marginTop: "1.5rem",
     flexDirection: "row",
     // maskImage: "none",
   },
@@ -38,30 +39,28 @@ const MapContainer = styled("div")(({ theme }) => ({
   maxWidth: "640px",
   height: "320px",
   borderRadius: "1rem",
-  // background: theme.colors.background.map,
-  // background: `linear-gradient(to bottom, ${theme.colors.background.sunk}, #fff)`,
-  backgroundImage: "url('/map-tiles/sample.png')",
+  backgroundImage: "url('/map-tiles/demo.png')",
   backgroundSize: "cover",
   backgroundPosition: "center",
-  // backgroundBlendMode: "multiply",
   maskImage: "radial-gradient(black 0%, transparent 74%)",
 
   "@media (min-width: 768px)": {
     maxWidth: "640px",
     height: "512px",
+    marginLeft: "6rem", // Match margins on ListingDemo
   },
   // Add debug crosshair at center
-  "&::after": {
-    content: '""',
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    width: "20px",
-    height: "20px",
-    transform: "translate(-50%, -50%)",
-    border: "1px solid red",
-    borderRadius: "50%",
-  },
+  // "&::after": {
+  //   content: '""',
+  //   position: "absolute",
+  //   top: "50%",
+  //   left: "50%",
+  //   width: "20px",
+  //   height: "20px",
+  //   transform: "translate(-50%, -50%)",
+  //   border: "1px solid red",
+  //   borderRadius: "50%",
+  // },
 }));
 
 const MarkerDemo = styled("div")(({ theme }) => ({
@@ -79,27 +78,34 @@ const MarkerDemo = styled("div")(({ theme }) => ({
 }));
 
 const ListingDemo = styled("div")(({ theme }) => ({
-  marginTop: "-8rem",
+  marginTop: "-7rem",
+
   backgroundColor: theme.colors.background.top,
-  padding: "2.5rem 1rem",
-  borderRadius: "1rem",
-  maxHeight: "50vh",
+  height: "50vh",
   overflow: "hidden",
   width: "95vw",
   maxWidth: "400px",
-  transform: `scale(0.93) rotate(var(--rotation-angle))`,
+  transform: `scale(0.88) rotate(var(--rotation-angle))`,
   transition: "opacity 200ms ease-out, transform 200ms ease-out",
+
+  padding: "2.5rem 1rem",
+  border: `1px solid ${theme.colors.border.base}`,
+  borderRadius: `${theme.corners.base}`,
 
   "@media (min-width: 768px)": {
     marginTop: "0",
-    marginLeft: "-4rem",
+    marginLeft: "-4rem", // Match map container margin
+    marginRight: "2rem",
     transform: `scale(0.95) rotate(var(--rotation-angle))`,
-    maxHeight: "unset",
+    height: "640px",
   },
 
   "&[data-transitioning='true']": {
     opacity: 0,
-    transform: `scale(0.875) rotate(var(--rotation-angle))`,
+    transform: `scale(0.9) rotate(var(--rotation-angle))`,
+    "@media (min-width: 768px)": {
+      transform: `scale(0.8625) rotate(var(--rotation-angle))`,
+    },
   },
 }));
 
@@ -110,6 +116,9 @@ export default function PeelsMapDemo() {
 
   const loadListingByIndex = async (index) => {
     setIsTransitioning(true);
+
+    // Reset selected index to null to trigger fade out
+    // setSelectedIndex(0);
 
     // Wait for fade out
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -129,7 +138,7 @@ export default function PeelsMapDemo() {
   // Initial load effect - runs once
   useEffect(() => {
     // Start with a random index
-    const randomIndex = Math.floor(Math.random() * exampleListings.length);
+    const randomIndex = Math.floor(Math.random() * demoListings.length);
     loadListingByIndex(randomIndex);
   }, []); // Empty dependency array for initial load only
 
@@ -137,7 +146,7 @@ export default function PeelsMapDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       // Move to next index, loop back to 0 if we're at the end
-      const nextIndex = (selectedIndex + 1) % exampleListings.length;
+      const nextIndex = (selectedIndex + 1) % demoListings.length;
       console.log("Cycling to listing index:", nextIndex);
       loadListingByIndex(nextIndex);
     }, 8000);
@@ -157,7 +166,7 @@ export default function PeelsMapDemo() {
   return (
     <Container>
       <MapContainer>
-        {exampleListings.map((listing, index) => {
+        {demoListings.map((listing, index) => {
           // Convert percentage to pixels based on container dimensions
           const containerWidth = 512; // maxWidth of MapContainer
           const containerHeight = 200; // height of MapContainer
@@ -180,7 +189,10 @@ export default function PeelsMapDemo() {
                 "--y-offset": yPixels,
               }}
             >
-              <MapPin selected={selectedIndex === index} type={listing.type} />
+              <MapPin
+                selected={isTransitioning === false && selectedIndex === index}
+                type={listing.type}
+              />
             </MarkerDemo>
           );
         })}
@@ -191,7 +203,7 @@ export default function PeelsMapDemo() {
         style={{ "--rotation-angle": `${rotationAngle}deg` }}
       >
         <ListingRead
-          listing={exampleListings[selectedIndex]}
+          listing={demoListings[selectedIndex]}
           presentation="demo"
           user={null}
         />

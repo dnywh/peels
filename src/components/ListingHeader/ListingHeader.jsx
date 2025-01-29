@@ -40,19 +40,15 @@ const StyledLozenge = styled(Lozenge)(({ theme }) => ({
 }));
 
 function ListingHeader({ listing, listingName, user }) {
-  const avatarProps = listing?.is_demo
-    ? {
-        bucket: "demo",
-        filename: listing?.avatar,
-        alt: `${listing?.name}’s avatar`,
-      }
-    : getListingAvatar(listing, user);
+  const avatarProps = getListingAvatar(listing, user);
 
   return (
     <StyledListingHeader>
       <Avatar
-        bucket={avatarProps?.bucket}
-        filename={avatarProps?.filename}
+        isDemo={avatarProps?.isDemo}
+        src={avatarProps?.isDemo ? avatarProps.path : undefined}
+        bucket={!avatarProps?.isDemo ? avatarProps?.bucket : undefined}
+        filename={!avatarProps?.isDemo ? avatarProps?.filename : undefined}
         alt={avatarProps?.alt || "The avatar for this listing"}
         size="large"
       />

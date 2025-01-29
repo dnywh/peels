@@ -65,6 +65,10 @@ const ListingReadSection = styled("section")({
   ],
 });
 
+const DemoButtonContainer = styled("div")({
+  padding: "0 1rem", // Match padding from other parts of ListingRead
+});
+
 const ButtonGroup = styled("div")({
   display: "flex",
   flexWrap: "wrap",
@@ -161,7 +165,16 @@ const ListingRead = memo(function Listing({
           user={user}
         />
 
-        {presentation !== "demo" && (
+        {presentation === "demo" ? (
+          <DemoButtonContainer>
+            <Button variant="primary" width="full" href="/#contact">
+              Contact{" "}
+              {listing.owner_first_name
+                ? listing.owner_first_name
+                : listing.name}
+            </Button>
+          </DemoButtonContainer>
+        ) : (
           <ListingChatDrawer
             isNested={presentation === "drawer" ? true : false}
             user={user}

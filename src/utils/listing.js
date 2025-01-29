@@ -22,11 +22,11 @@ export function getListingDisplayName(listing, user) {
 export function getListingAvatar(listing, user) {
     if (!listing) return null;
 
+    // For demo listings, return path to public demo folder
     if (listing?.is_demo) {
-        console.log("this is a demo!");
         return {
-            bucket: "demo",
-            filename: listing?.avatar,
+            isDemo: true, // New flag to indicate demo image
+            path: `/avatars/demo/${listing?.avatar}`,
             alt: `${listing?.name}’s avatar`
         };
     }

@@ -1,10 +1,12 @@
 import RemoteImage from "@/components/RemoteImage";
+import Image from "next/image";
 import { styled } from "@pigment-css/react";
 
 const LARGE_SIZE = 112;
 const SMALL_SIZE = 32;
 
-const StyledRemoteImage = styled(RemoteImage)(({ theme }) => ({
+// Base styles that will be shared between both image types
+const imageStyles = ({ theme }) => ({
   overflow: "hidden",
   objectFit: "cover",
   flexShrink: 0,
@@ -27,14 +29,23 @@ const StyledRemoteImage = styled(RemoteImage)(({ theme }) => ({
       },
     },
   ],
-}));
+});
 
-function Avatar({ size = "large", ...props }) {
-  return (
-    <StyledRemoteImage
-      // Pass size prop on to be styled
+const StyledRemoteImage = styled(RemoteImage)(imageStyles);
+const StyledNextImage = styled(Image)(imageStyles);
+
+function Avatar({ size = "large", isDemo, src, ...props }) {
+  return isDemo ? (
+    <StyledNextImage
+      src={src}
       size={size}
-      // Need width and height to be passed to the RemoteImage component in pixel dimensions
+      width={size === "large" ? LARGE_SIZE : SMALL_SIZE}
+      height={size === "large" ? LARGE_SIZE : SMALL_SIZE}
+      {...props}
+    />
+  ) : (
+    <StyledRemoteImage
+      size={size}
       width={size === "large" ? LARGE_SIZE : SMALL_SIZE}
       height={size === "large" ? LARGE_SIZE : SMALL_SIZE}
       {...props}
