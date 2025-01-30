@@ -248,7 +248,11 @@ const NoListingFound = styled("div")(({ theme }) => ({
 }));
 
 // export default async function MapPage() {
-export default function MapPageClient({ user }) {
+export default function MapPageClient({
+  user,
+  initialListingSlug,
+  initialListing,
+}) {
   const mapRef = useRef(null);
   const searchInputRef = useRef(null);
   const drawerContentRef = useRef(null);
@@ -260,7 +264,9 @@ export default function MapPageClient({ user }) {
   const supabase = createClient();
 
   const [listings, setListings] = useState([]);
-  const [selectedListing, setSelectedListing] = useState(null);
+  const [selectedListing, setSelectedListing] = useState(
+    initialListing || null
+  );
   // Set mapController to set relationship between MapSearch and MapRender
   const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
 
@@ -370,6 +376,12 @@ export default function MapPageClient({ user }) {
   }, []);
 
   const loadListingBySlug = async (slug) => {
+    // If the slug matches initial data, use that instead of fetching
+    if (slug === initialListingSlug && initialListing) {
+      setSelectedListing(initialListing);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("listings_with_owner_data")
       .select()

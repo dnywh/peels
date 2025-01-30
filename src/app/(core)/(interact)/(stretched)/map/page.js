@@ -2,47 +2,50 @@ import { createClient } from "@/utils/supabase/server";
 import MapPageClient from "@/components/MapPageClient";
 import { getListingDisplayName } from "@/utils/listing";
 
-// Add generateMetadata function
-export async function generateMetadata({ searchParams }) {
-    // Create Supabase client first
+// Fetch data only once and use across metadata and page
+async function getInitialData(listingSlug) {
     const supabase = await createClient();
+    const [userResponse, listingResponse] = await Promise.all([
+        supabase.auth.getUser(),
+        listingSlug ? supabase
+            .from("listings_with_owner_data")
+            .select()
+            .eq("slug", listingSlug)
+            .single() : null
+    ]);
 
-    // Get listing slug from URL if it exists
+    return {
+        user: userResponse.data.user,
+        listing: listingResponse?.data
+    };
+}
+
+export async function generateMetadata({ searchParams }) {
     const listingSlug = (await searchParams)?.listing;
-    // Get user
-    const { data: { user } } = await supabase.auth.getUser();
+    const { user, listing } = await getInitialData(listingSlug);
 
-    // If no listing slug, return default metadata
     if (!listingSlug) {
-        return {
-            title: "Map",
-        };
+        return { title: "Map" };
     }
 
-    // Fetch listing data from Supabase
-    const { data: listing } = await supabase
-        .from("listings_with_owner_data")
-        .select()
-        .eq("slug", listingSlug)
-        .single();
-
-    // If listing not found, return default metadata
     if (!listing) {
-        return {
-            title: "Listing Not Found",
-        };
+        return { title: "Listing Not Found" };
     }
 
-    // Return dynamic metadata based on listing, passing in user
     return {
         title: `${getListingDisplayName(listing, user)}`,
     };
 }
 
 export default async function Page({ searchParams }) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const initialListingSlug = (await searchParams)?.listing ?? undefined;
+    const listingSlug = (await searchParams)?.listing;
+    const { user, listing } = await getInitialData(listingSlug);
 
-    return <MapPageClient user={user} initialListingSlug={initialListingSlug} />;
+    return (
+        <MapPageClient
+            user={user}
+            initialListingSlug={listingSlug}
+            initialListing={listing}
+        />
+    );
 }
