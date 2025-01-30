@@ -1,11 +1,13 @@
 import FormHeader from "@/components/FormHeader";
 import Form from "@/components/Form";
 import FormFooter from "@/components/FormFooter";
-
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
-
 import SignUpForm from "@/components/SignUpForm";
+
+export const metadata = {
+  title: "Sign Up",
+};
 
 export default async function SignUp(props: {
   searchParams: Promise<{
