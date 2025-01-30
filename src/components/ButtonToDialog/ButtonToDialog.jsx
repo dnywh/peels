@@ -46,7 +46,7 @@ const DialogOverlay = styled(Dialog.Overlay)({
 
 function ButtonToDialog({
   variant = "danger",
-  size = "small",
+  size,
   initialButtonText,
   dialogTitle,
   children,

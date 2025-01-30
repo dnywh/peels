@@ -32,10 +32,8 @@ function SignInForm({ searchParams }) {
       }
 
       console.log("Submitting sign in data");
-      const result = await signInAction(formData);
-
-      // Note: We might not reach this point if signInAction redirects
-      console.log("Sign in result:", result);
+      await signInAction(formData);
+      // Don't reset isSubmitting on success - let the redirect handle cleanup
     } catch (error) {
       console.error("Sign in error:", error);
       setIsSubmitting(false);

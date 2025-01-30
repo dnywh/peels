@@ -147,7 +147,6 @@ export default function Button({
     variant,
     tabIndex: isDisabled ? -1 : tabIndex,
     "aria-disabled": isDisabled,
-    tabIndex,
     size,
     ...props,
   };

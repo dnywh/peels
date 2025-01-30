@@ -34,14 +34,27 @@ const Day = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "2rem",
+}));
+
+const DayHeader = styled("header")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.375rem",
+  alignItems: "stretch",
+
+  "& h3, & p": {
+    textAlign: "center",
+    lineHeight: "100%",
+    fontSize: "0.75rem", // Match timestamp font size
+  },
 
   "& h3": {
-    fontSize: "0.75rem", // Match timestamp font size
     fontWeight: "600",
-    lineHeight: "100%",
     color: theme.colors.text.ui.primary,
-    textAlign: "center",
-    alignSelf: "stretch",
+  },
+
+  "& p": {
+    color: theme.colors.text.ui.quaternary,
   },
 }));
 
@@ -260,9 +273,25 @@ const ChatWindow = memo(function ChatWindow({
               new Date(message.created_at).toDateString() !==
                 new Date(messages[index - 1].created_at).toDateString();
 
+            // Check if this is the first message at all
+            const showInitiationHeader = index === 0;
+
             return (
               <Day key={message.id}>
-                {showDateHeader && <h3>{formatWeekday(message.created_at)}</h3>}
+                {!isDemo && (showDateHeader || showInitiationHeader) ? (
+                  <DayHeader>
+                    {showDateHeader && (
+                      <h3>{formatWeekday(message.created_at)}</h3>
+                    )}
+                    {showInitiationHeader && (
+                      <p>
+                        {message.sender_id === user?.id
+                          ? `You reached out to ${recipientName}`
+                          : `${recipientName} reached out to you`}
+                      </p>
+                    )}
+                  </DayHeader>
+                ) : null}
                 <ChatMessage
                   direction={
                     isDemo
