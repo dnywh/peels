@@ -3,6 +3,10 @@ import Hyperlink from "@/components/Hyperlink";
 import SignInForm from "@/components/SignInForm";
 import FormFooter from "@/components/FormFooter";
 
+export const metadata = {
+  title: "Sign In",
+};
+
 export default async function SignIn(props: {
   searchParams: Promise<{
     redirect_to?: string;
