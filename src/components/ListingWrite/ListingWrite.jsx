@@ -27,7 +27,6 @@ import MultiInput from "@/components/MultiInput";
 import AvatarUploadManager from "@/components/AvatarUploadManager";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import ListingPhotosManager from "@/components/ListingPhotosManager";
-import Hyperlink from "@/components/Hyperlink";
 import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";

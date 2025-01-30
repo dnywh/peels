@@ -1,3 +1,5 @@
+import { useRouter } from "next/navigation";
+
 import { Drawer } from "vaul"; // TODO: Import only used subcomponents?
 
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
@@ -45,6 +47,7 @@ function ChatHeader({
   listingIsOwnedByUser,
   isDemo,
 }) {
+  const router = useRouter();
   const avatarProps = getListingAvatar(listing, user);
   const ownerAvatarProps = getListingOwnerAvatar(listing);
   // console.log({ avatarProps });
@@ -110,13 +113,12 @@ function ChatHeader({
         </p>
       </Title>
 
-      {!listingIsOwnedByUser && !isDrawer && !isDemo && (
+      {!isDrawer && !isDemo && (
         <>
           {/* <Hyperlink href={`/listings/${listing.slug}`}>View listing</Hyperlink> */}
           <IconButton
-            breakpoint="sm"
             action="overflow"
-            // onClick={() => router.push("/chats")} TODO: Open overflow menu, which has a 'View listing' option and 'Block user' option
+            // onClick={() => router.push("/chats")} TODO: Open overflow menu, which has a 'View listing' option (if !listingIsOwnedByUser) and 'Block user' option
           />
         </>
       )}

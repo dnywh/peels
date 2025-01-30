@@ -6,7 +6,6 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Avatar from "@/components/Avatar";
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
-import Label from "@/components/Label";
 import Button from "@/components/Button";
 import InputHint from "@/components/InputHint";
 

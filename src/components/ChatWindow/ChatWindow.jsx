@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, memo, useMemo } from "react";
-// import { useRouter } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/client";
 
@@ -30,6 +29,21 @@ const StyledMessagesContainer = styled("div")({
   flexDirection: "column",
   gap: "1rem",
 });
+
+const Day = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "2rem",
+
+  "& h3": {
+    fontSize: "0.75rem", // Match timestamp font size
+    fontWeight: "600",
+    lineHeight: "100%",
+    color: theme.colors.text.ui.primary,
+    textAlign: "center",
+    alignSelf: "stretch",
+  },
+}));
 
 // Memoize the ChatWindow component
 const ChatWindow = memo(function ChatWindow({
@@ -239,22 +253,29 @@ const ChatWindow = memo(function ChatWindow({
       <StyledMessagesContainer>
         {messages.length === 0 && <p>No messages yet</p>}
         {messages.length > 0 &&
-          messages.map((message, index) => (
-            <>
-              <h3>{formatWeekday(message.created_at)}</h3>
-              <ChatMessage
-                key={message.id}
-                direction={
-                  isDemo
-                    ? directionsForDemo[index]
-                    : message.sender_id === user.id
-                      ? "sent"
-                      : "received"
-                }
-                message={message}
-              />
-            </>
-          ))}
+          messages.map((message, index) => {
+            // Check if this message is the first of its day
+            const showDateHeader =
+              index === 0 ||
+              new Date(message.created_at).toDateString() !==
+                new Date(messages[index - 1].created_at).toDateString();
+
+            return (
+              <Day key={message.id}>
+                {showDateHeader && <h3>{formatWeekday(message.created_at)}</h3>}
+                <ChatMessage
+                  direction={
+                    isDemo
+                      ? directionsForDemo[index % 2]
+                      : message.sender_id === user.id
+                        ? "sent"
+                        : "received"
+                  }
+                  message={message}
+                />
+              </Day>
+            );
+          })}
       </StyledMessagesContainer>
 
       <ChatComposer
