@@ -5,7 +5,11 @@ import { createClient } from "@/utils/supabase/client";
 
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 
-import { updateFirstNameAction, deleteListingAction } from "@/app/actions";
+import {
+  updateFirstNameAction,
+  deleteListingAction,
+  createOrUpdateListingAction,
+} from "@/app/actions";
 
 import { useSearchParams, useParams } from "next/navigation";
 
@@ -20,7 +24,6 @@ import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
-import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import MultiInput from "@/components/MultiInput";
@@ -124,8 +127,6 @@ export default function ListingWrite({ initialListing, user, profile }) {
     initialListing ? initialListing.is_stub : false
   );
 
-  const [legal, setLegal] = useState(initialListing ? true : false);
-
   // Other states
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [pendingPhotos, setPendingPhotos] = useState([]);
@@ -228,51 +229,25 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
       console.log("Submitting listing data:", listingData);
 
-      // Insert the listing into the database
-      const { data, error } = await supabase
-        .from("listings")
-        .upsert(listingData)
-        .select()
-        .single();
+      const { data, error } = await createOrUpdateListingAction(listingData);
 
       if (error) {
-        // console.error("Supabase error:", error);
-
-        // Handle specific error cases
-        if (error.code === "42501") {
-          setGlobalError(
-            "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one."
-          );
-        } else if (error.code === "23505") {
-          // Unique constraint violation
-          setGlobalError("An identical listing already exists.");
-        } else {
-          setGlobalError("Something went wrong. Please try again later.");
-        }
+        setGlobalError(error);
         return;
       }
-
-      // If this was a new listing, we need to update the photo references
-      if (!initialListing && pendingPhotos.length > 0) {
-        const { error: updateError } = await supabase
-          .from("listings")
-          .update({ photos: pendingPhotos })
-          .eq("slug", data.slug);
-        if (updateError) throw updateError;
-      }
-
-      console.log("Listing created/updated:", data);
 
       // Redirect to the new/updated listing
       router.push(
         `/listings/${data.slug}?status=${initialListing ? "updated" : "created"}`
       );
-      // window.location.href = `/listings/${data.slug}?success=Listing ${initialListing ? "updated" : "created"} successfully`
     } catch (error) {
-      console.error("Error creating listing:", error);
+      console.error("Error in handleSubmit:", error);
       setGlobalError("An unexpected error occurred. Please try again later.");
     } finally {
-      setIsSubmitting(false);
+      // Only reset isSubmitting if we're not navigating away
+      if (globalError) {
+        setIsSubmitting(false);
+      }
     }
   }
 

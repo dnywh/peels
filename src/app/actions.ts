@@ -416,3 +416,51 @@ export async function fetchListingsInView(
     return [];
   }
 }
+
+export const createOrUpdateListingAction = async (listingData: any) => {
+  const supabase = await createClient();
+
+  try {
+    console.log("Server action: Creating/updating listing");
+
+    // Insert/update the listing
+    const { data, error } = await supabase
+      .from("listings")
+      .upsert(listingData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase error:", error);
+
+      // Return specific error messages based on error codes
+      if (error.code === "42501") {
+        return {
+          error:
+            "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
+        };
+      } else if (error.code === "23505") {
+        return { error: "An identical listing already exists." };
+      }
+      return { error: "Something went wrong. Please try again later." };
+    }
+
+    // If this was a new listing with pending photos, update them
+    if (!listingData.id && listingData.photos?.length > 0) {
+      const { error: updateError } = await supabase
+        .from("listings")
+        .update({ photos: listingData.photos })
+        .eq("slug", data.slug);
+
+      if (updateError) {
+        console.error("Error updating photos:", updateError);
+        return { error: "Created listing but couldn’t save photos." };
+      }
+    }
+
+    return { data };
+  } catch (error) {
+    console.error("Unexpected error in createOrUpdateListingAction:", error);
+    return { error: "An unexpected error occurred. Please try again later." };
+  }
+};
