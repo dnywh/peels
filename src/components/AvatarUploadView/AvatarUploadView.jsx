@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import DropdownMenu from "@/components/DropdownMenu";
 import Avatar from "@/components/Avatar";
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
@@ -10,29 +10,6 @@ import Button from "@/components/Button";
 import InputHint from "@/components/InputHint";
 
 import { styled } from "@pigment-css/react";
-
-const StyledMenuItems = styled(MenuItems)(({ theme }) => ({
-  width: "auto",
-  origin: "top center",
-  background: theme.colors.background.top,
-  padding: "0.5rem",
-  borderRadius: theme.corners.base,
-  transition: "opacity 100ms ease-out, scale 100ms ease-out",
-  transformOrigin: "top center",
-  display: "flex",
-  flexDirection: "column",
-  gap: `calc(${theme.spacing.unit} * 1)`,
-
-  boxShadow: `0px 0px 3px 1px rgba(0, 0, 0, 0.06)`,
-
-  // "&[data-focus]": {
-  // },
-
-  "&[data-closed]": {
-    scale: "0.95",
-    opacity: "0",
-  },
-}));
 
 const StyledField = styled(Field)({
   alignItems: "center",
@@ -125,28 +102,37 @@ function AvatarUploadView({
           </AvatarButton>
         ) : (
           // Scenario 2 & 3: Has avatar - show menu with options
-          <Menu>
-            <MenuButton as={AvatarButton} variant="secondary" size="small">
-              Edit
-            </MenuButton>
+          <>
+            <DropdownMenu.Root>
+              <DropdownMenu.Button
+                as={AvatarButton}
+                variant="secondary"
+                size="small"
+              >
+                Edit
+              </DropdownMenu.Button>
 
-            <StyledMenuItems transition anchor={{ to: "bottom", gap: "4px" }}>
-              <MenuItem>
-                <Button
-                  onClick={handleFileSelect}
-                  variant="secondary"
-                  size="small"
-                >
-                  Replace
-                </Button>
-              </MenuItem>
-              <MenuItem>
-                <Button onClick={onDelete} variant="danger" size="small">
-                  Delete
-                </Button>
-              </MenuItem>
-            </StyledMenuItems>
-          </Menu>
+              <DropdownMenu.Items
+                transition
+                anchor={{ to: "bottom", gap: "4px" }}
+              >
+                <DropdownMenu.Item>
+                  <Button
+                    onClick={handleFileSelect}
+                    variant="secondary"
+                    size="small"
+                  >
+                    Replace
+                  </Button>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item>
+                  <Button onClick={onDelete} variant="danger" size="small">
+                    Delete
+                  </Button>
+                </DropdownMenu.Item>
+              </DropdownMenu.Items>
+            </DropdownMenu.Root>
+          </>
         )}
         {inputHintShown && (
           <InputHint variant="centered">
