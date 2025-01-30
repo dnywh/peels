@@ -1,13 +1,14 @@
 import { useRouter } from "next/navigation";
 
 import { Drawer } from "vaul"; // TODO: Import only used subcomponents?
-
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
 
 import { getListingAvatar, getListingOwnerAvatar } from "@/utils/listing";
-import Hyperlink from "@/components/Hyperlink";
+
 import Avatar from "@/components/Avatar";
 import IconButton from "@/components/IconButton";
+import DropdownMenu from "@/components/DropdownMenu";
+import Button from "@/components/Button";
 
 import { styled } from "@pigment-css/react";
 
@@ -114,15 +115,40 @@ function ChatHeader({
       </Title>
 
       {!isDrawer && !isDemo && (
-        <>
+        <DropdownMenu.Root>
           {/* <Hyperlink href={`/listings/${listing.slug}`}>View listing</Hyperlink> */}
-          <IconButton
+
+          <DropdownMenu.Button as={IconButton} action="overflow" />
+
+          {/* <IconButton
             action="overflow"
             // onClick={() => router.push("/chats")} TODO: Open overflow menu, which has a 'View listing' option (if !listingIsOwnedByUser) and 'Block user' option
-          />
-        </>
+          /> */}
+          <DropdownMenu.Items anchor={{ to: "bottom end", gap: "4px" }}>
+            <DropdownMenu.Item>
+              <Button
+                onClick={() => console.log("View listing action called")}
+                variant="secondary"
+                size="small"
+              >
+                View listing
+              </Button>
+            </DropdownMenu.Item>
+            <DropdownMenu.Item>
+              {/* TODO: Overflow menu to block user via Dialog, even if manual for now */}
+              <Button
+                onClick={() => console.log("Block user action called")}
+                variant="danger"
+                size="small"
+              >
+                {/* TODO: Truncate recipient name or generalise to 'Block this person' */}
+                {/* Block {recipientName} */}
+                Block
+              </Button>
+            </DropdownMenu.Item>
+          </DropdownMenu.Items>
+        </DropdownMenu.Root>
       )}
-      {/* TODO: Overflow menu to block user via Dialog, even if manual for now */}
 
       {isDrawer && (
         <Drawer.Close asChild>

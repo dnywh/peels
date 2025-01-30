@@ -102,37 +102,35 @@ function AvatarUploadView({
           </AvatarButton>
         ) : (
           // Scenario 2 & 3: Has avatar - show menu with options
-          <>
-            <DropdownMenu.Root>
-              <DropdownMenu.Button
-                as={AvatarButton}
-                variant="secondary"
-                size="small"
-              >
-                Edit
-              </DropdownMenu.Button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Button
+              as={AvatarButton}
+              variant="secondary"
+              size="small"
+            >
+              Edit
+            </DropdownMenu.Button>
 
-              <DropdownMenu.Items
-                transition
-                anchor={{ to: "bottom", gap: "4px" }}
-              >
-                <DropdownMenu.Item>
-                  <Button
-                    onClick={handleFileSelect}
-                    variant="secondary"
-                    size="small"
-                  >
-                    Replace
-                  </Button>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item>
-                  <Button onClick={onDelete} variant="danger" size="small">
-                    Delete
-                  </Button>
-                </DropdownMenu.Item>
-              </DropdownMenu.Items>
-            </DropdownMenu.Root>
-          </>
+            <DropdownMenu.Items
+              transition
+              anchor={{ to: "bottom", gap: "4px" }}
+            >
+              <DropdownMenu.Item>
+                <Button
+                  onClick={handleFileSelect}
+                  variant="secondary"
+                  size="small"
+                >
+                  Replace
+                </Button>
+              </DropdownMenu.Item>
+              <DropdownMenu.Item>
+                <Button onClick={onDelete} variant="danger" size="small">
+                  Delete
+                </Button>
+              </DropdownMenu.Item>
+            </DropdownMenu.Items>
+          </DropdownMenu.Root>
         )}
         {inputHintShown && (
           <InputHint variant="centered">

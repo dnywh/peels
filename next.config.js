@@ -260,6 +260,9 @@ export default withPigment(
                 marginX: "1.5rem",
                 marginBottom: "0.75rem",
                 spaceFor: "6rem"
+            },
+            dropdownMenu: {
+                gap: "4px",
             }
         },
         rotations: {
