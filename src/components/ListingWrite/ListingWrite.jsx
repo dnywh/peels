@@ -27,7 +27,6 @@ import MultiInput from "@/components/MultiInput";
 import AvatarUploadManager from "@/components/AvatarUploadManager";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import ListingPhotosManager from "@/components/ListingPhotosManager";
-import Hyperlink from "@/components/Hyperlink";
 import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
@@ -64,6 +63,9 @@ export default function ListingWrite({ initialListing, user, profile }) {
   // Update error state to handle both field and global errors
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState("");
+
+  // Handle form submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Populate editable fields
   const [avatar, setAvatar] = useState(
@@ -142,6 +144,10 @@ export default function ListingWrite({ initialListing, user, profile }) {
   // Form handling logic here
   async function handleSubmit(event) {
     event.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     // Reset all errors
     setErrors({});
@@ -265,6 +271,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
     } catch (error) {
       console.error("Error creating listing:", error);
       setGlobalError("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -582,9 +590,14 @@ export default function ListingWrite({ initialListing, user, profile }) {
             }}
           />
         )}
-        <SubmitButton>
+        <Button
+          type="submit"
+          variant="primary"
+          loading={isSubmitting}
+          loadingText={initialListing ? "Saving..." : "Adding..."}
+        >
           {initialListing ? "Save changes" : "Add listing"}
-        </SubmitButton>
+        </Button>
       </Form>
 
       {/* TODO: Fix styling but do not move into above form, as that means nested forms (and an error) */}
@@ -605,8 +618,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             confirmButtonText="Yes, delete listing"
             onSubmit={handleDeleteListing}
           >
-            Are you sure you want to delete your listing? This action cannot be
-            undone.
+            Are you sure you want to delete your listing? This can’t be undone.
           </ButtonToDialog>
         </AdditionalSettings>
       )}
