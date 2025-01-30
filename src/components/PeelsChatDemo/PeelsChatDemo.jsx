@@ -9,7 +9,10 @@ const ChatDemoContainer = styled("div")(({ theme }) => ({
   borderRadius: `${theme.corners.base}`,
 
   padding: "1rem",
-  height: "512px",
+  height: "640px",
+
+  width: "95vw",
+  maxWidth: "400px",
 }));
 
 const demoListing = demoListings[0];
@@ -37,28 +40,8 @@ const existingThread = {
       sender_first_name: "Sofie B",
     },
     {
-      id: "cac71e0b-1b34-4037-8752-8ce96e32cb06",
-      content: "Yo",
-      read_at: null,
-      sender_id: "3f801ffe-aa00-402c-8d52-a71674e5e450",
-      thread_id: "347f0ff9-d0a3-44d9-8e13-4d66033940a9",
-      created_at: "2024-12-27T12:22:01.469374+00:00",
-      sender_avatar: "e08bcbf4-68a3-436f-a501-150832b2dbe8.jpg",
-      sender_first_name: "Sofie B",
-    },
-    {
-      id: "78c6cb63-821f-40a5-baa3-f9f748bd74f9",
-      content: "Hi Sally",
-      read_at: null,
-      sender_id: "3f801ffe-aa00-402c-8d52-a71674e5e450",
-      thread_id: "347f0ff9-d0a3-44d9-8e13-4d66033940a9",
-      created_at: "2024-12-29T10:54:02.560156+00:00",
-      sender_avatar: "e08bcbf4-68a3-436f-a501-150832b2dbe8.jpg",
-      sender_first_name: "Sofie B",
-    },
-    {
       id: "c659741e-6b32-4c7b-b7d1-63bf5ac4aba8",
-      content: "Hurra!",
+      content: "Sure, come by any time!",
       read_at: null,
       sender_id: "b66e3cac-3466-41dd-aa49-4d8697dc26cb",
       thread_id: "347f0ff9-d0a3-44d9-8e13-4d66033940a9",
@@ -125,7 +108,7 @@ function PeelsChatDemo() {
         user={null}
         listing={demoListing}
         existingThread={existingThread}
-        demo={true}
+        isDemo={true}
       />
     </ChatDemoContainer>
   );

@@ -1,11 +1,11 @@
-import RemoteImage from "@/components/RemoteImage";
-import { formatDate } from "@/utils/dateUtils";
+import { formatTimestamp } from "@/utils/dateUtils";
 import { styled } from "@pigment-css/react";
 
-const StyledChatMessageContainer = styled("div")({
+const ChatMessageContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
-  gap: "1rem",
+  gap: "0.25rem",
+
   variants: [
     {
       props: { direction: "sent" },
@@ -24,50 +24,42 @@ const StyledChatMessageContainer = styled("div")({
   ],
 });
 
-const StyledChatMessage = styled("p")({
-  backgroundColor: "#e0e0e0",
+const ChatBubble = styled("p")(({ theme }) => ({
   padding: "0.65rem 1rem",
   borderRadius: "2rem",
   variants: [
     {
       props: { direction: "sent" },
       style: {
-        backgroundColor: "#e0e0e0",
+        backgroundColor: theme.colors.message.sent.background,
+        color: theme.colors.message.sent.text,
         textAlign: "right",
+        textShadow: `0 0.35px 1px rgba(0, 0, 0, .1)`, // To increase contrast of text
       },
     },
     {
       props: { direction: "received" },
       style: {
-        backgroundColor: "#f0f0f0",
+        backgroundColor: theme.colors.message.received.background,
+        color: theme.colors.message.received.text,
         textAlign: "left",
       },
     },
   ],
-});
+}));
+
+const Timestamp = styled("p")(({ theme }) => ({
+  color: theme.colors.text.ui.quaternary,
+  fontSize: "0.75rem",
+  margin: "0 0.625rem", // Inset to visually align with chat bubble
+}));
 
 function ChatMessage({ direction, message }) {
   return (
-    <StyledChatMessageContainer direction={direction}>
-      {message.sender_avatar && (
-        <RemoteImage
-          bucket="avatars"
-          filename={message.sender_avatar}
-          alt={`Avatar for ${message.sender_first_name}`}
-          width={64}
-          height={64}
-        />
-      )}
-      <StyledChatMessage direction={direction}>
-        {message.content}
-      </StyledChatMessage>
-      <p>
-        <small>Sent by {message.sender_first_name}</small>
-      </p>
-      <p>
-        <small>{formatDate(message.created_at)}</small>
-      </p>
-    </StyledChatMessageContainer>
+    <ChatMessageContainer direction={direction}>
+      <ChatBubble direction={direction}>{message.content}</ChatBubble>
+      <Timestamp>{formatTimestamp(message.created_at)}</Timestamp>
+    </ChatMessageContainer>
   );
 }
 

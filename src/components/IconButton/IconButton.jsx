@@ -3,8 +3,13 @@
 import { useRouter } from "next/navigation";
 // import { Button as UnstyledButton } from "@headlessui/react";
 import Button from "@/components/Button";
-import { ArrowLeft } from "lucide-react";
-import { X, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  X,
+  ArrowLeft,
+  ArrowUp,
+  ArrowDown,
+  EllipsisVertical,
+} from "lucide-react";
 
 import { styled } from "@pigment-css/react";
 
@@ -55,8 +60,9 @@ function IconButton({ onClick, action = "back", breakpoint, ...props }) {
     <StyledButton breakpoint={breakpoint} onClick={handleClick} {...props}>
       {action === "close" && <X size={16} />}
       {action === "back" && <ArrowLeft size={16} />}
-      {action === "maximize" && <ArrowUp size={16} />}
+      {action === "maximize" || (action === "send" && <ArrowUp size={16} />)}
       {action === "minimize" && <ArrowDown size={16} />}
+      {action === "overflow" && <EllipsisVertical size={16} />}
     </StyledButton>
   );
 }

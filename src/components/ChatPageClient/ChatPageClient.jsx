@@ -22,13 +22,15 @@ const ChatPageLayout = styled("main")({
 const ChatWindowWrapper = styled("div")(({ theme }) => ({
   flex: 1,
   backgroundColor: theme.colors.background.top,
-  border: `1px solid ${theme.colors.border.base}`,
-  borderRadius: theme.corners.base,
+  overflow: "hidden",
 
   '[data-thread-selected="true"] &': {
     height: "100dvh",
     "@media (min-width: 768px)": {
       height: "inherit",
+
+      borderRadius: theme.corners.base,
+      border: `1px solid ${theme.colors.border.base}`,
     },
   },
 

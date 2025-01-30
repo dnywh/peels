@@ -123,6 +123,7 @@ export default withPigment(
                 error: tokens.ochre[500_0625],
                 map: tokens.ocean[200],
                 counter: tokens.black[15],
+
             },
             border: {
                 light: tokens.black[3],
@@ -141,6 +142,16 @@ export default withPigment(
                 accepted: tokens.forest[400],
                 rejected: tokens.ochre[500],
             },
+            message: {
+                sent: {
+                    background: tokens.forest[400],
+                    text: tokens.white[100],
+                },
+                received: {
+                    background: tokens.rock[50],
+                    text: tokens.rock[800],
+                },
+            },
             marker: {
                 dot: tokens.white[100],
                 background: {
@@ -155,7 +166,6 @@ export default withPigment(
                 checked: {
                     background: tokens.ochre[800],
                     foreground: tokens.white[100],
-
                 },
                 unchecked: {
                     background: tokens.ochre[50],

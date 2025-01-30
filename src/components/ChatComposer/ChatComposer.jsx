@@ -1,5 +1,6 @@
 import Textarea from "@/components/Textarea";
 import SubmitButton from "@/components/SubmitButton";
+import IconButton from "@/components/IconButton";
 import { styled } from "@pigment-css/react";
 import FormMessage from "@/components/FormMessage";
 
@@ -39,7 +40,8 @@ function ChatComposer({
           onChange={handleMessageChange}
           rows={1}
         />
-        <SubmitButton pendingText="Sending...">Send</SubmitButton>
+        {/* <SubmitButton pendingText="Sending...">Send</SubmitButton> */}
+        <IconButton action="send" />
       </ChatComposerInner>
     </ChatComposerForm>
   );

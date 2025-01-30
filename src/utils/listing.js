@@ -58,6 +58,17 @@ export function getListingAvatar(listing, user) {
     };
 }
 
+// TODO: Should this be merged in the above getListingAvatar, since we already do the same thing for the owner avatar?
+export function getListingOwnerAvatar(listing) {
+    if (!listing) return null;
+
+    return {
+        bucket: "avatars",
+        filename: listing.owner_avatar || null,
+        alt: `${listing.owner_first_name}’s avatar`
+    };
+}
+
 export function getListingDisplayType(listing) {
     if (!listing) return '';
 

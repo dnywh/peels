@@ -1,17 +1,15 @@
 "use client";
+
 import { useState, useEffect, memo, useMemo } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-
-import { Drawer } from "vaul"; // TODO: Import only used subcomponents?
-
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
+// import { useRouter } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/client";
+
 import ChatMessage from "@/components/ChatMessage";
 import ChatComposer from "@/components/ChatComposer";
-import IconButton from "@/components/IconButton";
-import Hyperlink from "@/components/Hyperlink";
+import ChatHeader from "@/components/ChatHeader";
+
+import { formatWeekday } from "@/utils/dateUtils";
 
 import { styled } from "@pigment-css/react";
 
@@ -21,26 +19,16 @@ const StyledChatWindow = styled("div")({
   display: "flex",
   flexDirection: "column",
   overflow: "hidden",
-  "@media (min-width: 768px)": {
-    // border: "1px solid #e0e0e0",
-    borderRadius: "0.5rem",
-  },
 });
-
-const ChatHeader = styled("header")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "stretch",
-  gap: "0.5rem",
-  borderBottom: `1px solid ${theme.colors.border.base}`,
-  backgroundColor: theme.colors.background.top,
-  padding: "1rem",
-}));
 
 const StyledMessagesContainer = styled("div")({
   flex: 1,
   padding: "1rem",
   overflowY: "scroll",
+
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
 });
 
 // Memoize the ChatWindow component
@@ -49,11 +37,11 @@ const ChatWindow = memo(function ChatWindow({
   user,
   listing,
   existingThread = null,
-  demo = false,
+  isDemo = false,
 }) {
-  const router = useRouter();
+  // const router = useRouter();
   // Move Supabase client creation outside of render
-  const supabase = demo ? null : useMemo(() => createClient(), []);
+  const supabase = isDemo ? null : useMemo(() => createClient(), []);
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
@@ -88,7 +76,7 @@ const ChatWindow = memo(function ChatWindow({
 
   // Check if the listing is owned by the user
   useEffect(() => {
-    if (demo) return;
+    if (isDemo) return;
     // console.log("Existing thread owned by user?", { existingThread, threadId });
     console.log("existingThread", existingThread);
     if (existingThread && existingThread.owner_id === user.id) {
@@ -110,7 +98,7 @@ const ChatWindow = memo(function ChatWindow({
   }, [existingThread]);
 
   async function initializeChat() {
-    if (demo) return;
+    if (isDemo) return;
 
     try {
       console.log("Initializing chat:", {
@@ -170,7 +158,7 @@ const ChatWindow = memo(function ChatWindow({
   }
 
   async function loadMessages(threadId) {
-    if (demo) return;
+    if (isDemo) return;
 
     const { data: messages, error } = await supabase
       // TODO: Check, is there a mismatch or duplication of efforts/data between the  `listing:listings_with_owner_data` join in [[...threadId]] page.js and the data retrieved here?
@@ -235,65 +223,37 @@ const ChatWindow = memo(function ChatWindow({
     setMessage(e.target.value);
   };
 
+  const directionsForDemo = ["sent", "received"];
+
   return (
     <StyledChatWindow>
-      <ChatHeader>
-        {!isDrawer && (
-          <IconButton
-            breakpoint="sm"
-            action="back"
-            onClick={() => router.push("/chats")}
-          />
-        )}
-        {isDrawer && (
-          <>
-            <VisuallyHidden.Root>
-              <Drawer.Title>
-                Nested chat drawer title visually hidden TODO
-              </Drawer.Title>
-              <Drawer.Description>
-                Test description for aria visually hidden TODO.
-              </Drawer.Description>
-            </VisuallyHidden.Root>
-
-            <Drawer.Close asChild>
-              <IconButton action="close" />
-            </Drawer.Close>
-
-            {/* <IconButton onClick={handleChatClose}>Close</IconButton> */}
-          </>
-        )}
-
-        {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
-        {/* TODO: Extract and have a 'recipientName' const and a more malleable 'recipient and their listing name' as per above */}
-        <p>
-          {recipientName}
-          {!listingIsOwnedByUser && listing?.type !== "residential" && (
-            <>, {listing.name}</>
-          )}
-        </p>
-
-        {!listingIsOwnedByUser && (
-          <Hyperlink href={`/listings/${listing.slug}`}>View listing</Hyperlink>
-        )}
-        {/* TODO: Overflow menu to block user via Dialog, even if manual for now */}
-      </ChatHeader>
+      <ChatHeader
+        listing={listing}
+        user={user}
+        isDemo={isDemo}
+        isDrawer={isDrawer}
+        recipientName={recipientName}
+        listingIsOwnedByUser={listingIsOwnedByUser}
+      />
 
       <StyledMessagesContainer>
         {messages.length === 0 && <p>No messages yet</p>}
         {messages.length > 0 &&
-          messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              direction={
-                demo
-                  ? "received"
-                  : message.sender_id === user.id
-                    ? "sent"
-                    : "received"
-              }
-              message={message}
-            />
+          messages.map((message, index) => (
+            <>
+              <h3>{formatWeekday(message.created_at)}</h3>
+              <ChatMessage
+                key={message.id}
+                direction={
+                  isDemo
+                    ? directionsForDemo[index]
+                    : message.sender_id === user.id
+                      ? "sent"
+                      : "received"
+                }
+                message={message}
+              />
+            </>
           ))}
       </StyledMessagesContainer>
 
