@@ -134,25 +134,34 @@ export default function Button({
   href,
   children,
   tabIndex = 0,
+  loading = false,
+  loadingText = "Loading...",
+  type = "button",
   size,
   ...props
 }) {
+  const isDisabled = disabled || loading;
+
   const sharedProps = {
-    disabled,
+    disabled: isDisabled,
     variant,
+    tabIndex: isDisabled ? -1 : tabIndex,
+    "aria-disabled": isDisabled,
     tabIndex,
     size,
     ...props,
   };
 
+  const buttonContent = <span>{loading ? loadingText : children}</span>;
+
   // Render either a button or a link based on the presence of href
   return href ? (
     <StyledLink href={href} {...sharedProps}>
-      <span>{children}</span>
+      {buttonContent}
     </StyledLink>
   ) : (
-    <StyledButton type="button" {...sharedProps}>
-      <span>{children}</span>
+    <StyledButton type={type} {...sharedProps}>
+      {buttonContent}
     </StyledButton>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 
+import { signUpAction } from "@/app/actions";
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 
 import Form from "@/components/Form";
@@ -8,31 +9,51 @@ import Field from "@/components/Field";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
 import InputHint from "@/components/InputHint";
-import SubmitButton from "@/components/SubmitButton";
+import Button from "@/components/Button";
 import LegalAgreement from "@/components/LegalAgreement";
 import FormMessage from "@/components/FormMessage";
-import { signUpAction } from "@/app/actions";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState(null);
 
   // Helper to determine if there are any field-level errors
   const hasFieldErrors = Boolean(firstNameError);
 
-  const handleSubmit = async (formData) => {
-    setFirstNameError(null);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (isSubmitting) return;
 
-    const validation = validateFirstName(formData.get("first_name"));
-    if (!validation.isValid) {
-      setFirstNameError(validation.error);
-      return false;
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData(event.currentTarget);
+
+      // Reset validation errors
+      setFirstNameError(null);
+
+      // Client-side validation
+      const validation = validateFirstName(formData.get("first_name"));
+      if (!validation.isValid) {
+        setFirstNameError(validation.error);
+        setIsSubmitting(false); // Important: Reset submit state if validation fails
+        console.log("Validation failed, resetting submit state");
+        return;
+      }
+
+      console.log("Submitting sign up data");
+      await signUpAction(formData);
+
+      // Note: We might not reach this point if signUpAction redirects
+      console.log("Sign up completed");
+    } catch (error) {
+      console.error("Sign up error:", error);
+      setIsSubmitting(false);
     }
-
-    return signUpAction(formData);
   };
 
   return (
-    <Form action={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Field>
         <Label htmlFor="first_name">First name</Label>
         <Input
@@ -63,15 +84,6 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           placeholder="Your new password" // Overwrites the placeholder in FIELD_CONFIGS.password
         />
       </Field>
-      {/* 
-      <Field>
-        <Label htmlFor="invite_code">Invite code</Label>
-        <Input
-          name="invite_code"
-          placeholder="Your invite code"
-          required={true}
-        />
-      </Field> */}
 
       <LegalAgreement required={true} defaultChecked={false} disabled={false} />
 
@@ -86,7 +98,14 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           }}
         />
       )}
-      <SubmitButton pendingText="Signing up...">Sign up</SubmitButton>
+      <Button
+        type="submit"
+        variant="primary"
+        loading={isSubmitting}
+        loadingText="Signing up..."
+      >
+        Sign up
+      </Button>
     </Form>
   );
 }

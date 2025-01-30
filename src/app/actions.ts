@@ -5,12 +5,12 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@/utils/url";
+import { revalidatePath } from "next/cache";
 
 export const signUpAction = async (formData: FormData, request: Request) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const first_name = formData.get("first_name")?.toString();
-  const inviteCode = formData.get("invite_code");
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
@@ -32,14 +32,6 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     );
     return redirect(redirectUrl.toString());
   }
-
-  // if (inviteCode !== process.env.INVITE_CODE) {
-  //   redirectUrl.searchParams.append(
-  //     "error",
-  //     "Sorry, that invite code is invalid.",
-  //   );
-  //   return redirect(redirectUrl.toString());
-  // }
 
   // Check if user exists in auth.users
   const { data: existingAuthUser, error: authError } = await supabase
@@ -416,3 +408,58 @@ export async function fetchListingsInView(
     return [];
   }
 }
+
+export const createOrUpdateListingAction = async (listingData: any) => {
+  const supabase = await createClient();
+
+  try {
+    console.log("Server action: Creating/updating listing");
+
+    // Insert/update the listing
+    const { data, error } = await supabase
+      .from("listings")
+      .upsert(listingData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase error:", error);
+
+      // Return specific error messages based on error codes
+      if (error.code === "42501") {
+        return {
+          error:
+            "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
+        };
+      } else if (error.code === "23505") {
+        return { error: "An identical listing already exists." };
+      }
+      return { error: "Something went wrong. Please try again later." };
+    }
+
+    // If this was a new listing with pending photos, update them
+    if (!listingData.id && listingData.photos?.length > 0) {
+      const { error: updateError } = await supabase
+        .from("listings")
+        .update({ photos: listingData.photos })
+        .eq("slug", data.slug);
+
+      if (updateError) {
+        console.error("Error updating photos:", updateError);
+        return { error: "Created listing but couldn’t save photos." };
+      }
+    }
+
+    // Revalidate relevant paths
+    revalidatePath("/map");
+    revalidatePath("/listings");
+    if (data?.slug) {
+      revalidatePath(`/listings/${data.slug}`);
+    }
+
+    return { data };
+  } catch (error) {
+    console.error("Unexpected error in createOrUpdateListingAction:", error);
+    return { error: "An unexpected error occurred. Please try again later." };
+  }
+};
