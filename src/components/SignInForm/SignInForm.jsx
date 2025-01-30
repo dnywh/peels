@@ -1,9 +1,10 @@
 "use client";
+
 import { useState } from "react";
 
 import { signInAction } from "@/app/actions";
 
-import SubmitButton from "@/components/SubmitButton";
+import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
 import Form from "@/components/Form";
@@ -13,9 +14,38 @@ import Hyperlink from "@/components/Hyperlink";
 import FormMessage from "@/components/FormMessage";
 
 function SignInForm({ searchParams }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    console.log("Setting isSubmitting to true");
+
+    try {
+      // Create FormData from the form
+      const formData = new FormData(event.currentTarget);
+
+      // Add redirect_to if it exists in searchParams
+      if (searchParams?.redirect_to) {
+        formData.append("redirect_to", searchParams.redirect_to);
+      }
+
+      console.log("Submitting sign in data");
+      const result = await signInAction(formData);
+
+      // Note: We might not reach this point if signInAction redirects
+      console.log("Sign in result:", result);
+    } catch (error) {
+      console.error("Sign in error:", error);
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <Form>
-      {searchParams.success && (
+    <Form onSubmit={handleSubmit}>
+      {searchParams?.success && (
         <FormMessage message={{ success: searchParams.success }} />
       )}
       <Field>
@@ -41,21 +71,18 @@ function SignInForm({ searchParams }) {
         />
       </Field>
 
-      {searchParams.redirect_to && (
-        <input
-          type="hidden"
-          name="redirect_to"
-          value={searchParams.redirect_to}
-        />
-      )}
-
-      {searchParams.error && (
+      {searchParams?.error && (
         <FormMessage message={{ error: searchParams.error }} />
       )}
 
-      <SubmitButton pendingText="Signing in..." formAction={signInAction}>
+      <Button
+        type="submit"
+        variant="primary"
+        loading={isSubmitting}
+        loadingText="Signing in..."
+      >
         Sign in
-      </SubmitButton>
+      </Button>
     </Form>
   );
 }

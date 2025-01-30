@@ -63,15 +63,6 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           placeholder="Your new password" // Overwrites the placeholder in FIELD_CONFIGS.password
         />
       </Field>
-      {/* 
-      <Field>
-        <Label htmlFor="invite_code">Invite code</Label>
-        <Input
-          name="invite_code"
-          placeholder="Your invite code"
-          required={true}
-        />
-      </Field> */}
 
       <LegalAgreement required={true} defaultChecked={false} disabled={false} />
 

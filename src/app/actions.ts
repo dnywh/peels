@@ -5,12 +5,12 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@/utils/url";
+import { revalidatePath } from "next/cache";
 
 export const signUpAction = async (formData: FormData, request: Request) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const first_name = formData.get("first_name")?.toString();
-  const inviteCode = formData.get("invite_code");
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
@@ -32,14 +32,6 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     );
     return redirect(redirectUrl.toString());
   }
-
-  // if (inviteCode !== process.env.INVITE_CODE) {
-  //   redirectUrl.searchParams.append(
-  //     "error",
-  //     "Sorry, that invite code is invalid.",
-  //   );
-  //   return redirect(redirectUrl.toString());
-  // }
 
   // Check if user exists in auth.users
   const { data: existingAuthUser, error: authError } = await supabase
@@ -456,6 +448,13 @@ export const createOrUpdateListingAction = async (listingData: any) => {
         console.error("Error updating photos:", updateError);
         return { error: "Created listing but couldn’t save photos." };
       }
+    }
+
+    // Revalidate relevant paths
+    revalidatePath("/map");
+    revalidatePath("/listings");
+    if (data?.slug) {
+      revalidatePath(`/listings/${data.slug}`);
     }
 
     return { data };
