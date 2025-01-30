@@ -46,6 +46,7 @@ const DialogOverlay = styled(Dialog.Overlay)({
 
 function ButtonToDialog({
   variant = "danger",
+  size = "small",
   initialButtonText,
   dialogTitle,
   children,
@@ -53,12 +54,12 @@ function ButtonToDialog({
   cancelButtonText = "No, cancel",
   action,
   onSubmit,
-  ...props
+  // ...props // Setting this on Button (for size etc) seems to stop the dialog from opening
 }) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <Button width="contained" variant={variant}>
+        <Button width="contained" variant={variant} size={size}>
           {initialButtonText}
         </Button>
       </Dialog.Trigger>

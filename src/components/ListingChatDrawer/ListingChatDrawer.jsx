@@ -22,9 +22,9 @@ const ListingCtaContainer = styled("div")({
   },
 });
 
-const StyledDrawerContent = styled(Drawer.Content)({
-  background: "rgb(243, 243, 243)",
-  borderRadius: "10px 10px 0 0",
+const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
+  background: theme.colors.background.top,
+  borderRadius: `${theme.corners.base} ${theme.corners.base} 0 0`, // Match over drawer content
 
   overflowX: "hidden",
 
@@ -43,7 +43,7 @@ const StyledDrawerContent = styled(Drawer.Content)({
   flexDirection: "column",
 
   "@media (min-width: 768px)": {
-    borderRadius: "10px",
+    borderRadius: theme.corners.base, // Match over drawer content
     height: "unset",
     marginTop: "unset",
     top: "24px",
@@ -54,7 +54,7 @@ const StyledDrawerContent = styled(Drawer.Content)({
     width: sidebarWidth,
     // height: "100%",
   },
-});
+}));
 
 export default function ListingChatDrawer({
   isNested, // true for map, false for listing page

@@ -134,14 +134,14 @@ export default function Button({
   href,
   children,
   tabIndex = 0,
-  // size,
+  size,
   ...props
 }) {
   const sharedProps = {
     disabled,
     variant,
     tabIndex,
-    // size,
+    size,
     ...props,
   };
 
