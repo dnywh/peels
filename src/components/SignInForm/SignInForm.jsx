@@ -21,7 +21,6 @@ function SignInForm({ searchParams }) {
     if (isSubmitting) return;
 
     setIsSubmitting(true);
-    console.log("Setting isSubmitting to true");
 
     try {
       // Create FormData from the form
