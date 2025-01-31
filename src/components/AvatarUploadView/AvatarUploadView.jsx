@@ -52,6 +52,7 @@ function AvatarUploadView({
   getAvatarUrl,
   bucket,
   inputHintShown = false,
+  listingType,
 }) {
   // Hidden file input that we'll trigger programmatically
   const fileInputRef = useRef(null);
@@ -86,6 +87,7 @@ function AvatarUploadView({
             filename={avatar}
             alt="Your avatar"
             size="massive"
+            listing={listingType ? { type: listingType } : undefined}
           />
 
           {loading && <LoadingSpinner>Uploading...</LoadingSpinner>}

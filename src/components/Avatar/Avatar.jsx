@@ -97,7 +97,7 @@ function Avatar({
       : listing.type === "community"
         ? "community.png"
         : "business.png"
-    : defaultImage || "profile.png"; // Fall back to provided defaultImage or profile.png
+    : "profile.png"; // If no listing, it's a user avatar, so use profile.png
 
   // Only include src in imageProps if isDemo is true
   const imageProps = {
@@ -105,7 +105,8 @@ function Avatar({
     rotation,
     width: dimensions,
     height: dimensions,
-    defaultImage: computedDefaultImage,
+    // Pass defaultImage to RemoteImage but not to the demo's Image component
+    ...(isDemo ? {} : { defaultImage: defaultImage || computedDefaultImage }),
     ...(isDemo ? { src } : {}),
     ...props,
   };

@@ -129,6 +129,7 @@ export default function ProfileListings({ user, profile, listings }) {
                 filename={avatarProps.filename}
                 alt={avatarProps.alt}
                 size="small"
+                listing={listing}
               />
               <Text>
                 <h3>

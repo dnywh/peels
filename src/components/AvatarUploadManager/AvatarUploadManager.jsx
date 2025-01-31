@@ -16,6 +16,7 @@ function AvatarUploadManager({
   entityId,
   onAvatarChange,
   inputHintShown,
+  listingType,
   ...props
 }) {
   const [avatar, setAvatar] = useState(initialAvatar || "");
@@ -92,6 +93,7 @@ function AvatarUploadManager({
       getAvatarUrl={(filename) => getAvatarUrl(filename, bucket)}
       bucket={bucket}
       inputHintShown={inputHintShown}
+      listingType={listingType}
     />
   );
 }

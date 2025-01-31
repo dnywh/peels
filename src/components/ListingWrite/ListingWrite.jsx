@@ -296,6 +296,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             entityId={user.id}
             onAvatarChange={setAvatar}
             inputHintShown={profile?.avatar ? undefined : true}
+            listingType={listingType}
           />
         ) : (
           <AvatarUploadManager
@@ -303,6 +304,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             bucket="listing_avatars"
             entityId={initialListing?.slug}
             onAvatarChange={setAvatar}
+            listingType={listingType}
           />
         )}
 
