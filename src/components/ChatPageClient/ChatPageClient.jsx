@@ -1,10 +1,14 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
+
+import { useTabBar } from "@/contexts/TabBarContext";
+
 import ThreadsList from "@/components/ThreadsList";
 import ChatWindow from "@/components/ChatWindow";
+import PeelsLogo from "@/components/PeelsLogo";
+
 import { styled } from "@pigment-css/react";
-import { useTabBar } from "@/contexts/TabBarContext";
 
 const ChatPageLayout = styled("main")({
   display: "flex",
@@ -21,16 +25,11 @@ const ChatPageLayout = styled("main")({
 
 const ChatWindowWrapper = styled("div")(({ theme }) => ({
   flex: 1,
-  backgroundColor: theme.colors.background.top,
-  overflow: "hidden",
 
   '[data-thread-selected="true"] &': {
     height: "100dvh",
     "@media (min-width: 768px)": {
       height: "inherit",
-
-      borderRadius: theme.corners.base,
-      border: `1px solid ${theme.colors.border.base}`,
     },
   },
 
@@ -51,8 +50,25 @@ const ChatWindowEmptyState = styled("div")(({ theme }) => ({
   flex: 1,
   display: "flex",
   flexDirection: "column",
+  gap: "1rem",
   alignItems: "center",
   justifyContent: "center",
+  backgroundColor: theme.colors.background.pit,
+
+  // Match styles in ChatWindow, MapSidebar
+  "@media (min-width: 768px)": {
+    borderRadius: theme.corners.base,
+    border: `2px dashed ${theme.colors.border.base}`,
+  },
+
+  // Match styles in MapSidebar
+  "& p": {
+    color: theme.colors.text.ui.emptyState,
+    fontSize: "1.2rem",
+    fontWeight: "500",
+    lineHeight: "120%",
+    textWrap: "balance",
+  },
 }));
 
 export default function ChatPageClient({
@@ -109,7 +125,14 @@ export default function ChatPageClient({
             }}
           />
         ) : (
-          <ChatWindowEmptyState>No thread selected</ChatWindowEmptyState>
+          <ChatWindowEmptyState>
+            <PeelsLogo size={64} color="emptyState" />
+            <p>
+              {initialThreads.length === 0
+                ? "No chats yet. Try contacting your first host"
+                : "Select a chat from the left"}
+            </p>
+          </ChatWindowEmptyState>
         )}
       </ChatWindowWrapper>
     </ChatPageLayout>

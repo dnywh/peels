@@ -12,13 +12,19 @@ import { formatWeekday } from "@/utils/dateUtils";
 
 import { styled } from "@pigment-css/react";
 
-const StyledChatWindow = styled("div")({
+const StyledChatWindow = styled("div")(({ theme }) => ({
   height: "100%",
   flex: 1,
   display: "flex",
   flexDirection: "column",
   overflow: "hidden",
-});
+  backgroundColor: theme.colors.background.top,
+
+  "@media (min-width: 768px)": {
+    borderRadius: theme.corners.base,
+    border: `1px solid ${theme.colors.border.base}`,
+  },
+}));
 
 const StyledMessagesContainer = styled("div")({
   flex: 1,

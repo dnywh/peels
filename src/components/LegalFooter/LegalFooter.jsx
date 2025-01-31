@@ -23,11 +23,11 @@ const StyledNav = styled("nav")(({ theme }) => ({
   flexWrap: "wrap",
   padding: "0 1.5rem",
   // marginTop: "10rem",
-  color: theme.colors.text.quaternity,
+  color: theme.colors.text.ui.emptyState,
   fontSize: "1rem",
 
   "& a": {
-    color: theme.colors.text.quaternity,
+    color: theme.colors.text.ui.emptyState,
     transition: "color 150ms ease-in-out",
     "&:hover": {
       color: theme.colors.text.secondary,

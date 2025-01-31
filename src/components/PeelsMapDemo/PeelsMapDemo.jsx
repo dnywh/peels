@@ -109,10 +109,6 @@ const ListingBackground = styled("div")(({ theme }) => ({
   justifyContent: "center",
 
   transform: `scale(0.65) rotate(-1.5deg)`,
-
-  "& > svg": {
-    opacity: "0.45",
-  },
 }));
 
 const ListingDemo = styled("div")(({ theme }) => ({
@@ -217,7 +213,7 @@ export default function PeelsMapDemo() {
 
       <ListingContainer>
         <ListingBackground>
-          <PeelsLogo size={96} color="quaternary" />
+          <PeelsLogo size={96} color="emptyState" />
         </ListingBackground>
         <ListingDemo
           data-transitioning={isTransitioning}

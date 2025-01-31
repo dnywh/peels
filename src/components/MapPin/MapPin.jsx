@@ -23,7 +23,7 @@ const UnselectedPinInner = styled("div")(({ theme }) => ({
   width: "24px",
   height: "24px",
   borderRadius: "50%",
-  backgroundColor: theme.colors.text.quaternity, // Backup background color for when type is not specified
+  backgroundColor: theme.colors.text.ui.emptyState, // Backup background color for when type is not specified
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -83,7 +83,7 @@ const SelectedPinDot = styled("div")(({ theme }) => ({
 }));
 
 const SelectedPinIcon = styled("svg")(({ theme }) => ({
-  fill: theme.colors.text.quaternity, // Backup fill for when type is not specified
+  fill: theme.colors.text.ui.emptyState, // Backup fill for when type is not specified
   stroke: theme.colors.marker.border,
   strokeWidth: "1.5px",
   overflow: "visible",

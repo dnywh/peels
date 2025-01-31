@@ -229,7 +229,6 @@ export default withPigment(
                 primary: tokens.ochre[800],
                 secondary: tokens.rock[800],
                 tertiary: tokens.rock[400],
-                quaternity: tokens.rock[300],
                 link: tokens.ochre[700],
                 counter: tokens.rock[100],
                 overlay: tokens.white[100],
@@ -239,6 +238,7 @@ export default withPigment(
                     secondary: tokens.rock[800],
                     tertiary: tokens.rock[700],
                     quaternary: tokens.rock[600],
+                    emptyState: tokens.rock[300],
                     error: tokens.ochre[600],
                 },
                 brand: {

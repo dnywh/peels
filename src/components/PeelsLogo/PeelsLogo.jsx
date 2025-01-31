@@ -10,6 +10,14 @@ const StyledPeelsLogo = styled("svg")(({ theme }) => ({
         color: theme.colors.logo.quaternary,
       },
     },
+    {
+      props: { color: "emptyState" },
+      style: {
+        color: theme.colors.text.ui.emptyState,
+        opacity: 0.25,
+        mixBlendMode: "multiply",
+      },
+    },
   ],
 }));
 
