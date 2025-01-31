@@ -5,6 +5,7 @@ import TabBarTab from "@/components/TabBarTab";
 import MapIcon from "@/components/MapIcon";
 import ChatsIcon from "@/components/ChatsIcon";
 import ProfileIcon from "@/components/ProfileIcon";
+import AboutIcon from "@/components/AboutIcon";
 import { styled } from "@pigment-css/react";
 import { useTabBar } from "@/contexts/TabBarContext";
 
@@ -120,6 +121,7 @@ function TabBar({ breakpoint = "sm", ...props }) {
   return (
     <StyledTabBar breakpoint={breakpoint} position={position} {...props}>
       <StyledTabBarNav>
+        {/* Show 'home' AKA 'about' as the first tab item on larger breakpoints */}
         {breakpoint === "md" && <PeelsTab size={32} />}
         {NAVIGATION_ITEMS.map(({ title, Icon, href }) => (
           <TabBarTab
@@ -135,6 +137,20 @@ function TabBar({ breakpoint = "sm", ...props }) {
             active={pathname.startsWith(href)}
           />
         ))}
+        {/* Show 'home' AKA 'about' as the last tab item on smaller breakpoints */}
+        {breakpoint === "sm" && (
+          <TabBarTab
+            title="About"
+            icon={
+              <AboutIcon
+                size={24}
+                variant={pathname === "/" ? "solid" : "outline"}
+              />
+            }
+            href="/"
+            active={pathname === "/"}
+          />
+        )}
       </StyledTabBarNav>
     </StyledTabBar>
   );
