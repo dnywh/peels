@@ -3,7 +3,7 @@ import Image from "next/image";
 import { styled } from "@pigment-css/react";
 
 const SIZE_MASSIVE = 112;
-const SIZE_LARGE = 88;
+const SIZE_LARGE = 96;
 const SIZE_MEDIUM = 64;
 const SIZE_SMALL = 40;
 
@@ -50,55 +50,28 @@ const imageStyles = ({ theme }) => ({
 const StyledRemoteImage = styled(RemoteImage)(imageStyles);
 const StyledNextImage = styled(Image)(imageStyles);
 
+// Create a size map for cleaner dimension lookup
+const SIZE_MAP = {
+  massive: SIZE_MASSIVE,
+  large: SIZE_LARGE,
+  medium: SIZE_MEDIUM,
+  small: SIZE_SMALL,
+};
+
 function Avatar({ size = "medium", isDemo, src, ...props }) {
-  return isDemo ? (
-    <StyledNextImage
-      src={src}
-      size={size}
-      width={
-        size === "massive"
-          ? SIZE_MASSIVE
-          : size === "large"
-            ? SIZE_LARGE
-            : size === "medium"
-              ? SIZE_MEDIUM
-              : SIZE_SMALL
-      }
-      height={
-        size === "massive"
-          ? SIZE_MASSIVE
-          : size === "large"
-            ? SIZE_LARGE
-            : size === "medium"
-              ? SIZE_MEDIUM
-              : SIZE_SMALL
-      }
-      {...props}
-    />
-  ) : (
-    <StyledRemoteImage
-      size={size}
-      width={
-        size === "massive"
-          ? SIZE_MASSIVE
-          : size === "large"
-            ? SIZE_LARGE
-            : size === "medium"
-              ? SIZE_MEDIUM
-              : SIZE_SMALL
-      }
-      height={
-        size === "massive"
-          ? SIZE_MASSIVE
-          : size === "large"
-            ? SIZE_LARGE
-            : size === "small"
-              ? SIZE_SMALL
-              : SIZE_MEDIUM
-      }
-      {...props}
-    />
-  );
+  const ImageComponent = isDemo ? StyledNextImage : StyledRemoteImage;
+  const dimensions = SIZE_MAP[size];
+
+  // Only include src in imageProps if isDemo is true
+  const imageProps = {
+    size,
+    width: dimensions,
+    height: dimensions,
+    ...(isDemo ? { src } : {}),
+    ...props,
+  };
+
+  return <ImageComponent {...imageProps} />;
 }
 
 export default Avatar;
