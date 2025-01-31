@@ -278,7 +278,7 @@ const ChatWindow = memo(function ChatWindow({
 
             return (
               <Day key={message.id}>
-                {!isDemo && (showDateHeader || showInitiationHeader) ? (
+                {showDateHeader || showInitiationHeader ? (
                   <DayHeader>
                     {showDateHeader && (
                       <h3>{formatWeekday(message.created_at)}</h3>

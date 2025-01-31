@@ -85,7 +85,7 @@ function ChatHeader({
           bucket={!avatarProps?.isDemo ? avatarProps?.bucket : undefined}
           filename={!avatarProps?.isDemo ? avatarProps?.filename : undefined}
           alt={avatarProps?.alt || "The avatar for this listing"}
-          size="large"
+          size="medium"
         />
 
         {/* Additional owner_avatar for business or community listing */}

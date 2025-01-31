@@ -85,7 +85,7 @@ function AvatarUploadView({
             bucket={bucket}
             filename={avatar}
             alt="Your avatar"
-            size="large"
+            size="massive"
           />
 
           {loading && <LoadingSpinner>Uploading...</LoadingSpinner>}
