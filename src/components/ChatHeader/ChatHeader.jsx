@@ -167,7 +167,7 @@ function ChatHeader({
         {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
         {/* TODO: Extract and have a 'recipientName' const and a more malleable 'recipient and their listing name' as per above */}
         <h1>
-          {recipientName}
+          {isDemo ? "Kerri" : recipientName}
           {!listingIsOwnedByUser && listing?.type !== "residential" && (
             <>, {listing.name}</>
           )}

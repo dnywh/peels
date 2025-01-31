@@ -232,6 +232,8 @@ const ChatWindow = memo(function ChatWindow({
   }
 
   async function sendMessage(threadId) {
+    if (isDemo) return;
+
     const { error } = await supabase
       .from("chat_messages")
       .insert({
