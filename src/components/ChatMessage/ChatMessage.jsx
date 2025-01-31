@@ -26,7 +26,7 @@ const ChatMessageContainer = styled("div")({
 
 const ChatBubble = styled("p")(({ theme }) => ({
   padding: "0.65rem 1rem",
-  borderRadius: "2rem",
+  borderRadius: "1.5rem",
   variants: [
     {
       props: { direction: "sent" },
