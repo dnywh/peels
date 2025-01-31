@@ -14,21 +14,9 @@ import {
 import { styled } from "@pigment-css/react";
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  width: "2rem",
-  height: "2rem",
-  borderRadius: "50%",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: theme.colors.background.top,
-  border: `1px solid ${theme.colors.border.base}`,
-
-  padding: `0`, // This is to override the general Button component padding. TODO: make a specific TextButton component that has this padding value, not the root Button component.
-  // TODO: Make clickable area at least 44px by 44px, set visible inner to what's currently set
-
-  "&:hover": {
-    backgroundColor: theme.colors.background.sunk,
-  },
 
   variants: [
     {
@@ -43,7 +31,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
   ],
 }));
 
-function IconButton({ onClick, action = "back", breakpoint, ...props }) {
+function IconButton({
+  onClick,
+  variant = "subtle",
+  icon = "back",
+  breakpoint,
+  ...props
+}) {
   const router = useRouter();
 
   const handleClick = (e) => {
@@ -51,18 +45,24 @@ function IconButton({ onClick, action = "back", breakpoint, ...props }) {
       onClick(e);
     }
 
-    if (!onClick && action === "back") {
+    if (!onClick && icon === "back") {
       router.back();
     }
   };
 
   return (
-    <StyledButton breakpoint={breakpoint} onClick={handleClick} {...props}>
-      {action === "close" && <X size={16} />}
-      {action === "back" && <ArrowLeft size={16} />}
-      {action === "maximize" || (action === "send" && <ArrowUp size={16} />)}
-      {action === "minimize" && <ArrowDown size={16} />}
-      {action === "overflow" && <EllipsisVertical size={16} />}
+    <StyledButton
+      size="icon"
+      variant={variant}
+      breakpoint={breakpoint}
+      onClick={handleClick}
+      {...props}
+    >
+      {icon === "close" && <X size={16} />}
+      {icon === "back" && <ArrowLeft size={16} />}
+      {icon === "maximize" || (icon === "send" && <ArrowUp size={16} />)}
+      {icon === "minimize" && <ArrowDown size={16} />}
+      {icon === "overflow" && <EllipsisVertical size={16} />}
     </StyledButton>
   );
 }

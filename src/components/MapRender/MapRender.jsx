@@ -20,7 +20,6 @@ import { styled, css } from "@pigment-css/react";
 
 import { Drawer } from "vaul";
 import Button from "@/components/Button";
-import IconButton from "@/components/IconButton";
 
 const snapPoints = ["148px", "355px", 1];
 

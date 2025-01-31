@@ -28,7 +28,7 @@ const StyledChatWindow = styled("div")(({ theme }) => ({
 
 const StyledMessagesContainer = styled("div")({
   flex: 1,
-  padding: "1rem",
+  padding: "1.5rem 1rem 1rem",
   overflowY: "scroll",
 
   display: "flex",
@@ -85,11 +85,11 @@ const ChatWindow = memo(function ChatWindow({
   const [messageSendError, setMessageSendError] = useState(null);
 
   const recipientName = useMemo(() => {
-    if (!listing || !user) return "";
+    if (!listing || !user) return "Peels Member";
 
     // If user is the listing owner, show the initiator's name
     if (listingIsOwnedByUser) {
-      return existingThread?.initiator_first_name || "";
+      return existingThread?.initiator_first_name || "Peels Member";
     }
 
     // Otherwise, show the owner's name (and listing name for business/community)

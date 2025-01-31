@@ -193,7 +193,11 @@ export default withPigment(
                 },
                 disabled: {
                     text: tokens.rock[400],
+                },
+                placeholder: {
+                    text: tokens.rock[400],
                 }
+
             },
             button: {
                 primary: {
@@ -211,6 +215,14 @@ export default withPigment(
                         mix: `40%`,
                     },
                     text: tokens.ochre[800],
+                },
+                send: {
+                    background: tokens.ochre[800],
+                    hover: {
+                        tint: tokens.ochre[800],
+                        mix: `60%`,
+                    },
+                    text: tokens.white[100],
                 },
                 danger: {
                     background: tokens.white[100],

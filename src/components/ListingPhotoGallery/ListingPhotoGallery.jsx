@@ -75,7 +75,7 @@ function ListingPhotoGallery({ photos }) {
   return (
     <PhotosList>
       <Gallery options={options}>
-        {/* <GalleryCloseButton action="close" /> */}
+        {/* <GalleryCloseButton variant="close" /> */}
         {photos.map((photo, index) => (
           <Item
             key={index}

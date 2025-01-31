@@ -29,8 +29,9 @@ const LozengeContainer = styled("div")(({ theme }) => ({
 }));
 
 const NewListingAvatar = styled("div")(({ theme }) => ({
-  width: "32px", // Match the size of the avatar in the Avatar component
-  height: "32px",
+  // TODO: Use Avatar component instead of hardcoding the same values here
+  width: "40px", // Match the size of the avatar in the Avatar component
+  height: "40px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -41,7 +42,7 @@ const NewListingAvatar = styled("div")(({ theme }) => ({
   borderRadius: theme.corners.avatar.small,
   flexShrink: 0,
   background: theme.colors.background.pit,
-  boxShadow: `0px 0px 0px 3px ${theme.colors.background.top}, 0px 0px 0px 4px ${theme.colors.border.base}, 2.5px 3px 0px 3px ${theme.colors.border.stark}`,
+  boxShadow: `0px 0px 0px 2px ${theme.colors.background.top}, 0px 0px 0px 3.5px ${theme.colors.border.base}, 2px 2.5px 0px 2.15px ${theme.colors.border.stark}`,
   transform: `rotate(${theme.rotations.avatar})`,
   color: theme.colors.text.brand.quaternary,
 }));

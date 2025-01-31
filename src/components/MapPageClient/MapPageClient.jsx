@@ -678,7 +678,6 @@ export default function MapPageClient({
                   Test description for aria.
                 </Drawer.Description>
               </VisuallyHidden.Root>
-              {/* <IconButton onClick={handleChatClose}>Close</IconButton> */}
 
               <StyledDrawerHeader
                 style={{
@@ -704,17 +703,17 @@ export default function MapPageClient({
                   // TODO: also show this control on hasTouch if the user has accessibility mode enabled (is that a thing?)
                   <ButtonSet>
                     <StyledIconButtonStationary
-                      action={snap === snapPoints[0] ? "maximize" : "minimize"}
+                      icon={snap === snapPoints[0] ? "maximize" : "minimize"}
                       onClick={handleSnapChange}
                     />
                     <StyledIconButtonStationary
-                      action="close"
+                      icon="close"
                       onClick={handleCloseListing}
                     />
                   </ButtonSet>
                 ) : (
                   <StyledIconButtonAbsolute
-                    action="close"
+                    icon="close"
                     onClick={handleCloseListing}
                   />
                 )}

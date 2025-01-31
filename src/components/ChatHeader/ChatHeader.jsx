@@ -17,29 +17,86 @@ import { styled } from "@pigment-css/react";
 const StyledChatHeader = styled("header")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  alignItems: "stretch",
+  alignItems: "flexStart", // So top-right IconButton components are hugging the top right corner
   gap: "1rem",
   borderBottom: `1px solid ${theme.colors.border.base}`,
   backgroundColor: theme.colors.background.top,
   padding: "1rem",
+
+  // This works! Just moving it directly in the component for clarity. Keeping around for reference
+  // [`& ${AvatarContainer}`]: {
+  //   display: "none",
+  // },
+
+  // "@media (min-width: 768px)": {
+  //   [`& ${AvatarContainer}`]: {
+  //     display: "flex",
+  //   },
+  // },
 }));
 
 const AvatarContainer = styled("div")({
+  margin: "0.25rem 0.625rem 0.25rem 0.25rem", // Account for rotated avatar(s)
   flexShrink: 0,
-
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "flex-end",
-
   "& > *:nth-child(2)": {
-    marginLeft: "-0.5rem",
+    marginLeft: "-1.25rem",
+    marginBottom: "-0.25rem",
+  },
+
+  display: "none",
+
+  // TODO: Container query, not a media query
+  "@media (min-width: 768px)": {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
 });
 
-const Title = styled("div")(({ theme }) => ({
+const TitleBlock = styled("div")(({ theme }) => ({
+  flex: 1,
+  alignSelf: "center",
+
   fontSize: "1rem",
   fontWeight: "700",
-  flex: 1,
+
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch",
+  gap: "0.25rem",
+
+  "& h1, & h2 ": {
+    // margin: "0",
+    textAlign: "center",
+    fontSize: "1rem",
+    fontWeight: "600",
+    lineHeight: "100%",
+  },
+
+  "& h1": {
+    // fontSize: "1.25rem",
+    color: theme.colors.text.ui.primary,
+  },
+
+  "& h2": {
+    // fontSize: "1rem",
+    color: theme.colors.text.ui.quaternary,
+  },
+
+  "@media (min-width: 768px)": {
+    "& h1, & h2 ": {
+      textAlign: "left",
+      fontWeight: "700",
+    },
+
+    "& h1": {
+      fontSize: "1.25rem",
+    },
+
+    "& h2": {
+      fontSize: "1rem",
+    },
+  },
 }));
 
 function ChatHeader({
@@ -60,7 +117,7 @@ function ChatHeader({
       {!isDrawer && !isDemo && (
         <IconButton
           breakpoint="sm"
-          action="back"
+          icon="back"
           onClick={() => router.push("/chats")}
         />
       )}
@@ -101,29 +158,37 @@ function ChatHeader({
             }
             alt={ownerAvatarProps?.alt || "The avatar for this listing"}
             size="small"
+            rotation="reverse"
           />
         )}
       </AvatarContainer>
 
-      <Title>
+      <TitleBlock>
         {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
         {/* TODO: Extract and have a 'recipientName' const and a more malleable 'recipient and their listing name' as per above */}
-        <p>
+        <h1>
           {recipientName}
           {!listingIsOwnedByUser && listing?.type !== "residential" && (
             <>, {listing.name}</>
           )}
-        </p>
-      </Title>
+        </h1>
+        {!listingIsOwnedByUser && (
+          <h2>
+            {listing.type === "residential"
+              ? "Residential listing"
+              : listing.name}
+          </h2>
+        )}
+      </TitleBlock>
 
       {!isDrawer && !isDemo && (
         <DropdownMenu.Root>
           {/* <Hyperlink href={`/listings/${listing.slug}`}>View listing</Hyperlink> */}
 
-          <DropdownMenu.Button as={IconButton} action="overflow" />
+          <DropdownMenu.Button as={IconButton} icon="overflow" />
 
           {/* <IconButton
-            action="overflow"
+            icon="overflow"
             // onClick={() => router.push("/chats")} TODO: Open overflow menu, which has a 'View listing' option (if !listingIsOwnedByUser) and 'Block user' option
           /> */}
           <DropdownMenu.Items anchor={{ to: "bottom end", gap: "4px" }}>
@@ -160,7 +225,7 @@ function ChatHeader({
 
       {isDrawer && (
         <Drawer.Close asChild>
-          <IconButton action="close" />
+          <IconButton icon="close" />
         </Drawer.Close>
       )}
     </StyledChatHeader>

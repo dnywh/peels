@@ -13,7 +13,6 @@ const imageStyles = ({ theme }) => ({
   objectFit: "cover",
   flexShrink: 0,
   background: theme.colors.background.pit,
-  transform: `rotate(${theme.rotations.avatar})`,
 
   variants: [
     {
@@ -34,14 +33,26 @@ const imageStyles = ({ theme }) => ({
       props: { size: "medium" },
       style: {
         borderRadius: theme.corners.avatar.large,
-        boxShadow: `0px 0px 0px 4px ${theme.colors.background.top}, 0px 0px 0px 5.5px ${theme.colors.border.base}, 3px 4px 0px 5px ${theme.colors.border.stark}`,
+        boxShadow: `0px 0px 0px 3px ${theme.colors.background.top}, 0px 0px 0px 4.5px ${theme.colors.border.base}, 2px 3px 0px 3px ${theme.colors.border.stark}`,
       },
     },
     {
       props: { size: "small" },
       style: {
         borderRadius: theme.corners.avatar.small,
-        boxShadow: `0px 0px 0px 3px ${theme.colors.background.top}, 0px 0px 0px 4px ${theme.colors.border.base}, 2.5px 3px 0px 3px ${theme.colors.border.stark}`,
+        boxShadow: `0px 0px 0px 2px ${theme.colors.background.top}, 0px 0px 0px 3.5px ${theme.colors.border.base}, 2px 2.5px 0px 2.15px ${theme.colors.border.stark}`,
+      },
+    },
+    {
+      props: { rotation: "normal" },
+      style: {
+        transform: `rotate(${theme.rotations.avatar})`,
+      },
+    },
+    {
+      props: { rotation: "reverse" },
+      style: {
+        transform: `rotate(calc(${theme.rotations.avatar} * -1.5))`,
       },
     },
   ],
@@ -58,13 +69,20 @@ const SIZE_MAP = {
   small: SIZE_SMALL,
 };
 
-function Avatar({ size = "medium", isDemo, src, ...props }) {
+function Avatar({
+  size = "medium",
+  rotation = "normal",
+  isDemo,
+  src,
+  ...props
+}) {
   const ImageComponent = isDemo ? StyledNextImage : StyledRemoteImage;
   const dimensions = SIZE_MAP[size];
 
   // Only include src in imageProps if isDemo is true
   const imageProps = {
     size,
+    rotation,
     width: dimensions,
     height: dimensions,
     ...(isDemo ? { src } : {}),

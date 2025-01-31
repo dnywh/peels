@@ -13,6 +13,10 @@ const StyledInput = styled(HeadlessInput)(({ theme }) => ({
   minHeight: "3.5rem",
   padding: "0.375rem 0.75rem",
 
+  "&::placeholder": {
+    color: theme.colors.input.placeholder.text,
+  },
+
   "&:focus-active": {
     outline: "none",
     outlineWidth: "20px",

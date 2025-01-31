@@ -13,6 +13,10 @@ const StyledTextarea = styled(HeadlessTextarea)(({ theme }) => ({
   minHeight: "3.5rem",
   padding: "0.9rem 0.75rem", // Different to Input
 
+  "&::placeholder": {
+    color: theme.colors.input.placeholder.text,
+  },
+
   "&:focus-active": {
     outline: "none",
     outlineWidth: "20px",
@@ -25,6 +29,18 @@ const StyledTextarea = styled(HeadlessTextarea)(({ theme }) => ({
   formSizing: "content",
   variants: [
     {
+      props: { variant: "chat" },
+      style: {
+        minHeight: "3rem",
+        borderRadius: "1.5rem", // Should appear rounded, so 50% of minHeight
+        padding: "0.75rem 1rem",
+        resize: "none",
+        // Disabled because if you don't like, it, change the styling globally!
+        // border: `1px solid ${theme.colors.border.base}`,
+        // backgroundColor: theme.colors.background.slight,
+      },
+    },
+    {
       props: { resize: "vertical" },
       style: {
         resize: "vertical",
@@ -33,10 +49,11 @@ const StyledTextarea = styled(HeadlessTextarea)(({ theme }) => ({
   ],
 }));
 
-function Textarea({ resize, children, ...props }) {
+function Textarea({ resize, variant, children, ...props }) {
   return (
     <StyledTextarea
       resize={resize}
+      variant={variant}
       autoCorrect="on"
       spellCheck="true"
       autoCapitalize="sentences"

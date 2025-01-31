@@ -5,13 +5,13 @@ import { styled } from "@pigment-css/react";
 const StyledIconButton = styled(IconButton)({
   variants: [
     {
-      props: { button: "back" },
+      props: { icon: "back" },
       style: {
         alignSelf: "flex-start",
       },
     },
     {
-      props: { button: "close" },
+      props: { icon: "close" },
       style: {
         alignSelf: "flex-end",
       },
@@ -66,7 +66,7 @@ const Text = styled("div")(({ theme }) => ({
 function FormHeader({ children, button = "back" }) {
   return (
     <Header button={button}>
-      {button === "none" ? null : <StyledIconButton button={button} />}
+      {button === "none" ? null : <StyledIconButton icon={button} />}
       <PeelsLogo />
       <Text>{children}</Text>
     </Header>

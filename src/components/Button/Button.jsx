@@ -3,11 +3,11 @@ import Link from "next/link";
 import { styled } from "@pigment-css/react";
 
 const buttonStyles = ({ theme }) => ({
-  // Base styles that both button and link will share
-  flexShrink: "0",
+  // Resets
   border: "none",
+  appearance: "none",
+  // Base styles that both button and link will share
   borderRadius: `calc(${theme.corners.base} * 1)`,
-  color: theme.colors.button.secondary.text, // Default color needed for sub-button components like IconButton that don't specifiy a variant
   fontSize: "1rem",
   height: "3rem",
   cursor: "pointer",
@@ -16,11 +16,13 @@ const buttonStyles = ({ theme }) => ({
   alignItems: "center", // Added to help with alignment
   justifyContent: "center", // Added to help with alignment
   textDecoration: "none",
-  // borderWidth: "2px",
-  // borderColor: theme.colors.border.base,
   padding: `0 calc(${theme.spacing.unit} * 2)`,
   transition:
     "background 100ms ease-in-out, color 75ms ease-in-out, box-shadow 100ms ease-in-out",
+
+  "&:hover&:not([disabled])": {
+    backgroundColor: theme.colors.background.sunk,
+  },
 
   // Ellipsize text
   "& span": {
@@ -115,6 +117,37 @@ const buttonStyles = ({ theme }) => ({
       },
     },
     {
+      props: { variant: "send" },
+      style: {
+        backgroundColor: theme.colors.button.send.background,
+        border: "none",
+        color: theme.colors.button.send.text,
+
+        "&:hover&:not([disabled])": {
+          backgroundColor: `color-mix(in srgb, ${theme.colors.button.send.text}, ${theme.colors.button.send.hover.tint} ${theme.colors.button.send.hover.mix})`,
+        },
+      },
+    },
+    {
+      // The default style for IconButton
+      props: { variant: "subtle" },
+      style: {
+        // Assume styles from secondary, mainly so I don't have to put visual styles in size: "icon" (TODO: avoid repetition)
+        background: theme.colors.button.secondary.background,
+        color: theme.colors.button.secondary.text,
+        border: `1px solid ${theme.colors.border.base}`,
+      },
+    },
+    {
+      props: { size: "icon" },
+      style: {
+        width: "2rem",
+        height: "2rem",
+        padding: 0,
+        borderRadius: "50%",
+      },
+    },
+    {
       props: { disabled: true },
       style: {
         cursor: "default",
@@ -129,7 +162,7 @@ const StyledButton = styled(UnstyledButton)(buttonStyles);
 const StyledLink = styled(Link)(buttonStyles);
 
 export default function Button({
-  variant,
+  variant = "secondary",
   disabled = false,
   href,
   children,

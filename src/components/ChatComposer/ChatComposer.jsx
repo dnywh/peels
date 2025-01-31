@@ -18,9 +18,13 @@ const ChatComposerInner = styled("form")(({ theme }) => ({
   width: "100%",
   display: "flex",
   flexDirection: "row",
-  alignItems: "center",
+  alignItems: "flex-end",
   justifyContent: "stretch",
-  gap: "1rem",
+  gap: "0.75rem",
+}));
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  marginBottom: "0.6rem", // TODO: Make dynamic. Since we're aligning items to the bottom, we need to manually set this to appear horizontally centered
 }));
 
 function ChatComposer({
@@ -35,13 +39,20 @@ function ChatComposer({
       {error && <FormMessage message={{ error: error }} />}
       <ChatComposerInner onSubmit={onSubmit}>
         <Textarea
+          variant="chat"
           placeholder={`Send a message${recipientName && ` to ${recipientName}`}...`}
           value={message}
           onChange={handleMessageChange}
           rows={1}
         />
         {/* <SubmitButton pendingText="Sending...">Send</SubmitButton> */}
-        <IconButton action="send" />
+        <StyledIconButton
+          type="submit"
+          icon="send"
+          variant="send"
+          // TODO: Some sort of Aria label to indicate this is a 'Send' button
+          disabled={!message.trim()}
+        />
       </ChatComposerInner>
     </ChatComposerForm>
   );

@@ -90,9 +90,9 @@ function ThreadsList({ user, threads, currentThreadId }) {
   return (
     <ThreadsSidebar>
       <h1>Chats</h1>
-      <ThreadsUnorderedList>
-        {threads.length > 0 ? (
-          threads.map((thread) => {
+      {threads.length > 0 ? (
+        <ThreadsUnorderedList>
+          {threads.map((thread) => {
             const otherPersonName =
               thread.initiator_id === user.id
                 ? thread.owner_first_name
@@ -126,11 +126,12 @@ function ThreadsList({ user, threads, currentThreadId }) {
                 </ThreadPreview>
               </li>
             );
-          })
-        ) : (
-          <p>No chats yet</p>
-        )}
-      </ThreadsUnorderedList>
+          })}
+        </ThreadsUnorderedList>
+      ) : (
+        // TODO: Center and visually match empty chat window state
+        <p>No chats yet</p>
+      )}
     </ThreadsSidebar>
   );
 }

@@ -3,12 +3,12 @@ import ChatWindow from "@/components/ChatWindow";
 import { styled } from "@pigment-css/react";
 
 const ChatDemoContainer = styled("div")(({ theme }) => ({
-  backgroundColor: theme.colors.background.top,
-  padding: "2.5rem 1rem",
-  border: `1px solid ${theme.colors.border.base}`,
-  borderRadius: `${theme.corners.base}`,
+  // backgroundColor: theme.colors.background.top,
+  // padding: "2.5rem 1rem",
+  // border: `1px solid ${theme.colors.border.base}`,
+  // borderRadius: `${theme.corners.base}`,
 
-  padding: "1rem",
+  // padding: "1rem",
   height: "640px",
 
   width: "95vw",
