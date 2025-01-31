@@ -148,7 +148,7 @@ export default withPigment(
                     text: tokens.white[100],
                 },
                 received: {
-                    background: tokens.rock[50],
+                    background: tokens.ochre[80],
                     text: tokens.rock[800],
                 },
             },

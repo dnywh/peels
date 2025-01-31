@@ -6,6 +6,7 @@ const SIZE_MASSIVE = 112;
 const SIZE_LARGE = 96;
 const SIZE_MEDIUM = 64;
 const SIZE_SMALL = 40;
+const SIZE_TINY = 24;
 
 // Base styles that will be shared between both image types
 const imageStyles = ({ theme }) => ({
@@ -44,6 +45,13 @@ const imageStyles = ({ theme }) => ({
       },
     },
     {
+      props: { size: "tiny" },
+      style: {
+        borderRadius: theme.corners.avatar.small,
+        boxShadow: `0px 0px 0px 2px ${theme.colors.background.top}, 0px 0px 0px 3.5px ${theme.colors.border.base}, 2px 2.5px 0px 2.15px ${theme.colors.border.stark}`,
+      },
+    },
+    {
       props: { rotation: "normal" },
       style: {
         transform: `rotate(${theme.rotations.avatar})`,
@@ -67,6 +75,7 @@ const SIZE_MAP = {
   large: SIZE_LARGE,
   medium: SIZE_MEDIUM,
   small: SIZE_SMALL,
+  tiny: SIZE_TINY,
 };
 
 function Avatar({
@@ -74,10 +83,21 @@ function Avatar({
   rotation = "normal",
   isDemo,
   src,
+  defaultImage,
+  listing,
   ...props
 }) {
   const ImageComponent = isDemo ? StyledNextImage : StyledRemoteImage;
   const dimensions = SIZE_MAP[size];
+
+  // Determine default images based on listing type if a listing is provided
+  const computedDefaultImage = listing
+    ? listing.type === "residential"
+      ? "profile.png"
+      : listing.type === "community"
+        ? "community.png"
+        : "business.png"
+    : defaultImage || "profile.png"; // Fall back to provided defaultImage or profile.png
 
   // Only include src in imageProps if isDemo is true
   const imageProps = {
@@ -85,6 +105,7 @@ function Avatar({
     rotation,
     width: dimensions,
     height: dimensions,
+    defaultImage: computedDefaultImage,
     ...(isDemo ? { src } : {}),
     ...props,
   };

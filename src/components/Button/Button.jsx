@@ -7,6 +7,7 @@ const buttonStyles = ({ theme }) => ({
   border: "none",
   appearance: "none",
   // Base styles that both button and link will share
+  flexShrink: 0,
   borderRadius: `calc(${theme.corners.base} * 1)`,
   fontSize: "1rem",
   height: "3rem",

@@ -51,6 +51,7 @@ function ListingHeader({ listing, listingName, user }) {
         filename={!avatarProps?.isDemo ? avatarProps?.filename : undefined}
         alt={avatarProps?.alt || "The avatar for this listing"}
         size="large"
+        listing={listing}
       />
 
       <StyledText>

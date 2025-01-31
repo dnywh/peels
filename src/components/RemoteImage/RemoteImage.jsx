@@ -34,12 +34,14 @@ export default function RemoteImage({
   style,
   width,
   height,
+  defaultImage = "profile.png",
   ...props
 }) {
-  // console.log("RemoteImage received:", { bucket, filename });
-  // Handle missing filename or public folder images
+  // Fall back to default profile image if no filename or public bucket
   if (!filename || bucket === "public") {
-    const imagePath = !filename ? "/avatars/default.png" : `/${filename}`;
+    const imagePath = !filename
+      ? `/avatars/default/${defaultImage}`
+      : `/${filename}`;
     return (
       <Image
         src={imagePath}

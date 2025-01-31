@@ -37,7 +37,7 @@ export function getListingAvatar(listing, user) {
         if (!user) {
             return {
                 bucket: "public",
-                filename: "avatars/private.jpg",
+                filename: "avatars/default/private.jpg",
                 alt: "A blurred avatar for Private Host. Sign in to see their full information."
             };
         }
@@ -50,7 +50,16 @@ export function getListingAvatar(listing, user) {
         };
     }
 
-    // For business and community listings
+    // Business and community listings 
+    // For those without an avatar, use a default image based on the listing type
+    if (!listing.avatar) {
+        return {
+            path: `/avatars/default/${listing.type}.png`,
+            alt: `${listing.name}’s avatar`
+        };
+    }
+
+    // Otherwise, if that business or community listing has an avatar, use it!
     return {
         bucket: "listing_avatars",
         filename: listing.avatar || null,

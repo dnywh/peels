@@ -2,10 +2,7 @@ import { useRouter } from "next/navigation";
 
 import { Drawer } from "vaul"; // TODO: Import only used subcomponents?
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
-
-import { getListingAvatar, getListingOwnerAvatar } from "@/utils/listing";
-
-import Avatar from "@/components/Avatar";
+import AvatarPair from "@/components/AvatarPair";
 import IconButton from "@/components/IconButton";
 import DropdownMenu from "@/components/DropdownMenu";
 import Button from "@/components/Button";
@@ -34,24 +31,6 @@ const StyledChatHeader = styled("header")(({ theme }) => ({
   //   },
   // },
 }));
-
-const AvatarContainer = styled("div")({
-  margin: "0.25rem 0.625rem 0.25rem 0.25rem", // Account for rotated avatar(s)
-  flexShrink: 0,
-  "& > *:nth-child(2)": {
-    marginLeft: "-1.25rem",
-    marginBottom: "-0.25rem",
-  },
-
-  display: "none",
-
-  // TODO: Container query, not a media query
-  "@media (min-width: 768px)": {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-end",
-  },
-});
 
 const TitleBlock = styled("div")(({ theme }) => ({
   flex: 1,
@@ -108,9 +87,6 @@ function ChatHeader({
   isDemo,
 }) {
   const router = useRouter();
-  const avatarProps = getListingAvatar(listing, user);
-  const ownerAvatarProps = getListingOwnerAvatar(listing);
-  // console.log({ avatarProps });
 
   return (
     <StyledChatHeader>
@@ -134,34 +110,7 @@ function ChatHeader({
         </>
       )}
 
-      {/* Listing avatar (or person's own avatar if residential listing) */}
-      <AvatarContainer>
-        <Avatar
-          isDemo={avatarProps?.isDemo}
-          src={avatarProps?.isDemo ? avatarProps.path : undefined}
-          bucket={!avatarProps?.isDemo ? avatarProps?.bucket : undefined}
-          filename={!avatarProps?.isDemo ? avatarProps?.filename : undefined}
-          alt={avatarProps?.alt || "The avatar for this listing"}
-          size="medium"
-        />
-
-        {/* Additional owner_avatar for business or community listing */}
-        {listing.type !== "residential" && (
-          <Avatar
-            isDemo={ownerAvatarProps?.isDemo}
-            src={ownerAvatarProps?.isDemo ? ownerAvatarProps.path : undefined}
-            bucket={
-              !ownerAvatarProps?.isDemo ? ownerAvatarProps?.bucket : undefined
-            }
-            filename={
-              !ownerAvatarProps?.isDemo ? ownerAvatarProps?.filename : undefined
-            }
-            alt={ownerAvatarProps?.alt || "The avatar for this listing"}
-            size="small"
-            rotation="reverse"
-          />
-        )}
-      </AvatarContainer>
+      <AvatarPair listing={listing} user={user} smallest="small" />
 
       <TitleBlock>
         {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}

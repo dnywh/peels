@@ -3,6 +3,8 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 // import Link from "next/link";
 
+import AvatarPair from "@/components/AvatarPair";
+
 import { styled } from "@pigment-css/react";
 
 const ThreadsSidebar = styled("div")(({ theme }) => ({
@@ -38,13 +40,33 @@ const ThreadsUnorderedList = styled("ul")(({ theme }) => ({
 const ThreadPreview = styled("a")(({ theme }) => ({
   cursor: "pointer",
   display: "flex",
-  flexDirection: "column",
+  flexDirection: "row",
   alignItems: "stretch",
-  gap: "0rem",
+  gap: "1rem",
   padding: "0.25rem 0.5rem",
 
   // Match styles in ProfileListings
   borderRadius: `calc(${theme.corners.base} * 0.625)`,
+
+  transition: "background-color 150ms ease-in-out",
+  "&:hover": {
+    backgroundColor: `color-mix(in srgb, ${theme.colors.background.sunk} 80%, transparent)`,
+  },
+
+  variants: [
+    {
+      props: { selected: true },
+      style: {
+        // cursor: "auto",
+        backgroundColor: theme.colors.background.sunk,
+      },
+    },
+  ],
+}));
+
+const ThreadPreviewText = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
 
   "& h3": {
     color: theme.colors.text.ui.primary,
@@ -59,20 +81,6 @@ const ThreadPreview = styled("a")(({ theme }) => ({
     overflow: "hidden",
     whiteSpace: "nowrap",
   },
-
-  transition: "background-color 150ms ease-in-out",
-  "&:hover": {
-    backgroundColor: `color-mix(in srgb, ${theme.colors.background.sunk} 80%, transparent)`,
-  },
-  variants: [
-    {
-      props: { selected: true },
-      style: {
-        // cursor: "auto",
-        backgroundColor: theme.colors.background.sunk,
-      },
-    },
-  ],
 }));
 
 function ThreadsList({ user, threads, currentThreadId }) {
@@ -113,16 +121,24 @@ function ThreadsList({ user, threads, currentThreadId }) {
                   selected={thread.id === currentThreadId}
                   onClick={() => handleThreadSelect(thread)}
                 >
-                  <h3>{displayName}</h3>
-                  {thread.chat_messages_with_senders?.length > 0 && (
-                    <p>
-                      {
-                        thread.chat_messages_with_senders[
-                          thread.chat_messages_with_senders.length - 1
-                        ].content
-                      }
-                    </p>
-                  )}
+                  {/* Listing avatar (or person's own avatar if residential listing) */}
+                  <AvatarPair
+                    listing={thread.listing}
+                    user={user}
+                    smallest="tiny"
+                  />
+                  <ThreadPreviewText>
+                    <h3>{displayName}</h3>
+                    {thread.chat_messages_with_senders?.length > 0 && (
+                      <p>
+                        {
+                          thread.chat_messages_with_senders[
+                            thread.chat_messages_with_senders.length - 1
+                          ].content
+                        }
+                      </p>
+                    )}
+                  </ThreadPreviewText>
                 </ThreadPreview>
               </li>
             );
