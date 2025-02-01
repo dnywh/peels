@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
-import Map from "react-map-gl/maplibre";
+import Map, { AttributionControl } from "react-map-gl/maplibre";
 
 import maplibregl from "maplibre-gl";
 // import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
@@ -45,6 +45,7 @@ export default function MapThumbnail({ height = `300`, children, ...props }) {
   return (
     <MapContainer>
       <Map
+        attributionControl={false} // Customised below
         mapStyle={{
           version: 8,
           glyphs:
@@ -64,6 +65,7 @@ export default function MapThumbnail({ height = `300`, children, ...props }) {
         style={{ width: "100%", height: height, borderRadius: RADIUS }}
         {...props}
       >
+        <AttributionControl compact={true} />
         {children}
       </Map>
       <MapBorder />
