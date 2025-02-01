@@ -24,7 +24,7 @@ import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
 import ListingPhotoGallery from "@/components/ListingPhotoGallery";
 import RemoteImage from "@/components/RemoteImage";
-import PeelsMap from "@/components/PeelsMap";
+import MapThumbnail from "@/components/MapThumbnail";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
 import ListingChatDrawer from "@/components/ListingChatDrawer";
@@ -226,14 +226,15 @@ const ListingRead = memo(function Listing({
           {presentation !== "drawer" && (
             <ListingReadSection>
               <h3>Location</h3>
-              <PeelsMap
-                style={{ height: "320px" }}
-                interactive={false}
+
+              <MapThumbnail
+                height="320px"
                 initialViewState={{
                   longitude: listing.longitude,
                   latitude: listing.latitude,
                   zoom: initialZoomLevel,
                 }}
+                interactive={false}
               >
                 <Marker
                   longitude={listing.longitude}
@@ -247,7 +248,7 @@ const ListingRead = memo(function Listing({
                   <MapPin selected={true} type={listing.type} />
                 </Marker>
                 <NavigationControl showCompass={false} />
-              </PeelsMap>
+              </MapThumbnail>
 
               {listing.type === "residential" ? (
                 <p>

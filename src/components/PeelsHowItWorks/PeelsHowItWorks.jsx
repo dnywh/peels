@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PeelsMapDemo from "@/components/PeelsMapDemo";
+import MapThumbnailDemo from "@/components/MapThumbnailDemo";
 import PeelsFeaturedHostsPhotos from "@/components/PeelsFeaturedHostsPhotos";
 import { styled } from "@pigment-css/react";
 
@@ -80,7 +80,7 @@ function PeelsHowItWorks() {
     <OrderedList>
       <Step number={1} title="Find a host">
         <p>Select a marker on the map to see who’s nearby.</p>
-        <PeelsMapDemo />
+        <MapThumbnailDemo />
       </Step>
 
       <Step number={2} title="Contact" id="contact">

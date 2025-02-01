@@ -19,10 +19,6 @@ const buttonStyles = ({ theme }) => ({
   transition:
     "background 100ms ease-in-out, color 75ms ease-in-out, box-shadow 100ms ease-in-out",
 
-  "&:hover&:not([disabled])": {
-    backgroundColor: theme.colors.background.sunk,
-  },
-
   // Ellipsize text
   "& span": {
     display: "inline-block",
@@ -142,6 +138,9 @@ const buttonStyles = ({ theme }) => ({
         background: theme.colors.button.secondary.background,
         color: theme.colors.button.secondary.text,
         border: `1px solid ${theme.colors.border.base}`,
+        "&:hover&:not([disabled])": {
+          backgroundColor: theme.colors.background.sunk,
+        },
       },
     },
     {

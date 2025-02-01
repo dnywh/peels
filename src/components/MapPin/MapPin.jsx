@@ -57,14 +57,14 @@ const SelectedPin = styled("div")(({ theme }) => ({
   // . TODO: is there a way to group these two CSS declarations?
   // I.e. so the transition is only declared once
   [`& ${SelectedPinDot}`]: {
-    transition: "transform 110ms ease-in-out",
+    transition: "transform 75ms ease-in-out",
   },
   [`& ${SelectedPinRing}`]: {
-    transition: "transform 110ms ease-in-out",
+    transition: "transform 75ms ease-in-out",
   },
   "&:hover": {
     [`& ${SelectedPinDot}`]: {
-      transform: "scale(1.15)",
+      transform: "scale(1.05)",
     },
     [`& ${SelectedPinRing}`]: {
       transform: "scale(1.25)",

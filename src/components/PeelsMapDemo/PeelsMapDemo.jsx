@@ -138,7 +138,7 @@ const ListingDemo = styled("div")(({ theme }) => ({
   },
 }));
 
-export default function PeelsMapDemo() {
+export default function MapThumbnailDemo() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [rotationAngle, setRotationAngle] = useState(0);
