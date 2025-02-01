@@ -10,18 +10,13 @@ import PeelsLogo from "@/components/PeelsLogo";
 
 import { styled } from "@pigment-css/react";
 
-const ChatPageLayout = styled("main")({
+const ChatPageLayout = styled("main")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "stretch",
-  gap: "2rem",
+  gap: theme.spacing.gap.desktop,
   width: "100%",
-  // height: "calc(100% - 80px)",
-
-  // "@media (min-width: 768px)": {
-  //   height: "100%",
-  // },
-});
+}));
 
 const ChatWindowWrapper = styled("div")(({ theme }) => ({
   flex: 1,
@@ -86,7 +81,7 @@ export default function ChatPageClient({
 
   const selectedThread = useMemo(
     () =>
-      currentThreadId ? threads.find((t) => t.id === currentThreadId) : null,
+      currentThreadId ? threads?.find((t) => t.id === currentThreadId) : null,
     [currentThreadId, threads]
   );
 
@@ -128,7 +123,7 @@ export default function ChatPageClient({
           <ChatWindowEmptyState>
             <PeelsLogo size={64} color="emptyState" />
             <p>
-              {initialThreads.length === 0
+              {initialThreads?.length === 0
                 ? "No chats yet. Try contacting your first host"
                 : "Select a chat from the left"}
             </p>

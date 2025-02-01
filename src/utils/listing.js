@@ -78,6 +78,16 @@ export function getListingOwnerAvatar(listing) {
     };
 }
 
+export function getProfileAvatar(profileId) {
+    if (!profileId) return null;
+
+    return {
+        bucket: "avatars",
+        filename: profileId,
+        alt: "The avatar for this profile"
+    };
+}
+
 export function getListingDisplayType(listing) {
     if (!listing) return '';
 

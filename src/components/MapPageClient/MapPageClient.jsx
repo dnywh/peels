@@ -40,13 +40,13 @@ const ZOOM_LEVEL_DEFAULT = 7.5; // TODO: 11 is a sensible default once the map i
 // For IP geolocation API
 config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
-const StyledMapPage = styled("main")({
+const StyledMapPage = styled("main")(({ theme }) => ({
   flex: 1,
-  gap: "1.5rem",
+  gap: theme.spacing.gap.desktop,
   alignItems: "stretch",
   display: "flex",
   flexDirection: "row",
-});
+}));
 
 const StyledMapWrapper = styled("div")(({ theme }) => ({
   display: "flex",

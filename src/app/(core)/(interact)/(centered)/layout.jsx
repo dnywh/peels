@@ -16,7 +16,7 @@ const CenteredPage = styled("div")(({ theme }) => ({
 
     flexDirection: "row",
     alignItems: "stretch",
-    gap: "1.5rem",
+    gap: theme.spacing.gap.desktop,
     padding: "1.5rem", //24px
   },
 }));

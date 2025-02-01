@@ -22,7 +22,7 @@ export default async function ChatsPage(props) {
     // Get threads belonging to user
     const { data: threads } = await supabase
         .from("chat_threads_with_participants")
-        // TODO: Minify this query
+        // TODO: Minify this query to only use fields we need
         .select(`
             *,
             chat_messages_with_senders (*),

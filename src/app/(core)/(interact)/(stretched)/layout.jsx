@@ -11,7 +11,7 @@ const StretchedPage = styled("div")(({ theme }) => ({
   "@media (min-width: 768px)": {
     flexDirection: "row",
     alignItems: "stretch",
-    gap: "1.5rem",
+    gap: theme.spacing.gap.desktop,
     padding: "1.5rem", //24px
   },
 }));

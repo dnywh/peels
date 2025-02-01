@@ -78,17 +78,32 @@ const TitleBlock = styled("div")(({ theme }) => ({
   },
 }));
 
-function ChatHeader({
-  listing,
-  user,
-  isDrawer,
-  recipientName,
-  listingIsOwnedByUser,
-  isDemo,
-}) {
+function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
   const router = useRouter();
 
-  const role = listingIsOwnedByUser ? "owner" : "initiator"; // TODO: Consolidate with other role logic elsewhere
+  // TODO: Consolidate with other role, naming logic elsewhere
+  // Tricky because this ChatHeader component is used for both the existing threads and the new threads, i.e. on the map
+  // So we can't always look up details based on thread.
+  const role = thread
+    ? thread.initiator_id === user.id
+      ? "initiator"
+      : "owner"
+    : "initiator";
+
+  const otherPersonName =
+    role === "initiator"
+      ? listing.owner_first_name
+      : thread.initiator_first_name;
+
+  // Verbose because it has a comma and then the listing name
+  // const displayName =
+  //   thread.listing?.type !== "residential" &&
+  //   thread.owner_id ===
+  //     (thread.initiator_id === user.id
+  //       ? thread.owner_id
+  //       : thread.initiator_id)
+  //     ? `${otherPersonName}, ${thread.listing.name}`
+  //     : otherPersonName;
 
   return (
     <StyledChatHeader>
@@ -112,16 +127,25 @@ function ChatHeader({
         </>
       )}
 
-      <AvatarPair listing={listing} user={user} role={role} smallest="small" />
+      {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
+      <AvatarPair
+        listing={role === "initiator" ? listing : undefined}
+        profile={
+          role === "owner" ? { avatar: thread.initiator_avatar } : undefined
+        }
+        user={user}
+        smallest="small"
+        role={role}
+      />
 
       <TitleBlock>
         {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
-        {/* TODO: Extract and have a 'recipientName' const and a more malleable 'recipient and their listing name' as per above */}
-        <h1>{recipientName}</h1>
+        {/* TODO: Extract and have a 'otherPersonName' const and a more malleable 'recipient and their listing name' as per above */}
+        <h1>{otherPersonName}</h1>
         {role === "initiator" && (
           <h2>
             {listing.type === "residential"
-              ? "Residential listing"
+              ? `Resident of ${listing.area_name}`
               : listing.name}
           </h2>
         )}
@@ -129,16 +153,10 @@ function ChatHeader({
 
       {!isDrawer && !isDemo && (
         <DropdownMenu.Root>
-          {/* <Hyperlink href={`/listings/${listing.slug}`}>View listing</Hyperlink> */}
-
           <DropdownMenu.Button as={IconButton} icon="overflow" />
 
-          {/* <IconButton
-            icon="overflow"
-            // onClick={() => router.push("/chats")} TODO: Open overflow menu, which has a 'View listing' option (if !listingIsOwnedByUser) and 'Block user' option
-          /> */}
           <DropdownMenu.Items anchor={{ to: "bottom end", gap: "4px" }}>
-            {!listingIsOwnedByUser && (
+            {role === "initiator" && (
               <DropdownMenu.Item>
                 <Button
                   onClick={() => router.push(`/listings/${listing.slug}`)}
@@ -157,7 +175,8 @@ function ChatHeader({
                 dialogTitle="Let’s get this sorted"
                 cancelButtonText="Done"
               >
-                Sorry to hear you’re having trouble with {recipientName}. Please{" "}
+                Sorry to hear you’re having trouble with {otherPersonName}.
+                Please{" "}
                 <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
                   contact us
                 </EncodedEmailHyperlink>{" "}

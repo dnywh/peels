@@ -41,8 +41,8 @@ const ThreadPreview = styled("a")(({ theme }) => ({
   cursor: "pointer",
   display: "flex",
   flexDirection: "row",
-  alignItems: "stretch",
-  gap: "1rem",
+  alignItems: "center",
+  gap: "0.625rem",
   padding: "0.25rem 0.5rem",
 
   // Match styles in ProfileListings
@@ -67,6 +67,16 @@ const ThreadPreview = styled("a")(({ theme }) => ({
 const ThreadPreviewText = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
+  padding: "0.625rem 0",
+  gap: "0.25rem",
+  overflow: "hidden",
+
+  "& h3, & p": {
+    lineHeight: "100%",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+  },
 
   "& h3": {
     color: theme.colors.text.ui.primary,
@@ -76,10 +86,7 @@ const ThreadPreviewText = styled("div")(({ theme }) => ({
   "& p": {
     fontSize: "0.875rem",
     color: theme.colors.text.ui.quaternary,
-
-    textOverflow: "ellipsis",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
+    paddingBottom: "0.05rem", // Stop visual clipping on overflowY
   },
 }));
 
@@ -98,17 +105,20 @@ function ThreadsList({ user, threads, currentThreadId }) {
   return (
     <ThreadsSidebar>
       <h1>Chats</h1>
-      {threads.length > 0 ? (
+      {threads?.length > 0 ? (
         <ThreadsUnorderedList>
           {threads.map((thread) => {
+            // TODO: Consolidate with other role and otherPersonName and displayNameVerbose logic elsewhere
             const role =
               thread.initiator_id === user.id ? "initiator" : "owner";
+
             const otherPersonName =
               role === "initiator"
                 ? thread.owner_first_name
                 : thread.initiator_first_name;
 
-            const displayName =
+            // Verbose because it has a comma and then the listing name
+            const displayNameVerbose =
               thread.listing?.type !== "residential" &&
               thread.owner_id ===
                 (thread.initiator_id === user.id
@@ -123,15 +133,21 @@ function ThreadsList({ user, threads, currentThreadId }) {
                   selected={thread.id === currentThreadId}
                   onClick={() => handleThreadSelect(thread)}
                 >
-                  {/* Listing avatar (or person's own avatar if residential listing) */}
+                  {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
                   <AvatarPair
-                    listing={thread.listing}
+                    listing={role === "initiator" ? thread.listing : undefined}
+                    profile={
+                      role === "owner"
+                        ? { avatar: thread.initiator_avatar }
+                        : undefined
+                    }
                     user={user}
-                    smallest="tiny"
                     role={role}
+                    smallest="tiny"
+                    width="fixed" // So text is aligned on every row
                   />
                   <ThreadPreviewText>
-                    <h3>{displayName}</h3>
+                    <h3>{displayNameVerbose}</h3>
                     {thread.chat_messages_with_senders?.length > 0 && (
                       <p>
                         {

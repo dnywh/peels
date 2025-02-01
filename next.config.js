@@ -261,6 +261,9 @@ export default withPigment(
         },
         spacing: {
             unit: "0.5rem", // 8px
+            gap: {
+                desktop: "1.5rem",
+            },
             forms: {
                 maxWidth: "36rem",
                 gap: {

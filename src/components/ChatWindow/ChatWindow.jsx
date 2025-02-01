@@ -263,12 +263,11 @@ const ChatWindow = memo(function ChatWindow({
   return (
     <StyledChatWindow>
       <ChatHeader
+        thread={existingThread ? existingThread : undefined}
         listing={listing}
         user={user}
         isDemo={isDemo}
         isDrawer={isDrawer}
-        recipientName={recipientName}
-        listingIsOwnedByUser={listingIsOwnedByUser}
       />
 
       <StyledMessagesContainer>
