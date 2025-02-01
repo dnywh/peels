@@ -27,10 +27,12 @@ const ChatMessageContainer = styled("div")({
 const ChatBubble = styled("p")(({ theme }) => ({
   padding: "0.65rem 1rem",
   borderRadius: "1.5rem",
+  // textWrap: "balance",
   variants: [
     {
       props: { direction: "sent" },
       style: {
+        marginLeft: "24dvw",
         backgroundColor: theme.colors.message.sent.background,
         color: theme.colors.message.sent.text,
         textAlign: "right",
@@ -40,6 +42,7 @@ const ChatBubble = styled("p")(({ theme }) => ({
     {
       props: { direction: "received" },
       style: {
+        marginRight: "24dvw",
         backgroundColor: theme.colors.message.received.background,
         color: theme.colors.message.received.text,
         textAlign: "left",
