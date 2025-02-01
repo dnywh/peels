@@ -11,7 +11,7 @@ import { Marker, NavigationControl } from "react-map-gl/maplibre";
 
 import Select from "@/components/Select";
 
-import PeelsMap from "@/components/PeelsMap";
+import MapThumbnail from "@/components/MapThumbnail";
 import MapPin from "@/components/MapPin";
 
 import Fieldset from "@/components/Fieldset";
@@ -25,13 +25,6 @@ const StyledFieldset = styled(Fieldset)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing.forms.gap.field,
-}));
-
-const StyledMapWrapper = styled("div")(({ theme }) => ({
-  borderRadius: `calc(${theme.corners.base} * 0.5)`,
-  border: `1.5px solid ${theme.colors.border.stark}`,
-  background: theme.colors.background.map,
-  overflow: "hidden",
 }));
 
 const ZOOM_LEVEL = 16;
@@ -322,33 +315,33 @@ export default function LocationSelect({
       {mapShown && (
         <Field>
           {/* <p>Refine your pin location:</p> */}
-          <StyledMapWrapper>
-            <PeelsMap
-              ref={mapRef}
-              initialViewState={{ ...coordinates, zoom: ZOOM_LEVEL }}
-              height={`35dvh`}
-              // Allow interaction but just disable the input handlers that collide with the overall form experience (i.e. scrolling)
-              // dragRotate={false}
-              // dragPan={false}
-              scrollZoom={false}
-              // doubleClickZoom={false}
-              // boxZoom={false}
-              // cursor="default"
+
+          <MapThumbnail
+            ref={mapRef}
+            initialViewState={{ ...coordinates, zoom: ZOOM_LEVEL }}
+            height={`35dvh`}
+            // Allow interaction but just disable the input handlers that collide with the overall form experience (i.e. scrolling)
+            // dragRotate={false}
+            // dragPan={false}
+            scrollZoom={false}
+            // doubleClickZoom={false}
+            // boxZoom={false}
+            // cursor="default"
+          >
+            <Marker
+              draggable={true}
+              longitude={coordinates.longitude}
+              latitude={coordinates.latitude}
+              anchor="center"
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onClick={() => console.log("Tapped marker")}
             >
-              <Marker
-                draggable={true}
-                longitude={coordinates.longitude}
-                latitude={coordinates.latitude}
-                anchor="center"
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onClick={() => console.log("Tapped marker")}
-              >
-                <MapPin type={listingType} selected={true} />
-              </Marker>
-              <NavigationControl showZoom={true} showCompass={false} />
-            </PeelsMap>
-          </StyledMapWrapper>
+              <MapPin type={listingType} selected={true} />
+            </Marker>
+            <NavigationControl showZoom={true} showCompass={false} />
+          </MapThumbnail>
+
           <InputHint>
             Drag the pin to refine{" "}
             {listingType === "residential" && "or obscure"} your location.

@@ -24,13 +24,21 @@ import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
 import ListingPhotoGallery from "@/components/ListingPhotoGallery";
 import RemoteImage from "@/components/RemoteImage";
-import PeelsMap from "@/components/PeelsMap";
+import MapThumbnail from "@/components/MapThumbnail";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
 import ListingChatDrawer from "@/components/ListingChatDrawer";
 import Hyperlink from "@/components/Hyperlink";
 
 import { styled } from "@pigment-css/react";
+
+// const StyledMapPin = styled(MapPin)({
+//   // zIndex: 1,
+//   cursor: "pointer",
+//   "&:hover": {
+
+//   },
+// });
 
 const Column = styled("div")({
   // Inherit same flex properties as parent, given these columns should be invisible when drawer
@@ -104,6 +112,8 @@ const ListingRead = memo(function Listing({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
+  const router = presentation !== "demo" ? useRouter() : null;
+
   const [existingThread, setExistingThread] = useState(null);
   const [mapZoomLevel, setMapZoomLevel] = useState(null);
 
@@ -114,6 +124,7 @@ const ListingRead = memo(function Listing({
   useEffect(() => {
     if (presentation === "demo" || !supabase || !user || !listing) return;
 
+    // TODO should this only be called when the actual ListingChatDrawer is loaded?
     async function loadExistingThread() {
       const { data: thread, error } = await supabase
         .from("chat_threads_with_participants")
@@ -215,24 +226,29 @@ const ListingRead = memo(function Listing({
           {presentation !== "drawer" && (
             <ListingReadSection>
               <h3>Location</h3>
-              <PeelsMap
-                style={{ height: "320px" }}
-                interactive={false}
+
+              <MapThumbnail
+                height="320px"
                 initialViewState={{
                   longitude: listing.longitude,
                   latitude: listing.latitude,
                   zoom: initialZoomLevel,
                 }}
+                interactive={false}
               >
                 <Marker
                   longitude={listing.longitude}
                   latitude={listing.latitude}
                   anchor="center"
+                  onClick={(event) => {
+                    event.originalEvent.stopPropagation();
+                    router.push(`/map?listing=${listing.slug}`);
+                  }}
                 >
                   <MapPin selected={true} type={listing.type} />
                 </Marker>
                 <NavigationControl showCompass={false} />
-              </PeelsMap>
+              </MapThumbnail>
 
               {listing.type === "residential" ? (
                 <p>

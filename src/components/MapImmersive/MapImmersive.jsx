@@ -1,25 +1,23 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
-import LoadingSpinner from "@/components/LoadingSpinner";
+
 import Map, {
   Marker,
   NavigationControl,
   AttributionControl,
   GeolocateControl,
 } from "react-map-gl/maplibre";
-
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 
+import LoadingSpinner from "@/components/LoadingSpinner";
 import MapPin from "@/components/MapPin";
 import MapSearch from "@/components/MapSearch";
-
-import { styled, css } from "@pigment-css/react";
-
-import { Drawer } from "vaul";
 import Button from "@/components/Button";
+
+import { styled } from "@pigment-css/react";
 
 const snapPoints = ["148px", "355px", 1];
 
@@ -55,7 +53,7 @@ const DEFAULT_COORDINATES = {
   zoom: 9,
 };
 
-export default function MapRender({
+export default function MapImmersive({
   mapRef,
   searchInputRef,
   listings,
@@ -173,7 +171,7 @@ export default function MapRender({
     };
   }, []); // Empty dependency array as before
 
-  // Set mapController to set relationship between MapSearch and MapRender
+  // Set mapController to set relationship between MapSearch and MapImmersive
   // Can't get this to work, perhaps delete all mapController and createMapLibreGlMapController code if I can't get it working
   // useEffect(() => {
   //   if (mapRef.current) return; // stops map from intializing more than once

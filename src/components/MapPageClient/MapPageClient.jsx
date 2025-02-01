@@ -14,7 +14,7 @@ import { fetchListingsInView } from "@/app/actions";
 import { config, geolocation } from "@maptiler/client";
 
 import MapSearch from "@/components/MapSearch";
-import MapRender from "@/components/MapRender";
+import MapImmersive from "@/components/MapImmersive";
 import ListingRead from "@/components/ListingRead";
 import GuestActions from "@/components/GuestActions";
 
@@ -267,7 +267,7 @@ export default function MapPageClient({
   const [selectedListing, setSelectedListing] = useState(
     initialListing || null
   );
-  // Set mapController to set relationship between MapSearch and MapRender
+  // Set mapController to set relationship between MapSearch and MapImmersive
   const [mapController, setMapController] = useState(); // https://docs.maptiler.com/react/maplibre-gl-js/geocoding-control/
 
   const [isLoading, setIsLoading] = useState(true);
@@ -359,7 +359,7 @@ export default function MapPageClient({
             setInitialCoordinates({
               latitude: response.latitude,
               longitude: response.longitude,
-              zoom: ZOOM_LEVEL_DEFAULT, // TODO: Increase zoom when more listings are available. Also in MapRender
+              zoom: ZOOM_LEVEL_DEFAULT, // TODO: Increase zoom when more listings are available. Also in MapImmersive
             });
           }
         } catch (error) {
@@ -367,7 +367,7 @@ export default function MapPageClient({
             "Could not determine location from MapTiler:",
             error.message
           );
-          // No need to set fallback coordinates - MapRender will handle that
+          // No need to set fallback coordinates - MapImmersive will handle that
         }
       }
 
@@ -641,7 +641,7 @@ export default function MapPageClient({
 
           // data-vaul-delayed-snap-points={false} // Seems to smooth out some of the snapping but I can't call it
         >
-          <MapRender
+          <MapImmersive
             mapRef={mapRef}
             searchInputRef={searchInputRef}
             listings={listings}
