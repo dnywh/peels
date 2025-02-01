@@ -9,8 +9,6 @@ const buttonStyles = ({ theme }) => ({
   // Base styles that both button and link will share
   flexShrink: 0,
   borderRadius: `calc(${theme.corners.base} * 1)`,
-  fontSize: "1rem",
-  height: "3rem",
   cursor: "pointer",
   fontWeight: "600",
   display: "inline-flex", // Added to help with alignment
@@ -68,6 +66,13 @@ const buttonStyles = ({ theme }) => ({
       style: {
         height: "3.5rem",
         fontSize: "1.125rem",
+      },
+    },
+    {
+      props: { size: "normal" },
+      style: {
+        height: "3rem",
+        fontSize: "1rem",
       },
     },
     {
@@ -171,7 +176,7 @@ export default function Button({
   loading = false,
   loadingText = "Loading...",
   type = "button",
-  size,
+  size = "normal",
   ...props
 }) {
   const isDisabled = disabled || loading;
