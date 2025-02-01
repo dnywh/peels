@@ -120,16 +120,14 @@ export default function ProfileListings({ user, profile, listings }) {
   return (
     <ListingsList>
       {listings.map((listing) => {
-        const avatarProps = getListingAvatar(listing, user);
         return (
           <li key={listing.id}>
             <ExistingListingLink href={`/profile/listings/${listing.slug}`}>
               <Avatar
-                bucket={avatarProps.bucket}
-                filename={avatarProps.filename}
-                alt={avatarProps.alt}
                 size="small"
-                listing={listing}
+                profile={listing.type === "residential" ? profile : undefined}
+                listing={listing.type !== "residential" ? listing : undefined}
+                alt={`Your avatar for this ${listing.type} listing`}
               />
               <Text>
                 <h3>

@@ -84,34 +84,69 @@ function Avatar({
   isDemo,
   src,
   defaultImage,
+  // Handles both profile and listing avatars
   listing,
+  profile,
   ...props
 }) {
   const ImageComponent = isDemo ? StyledNextImage : StyledRemoteImage;
   const dimensions = SIZE_MAP[size];
 
-  // Determine default images based on listing type if a listing is provided
-  const computedDefaultImage = listing
-    ? listing.type === "residential"
-      ? "profile.png"
-      : listing.type === "community"
-        ? "community.png"
-        : "business.png"
-    : "profile.png"; // If no listing, it's a user avatar, so use profile.png
-
-  // Only include src in imageProps if isDemo is true
-  const imageProps = {
+  // Common props used across all cases
+  const commonProps = {
     size,
     rotation,
     width: dimensions,
     height: dimensions,
-    // Pass defaultImage to RemoteImage but not to the demo's Image component
-    ...(isDemo ? {} : { defaultImage: defaultImage || computedDefaultImage }),
-    ...(isDemo ? { src } : {}),
     ...props,
   };
 
-  return <ImageComponent {...imageProps} />;
+  // Direct profile avatar display (highest priority)
+  if (profile) {
+    return (
+      <StyledRemoteImage
+        bucket="avatars"
+        filename={profile.avatar}
+        defaultImage="profile.png"
+        {...commonProps}
+      />
+    );
+  }
+
+  // Demo image handling
+  if (isDemo) {
+    return <StyledNextImage src={src} {...commonProps} />;
+  }
+
+  // Listing-based avatar logic
+  if (listing) {
+    // Determine default images based on listing type
+    const computedDefaultImage =
+      listing.type === "residential"
+        ? "profile.png"
+        : listing.type === "community"
+          ? "community.png"
+          : "business.png";
+
+    return (
+      <StyledRemoteImage
+        bucket={listing.type === "residential" ? "avatars" : "listing_avatars"}
+        filename={
+          listing.type === "residential" ? listing.owner_avatar : listing.avatar
+        }
+        defaultImage={defaultImage || computedDefaultImage}
+        {...commonProps}
+      />
+    );
+  }
+
+  // Default case - no profile or listing provided
+  return (
+    <StyledRemoteImage
+      defaultImage={defaultImage || "profile.png"}
+      {...commonProps}
+    />
+  );
 }
 
 export default Avatar;
