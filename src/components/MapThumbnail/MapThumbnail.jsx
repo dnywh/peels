@@ -1,11 +1,9 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
+
 import Map, { AttributionControl } from "react-map-gl/maplibre";
-
 import maplibregl from "maplibre-gl";
-// import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
 import "maplibre-gl/dist/maplibre-gl.css";
-
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 
