@@ -19,17 +19,14 @@ const StyledChatHeader = styled("header")(({ theme }) => ({
   borderBottom: `1px solid ${theme.colors.border.base}`,
   backgroundColor: theme.colors.background.top,
   padding: "1rem",
+}));
 
-  // This works! Just moving it directly in the component for clarity. Keeping around for reference
-  // [`& ${AvatarContainer}`]: {
-  //   display: "none",
-  // },
+const AvatarContainer = styled("div")(({ theme }) => ({
+  display: "none",
 
-  // "@media (min-width: 768px)": {
-  //   [`& ${AvatarContainer}`]: {
-  //     display: "flex",
-  //   },
-  // },
+  "@media (min-width: 768px)": {
+    display: "flex",
+  },
 }));
 
 const TitleBlock = styled("div")(({ theme }) => ({
@@ -127,16 +124,19 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
         </>
       )}
 
+      {/* TODO: Handle breakpoint directly on/in component, not on wrapper div */}
       {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
-      <AvatarPair
-        listing={role === "initiator" ? listing : undefined}
-        profile={
-          role === "owner" ? { avatar: thread.initiator_avatar } : undefined
-        }
-        user={user}
-        smallest="small"
-        role={role}
-      />
+      <AvatarContainer>
+        <AvatarPair
+          listing={role === "initiator" ? listing : undefined}
+          profile={
+            role === "owner" ? { avatar: thread.initiator_avatar } : undefined
+          }
+          user={user}
+          smallest="small"
+          role={role}
+        />
+      </AvatarContainer>
 
       <TitleBlock>
         {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
