@@ -23,8 +23,12 @@ const AvatarContainer = styled("div")({
   "@media (min-width: 768px)": {},
 });
 
-export default function AvatarPair({ listing, user, smallest = "small" }) {
-  console.log({ listing });
+export default function AvatarPair({
+  listing,
+  user,
+  role = "initiator",
+  smallest = "small",
+}) {
   const avatarProps = getListingAvatar(listing, user);
   const ownerAvatarProps = getListingOwnerAvatar(listing);
 
@@ -40,7 +44,7 @@ export default function AvatarPair({ listing, user, smallest = "small" }) {
         listing={listing}
       />
 
-      {listing.type !== "residential" && (
+      {role === "initiator" && listing.type !== "residential" && (
         <Avatar
           isDemo={ownerAvatarProps?.isDemo}
           src={ownerAvatarProps?.isDemo ? ownerAvatarProps.path : undefined}

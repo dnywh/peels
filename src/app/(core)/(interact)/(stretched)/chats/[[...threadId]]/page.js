@@ -22,16 +22,11 @@ export default async function ChatsPage(props) {
     // Get threads belonging to user
     const { data: threads } = await supabase
         .from("chat_threads_with_participants")
+        // TODO: Minify this query
         .select(`
             *,
             chat_messages_with_senders (*),
-            listing:listings_with_owner_data (
-                name,
-                owner_first_name,
-                type,
-                slug,
-                visibility
-            )
+            listing:listings_with_owner_data (*)
         `)
         .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`)
         .order("created_at", { ascending: false });

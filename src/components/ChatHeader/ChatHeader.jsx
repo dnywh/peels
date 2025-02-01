@@ -88,6 +88,8 @@ function ChatHeader({
 }) {
   const router = useRouter();
 
+  const role = listingIsOwnedByUser ? "owner" : "initiator"; // TODO: Consolidate with other role logic elsewhere
+
   return (
     <StyledChatHeader>
       {!isDrawer && !isDemo && (
@@ -110,18 +112,13 @@ function ChatHeader({
         </>
       )}
 
-      <AvatarPair listing={listing} user={user} smallest="small" />
+      <AvatarPair listing={listing} user={user} role={role} smallest="small" />
 
       <TitleBlock>
         {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
         {/* TODO: Extract and have a 'recipientName' const and a more malleable 'recipient and their listing name' as per above */}
-        <h1>
-          {recipientName}
-          {!listingIsOwnedByUser && listing?.type !== "residential" && (
-            <>, {listing.name}</>
-          )}
-        </h1>
-        {!listingIsOwnedByUser && (
+        <h1>{recipientName}</h1>
+        {role === "initiator" && (
           <h2>
             {listing.type === "residential"
               ? "Residential listing"

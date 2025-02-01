@@ -101,8 +101,10 @@ function ThreadsList({ user, threads, currentThreadId }) {
       {threads.length > 0 ? (
         <ThreadsUnorderedList>
           {threads.map((thread) => {
+            const role =
+              thread.initiator_id === user.id ? "initiator" : "owner";
             const otherPersonName =
-              thread.initiator_id === user.id
+              role === "initiator"
                 ? thread.owner_first_name
                 : thread.initiator_first_name;
 
@@ -126,6 +128,7 @@ function ThreadsList({ user, threads, currentThreadId }) {
                     listing={thread.listing}
                     user={user}
                     smallest="tiny"
+                    role={role}
                   />
                   <ThreadPreviewText>
                     <h3>{displayName}</h3>
