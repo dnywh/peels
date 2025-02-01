@@ -11,11 +11,6 @@ const UnselectedPin = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-
-  transition: "transform 110ms ease-in-out",
-  "&:hover": {
-    transform: "scale(1.15)",
-  },
 }));
 
 const UnselectedPinInner = styled("div")(({ theme }) => ({
@@ -57,11 +52,24 @@ const UnselectedPinInner = styled("div")(({ theme }) => ({
 
 const SelectedPin = styled("div")(({ theme }) => ({
   display: "flex",
-}));
+  cursor: "pointer",
 
-const SelectedPinInner = styled("div")(({ theme }) => ({
-  boxShadow: `0 0 0 3px ${theme.colors.border.base}`,
-  backgroundColor: theme.colors.marker.background.residential,
+  // . TODO: is there a way to group these two CSS declarations?
+  // I.e. so the transition is only declared once
+  [`& ${SelectedPinDot}`]: {
+    transition: "transform 110ms ease-in-out",
+  },
+  [`& ${SelectedPinRing}`]: {
+    transition: "transform 110ms ease-in-out",
+  },
+  "&:hover": {
+    [`& ${SelectedPinDot}`]: {
+      transform: "scale(1.15)",
+    },
+    [`& ${SelectedPinRing}`]: {
+      transform: "scale(1.25)",
+    },
+  },
 }));
 
 const SelectedPinRing = styled("div")(({ theme }) => ({
@@ -94,6 +102,9 @@ const SelectedPinIcon = styled("svg")(({ theme }) => ({
   transform: "translate(calc(40px - 1.625rem), -50%)",
   filter:
     "drop-shadow(0px 3px 18px rgba(0, 0, 0, 0.12)) drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.15))",
+
+  transition: "transform 110ms ease-in-out",
+  transformOrigin: "center",
 
   variants: [
     {
