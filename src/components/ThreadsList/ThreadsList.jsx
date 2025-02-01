@@ -42,7 +42,7 @@ const ThreadPreview = styled("a")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  gap: "0.625rem",
+  gap: "0.45rem", // Optically match padding around rotated avatar (left-edge)
   padding: "0.25rem 0.5rem",
 
   // Match styles in ProfileListings
