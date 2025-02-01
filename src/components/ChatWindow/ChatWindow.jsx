@@ -36,6 +36,23 @@ const StyledMessagesContainer = styled("div")({
   gap: "1rem",
 });
 
+const EmptyState = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "2rem",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100%",
+
+  "& p": {
+    color: theme.colors.text.ui.emptyState,
+    fontSize: "1.2rem",
+    fontWeight: "500",
+    lineHeight: "120%",
+    textWrap: "balance",
+  },
+}));
+
 const Day = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -271,7 +288,11 @@ const ChatWindow = memo(function ChatWindow({
       />
 
       <StyledMessagesContainer>
-        {messages.length === 0 && <p>No messages yet</p>}
+        {messages.length === 0 && (
+          <EmptyState>
+            <p>No messages yet</p>
+          </EmptyState>
+        )}
         {messages.length > 0 &&
           messages.map((message, index) => {
             // Check if this message is the first of its day
