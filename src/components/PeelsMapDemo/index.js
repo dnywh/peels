@@ -1,2 +1,2 @@
-export * from './MapThumbnailDemo';
-export { default } from './MapThumbnailDemo';
+export * from './PeelsMapDemo';
+export { default } from './PeelsMapDemo';

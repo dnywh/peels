@@ -26,7 +26,7 @@ function MapSearch({
         mapController={mapController}
         // Otherwise I get funky results, like "melbourne" coming up with options in the USA
         // Only applies if control is tied to the map via mapController. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
-        // I can't figure this out. See MapRender component
+        // I can't figure this out. See MapImmersive component
         proximity={[
           // { type: "map-center" }, // Doesn't seem to work without mapController
           { type: "server-geolocation" }, // The default, using as a backup

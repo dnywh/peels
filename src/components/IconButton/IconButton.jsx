@@ -60,7 +60,7 @@ function IconButton({
     >
       {icon === "close" && <X size={16} />}
       {icon === "back" && <ArrowLeft size={16} />}
-      {icon === "maximize" || (icon === "send" && <ArrowUp size={16} />)}
+      {icon === "maximize" || icon === "send" ? <ArrowUp size={16} /> : null}
       {icon === "minimize" && <ArrowDown size={16} />}
       {icon === "overflow" && <EllipsisVertical size={16} />}
     </StyledButton>
