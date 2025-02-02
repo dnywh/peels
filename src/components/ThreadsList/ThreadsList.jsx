@@ -8,7 +8,7 @@ import AvatarPair from "@/components/AvatarPair";
 import { styled } from "@pigment-css/react";
 
 const ThreadsSidebar = styled("div")(({ theme }) => ({
-  width: "20rem",
+  width: "100%",
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
@@ -18,15 +18,20 @@ const ThreadsSidebar = styled("div")(({ theme }) => ({
   },
 
   // Mobile: full width when at root, hidden when thread selected
-  "@media (max-width: 767px)": {
-    width: "100%",
-    padding: "0.5rem", // Match padding in CenteredPage layout, but just for chat threads in this context
-    '[data-thread-selected="true"] &': {
-      display: "none",
-    },
+
+  padding: `0.5rem 0.5rem ${theme.spacing.tabBar.spaceFor}`, // Match padding in CenteredPage layout, but just for chat threads in this context, and accommodate TabBar when thread not selected
+
+  // Hide the threads list when a thread is selected
+  '[data-thread-selected="true"] &': {
+    display: "none",
   },
 
   "@media (min-width: 768px)": {
+    // Continue showing the threads list when a thread is selected (override mobile styles above)
+    '[data-thread-selected="true"] &': {
+      display: "inherit",
+    },
+    width: "20rem",
     padding: "0.75rem",
     backgroundColor: theme.colors.background.top,
     border: `1px solid ${theme.colors.border.base}`,
