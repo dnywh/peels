@@ -95,6 +95,8 @@ const MainContents = styled("div")(({ theme }) => ({
   flex: 1,
   display: "flex",
   flexDirection: "row",
+  gap: "1rem",
+
   [`& ${TitleBlock}`]: {
     textAlign: "left",
   },
