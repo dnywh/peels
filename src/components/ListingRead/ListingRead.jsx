@@ -160,6 +160,8 @@ const ListingRead = memo(function Listing({
   const listingDisplayName =
     presentation === "demo"
       ? listing?.name
+        ? listing.name
+        : listing.owner_first_name
       : getListingDisplayName(listing, user);
 
   if (!listing && presentation !== "demo") {

@@ -130,26 +130,20 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
   // TODO: Consolidate with other role, naming logic elsewhere
   // Tricky because this ChatHeader component is used for both the existing threads and the new threads, i.e. on the map
   // So we can't always look up details based on thread.
-  const role = thread
-    ? thread.initiator_id === user.id
-      ? "initiator"
-      : "owner"
-    : "initiator";
+  const role = isDemo
+    ? "initiator"
+    : thread
+      ? thread.initiator_id === user.id
+        ? "initiator"
+        : "owner"
+      : "initiator";
 
   const otherPersonName =
     role === "initiator"
       ? listing.owner_first_name
       : thread.initiator_first_name;
 
-  // Verbose because it has a comma and then the listing name
-  // const displayName =
-  //   thread.listing?.type !== "residential" &&
-  //   thread.owner_id ===
-  //     (thread.initiator_id === user.id
-  //       ? thread.owner_id
-  //       : thread.initiator_id)
-  //     ? `${otherPersonName}, ${thread.listing.name}`
-  //     : otherPersonName;
+  console.log({ role, listing, thread, user });
 
   return (
     <StyledChatHeader>

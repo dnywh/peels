@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PeelsMapDemo from "@/components/PeelsMapDemo";
+import PeelsChatDemo from "@/components/PeelsChatDemo";
 import PeelsFeaturedHostsPhotos from "@/components/PeelsFeaturedHostsPhotos";
 import { styled } from "@pigment-css/react";
 
@@ -85,9 +86,10 @@ function PeelsHowItWorks() {
 
       <Step number={2} title="Contact" id="contact">
         <p>Arrange to drop-off or collect your scraps via chat.</p>
+        <PeelsChatDemo />
       </Step>
 
-      <Step number={3} title="Drop-off">
+      <Step number={3} title="Drop-off" id="drop-off">
         <p>
           Or collect, if you’ve reached out to a local business with scraps to
           give away.

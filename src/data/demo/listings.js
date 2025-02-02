@@ -26,7 +26,7 @@ export const demoListings = [
 
     }),
     createDemoListing({
-        name: "Matt",
+        owner_first_name: "Matt",
         type: "residential",
         avatar: "skate.jpg",
         map_position: {
@@ -48,7 +48,7 @@ export const demoListings = [
 
     }),
     createDemoListing({
-        name: "Becca",
+        owner_first_name: "Becca",
         type: "residential",
         avatar: "sunflowers.jpg",
         map_position: {
@@ -66,7 +66,7 @@ export const demoListings = [
 
     }),
     createDemoListing({
-        name: "Lee",
+        owner_first_name: "Lee",
         type: "residential",
         avatar: "mayo.jpg",
         map_position: {

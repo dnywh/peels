@@ -96,22 +96,7 @@ const ChatWindow = memo(function ChatWindow({
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
   const [messages, setMessages] = useState([]);
-
-  const [listingIsOwnedByUser, setListingIsOwnedByUser] = useState(false);
-
   const [messageSendError, setMessageSendError] = useState(null);
-
-  const recipientName = useMemo(() => {
-    if (!listing || !user) return "Peels Member";
-
-    // If user is the listing owner, show the initiator's name
-    if (listingIsOwnedByUser) {
-      return existingThread?.initiator_first_name || "Peels Member";
-    }
-
-    // Otherwise, show the owner's name (and listing name for business/community)
-    return listing.owner_first_name || "Private Host";
-  }, [listing, user, listingIsOwnedByUser, existingThread]);
 
   function handleChatSendError(error) {
     // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
@@ -124,23 +109,10 @@ const ChatWindow = memo(function ChatWindow({
     }
   }
 
-  // Check if the listing is owned by the user
-  useEffect(() => {
-    if (isDemo) return;
-    // console.log("Existing thread owned by user?", { existingThread, threadId });
-    console.log("existingThread", existingThread);
-    if (existingThread && existingThread.owner_id === user.id) {
-      console.log("Existing thread is owned by user");
-      setListingIsOwnedByUser(true);
-    } else {
-      setListingIsOwnedByUser(false);
-    }
-  }, []);
-
   // Update messages when existingThread changes
+  // TODO: The if statement seems repetitive, what's the difference between the two?
   useEffect(() => {
     if (existingThread?.chat_messages_with_senders) {
-      console.log(existingThread);
       setMessages(existingThread.chat_messages_with_senders);
     } else if (existingThread?.chat_messages) {
       setMessages(existingThread.chat_messages);
@@ -277,6 +249,19 @@ const ChatWindow = memo(function ChatWindow({
 
   const directionsForDemo = ["sent", "received"];
 
+  const role = isDemo
+    ? "initiator"
+    : existingThread
+      ? existingThread.initiator_id === user.id
+        ? "initiator"
+        : "owner"
+      : "initiator";
+
+  const otherPersonName =
+    role === "initiator"
+      ? listing.owner_first_name
+      : existingThread.initiator_first_name;
+
   return (
     <StyledChatWindow>
       <ChatHeader
@@ -305,7 +290,7 @@ const ChatWindow = memo(function ChatWindow({
             const showInitiationHeader = index === 0;
 
             return (
-              <Day key={message.id}>
+              <Day key={isDemo ? index : message.id}>
                 {showDateHeader || showInitiationHeader ? (
                   <DayHeader>
                     {showDateHeader && (
@@ -313,9 +298,9 @@ const ChatWindow = memo(function ChatWindow({
                     )}
                     {showInitiationHeader && (
                       <p>
-                        {message.sender_id === user?.id
-                          ? `You reached out to ${recipientName}`
-                          : `${recipientName} reached out to you`}
+                        {isDemo || message.sender_id === user?.id
+                          ? `You reached out to ${otherPersonName}`
+                          : `${otherPersonName} reached out to you`}
                       </p>
                     )}
                   </DayHeader>
@@ -339,8 +324,9 @@ const ChatWindow = memo(function ChatWindow({
         onSubmit={handleSubmit}
         message={message}
         handleMessageChange={handleMessageChange}
-        recipientName={recipientName}
+        recipientName={otherPersonName}
         error={messageSendError}
+        isDemo={isDemo}
       />
     </StyledChatWindow>
   );

@@ -33,6 +33,7 @@ function ChatComposer({
   handleMessageChange,
   error,
   recipientName,
+  isDemo,
 }) {
   return (
     <ChatComposerForm>
@@ -47,7 +48,8 @@ function ChatComposer({
         />
         {/* <SubmitButton pendingText="Sending...">Send</SubmitButton> */}
         <StyledIconButton
-          type="submit"
+          type={isDemo ? "button" : "submit"}
+          href={isDemo ? "/#drop-off" : undefined}
           icon="send"
           variant="send"
           // TODO: Some sort of Aria label to indicate this is a 'Send' button
