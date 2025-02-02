@@ -12,21 +12,28 @@ const ThreadsSidebar = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
-  padding: "1rem",
-
-  backgroundColor: theme.colors.background.top,
-  border: `1px solid ${theme.colors.border.base}`,
-  borderRadius: theme.corners.base,
 
   "& h1": {
-    padding: "0 0.5rem", // Match inset of ThreadPreview
+    padding: "0.75rem 1.25rem 0", // Match inset of ThreadsSidebar/ThreadsUnorderedList/ThreadPreview, with a bit of space above
   },
 
   // Mobile: full width when at root, hidden when thread selected
   "@media (max-width: 767px)": {
     width: "100%",
+    padding: "0.5rem", // Match padding in CenteredPage layout, but just for chat threads in this context
     '[data-thread-selected="true"] &': {
       display: "none",
+    },
+  },
+
+  "@media (min-width: 768px)": {
+    padding: "0.75rem",
+    backgroundColor: theme.colors.background.top,
+    border: `1px solid ${theme.colors.border.base}`,
+    borderRadius: theme.corners.base,
+
+    "& h1": {
+      padding: "0 0.5rem", // Remove space above, still match inset of ThreadPreview
     },
   },
 }));
@@ -35,6 +42,18 @@ const ThreadsUnorderedList = styled("ul")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.25rem",
+  padding: "0.75rem", // Match inset of ThreadsSidebar on larger breakpoint
+
+  backgroundColor: theme.colors.background.top,
+  border: `1px solid ${theme.colors.border.base}`,
+  borderRadius: theme.corners.base,
+
+  "@media (min-width: 768px)": {
+    padding: "unset",
+    backgroundColor: "transparent",
+    border: "none",
+    borderRadius: "unset",
+  },
 }));
 
 const ThreadPreview = styled("a")(({ theme }) => ({
