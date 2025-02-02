@@ -19,14 +19,28 @@ const StyledChatHeader = styled("header")(({ theme }) => ({
   borderBottom: `1px solid ${theme.colors.border.base}`,
   backgroundColor: theme.colors.background.top,
   padding: "1rem",
+
+  // variants: [
+  //   {
+  //     props: { isDrawer: true },
+  //     style: {
+  //       [`& ${AvatarContainer}`]: {
+  //         display: "flex",
+  //       },
+  //       [`& ${TitleBlock}`]: {
+  //         "& h1, & h2 ": {
+  //           textAlign: "left",
+  //           fontWeight: "700",
+  //         },
+  //       },
+  //     },
+  //   },
+  // ],
 }));
 
 const AvatarContainer = styled("div")(({ theme }) => ({
-  display: "none",
-
-  "@media (min-width: 768px)": {
-    display: "flex",
-  },
+  // display: "none",
+  display: "flex",
 }));
 
 const TitleBlock = styled("div")(({ theme }) => ({
@@ -42,8 +56,7 @@ const TitleBlock = styled("div")(({ theme }) => ({
   gap: "0.25rem",
 
   "& h1, & h2 ": {
-    // margin: "0",
-    textAlign: "center",
+    // textAlign: "center",
     fontSize: "1rem",
     fontWeight: "600",
     lineHeight: "100%",
@@ -61,7 +74,7 @@ const TitleBlock = styled("div")(({ theme }) => ({
 
   "@media (min-width: 768px)": {
     "& h1, & h2 ": {
-      textAlign: "left",
+      // textAlign: "left",
       fontWeight: "700",
     },
 
@@ -73,6 +86,40 @@ const TitleBlock = styled("div")(({ theme }) => ({
       fontSize: "1rem",
     },
   },
+}));
+
+// Style the avatar and title block based on the same conditions as the <- button:
+// !isDrawer, and at a certain breakpoint
+// We center align the children in this case to account for the left-aligned <- button
+const MainContents = styled("div")(({ theme }) => ({
+  flex: 1,
+  display: "flex",
+  flexDirection: "row",
+  [`& ${TitleBlock}`]: {
+    textAlign: "left",
+  },
+
+  variants: [
+    {
+      props: { isDrawer: false },
+      style: {
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "1rem",
+
+        [`& ${TitleBlock}`]: {
+          textAlign: "center",
+        },
+
+        "@media (min-width: 768px)": {
+          flexDirection: "inherit",
+          [`& ${TitleBlock}`]: {
+            textAlign: "inherit",
+          },
+        },
+      },
+    },
+  ],
 }));
 
 function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
@@ -124,32 +171,34 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
         </>
       )}
 
-      {/* TODO: Handle breakpoint directly on/in component, not on wrapper div */}
-      {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
-      <AvatarContainer>
-        <AvatarPair
-          listing={role === "initiator" ? listing : undefined}
-          profile={
-            role === "owner" ? { avatar: thread.initiator_avatar } : undefined
-          }
-          user={user}
-          smallest="small"
-          role={role}
-        />
-      </AvatarContainer>
+      <MainContents isDrawer={isDrawer}>
+        {/* TODO: Handle breakpoint directly on/in component, not on wrapper div */}
+        {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
+        <AvatarContainer>
+          <AvatarPair
+            listing={role === "initiator" ? listing : undefined}
+            profile={
+              role === "owner" ? { avatar: thread.initiator_avatar } : undefined
+            }
+            user={user}
+            smallest="small"
+            role={role}
+          />
+        </AvatarContainer>
 
-      <TitleBlock>
-        {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
-        {/* TODO: Extract and have a 'otherPersonName' const and a more malleable 'recipient and their listing name' as per above */}
-        <h1>{otherPersonName}</h1>
-        {role === "initiator" && (
-          <h2>
-            {listing.type === "residential"
-              ? `Resident of ${listing.area_name}`
-              : listing.name}
-          </h2>
-        )}
-      </TitleBlock>
+        <TitleBlock>
+          {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
+          {/* TODO: Extract and have a 'otherPersonName' const and a more malleable 'recipient and their listing name' as per above */}
+          <h1>{otherPersonName}</h1>
+          {role === "initiator" && (
+            <h2>
+              {listing.type === "residential"
+                ? `Resident of ${listing.area_name}`
+                : listing.name}
+            </h2>
+          )}
+        </TitleBlock>
+      </MainContents>
 
       {!isDrawer && !isDemo && (
         <DropdownMenu.Root>

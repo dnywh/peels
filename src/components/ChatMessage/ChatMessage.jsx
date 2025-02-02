@@ -32,7 +32,7 @@ const ChatBubble = styled("p")(({ theme }) => ({
     {
       props: { direction: "sent" },
       style: {
-        marginLeft: "24dvw",
+        marginLeft: "7cqi", // https://moderncss.dev/container-query-units-and-fluid-typography/#container-query-units
         backgroundColor: theme.colors.message.sent.background,
         color: theme.colors.message.sent.text,
         textAlign: "right",
@@ -42,7 +42,7 @@ const ChatBubble = styled("p")(({ theme }) => ({
     {
       props: { direction: "received" },
       style: {
-        marginRight: "24dvw",
+        marginRight: "7cqi",
         backgroundColor: theme.colors.message.received.background,
         color: theme.colors.message.received.text,
         textAlign: "left",
