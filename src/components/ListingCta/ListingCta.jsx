@@ -22,6 +22,16 @@ const StyledListingCta = styled("aside")(({ theme }) => ({
   },
 }));
 
+const Text = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.25rem",
+
+  "& p": {
+    fontSize: "0.875rem",
+  },
+}));
+
 function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
   if (viewer === "owner") {
     return (
@@ -46,17 +56,19 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
     return (
       <StyledListingCta>
         <PeelsLogo color="quaternary" />
-        <p>
-          This is a stub created by the Peels team. Double-check the listing
-          information before visiting.
-        </p>
-        <p>
-          Are you the owner?{" "}
-          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
-            Reach out
-          </EncodedEmailHyperlink>{" "}
-          to claim this listing or request changes.
-        </p>
+        <Text>
+          <p>
+            This is a stub created by the Peels team. Double-check the listing
+            information before visiting.
+          </p>
+          <p>
+            Are you the owner?{" "}
+            <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+              Reach out
+            </EncodedEmailHyperlink>{" "}
+            to claim this listing or to request changes.
+          </p>
+        </Text>
       </StyledListingCta>
     );
   }
