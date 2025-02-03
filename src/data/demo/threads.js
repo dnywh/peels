@@ -22,10 +22,10 @@ export const demoThreads = [
                     "Yes please! We’re home most days after 4pm. Ring the bell at 12 Ingham Dr",
                 created_at: timestampTwo.toISOString(),
             },
-            {
-                content: "Amazing! Thank you, I'll try this afternoon 🙂",
-                created_at: timestampThree.toISOString(),
-            },
+            // {
+            //     content: "Amazing! Thank you, I'll try this afternoon 🙂",
+            //     created_at: timestampThree.toISOString(),
+            // },
         ],
     },
 ];

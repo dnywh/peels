@@ -100,6 +100,7 @@ const Section = styled("section")(({ theme }) => ({
 
   "@media (min-width: 768px)": {
     paddingTop: `12vh`, // Match page gap
+    gap: "2.75rem",
 
   }
 }));

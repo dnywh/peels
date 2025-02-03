@@ -6,99 +6,152 @@ import { styled } from "@pigment-css/react";
 
 const OrderedList = styled("ol")(({ theme }) => ({
   marginTop: "2rem",
-  width: "100%",
+  // width: "100%",
   display: "flex",
   flexDirection: "column",
   gap: "5rem",
   alignItems: "center",
   counterReset: "step-counter",
 
-  "& > li": {
-    width: "100%",
-
-    listStyle: "none",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "0.5rem",
-
-    "&:before": {
-      content: "counter(step-counter)",
-      counterIncrement: "step-counter",
-      backgroundColor: theme.colors.background.counter,
-      color: theme.colors.background.sunk, // Match page background
-      width: "1.5rem",
-      height: "1.5rem",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: "50%",
-      fontSize: "1rem",
-      fontWeight: "700",
-    },
-
-    "& > h3, & > p": {
-      textAlign: "center",
-      textWrap: "balance",
-    },
-
-    "& > h3": {
-      fontSize: "1.75rem",
-      fontWeight: "700",
-      lineHeight: "115%",
-      color: theme.colors.text.brand.primary,
-    },
-
-    // Match type styling from homepage
-    "& >  p": {
-      fontSize: "1rem",
-      color: theme.colors.text.ui.quaternary,
-      // But make a little narrower than the homepage
-      maxWidth: "44ch",
-
-      "& > a": {
-        color: "inherit",
-        transition: "color 150ms ease-in-out",
-        "&:hover": {
-          color: theme.colors.text.primary,
-        },
-      },
-    },
+  "@media (min-width: 960px)": {
+    gap: "8rem",
   },
 }));
 
-function Step({ title, children, ...props }) {
+const StyledStep = styled("li")(({ theme }) => ({
+  // width: "100%",
+  listStyle: "none",
+
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+
+  variants: [
+    {
+      props: { anchor: "left" },
+      style: {
+        gap: "0.5rem",
+
+        "@media (min-width: 960px)": {
+          flexDirection: "row-reverse",
+          gap: "3.5rem",
+        },
+      },
+    },
+  ],
+}));
+
+const sharedStepStyles = ({ theme }) => ({
+  "& > h3, & > p": {
+    textAlign: "center",
+    textWrap: "balance",
+  },
+
+  "& > h3": {
+    fontSize: "1.75rem",
+    fontWeight: "700",
+    lineHeight: "115%",
+    color: theme.colors.text.brand.primary,
+  },
+
+  // Match type styling from homepage
+  "& >  p": {
+    fontSize: "1rem",
+    color: theme.colors.text.ui.quaternary,
+    // But make a little narrower than the homepage
+    maxWidth: "36ch",
+
+    "& > a": {
+      color: "inherit",
+      transition: "color 150ms ease-in-out",
+      "&:hover": {
+        color: theme.colors.text.primary,
+      },
+    },
+  },
+
+  "@media (min-width: 960px)": {
+    "& > h3": {
+      fontSize: "2.2rem",
+    },
+  },
+});
+
+const StepHeader = styled("header")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "0.5rem",
+
+  ...sharedStepStyles({ theme }),
+
+  "&:before": {
+    content: "counter(step-counter)",
+    counterIncrement: "step-counter",
+    backgroundColor: theme.colors.background.counter,
+    color: theme.colors.background.sunk, // Match page background
+    width: "1.5rem",
+    height: "1.5rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "50%",
+    fontSize: "1rem",
+    fontWeight: "700",
+  },
+}));
+
+const StepFooter = styled("footer")(({ theme }) => ({
+  ...sharedStepStyles({ theme }),
+}));
+
+function Step({ title, anchor, children, ...props }) {
   return (
-    <li {...props}>
-      <h3>{title}</h3>
+    <StyledStep anchor={anchor} {...props}>
       {children}
-    </li>
+    </StyledStep>
   );
 }
 
 function PeelsHowItWorks() {
   return (
     <OrderedList>
-      <Step number={1} title="Find a host">
-        <p>Select a marker on the map to see who’s nearby.</p>
-        <PeelsMapDemo />
+      <Step>
+        <PeelsMapDemo
+          stepHeader={
+            <StepHeader>
+              <h3>Find a host</h3>
+              <p>Select a marker on the map to see who’s nearby.</p>
+            </StepHeader>
+          }
+        />
       </Step>
 
-      <Step number={2} title="Contact" id="contact">
-        <p>Arrange to drop-off or collect your scraps via chat.</p>
+      <Step anchor="left" id="contact">
+        <StepHeader>
+          <h3>Contact</h3>
+          <p>Arrange to drop-off or collect your scraps via chat.</p>
+        </StepHeader>
         <PeelsChatDemo />
       </Step>
 
-      <Step number={3} title="Drop-off" id="drop-off">
-        <p>
-          Or collect, if you’ve reached out to a local business with scraps to
-          give away.
-        </p>
+      <Step id="drop-off">
+        <StepHeader>
+          <h3>Drop-off</h3>
+          <p>
+            Or collect, if you’ve reached out to a local business with scraps to
+            give away.
+          </p>
+        </StepHeader>
+
         <PeelsFeaturedHostsPhotos />
-        <p>
-          That’s all there is to it! <Link href="/sign-up">Get out there</Link>{" "}
-          and meet your neighbours.
-        </p>
+
+        <StepFooter>
+          <p>
+            That’s all there is to it!{" "}
+            <Link href="/sign-up">Get out there</Link> and meet your neighbours.
+          </p>
+        </StepFooter>
       </Step>
     </OrderedList>
   );

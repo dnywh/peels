@@ -22,11 +22,24 @@ const Wrapper = styled("div")(({ theme }) => ({
   // https://css-tricks.com/almanac/properties/m/mask-image/
   maskImage: "linear-gradient(black 80%, transparent 95%)",
 
-  "@media (min-width: 768px)": {
-    marginLeft: "-5rem", // Optical offset
-    marginTop: "1.5rem",
+  "@media (min-width: 960px)": {
+    // marginLeft: "-5rem", // Optical offset
+    // marginTop: "1.5rem",
     flexDirection: "row",
-    // maskImage: "none",
+  },
+}));
+
+const Left = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+
+  width: "100%",
+
+  "@media (min-width: 960px)": {
+    gap: "1rem",
+    maxWidth: "640px",
+    height: "512px",
+    // marginLeft: "5rem", // Match margins on ListingDemo
   },
 }));
 
@@ -39,8 +52,7 @@ const MapContainer = styled("div")(({ theme }) => ({
   justifyContent: "center",
 
   position: "relative",
-  width: "100%",
-  maxWidth: "640px",
+
   height: "320px",
   borderRadius: "1rem",
   backgroundImage: "url('/map-tiles/demo.png')",
@@ -48,11 +60,10 @@ const MapContainer = styled("div")(({ theme }) => ({
   backgroundPosition: "center",
   maskImage: "radial-gradient(black 0%, transparent 74%)",
 
-  "@media (min-width: 768px)": {
-    maxWidth: "640px",
-    height: "512px",
-    marginLeft: "5rem", // Match margins on ListingDemo
+  "@media (min-width: 960px)": {
+    height: "100%",
   },
+
   // Add debug crosshair at center
   // "&::after": {
   //   content: '""',
@@ -81,14 +92,14 @@ const MarkerDemo = styled("div")(({ theme }) => ({
   `,
 }));
 
-const ListingContainer = styled("div")(({ theme }) => ({
+const Right = styled("div")(({ theme }) => ({
   marginTop: "-7rem",
   position: "relative",
 
-  "@media (min-width: 768px)": {
+  "@media (min-width: 960px)": {
     marginTop: "0",
     marginLeft: "-4rem", // Match map container margin
-    marginRight: "1rem", // For awkward viewport widths
+    // marginRight: "1rem", // For awkward viewport widths
   },
 }));
 
@@ -124,7 +135,7 @@ const ListingDemo = styled("div")(({ theme }) => ({
   border: `1px solid ${theme.colors.border.base}`,
   borderRadius: `${theme.corners.base}`,
 
-  "@media (min-width: 768px)": {
+  "@media (min-width: 960px)": {
     transform: `scale(0.95) rotate(var(--rotation-angle))`,
     height: "640px",
   },
@@ -132,13 +143,13 @@ const ListingDemo = styled("div")(({ theme }) => ({
   "&[data-transitioning='true']": {
     opacity: 0,
     transform: `scale(0.9) rotate(var(--rotation-angle))`,
-    "@media (min-width: 768px)": {
+    "@media (min-width: 960px)": {
       transform: `scale(0.8625) rotate(var(--rotation-angle))`,
     },
   },
 }));
 
-export default function PeelsMapDemo() {
+export default function PeelsMapDemo({ stepHeader }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [rotationAngle, setRotationAngle] = useState(0);
@@ -184,34 +195,40 @@ export default function PeelsMapDemo() {
 
   return (
     <Wrapper>
-      <MapContainer>
-        {demoListings.map((listing, index) => {
-          // Convert percentage to pixels based on container dimensions
-          const containerWidth = 512; // maxWidth of MapContainer
-          const containerHeight = 200; // height of MapContainer
-          const xPixels = (listing.map_position.x / 100) * (containerWidth / 2);
-          const yPixels =
-            (listing.map_position.y / 100) * (containerHeight / 2);
+      <Left>
+        {stepHeader}
+        <MapContainer>
+          {demoListings.map((listing, index) => {
+            // Convert percentage to pixels based on container dimensions
+            const containerWidth = 512; // maxWidth of MapContainer
+            const containerHeight = 200; // height of MapContainer
+            const xPixels =
+              (listing.map_position.x / 100) * (containerWidth / 2);
+            const yPixels =
+              (listing.map_position.y / 100) * (containerHeight / 2);
 
-          return (
-            <MarkerDemo
-              key={index}
-              onClick={() => loadListingByIndex(index)}
-              style={{
-                "--x-offset": xPixels,
-                "--y-offset": yPixels,
-              }}
-            >
-              <MapPin
-                selected={isTransitioning === false && selectedIndex === index}
-                type={listing.type}
-              />
-            </MarkerDemo>
-          );
-        })}
-      </MapContainer>
+            return (
+              <MarkerDemo
+                key={index}
+                onClick={() => loadListingByIndex(index)}
+                style={{
+                  "--x-offset": xPixels,
+                  "--y-offset": yPixels,
+                }}
+              >
+                <MapPin
+                  selected={
+                    isTransitioning === false && selectedIndex === index
+                  }
+                  type={listing.type}
+                />
+              </MarkerDemo>
+            );
+          })}
+        </MapContainer>
+      </Left>
 
-      <ListingContainer>
+      <Right>
         <ListingBackground>
           <PeelsLogo size={96} color="emptyState" />
         </ListingBackground>
@@ -225,7 +242,7 @@ export default function PeelsMapDemo() {
             user={null}
           />
         </ListingDemo>
-      </ListingContainer>
+      </Right>
     </Wrapper>
   );
 }

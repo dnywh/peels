@@ -4,12 +4,12 @@ import ChatWindow from "@/components/ChatWindow";
 import { styled } from "@pigment-css/react";
 
 const ChatDemoContainer = styled("div")(({ theme }) => ({
-  height: "720px",
+  // height: "690px",
 
   width: "95vw",
   maxWidth: "400px",
 
-  transform: `scale(0.88) rotate(-1.5deg)`,
+  transform: `scale(0.88) rotate(-2deg)`,
 
   // The chat window is usually 'unstyled' on mobile because it lives full-screen
   // So we need to add a container style for this demo case
@@ -20,8 +20,8 @@ const ChatDemoContainer = styled("div")(({ theme }) => ({
   padding: "0",
   overflow: "hidden",
 
-  "@media (min-width: 768px)": {
-    transform: `scale(0.95) rotate(-1.5deg)`,
+  "@media (min-width: 960px)": {
+    transform: `scale(0.95) rotate(-2.5deg)`,
 
     // Undo all those container styles
     backgroundColor: "unset",
