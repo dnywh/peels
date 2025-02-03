@@ -83,15 +83,6 @@ const ButtonGroup = styled("div")({
   gap: "0.5rem",
 });
 
-const ListingPhotoRemoteImage = styled(RemoteImage)(({ theme }) => ({
-  mixBlendMode: "multiply", // So box-shadow on parent is visible
-  // width: "100px",
-  // height: "10rem",
-  objectFit: "cover",
-  backgroundColor: theme.colors.background.map,
-  cursor: "zoom-in",
-}));
-
 // A much fancier version than just using whiteSpace: "pre-wrap", which renders looking like a completely new empty paragraph in between lines
 const ParagraphWithLineBreaks = ({ text }) => {
   const paragraphs = text.split("\n").filter((line) => line.trim() !== ""); // Split by line breaks and filter out empty lines
@@ -111,6 +102,7 @@ const ListingRead = memo(function Listing({
   presentation,
   isChatDrawerOpen,
   setIsChatDrawerOpen,
+  modalBehavior,
 }) {
   const router = presentation !== "demo" ? useRouter() : null;
 
@@ -196,6 +188,7 @@ const ListingRead = memo(function Listing({
             setIsChatDrawerOpen={setIsChatDrawerOpen}
             existingThread={existingThread}
             listingDisplayName={listingDisplayName}
+            modalBehavior={modalBehavior}
           />
         )}
 

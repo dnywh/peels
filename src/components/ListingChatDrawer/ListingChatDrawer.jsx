@@ -56,29 +56,67 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   },
 }));
 
+const ModalDrawer = ({
+  isNested,
+  children,
+  isChatDrawerOpen,
+  setIsChatDrawerOpen,
+  isDesktop,
+  ...props
+}) => {
+  const DrawerComponent = isNested ? Drawer.NestedRoot : Drawer.Root;
+
+  return (
+    <DrawerComponent
+      modal={true}
+      direction={isDesktop ? "right" : undefined}
+      open={isChatDrawerOpen}
+      onOpenChange={setIsChatDrawerOpen}
+      {...props}
+    >
+      {children}
+    </DrawerComponent>
+  );
+};
+
+const NonModalDrawer = ({
+  isNested,
+  children,
+  isChatDrawerOpen,
+  setIsChatDrawerOpen,
+  isDesktop,
+  ...props
+}) => {
+  const DrawerComponent = isNested ? Drawer.NestedRoot : Drawer.Root;
+
+  return (
+    <DrawerComponent
+      modal={false}
+      direction={isDesktop ? "right" : undefined}
+      open={isChatDrawerOpen}
+      onOpenChange={setIsChatDrawerOpen}
+      {...props}
+    >
+      {children}
+    </DrawerComponent>
+  );
+};
+
 export default function ListingChatDrawer({
-  isNested, // true for map, false for listing page
+  isNested,
   user,
   listing,
   isChatDrawerOpen,
   setIsChatDrawerOpen,
   existingThread,
   listingDisplayName,
+  modalBehavior = "always",
   ...props
 }) {
   const { isDesktop, hasTouch } = useDeviceContext();
-  const DrawerComponent = isNested ? Drawer.NestedRoot : Drawer.Root;
 
-  const modality = isNested ? (isDesktop ? false : true) : true;
-
-  return (
-    <DrawerComponent
-      modal={modality}
-      direction={isDesktop ? "right" : undefined}
-      open={isChatDrawerOpen}
-      onOpenChange={setIsChatDrawerOpen}
-      {...props}
-    >
+  const drawerContent = (
+    <>
       <ListingCtaContainer>
         {user ? (
           listing.owner_id === user.id ? (
@@ -123,21 +161,34 @@ export default function ListingChatDrawer({
           />
         </StyledDrawerContent>
       </Drawer.Portal>
-    </DrawerComponent>
+    </>
   );
-}
 
-export function getListingDisplayName(listing, user) {
-  if (!listing) return "";
-
-  // For residential listings
-  if (listing.type === "residential") {
-    // Show "Private Host" to non-authenticated users
-    if (!user) return "Private Host";
-    // Use the flattened column directly
-    return listing.owner_first_name || "Private Host";
+  // Use modal drawer for mobile or when modalBehavior is "always"
+  if (!isDesktop || modalBehavior === "always") {
+    return (
+      <ModalDrawer
+        isNested={isNested}
+        isChatDrawerOpen={isChatDrawerOpen}
+        setIsChatDrawerOpen={setIsChatDrawerOpen}
+        isDesktop={isDesktop}
+        {...props}
+      >
+        {drawerContent}
+      </ModalDrawer>
+    );
   }
 
-  // For business and community listings, always show the listing name
-  return listing.name || "";
+  // Use non-modal drawer for desktop when modalBehavior is "mobile-only"
+  return (
+    <NonModalDrawer
+      isNested={isNested}
+      isChatDrawerOpen={isChatDrawerOpen}
+      setIsChatDrawerOpen={setIsChatDrawerOpen}
+      isDesktop={isDesktop}
+      {...props}
+    >
+      {drawerContent}
+    </NonModalDrawer>
+  );
 }

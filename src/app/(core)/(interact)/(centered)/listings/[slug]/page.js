@@ -72,7 +72,11 @@ export default async function ListingPage({ params }) {
 
     return (
         <StyledMain>
-            <ListingRead user={user} listing={listing} />
+            <ListingRead
+                user={user}
+                listing={listing}
+                modalBehavior="always" // Always modal for standalone listing page
+            />
         </StyledMain>
     );
 }
