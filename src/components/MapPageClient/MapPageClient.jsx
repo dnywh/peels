@@ -225,7 +225,7 @@ const StyledDrawerInner = styled("div")(({ theme }) => ({
   // Set same flex properties in ListingRead > Column, given these columns should be invisible when drawer
   display: "flex",
   flexDirection: "column",
-  gap: "3rem",
+  gap: "3rem", // Match in ListingRead
 }));
 
 const NoListingFound = styled("div")(({ theme }) => ({

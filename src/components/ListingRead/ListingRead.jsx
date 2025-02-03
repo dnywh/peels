@@ -32,26 +32,34 @@ import Hyperlink from "@/components/Hyperlink";
 
 import { styled } from "@pigment-css/react";
 
-// const StyledMapPin = styled(MapPin)({
-//   // zIndex: 1,
-//   cursor: "pointer",
-//   "&:hover": {
-
-//   },
-// });
-
-const Column = styled("div")({
+const Column = styled("div")(({ theme }) => ({
   // Inherit same flex properties as parent, given these columns should be invisible when drawer
   display: "flex",
   flexDirection: "column",
-  gap: "3rem",
+  gap: "3rem", // Match in MapPageClient (StyledDrawerInner)
 
-  // width: "100%",
-});
+  variants: [
+    {
+      props: { presentation: "full" },
+      style: {
+        // Make second column gap smaller on larger breakpoint
+        "&:nth-child(2)": {
+          "@media (min-width: 768px)": {
+            gap: "1.5rem",
+          },
+        },
+      },
+    },
+  ],
+}));
 
-const ListingReadSection = styled("section")({
+const ListingReadSection = styled("section")(({ theme }) => ({
   // width: "100%",
-  padding: " 0 1rem", // Pad by default ,override on Photos section
+  padding: " 0 1rem", // Pad by default ,override on Photos section (overflowX: "visible")
+
+  "& h3": {
+    marginBottom: "0.5rem",
+  },
 
   "& p + p": {
     // Add paragraph spacing
@@ -62,7 +70,7 @@ const ListingReadSection = styled("section")({
     {
       props: { overflowX: "visible" },
       style: {
-        padding: "0", // Pad by default, override on Photos section
+        padding: "0", // Pad by default, override on Photos section (overflowX: "visible")
         overflowX: "visible",
 
         "& h3": {
@@ -70,12 +78,51 @@ const ListingReadSection = styled("section")({
         },
       },
     },
+    {
+      // TODO: This 'overflowX: undefined' is ignored, targeting everything with tiled: true'. Ideally I can only target the tiled: true items that DON'T have an overflowX prop defined
+      props: { tiled: true, overflowX: undefined, presentation: "full" },
+      style: {
+        backgroundColor: theme.colors.background.top,
+        border: `1px solid ${theme.colors.border.base}`,
+        borderRadius: theme.corners.base,
+
+        padding: "1rem 1rem 1.5rem",
+
+        // "@media (min-width: 768px)": {
+        //   padding: "0 1.5rem",
+        // },
+      },
+    },
+    {
+      props: { tiled: true, overflowX: "visible", presentation: "full" },
+      style: {
+        // padding: "1rem",
+
+        padding: "1rem 0 1.5rem",
+
+        // "@media (min-width: 768px)": {
+        //   padding: "0 1.5rem",
+        // },
+      },
+    },
   ],
-});
+}));
 
 const DemoButtonContainer = styled("div")({
   padding: "0 1rem", // Match padding from other parts of ListingRead
 });
+
+const MapDetails = styled("div")(({ theme }) => ({
+  marginTop: "1rem",
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+
+  "& p": {
+    fontSize: "0.875rem",
+    color: theme.colors.text.ui.tertiary,
+  },
+}));
 
 const ButtonGroup = styled("div")({
   display: "flex",
@@ -99,7 +146,7 @@ const ParagraphWithLineBreaks = ({ text }) => {
 const ListingRead = memo(function Listing({
   user,
   listing,
-  presentation,
+  presentation = "full",
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
@@ -162,7 +209,7 @@ const ListingRead = memo(function Listing({
 
   return (
     <Fragment key={listing?.id ? listing.id : undefined}>
-      <Column>
+      <Column tiled={true}>
         <ListingHeader
           listing={listing}
           listingName={listingDisplayName}
@@ -215,9 +262,9 @@ const ListingRead = memo(function Listing({
       </Column>
 
       {presentation !== "demo" && (
-        <Column>
+        <Column presentation={presentation}>
           {presentation !== "drawer" && (
-            <ListingReadSection>
+            <ListingReadSection presentation={presentation} tiled={true}>
               <h3>Location</h3>
 
               <MapThumbnail
@@ -243,61 +290,65 @@ const ListingRead = memo(function Listing({
                 <NavigationControl showCompass={false} />
               </MapThumbnail>
 
-              {listing.type === "residential" ? (
-                <p>
-                  {listingDisplayName} is a resident of{" "}
-                  {listing.area_name ? listing.area_name : "this area"}. Ask
-                  them for their exact location when you arrange a food scrap
-                  drop-off.
-                </p>
-              ) : (
-                <p>
-                  {listingDisplayName} is{" "}
-                  {listing.type === "business"
-                    ? "a business"
-                    : listing.type === "community"
-                      ? "a community spot"
-                      : ""}{" "}
-                  located in {listing.area_name}.
-                </p>
-              )}
-
-              <ButtonGroup>
-                <Button
-                  variant="secondary"
-                  size="small"
-                  href={`/map?listing=${listing.slug}`}
-                >
-                  See nearby listings
-                </Button>
-                {listing.type !== "residential" && (
-                  <>
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
-                        listing.name
-                      )}`}
-                      target="_blank"
-                    >
-                      Open in Apple Maps
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
-                      target="_blank"
-                    >
-                      Open in Google Maps
-                    </Button>
-                  </>
+              <MapDetails>
+                {listing.type === "residential" ? (
+                  <p>
+                    {listingDisplayName} is a resident of{" "}
+                    {listing.area_name ? listing.area_name : "this area"}. Ask
+                    them for their exact location when you arrange a food scrap
+                    drop-off.
+                  </p>
+                ) : (
+                  <p>
+                    {listingDisplayName} is{" "}
+                    {listing.type === "business"
+                      ? "a business"
+                      : listing.type === "community"
+                        ? "a community spot"
+                        : ""}{" "}
+                    located in {listing.area_name}.
+                  </p>
                 )}
-              </ButtonGroup>
+
+                <ButtonGroup>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    href={`/map?listing=${listing.slug}`}
+                  >
+                    See nearby listings
+                  </Button>
+                  {listing.type !== "residential" && (
+                    <>
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
+                          listing.name
+                        )}`}
+                        target="_blank"
+                      >
+                        Open in Apple Maps
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
+                        target="_blank"
+                      >
+                        Open in Google Maps
+                      </Button>
+                    </>
+                  )}
+                </ButtonGroup>
+              </MapDetails>
             </ListingReadSection>
           )}
 
           {listing.photos?.length > 0 && (
             <ListingReadSection
+              presentation={presentation}
+              tiled={true}
               overflowX={
                 !user && listing.type === "residential" ? undefined : "visible"
               }
@@ -325,7 +376,7 @@ const ListingRead = memo(function Listing({
         )} */}
 
           {listing.links?.length > 0 && (
-            <ListingReadSection>
+            <ListingReadSection presentation={presentation} tiled={true}>
               <h3>Links</h3>
               <ListingItemList items={listing.links} type="links" />
             </ListingReadSection>
