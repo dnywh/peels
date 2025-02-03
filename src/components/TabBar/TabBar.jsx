@@ -22,6 +22,7 @@ const StyledTabBar = styled("div")(({ theme }) => ({
         touchAction: "none",
         display: "flex",
         justifyContent: "center",
+        zIndex: 3,
         "@media (min-width: 768px)": {
           display: "none",
         },

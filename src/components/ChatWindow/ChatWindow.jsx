@@ -123,11 +123,6 @@ const ChatWindow = memo(function ChatWindow({
     if (isDemo) return;
 
     try {
-      console.log("Initializing chat:", {
-        listing_id: listing?.id,
-        initiator_id: user?.id,
-      });
-
       const { data: thread, error } = await supabase
         .from("chat_threads")
         .select("id")
@@ -146,7 +141,6 @@ const ChatWindow = memo(function ChatWindow({
       if (thread) {
         setThreadId(thread.id);
         loadMessages(thread.id);
-        console.log("Thread found:", thread);
         return thread;
       }
 
@@ -193,8 +187,6 @@ const ChatWindow = memo(function ChatWindow({
       handleChatSendError(error);
       return;
     }
-
-    console.log("Messages loaded:", messages);
     setMessages(messages || []);
   }
 
@@ -237,7 +229,6 @@ const ChatWindow = memo(function ChatWindow({
     }
 
     // Message sent, clear message and reload messages
-    console.log("Message sent:", message);
     setMessage("");
     loadMessages(threadId);
   }

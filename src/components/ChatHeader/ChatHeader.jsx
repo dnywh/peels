@@ -143,8 +143,6 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
       ? listing.owner_first_name
       : thread.initiator_first_name;
 
-  console.log({ role, listing, thread, user });
-
   return (
     <StyledChatHeader>
       {!isDrawer && !isDemo && (
