@@ -19,23 +19,6 @@ const StyledChatHeader = styled("header")(({ theme }) => ({
   borderBottom: `1px solid ${theme.colors.border.base}`,
   backgroundColor: theme.colors.background.top,
   padding: "1rem",
-
-  // variants: [
-  //   {
-  //     props: { isDrawer: true },
-  //     style: {
-  //       [`& ${AvatarContainer}`]: {
-  //         display: "flex",
-  //       },
-  //       [`& ${TitleBlock}`]: {
-  //         "& h1, & h2 ": {
-  //           textAlign: "left",
-  //           fontWeight: "700",
-  //         },
-  //       },
-  //     },
-  //   },
-  // ],
 }));
 
 const AvatarContainer = styled("div")(({ theme }) => ({
@@ -43,46 +26,43 @@ const AvatarContainer = styled("div")(({ theme }) => ({
   display: "flex",
 }));
 
+// Match styling in ListingHeader (but keep separate because of complicated alignment logic here)
 const TitleBlock = styled("div")(({ theme }) => ({
   flex: 1,
   alignSelf: "center",
 
   fontSize: "1rem",
-  fontWeight: "700",
 
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
-  gap: "0.25rem",
 
-  "& h1, & h2 ": {
-    // textAlign: "center",
-    fontSize: "1rem",
-    fontWeight: "600",
-    lineHeight: "100%",
+  "& h1, & p ": {
+    // lineHeight: "100%",
   },
 
   "& h1": {
-    // fontSize: "1.25rem",
+    fontSize: "1rem",
+    lineHeight: "120%",
     color: theme.colors.text.ui.primary,
   },
 
-  "& h2": {
-    // fontSize: "1rem",
+  "& p": {
+    fontSize: "0.875rem",
+    lineHeight: "125%",
     color: theme.colors.text.ui.quaternary,
   },
 
   "@media (min-width: 768px)": {
     "& h1, & h2 ": {
-      // textAlign: "left",
-      fontWeight: "700",
+      textAlign: "left",
     },
 
     "& h1": {
       fontSize: "1.25rem",
     },
 
-    "& h2": {
+    "& p": {
       fontSize: "1rem",
     },
   },
@@ -111,12 +91,14 @@ const MainContents = styled("div")(({ theme }) => ({
 
         [`& ${TitleBlock}`]: {
           textAlign: "center",
+          gap: 0,
         },
 
         "@media (min-width: 768px)": {
           flexDirection: "inherit",
           [`& ${TitleBlock}`]: {
             textAlign: "inherit",
+            gap: "0.25rem",
           },
         },
       },
@@ -185,11 +167,11 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
           {/* TODO: Extract and have a 'otherPersonName' const and a more malleable 'recipient and their listing name' as per above */}
           <h1>{otherPersonName}</h1>
           {role === "initiator" && (
-            <h2>
+            <p>
               {listing.type === "residential"
                 ? `Resident of ${listing.area_name}`
                 : listing.name}
-            </h2>
+            </p>
           )}
         </TitleBlock>
       </MainContents>

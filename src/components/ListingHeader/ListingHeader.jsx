@@ -15,23 +15,25 @@ const StyledListingHeader = styled("header")(({ theme }) => ({
   padding: "0 1rem 0 1.75rem", // Match ListingReadSection but also account for rotated avatar
 }));
 
-const StyledText = styled("div")(({ theme }) => ({
+// Match styling in ChatHeader (but keep separate because of complicated alignment logic in ChatHeader)
+const TitleBlock = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "0.35rem",
+  gap: "0.25rem",
 
   "& h1": {
     fontSize: "1.25rem",
-    lineHeight: "1.2",
+    lineHeight: "120%",
     overflowWrap: "break-word",
     hyphens: "manual",
     wordBreak: "break-word", // Above hyphens approach doesn't work, so this is a temporary solution
+    color: theme.colors.text.ui.primary,
   },
 
   "& p": {
     color: theme.colors.text.tertiary,
     textWrap: "balance",
-    lineHeight: "1.25",
+    lineHeight: "125%",
   },
 }));
 
@@ -54,7 +56,7 @@ function ListingHeader({ listing, listingName, user }) {
         listing={listing}
       />
 
-      <StyledText>
+      <TitleBlock>
         <h1>{listingName}</h1>
 
         {/* Use getListingDisplayType() here? Or is it too limiting? */}
@@ -86,7 +88,7 @@ function ListingHeader({ listing, listingName, user }) {
           </p>
         )}
         {listing?.is_stub && <StyledLozenge>Stub</StyledLozenge>}
-      </StyledText>
+      </TitleBlock>
     </StyledListingHeader>
   );
 }
