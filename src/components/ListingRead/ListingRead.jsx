@@ -102,7 +102,6 @@ const ListingRead = memo(function Listing({
   presentation,
   isChatDrawerOpen,
   setIsChatDrawerOpen,
-  modalBehavior,
 }) {
   const router = presentation !== "demo" ? useRouter() : null;
 
@@ -188,7 +187,6 @@ const ListingRead = memo(function Listing({
             setIsChatDrawerOpen={setIsChatDrawerOpen}
             existingThread={existingThread}
             listingDisplayName={listingDisplayName}
-            modalBehavior={modalBehavior}
           />
         )}
 

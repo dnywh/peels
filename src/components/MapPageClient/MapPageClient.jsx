@@ -761,7 +761,6 @@ export default function MapPageClient({
                     presentation="drawer"
                     isChatDrawerOpen={isChatDrawerOpen}
                     setIsChatDrawerOpen={setIsChatDrawerOpen}
-                    modalBehavior="mobile-only"
                   />
                 )}
               </StyledDrawerInner>

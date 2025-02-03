@@ -56,50 +56,31 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   },
 }));
 
-const ModalDrawer = ({
+// We need to define two different drawer components, because depending on the 'modal' prop, a different number of hooks will be rendered
+// React doesn't like when we conditionally change the number of hooks. It's better to just render a separate component for each case
+// Shared drawer props to reduce repetition
+const getDrawerProps = ({
   isNested,
-  children,
   isChatDrawerOpen,
   setIsChatDrawerOpen,
   isDesktop,
-  ...props
-}) => {
-  const DrawerComponent = isNested ? Drawer.NestedRoot : Drawer.Root;
+  ...rest
+}) => ({
+  isNested,
+  direction: isDesktop ? "right" : undefined,
+  open: isChatDrawerOpen,
+  onOpenChange: setIsChatDrawerOpen,
+  ...rest,
+});
 
-  return (
-    <DrawerComponent
-      modal={true}
-      direction={isDesktop ? "right" : undefined}
-      open={isChatDrawerOpen}
-      onOpenChange={setIsChatDrawerOpen}
-      {...props}
-    >
-      {children}
-    </DrawerComponent>
-  );
+const ModalDrawer = (props) => {
+  const DrawerComponent = props.isNested ? Drawer.NestedRoot : Drawer.Root;
+  return <DrawerComponent modal={true} {...getDrawerProps(props)} />;
 };
 
-const NonModalDrawer = ({
-  isNested,
-  children,
-  isChatDrawerOpen,
-  setIsChatDrawerOpen,
-  isDesktop,
-  ...props
-}) => {
-  const DrawerComponent = isNested ? Drawer.NestedRoot : Drawer.Root;
-
-  return (
-    <DrawerComponent
-      modal={false}
-      direction={isDesktop ? "right" : undefined}
-      open={isChatDrawerOpen}
-      onOpenChange={setIsChatDrawerOpen}
-      {...props}
-    >
-      {children}
-    </DrawerComponent>
-  );
+const NonModalDrawer = (props) => {
+  const DrawerComponent = props.isNested ? Drawer.NestedRoot : Drawer.Root;
+  return <DrawerComponent modal={false} {...getDrawerProps(props)} />;
 };
 
 export default function ListingChatDrawer({
@@ -110,10 +91,14 @@ export default function ListingChatDrawer({
   setIsChatDrawerOpen,
   existingThread,
   listingDisplayName,
-  modalBehavior = "always",
   ...props
 }) {
   const { isDesktop, hasTouch } = useDeviceContext();
+
+  // We can infer modal behavior based on presentation
+  // If it's a mobile breakpoint, always use a model
+  // If it's a desktop breakpoint, only use a modal if it's NOT a nested drawer
+  const shouldUseModal = !isDesktop || isNested === false;
 
   const drawerContent = (
     <>
@@ -164,24 +149,10 @@ export default function ListingChatDrawer({
     </>
   );
 
-  // Use modal drawer for mobile or when modalBehavior is "always"
-  if (!isDesktop || modalBehavior === "always") {
-    return (
-      <ModalDrawer
-        isNested={isNested}
-        isChatDrawerOpen={isChatDrawerOpen}
-        setIsChatDrawerOpen={setIsChatDrawerOpen}
-        isDesktop={isDesktop}
-        {...props}
-      >
-        {drawerContent}
-      </ModalDrawer>
-    );
-  }
+  const DrawerComponent = shouldUseModal ? ModalDrawer : NonModalDrawer;
 
-  // Use non-modal drawer for desktop when modalBehavior is "mobile-only"
   return (
-    <NonModalDrawer
+    <DrawerComponent
       isNested={isNested}
       isChatDrawerOpen={isChatDrawerOpen}
       setIsChatDrawerOpen={setIsChatDrawerOpen}
@@ -189,6 +160,6 @@ export default function ListingChatDrawer({
       {...props}
     >
       {drawerContent}
-    </NonModalDrawer>
+    </DrawerComponent>
   );
 }
