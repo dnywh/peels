@@ -44,7 +44,7 @@ const ColumnMain = styled("div")(({ theme }) => ({
 
   variants: [
     {
-      props: { tiled: true, presentation: "full" },
+      props: { presentation: "full" },
       style: {
         "@media (min-width: 768px)": {
           padding: "2rem 0",
@@ -82,7 +82,7 @@ const Cluster = styled("div")(({ theme }) => ({
   // Match styling of other sections
   variants: [
     {
-      props: { tiled: true, presentation: "full" },
+      props: { presentation: "full" },
       style: {
         padding: "1.5rem 0",
         backgroundColor: theme.colors.background.top,
@@ -90,7 +90,7 @@ const Cluster = styled("div")(({ theme }) => ({
         borderRadius: theme.corners.base,
 
         "@media (min-width: 768px)": {
-          padding: "unset",
+          padding: "0 0.5rem", // 0.5rem + 1rem = 1.5rem used elsewhere in 'naked' ListingReadSection instances
           backgroundColor: "unset",
           border: "unset",
           borderRadius: "unset",
@@ -126,8 +126,8 @@ const ListingReadSection = styled("section")(({ theme }) => ({
       },
     },
     {
-      // TODO: This 'overflowX: undefined' is ignored, targeting everything with tiled: true'. Ideally I can only target the tiled: true items that DON'T have an overflowX prop defined
-      props: { tiled: true, overflowX: undefined, presentation: "full" },
+      // TODO: This 'overflowX: undefined' is ignored, targeting everything with presentation: full. Ideally I can only target the presentation: full items that DON'T have an overflowX prop defined
+      props: { overflowX: undefined, presentation: "full" },
       style: {
         backgroundColor: theme.colors.background.top,
         border: `1px solid ${theme.colors.border.base}`,
@@ -135,21 +135,21 @@ const ListingReadSection = styled("section")(({ theme }) => ({
 
         padding: "1rem 1rem 1.5rem",
 
-        // "@media (min-width: 768px)": {
-        //   padding: "0 1.5rem",
-        // },
+        "@media (min-width: 768px)": {
+          padding: "1rem 1.5rem 1.5rem",
+        },
       },
     },
     {
-      props: { tiled: true, overflowX: "visible", presentation: "full" },
+      props: { overflowX: "visible", presentation: "full" },
       style: {
-        // padding: "1rem",
-
         padding: "1rem 0 1.5rem",
 
-        // "@media (min-width: 768px)": {
-        //   padding: "0 1.5rem",
-        // },
+        "@media (min-width: 768px)": {
+          "& h3": {
+            padding: "0 1.5rem", // Account for removed padding on parent
+          },
+        },
       },
     },
   ],
@@ -256,7 +256,7 @@ const ListingRead = memo(function Listing({
 
   return (
     <Fragment key={listing?.id ? listing.id : undefined}>
-      <ColumnMain tiled={true} presentation={presentation}>
+      <ColumnMain presentation={presentation}>
         <ListingHeader
           listing={listing}
           listingName={listingDisplayName}
@@ -284,7 +284,7 @@ const ListingRead = memo(function Listing({
           />
         )}
 
-        <Cluster tiled={true} presentation={presentation}>
+        <Cluster presentation={presentation}>
           {listing?.description && (
             <ListingReadSection>
               <h3>
@@ -319,7 +319,7 @@ const ListingRead = memo(function Listing({
       {presentation !== "demo" && (
         <ColumnMinor presentation={presentation}>
           {presentation !== "drawer" && (
-            <ListingReadSection presentation={presentation} tiled={true}>
+            <ListingReadSection presentation={presentation}>
               <h3>Location</h3>
 
               <MapThumbnail
@@ -403,7 +403,6 @@ const ListingRead = memo(function Listing({
           {listing.photos?.length > 0 && (
             <ListingReadSection
               presentation={presentation}
-              tiled={true}
               overflowX={
                 !user && listing.type === "residential" ? undefined : "visible"
               }
@@ -416,7 +415,10 @@ const ListingRead = memo(function Listing({
                 </p>
               ) : (
                 <>
-                  <ListingPhotoGallery photos={listing.photos} />
+                  <ListingPhotoGallery
+                    presentation={presentation}
+                    photos={listing.photos}
+                  />
                 </>
               )}
             </ListingReadSection>
@@ -431,7 +433,7 @@ const ListingRead = memo(function Listing({
         )} */}
 
           {listing.links?.length > 0 && (
-            <ListingReadSection presentation={presentation} tiled={true}>
+            <ListingReadSection presentation={presentation}>
               <h3>Links</h3>
               <ListingItemList items={listing.links} type="links" />
             </ListingReadSection>

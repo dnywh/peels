@@ -34,6 +34,17 @@ const PhotosList = styled("ul")(({ theme }) => ({
       opacity: 0.86,
     },
   },
+
+  variants: [
+    {
+      props: { presentation: "full" },
+      style: {
+        "@media (min-width: 768px)": {
+          padding: "0 1.5rem",
+        },
+      },
+    },
+  ],
 }));
 
 const ListingPhotoRemoteImageThumnail = styled(RemoteImage)(({ theme }) => ({
@@ -71,9 +82,9 @@ const options = {
   bgClickAction: "close",
 };
 
-function ListingPhotoGallery({ photos }) {
+function ListingPhotoGallery({ presentation, photos }) {
   return (
-    <PhotosList>
+    <PhotosList presentation={presentation}>
       <Gallery options={options}>
         {/* <GalleryCloseButton variant="close" /> */}
         {photos.map((photo, index) => (
