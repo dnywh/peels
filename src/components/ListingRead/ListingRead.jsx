@@ -106,11 +106,13 @@ const ListingReadSection = styled("section")(({ theme }) => ({
 
   "& h3": {
     marginBottom: "0.5rem",
+    color: theme.colors.text.ui.secondary,
   },
 
   "& p + p": {
     // Add paragraph spacing
     marginTop: "0.5rem",
+    color: theme.colors.text.ui.primary,
   },
 
   variants: [
@@ -258,6 +260,7 @@ const ListingRead = memo(function Listing({
     <Fragment key={listing?.id ? listing.id : undefined}>
       <ColumnMain presentation={presentation}>
         <ListingHeader
+          presentation={presentation}
           listing={listing}
           listingName={listingDisplayName}
           user={user}
