@@ -56,7 +56,7 @@ const ChatWindowEmptyState = styled("div")(({ theme }) => ({
     border: `2px dashed ${theme.colors.border.base}`,
   },
 
-  // Match styles in MapSidebar
+  // Match styles in MapSidebar and ThreadsEmptyState
   "& p": {
     color: theme.colors.text.ui.emptyState,
     fontSize: "1.2rem",
@@ -124,7 +124,7 @@ export default function ChatPageClient({
             <PeelsLogo size={64} color="emptyState" />
             <p>
               {initialThreads?.length === 0
-                ? "No chats yet. Try contacting your first host"
+                ? "Try contacting your first host"
                 : "Select a chat from the left"}
             </p>
           </ChatWindowEmptyState>

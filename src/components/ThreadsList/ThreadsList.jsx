@@ -43,7 +43,7 @@ const ThreadsSidebar = styled("div")(({ theme }) => ({
   },
 }));
 
-const ThreadsUnorderedList = styled("ul")(({ theme }) => ({
+const sharedThreadsContainerStyles = ({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.25rem",
@@ -59,6 +59,26 @@ const ThreadsUnorderedList = styled("ul")(({ theme }) => ({
     border: "none",
     borderRadius: "unset",
   },
+});
+
+const ThreadsEmptyState = styled("div")(({ theme }) => ({
+  ...sharedThreadsContainerStyles({ theme }),
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "30rem",
+  height: "100%",
+
+  "& p": {
+    color: theme.colors.text.ui.emptyState,
+    fontSize: "1.2rem",
+    fontWeight: "500",
+    lineHeight: "120%",
+    textWrap: "balance",
+  },
+}));
+
+const ThreadsUnorderedList = styled("ul")(({ theme }) => ({
+  ...sharedThreadsContainerStyles({ theme }),
 }));
 
 const ThreadPreview = styled("a")(({ theme }) => ({
@@ -188,8 +208,9 @@ function ThreadsList({ user, threads, currentThreadId }) {
           })}
         </ThreadsUnorderedList>
       ) : (
-        // TODO: Center and visually match empty chat window state
-        <p>No chats yet</p>
+        <ThreadsEmptyState>
+          <p>No chats yet</p>
+        </ThreadsEmptyState>
       )}
     </ThreadsSidebar>
   );
