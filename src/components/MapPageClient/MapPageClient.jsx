@@ -226,6 +226,7 @@ const StyledDrawerInner = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "3rem", // Match in ListingRead
+  marginBottom: "1.5rem", // Visual buffer
 }));
 
 const NoListingFound = styled("div")(({ theme }) => ({

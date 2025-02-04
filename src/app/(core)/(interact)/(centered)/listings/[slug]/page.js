@@ -14,17 +14,21 @@ const StyledMain = styled("main")({
 
     display: "flex",
     flexDirection: "column",
-    gap: "3rem",
+    gap: "3rem", // Match in MapPageClient (StyledDrawerInner)
 
+    "@media (min-width: 768px)": {
+        margin: "0 auto 2rem",
+    },
+    // Multiple columns on larger breakpoints
     "@media (min-width: 1280px)": {
+        gap: "1.5rem", // Smaller gap between what are now columns
         maxWidth: "1024px",
         display: "grid",
         gridTemplateColumns: "7fr 5fr",
     },
     "@media (min-width: 1920px)": {
-        maxWidth: "1536px",
+        maxWidth: "1344px",
         gridTemplateColumns: "8fr 4fr",
-        gap: "5rem",
     },
 
 });

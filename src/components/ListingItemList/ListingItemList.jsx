@@ -18,6 +18,7 @@ import { styled } from "@pigment-css/react";
 // Perhaps via encodeURIComponent?
 
 const StyledListingItemList = styled("ol")(({ theme }) => ({
+  marginTop: "0.825rem", // Optical offset from heading
   display: "flex",
   flexDirection: "column",
   gap: "0.75rem",

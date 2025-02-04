@@ -32,21 +32,68 @@ import Hyperlink from "@/components/Hyperlink";
 
 import { styled } from "@pigment-css/react";
 
-const Column = styled("div")(({ theme }) => ({
+const sharedColumnStyles = {
   // Inherit same flex properties as parent, given these columns should be invisible when drawer
   display: "flex",
   flexDirection: "column",
   gap: "3rem", // Match in MapPageClient (StyledDrawerInner)
+};
+
+const ColumnMain = styled("div")(({ theme }) => ({
+  ...sharedColumnStyles,
+
+  variants: [
+    {
+      props: { tiled: true, presentation: "full" },
+      style: {
+        "@media (min-width: 768px)": {
+          padding: "2rem 0",
+          backgroundColor: theme.colors.background.top,
+          border: `1px solid ${theme.colors.border.base}`,
+          borderRadius: theme.corners.base,
+        },
+      },
+    },
+  ],
+}));
+
+const ColumnMinor = styled("div")(({ theme }) => ({
+  ...sharedColumnStyles,
 
   variants: [
     {
       props: { presentation: "full" },
       style: {
         // Make second column gap smaller on larger breakpoint
-        "&:nth-child(2)": {
-          "@media (min-width: 768px)": {
-            gap: "1.5rem",
-          },
+
+        "@media (min-width: 1280px)": {
+          gap: "1.5rem",
+        },
+      },
+    },
+  ],
+}));
+
+const Cluster = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "3rem", // Match in MapPageClient (StyledDrawerInner)
+
+  // Match styling of other sections
+  variants: [
+    {
+      props: { tiled: true, presentation: "full" },
+      style: {
+        padding: "1.5rem 0",
+        backgroundColor: theme.colors.background.top,
+        border: `1px solid ${theme.colors.border.base}`,
+        borderRadius: theme.corners.base,
+
+        "@media (min-width: 768px)": {
+          padding: "unset",
+          backgroundColor: "unset",
+          border: "unset",
+          borderRadius: "unset",
         },
       },
     },
@@ -209,7 +256,7 @@ const ListingRead = memo(function Listing({
 
   return (
     <Fragment key={listing?.id ? listing.id : undefined}>
-      <Column tiled={true}>
+      <ColumnMain tiled={true} presentation={presentation}>
         <ListingHeader
           listing={listing}
           listingName={listingDisplayName}
@@ -237,32 +284,40 @@ const ListingRead = memo(function Listing({
           />
         )}
 
-        {listing?.description && (
-          <ListingReadSection>
-            <h3>
-              {listing.type === "business" ? "Donation details" : "About"}
-            </h3>
-            <ParagraphWithLineBreaks text={listing?.description} />
-          </ListingReadSection>
-        )}
+        <Cluster tiled={true} presentation={presentation}>
+          {listing?.description && (
+            <ListingReadSection>
+              <h3>
+                {listing.type === "business" ? "Donation details" : "About"}
+              </h3>
+              <ParagraphWithLineBreaks text={listing?.description} />
+            </ListingReadSection>
+          )}
 
-        {listing?.accepted_items?.length > 0 && (
-          <ListingReadSection>
-            <h3>Accepted</h3>
-            <ListingItemList items={listing?.accepted_items} type="accepted" />
-          </ListingReadSection>
-        )}
+          {listing?.accepted_items?.length > 0 && (
+            <ListingReadSection>
+              <h3>What’s accepted</h3>
+              <ListingItemList
+                items={listing?.accepted_items}
+                type="accepted"
+              />
+            </ListingReadSection>
+          )}
 
-        {listing?.rejected_items?.length > 0 && (
-          <ListingReadSection>
-            <h3>Not accepted</h3>
-            <ListingItemList items={listing?.rejected_items} type="rejected" />
-          </ListingReadSection>
-        )}
-      </Column>
+          {listing?.rejected_items?.length > 0 && (
+            <ListingReadSection>
+              <h3>What’s not</h3>
+              <ListingItemList
+                items={listing?.rejected_items}
+                type="rejected"
+              />
+            </ListingReadSection>
+          )}
+        </Cluster>
+      </ColumnMain>
 
       {presentation !== "demo" && (
-        <Column presentation={presentation}>
+        <ColumnMinor presentation={presentation}>
           {presentation !== "drawer" && (
             <ListingReadSection presentation={presentation} tiled={true}>
               <h3>Location</h3>
@@ -394,7 +449,7 @@ const ListingRead = memo(function Listing({
               </Button>
             </ListingReadSection>
           )}
-        </Column>
+        </ColumnMinor>
       )}
     </Fragment>
   );
