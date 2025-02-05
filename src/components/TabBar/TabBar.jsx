@@ -117,8 +117,6 @@ function TabBar({ breakpoint = "sm", ...props }) {
   const { tabBarProps } = useTabBar();
   const { shouldShowUnreadIndicator } = useUnreadMessages();
 
-  console.log("shouldShowUnreadIndicator", shouldShowUnreadIndicator);
-
   // Only use visibility prop on small breakpoint. Larger breakpoints should always be visible.
   if (!tabBarProps.visible && breakpoint === "sm") return null;
 
