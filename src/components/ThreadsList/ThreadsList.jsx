@@ -105,6 +105,25 @@ const ThreadPreview = styled("a")(({ theme }) => ({
         backgroundColor: theme.colors.background.sunk,
       },
     },
+    {
+      props: { unread: true },
+      style: {
+        // backgroundColor: theme.colors.background.sunk,
+        position: "relative",
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          right: "1rem",
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "0.5rem",
+          height: "0.5rem",
+          backgroundColor: theme.colors.text.brand.primary,
+          borderRadius: "50%",
+          boxShadow: `0 0 4px 1rem ${theme.colors.background.top}`,
+        },
+      },
+    },
   ],
 }));
 
@@ -171,10 +190,15 @@ function ThreadsList({ user, threads, currentThreadId }) {
                 ? `${otherPersonName}, ${thread.listing.name}`
                 : otherPersonName;
 
+            const hasUnreadMessages = thread.chat_messages_with_senders?.some(
+              (message) => !message.read_at && message.sender_id !== user.id
+            );
+
             return (
               <li key={thread.id}>
                 <ThreadPreview
                   selected={thread.id === currentThreadId}
+                  unread={hasUnreadMessages}
                   onClick={() => handleThreadSelect(thread)}
                 >
                   {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}

@@ -11,6 +11,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { globalCss, styled } from "@pigment-css/react";
 import type { ExtendTheme } from "@pigment-css/react/theme";
 
+import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
+
 const publicSans = Public_Sans({
   display: "swap",
   subsets: ["latin"],
@@ -161,7 +163,9 @@ export default function RootLayout({
   return (
     // Re-add suppressHydrationWarning? What was it in for?
     <html lang="en" className={publicSans.className}>
-      <Body>{children}</Body>
+      <Body>
+        <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
+      </Body>
       <Analytics />
     </html>
   );

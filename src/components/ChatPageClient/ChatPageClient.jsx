@@ -70,8 +70,8 @@ export default function ChatPageClient({
   user,
   initialThreads,
   initialThreadId,
+  unreadCount,
 }) {
-  // console.log("ChatPageClient rendered");
   const router = useRouter();
   const pathname = usePathname();
   const { setTabBarProps } = useTabBar();

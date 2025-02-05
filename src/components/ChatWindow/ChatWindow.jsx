@@ -11,6 +11,7 @@ import ChatHeader from "@/components/ChatHeader";
 import { formatWeekday } from "@/utils/dateUtils";
 
 import { styled } from "@pigment-css/react";
+import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 
 const StyledChatWindow = styled("div")(({ theme }) => ({
   height: "100%",
@@ -92,6 +93,7 @@ const ChatWindow = memo(function ChatWindow({
   // const router = useRouter();
   // Move Supabase client creation outside of render
   const supabase = isDemo ? null : useMemo(() => createClient(), []);
+  const { setUnreadCount } = useUnreadMessages();
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
@@ -118,6 +120,67 @@ const ChatWindow = memo(function ChatWindow({
       setMessages(existingThread.chat_messages);
     }
   }, [existingThread]);
+
+  // Mark messages as read when thread is viewed
+  useEffect(() => {
+    if (isDemo || !existingThread?.id || !user) return;
+
+    const markMessagesAsRead = async () => {
+      try {
+        console.log(
+          "Checking for unread messages in thread:",
+          existingThread.id
+        );
+
+        const { data: unreadMessages, error: countError } = await supabase
+          .from("chat_messages")
+          .select("id")
+          .eq("thread_id", existingThread.id)
+          .neq("sender_id", user.id)
+          .is("read_at", null);
+
+        if (countError) {
+          console.error("Error getting unread count:", countError);
+          return;
+        }
+
+        const unreadCount = unreadMessages?.length || 0;
+        console.log("Unread messages found:", unreadCount);
+        if (unreadCount === 0) return;
+
+        // Mark messages as read in database
+        const { error } = await supabase
+          .from("chat_messages")
+          .update({ read_at: new Date().toISOString() })
+          .eq("thread_id", existingThread.id)
+          .neq("sender_id", user.id)
+          .is("read_at", null);
+
+        if (error) {
+          console.error("Error marking messages as read:", error);
+          return;
+        }
+
+        // Update the messages state
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            msg.sender_id !== user.id
+              ? { ...msg, read_at: new Date().toISOString() }
+              : msg
+          )
+        );
+
+        // Update global unread count
+        setUnreadCount((prevCount) => Math.max(0, prevCount - unreadCount));
+
+        console.log("Messages marked as read, new unread count:", unreadCount);
+      } catch (error) {
+        console.error("Error in markMessagesAsRead:", error);
+      }
+    };
+
+    markMessagesAsRead();
+  }, [existingThread?.id, user, supabase, setUnreadCount, isDemo]);
 
   async function initializeChat() {
     if (isDemo) return;

@@ -67,7 +67,7 @@ const StyledDetails = styled("details")(({ theme }) => ({
     borderRadius: theme.corners.base,
     transition: "opacity 150ms ease-in-out",
 
-    textBoxTrim: "both cap alphabetic", // TODO: Future CSS property to play with
+    textBoxTrim: "both cap alphabetic", // TODO: Future CSS property to play with. See https://piccalil.li/blog/why-im-excited-about-text-box-trim-as-a-designer/
 
     // marginInlineStart: "1rem",
     // listStylePosition: "outside",

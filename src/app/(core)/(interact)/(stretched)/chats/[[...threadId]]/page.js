@@ -31,17 +31,26 @@ export default async function ChatsPage(props) {
         .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`)
         .order("created_at", { ascending: false });
 
-    // Validate thread access if threadId exists
-    if (threadId && !threads?.some(t => t.id === threadId)) {
-        console.log("Thread not found or access denied, redirecting...");
-        redirect('/chats');
-    }
+    // if (threadId && !threads?.some(t => t.id === threadId)) {
+    //     console.log("Thread not found or access denied, redirecting...");
+    //     redirect('/chats');
+    // }
+
+
+    // Calculate unread message count for context
+    const totalUnreadMessages = threads?.reduce((count, thread) => {
+        const unreadMessages = thread.chat_messages_with_senders?.filter(
+            msg => !msg.read_at && msg.sender_id !== user?.id
+        )?.length || 0;
+        return count + unreadMessages;
+    }, 0);
 
     return (
         <ChatPageClient
             user={user}
             initialThreads={threads}
             initialThreadId={threadId}
+            unreadCount={totalUnreadMessages}
         />
     );
 }
