@@ -8,6 +8,7 @@ import ProfileIcon from "@/components/ProfileIcon";
 import AboutIcon from "@/components/AboutIcon";
 import { styled } from "@pigment-css/react";
 import { useTabBar } from "@/contexts/TabBarContext";
+import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 
 const StyledTabBar = styled("div")(({ theme }) => ({
   variants: [
@@ -103,6 +104,16 @@ const StyledTabBarNav = styled("nav")(({ theme }) => ({
   },
 }));
 
+const UnreadDot = styled("div")({
+  position: "absolute",
+  top: "-2px",
+  right: "-2px",
+  width: "8px",
+  height: "8px",
+  borderRadius: "50%",
+  backgroundColor: "red",
+});
+
 const NAVIGATION_ITEMS = [
   { title: "Map", Icon: MapIcon, href: "/map" },
   { title: "Chats", Icon: ChatsIcon, href: "/chats" },
@@ -112,6 +123,9 @@ const NAVIGATION_ITEMS = [
 function TabBar({ breakpoint = "sm", ...props }) {
   const pathname = usePathname();
   const { tabBarProps } = useTabBar();
+  const { shouldShowUnreadIndicator } = useUnreadMessages();
+
+  console.log("shouldShowUnreadIndicator", shouldShowUnreadIndicator);
 
   // Only use visibility prop on small breakpoint. Larger breakpoints should always be visible.
   if (!tabBarProps.visible && breakpoint === "sm") return null;
@@ -129,10 +143,15 @@ function TabBar({ breakpoint = "sm", ...props }) {
             key={href}
             title={title}
             icon={
-              <Icon
-                size={24}
-                variant={pathname.startsWith(href) ? "solid" : "outline"}
-              />
+              <div style={{ position: "relative" }}>
+                <Icon
+                  size={24}
+                  variant={pathname.startsWith(href) ? "solid" : "outline"}
+                />
+                {href === "/chats" && shouldShowUnreadIndicator && (
+                  <UnreadDot />
+                )}
+              </div>
             }
             href={href}
             active={pathname.startsWith(href)}

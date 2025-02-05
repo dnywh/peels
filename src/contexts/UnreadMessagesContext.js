@@ -4,21 +4,70 @@ import { createClient } from '@/utils/supabase/client';
 
 const UnreadMessagesContext = createContext();
 
-export function UnreadMessagesProvider({ children, initialUnreadCount = 0 }) {
-    const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+export function UnreadMessagesProvider({ children }) {
+    const [unreadCount, setUnreadCount] = useState(0);
     const [threadReadStatus, setThreadReadStatus] = useState({});
+    const [hasViewedChats, setHasViewedChats] = useState(false);
     const supabase = createClient();
 
+    // Check for unread messages on mount
     useEffect(() => {
-        // Get current user
-        const getCurrentUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return null;
-            return user;
+        const checkUnreadMessages = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                // Query for all unread messages where the user is the recipient
+                const { data: unreadMessages, error } = await supabase
+                    .from("chat_messages")
+                    .select("id")
+                    .neq("sender_id", user.id)
+                    .is("read_at", null);
+
+                if (error) {
+                    console.error("Error checking unread messages:", error);
+                    return;
+                }
+
+                const count = unreadMessages?.length || 0;
+                console.log("Initial unread messages count:", count);
+                setUnreadCount(count);
+            } catch (error) {
+                console.error("Error in checkUnreadMessages:", error);
+            }
         };
 
+        checkUnreadMessages();
+    }, [supabase]);
+
+    // Track when user visits the chats page
+    useEffect(() => {
+        const handleRouteChange = () => {
+            if (window.location.pathname === '/chats') {
+                setHasViewedChats(true);
+            }
+        };
+
+        // Check initial route
+        handleRouteChange();
+
+        // Listen for pathname changes
+        const observer = new MutationObserver(() => {
+            handleRouteChange();
+        });
+
+        observer.observe(document.querySelector('body'), {
+            childList: true,
+            subtree: true
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    // Real-time subscription for new messages
+    useEffect(() => {
         const setupSubscription = async () => {
-            const user = await getCurrentUser();
+            const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
             const channel = supabase
@@ -31,22 +80,25 @@ export function UnreadMessagesProvider({ children, initialUnreadCount = 0 }) {
                         table: 'chat_messages',
                     },
                     async (payload) => {
-                        console.log("payload", payload);
-                        // Only increment if message is not from current user
                         if (payload.new.sender_id !== user.id) {
-                            // Check if user is currently viewing this thread
                             const currentPath = window.location.pathname;
-                            const threadIdInPath = currentPath.match(/\/chats\/([^\/]+)/)?.[1];
 
-                            // Only increment if user is not viewing the thread
-                            if (threadIdInPath !== payload.new.thread_id) {
+                            if (!currentPath.startsWith('/chats')) {
+                                setHasViewedChats(false);
                                 setUnreadCount(prev => prev + 1);
+                            } else if (currentPath === '/chats') {
+                                setHasViewedChats(true);
                             } else {
-                                // If viewing the thread, mark as read immediately
-                                await supabase
-                                    .from('chat_messages')
-                                    .update({ read_at: new Date().toISOString() })
-                                    .eq('id', payload.new.id);
+                                const threadIdInPath = currentPath.match(/\/chats\/([^\/]+)/)?.[1];
+                                if (threadIdInPath !== payload.new.thread_id) {
+                                    setUnreadCount(prev => prev + 1);
+                                    setHasViewedChats(false);
+                                } else {
+                                    await supabase
+                                        .from('chat_messages')
+                                        .update({ read_at: new Date().toISOString() })
+                                        .eq('id', payload.new.id);
+                                }
                             }
                         }
                     }
@@ -75,12 +127,15 @@ export function UnreadMessagesProvider({ children, initialUnreadCount = 0 }) {
         return threadReadStatus[threadId] === true;
     };
 
+    const shouldShowUnreadIndicator = !hasViewedChats && unreadCount > 0;
+
     return (
         <UnreadMessagesContext.Provider value={{
             unreadCount,
             setUnreadCount,
             markThreadAsRead,
-            isThreadRead
+            isThreadRead,
+            shouldShowUnreadIndicator
         }}>
             {children}
         </UnreadMessagesContext.Provider>
