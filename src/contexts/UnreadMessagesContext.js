@@ -64,6 +64,20 @@ export function UnreadMessagesProvider({ children }) {
         return () => observer.disconnect();
     }, []);
 
+    // Simplified auth listener for debugging
+    useEffect(() => {
+        console.log("🔐 Setting up auth listener");
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            console.log("🔐 Auth event:", event);
+            console.log("🔐 Session:", session ? "exists" : "none");
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+
     // Real-time subscription for new messages
     useEffect(() => {
         const setupSubscription = async () => {
