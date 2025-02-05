@@ -93,7 +93,7 @@ const ChatWindow = memo(function ChatWindow({
   // const router = useRouter();
   // Move Supabase client creation outside of render
   const supabase = isDemo ? null : useMemo(() => createClient(), []);
-  const { setUnreadCount } = useUnreadMessages();
+  const { setUnreadCount, markThreadAsRead } = useUnreadMessages();
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState(existingThread?.id || null);
@@ -170,8 +170,9 @@ const ChatWindow = memo(function ChatWindow({
           )
         );
 
-        // Update global unread count
+        // Update global unread count AND mark thread as read
         setUnreadCount((prevCount) => Math.max(0, prevCount - unreadCount));
+        markThreadAsRead(existingThread.id);
 
         console.log("Messages marked as read, new unread count:", unreadCount);
       } catch (error) {
@@ -180,7 +181,14 @@ const ChatWindow = memo(function ChatWindow({
     };
 
     markMessagesAsRead();
-  }, [existingThread?.id, user, supabase, setUnreadCount, isDemo]);
+  }, [
+    existingThread?.id,
+    user,
+    supabase,
+    setUnreadCount,
+    isDemo,
+    markThreadAsRead,
+  ]);
 
   async function initializeChat() {
     if (isDemo) return;

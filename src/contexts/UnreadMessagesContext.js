@@ -6,6 +6,7 @@ const UnreadMessagesContext = createContext();
 
 export function UnreadMessagesProvider({ children, initialUnreadCount = 0 }) {
     const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+    const [threadReadStatus, setThreadReadStatus] = useState({});
     const supabase = createClient();
 
     useEffect(() => {
@@ -63,8 +64,24 @@ export function UnreadMessagesProvider({ children, initialUnreadCount = 0 }) {
         };
     }, [supabase]);
 
+    const markThreadAsRead = (threadId) => {
+        setThreadReadStatus(prev => ({
+            ...prev,
+            [threadId]: true
+        }));
+    };
+
+    const isThreadRead = (threadId) => {
+        return threadReadStatus[threadId] === true;
+    };
+
     return (
-        <UnreadMessagesContext.Provider value={{ unreadCount, setUnreadCount }}>
+        <UnreadMessagesContext.Provider value={{
+            unreadCount,
+            setUnreadCount,
+            markThreadAsRead,
+            isThreadRead
+        }}>
             {children}
         </UnreadMessagesContext.Provider>
     );

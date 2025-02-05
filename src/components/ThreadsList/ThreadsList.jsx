@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AvatarPair from "@/components/AvatarPair";
 
 import { styled } from "@pigment-css/react";
+import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 
 const ThreadsSidebar = styled("div")(({ theme }) => ({
   width: "100%",
@@ -155,6 +156,7 @@ const ThreadPreviewText = styled("div")(({ theme }) => ({
 
 function ThreadsList({ user, threads, currentThreadId }) {
   const router = useRouter();
+  const { isThreadRead } = useUnreadMessages();
 
   const handleThreadSelect = useCallback(
     (thread) => {
@@ -190,9 +192,11 @@ function ThreadsList({ user, threads, currentThreadId }) {
                 ? `${otherPersonName}, ${thread.listing.name}`
                 : otherPersonName;
 
-            const hasUnreadMessages = thread.chat_messages_with_senders?.some(
-              (message) => !message.read_at && message.sender_id !== user.id
-            );
+            // Check if thread has unread messages AND hasn't been marked as read
+            const hasUnreadMessages =
+              thread.chat_messages_with_senders?.some(
+                (msg) => !msg.read_at && msg.sender_id !== user?.id
+              ) && !isThreadRead(thread.id);
 
             return (
               <li key={thread.id}>
