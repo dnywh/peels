@@ -1,15 +1,32 @@
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 
+const UnreadDot = styled("div")(({ theme }) => ({
+  position: "absolute",
+  top: "0px",
+  right: "-4px",
+  width: "10px",
+  height: "10px",
+  borderRadius: "50%",
+  backgroundColor: theme.colors.tab.unread,
+  boxShadow: `0 0 0 4px ${theme.colors.background.top}`,
+  "@media (min-width: 768px)": {
+    boxShadow: `0 0 0 4px ${theme.colors.background.sunk}`,
+  },
+}));
 export default function TabBarTab({
   title,
   href = "/",
   icon = "Icon",
   active = false,
+  unreadDot = false,
 }) {
   return (
     <StyledTabBarTab href={href}>
-      <StyledTabBarTabIcon active={active}>{icon}</StyledTabBarTabIcon>
+      <StyledTabBarTabIcon active={active}>
+        {icon}
+        {unreadDot && <UnreadDot />}
+      </StyledTabBarTabIcon>
       {title && (
         <StyledTabBarTabTitle active={active}>{title}</StyledTabBarTabTitle>
       )}
@@ -51,6 +68,7 @@ const StyledTabBarTabTitle = styled("p")(({ theme }) => ({
 }));
 
 const StyledTabBarTabIcon = styled("div")(({ theme }) => ({
+  position: "relative",
   variants: [
     {
       props: { active: true },

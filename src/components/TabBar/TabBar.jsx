@@ -1,4 +1,7 @@
 "use client";
+import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
+import { useTabBar } from "@/contexts/TabBarContext";
+
 import { usePathname } from "next/navigation";
 import PeelsTab from "@/components/PeelsTab";
 import TabBarTab from "@/components/TabBarTab";
@@ -6,9 +9,8 @@ import MapIcon from "@/components/MapIcon";
 import ChatsIcon from "@/components/ChatsIcon";
 import ProfileIcon from "@/components/ProfileIcon";
 import AboutIcon from "@/components/AboutIcon";
+
 import { styled } from "@pigment-css/react";
-import { useTabBar } from "@/contexts/TabBarContext";
-import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 
 const StyledTabBar = styled("div")(({ theme }) => ({
   variants: [
@@ -104,16 +106,6 @@ const StyledTabBarNav = styled("nav")(({ theme }) => ({
   },
 }));
 
-const UnreadDot = styled("div")({
-  position: "absolute",
-  top: "-2px",
-  right: "-2px",
-  width: "8px",
-  height: "8px",
-  borderRadius: "50%",
-  backgroundColor: "red",
-});
-
 const NAVIGATION_ITEMS = [
   { title: "Map", Icon: MapIcon, href: "/map" },
   { title: "Chats", Icon: ChatsIcon, href: "/chats" },
@@ -143,18 +135,14 @@ function TabBar({ breakpoint = "sm", ...props }) {
             key={href}
             title={title}
             icon={
-              <div style={{ position: "relative" }}>
-                <Icon
-                  size={24}
-                  variant={pathname.startsWith(href) ? "solid" : "outline"}
-                />
-                {href === "/chats" && shouldShowUnreadIndicator && (
-                  <UnreadDot />
-                )}
-              </div>
+              <Icon
+                size={24}
+                variant={pathname.startsWith(href) ? "solid" : "outline"}
+              />
             }
             href={href}
             active={pathname.startsWith(href)}
+            unreadDot={href === "/chats" && shouldShowUnreadIndicator}
           />
         ))}
         {/* Show 'home' AKA 'about' as the last tab item on smaller breakpoints */}

@@ -94,8 +94,13 @@ const ThreadPreview = styled("a")(({ theme }) => ({
   borderRadius: `calc(${theme.corners.base} * 0.625)`,
 
   transition: "background-color 150ms ease-in-out",
+
   "&:hover": {
     backgroundColor: `color-mix(in srgb, ${theme.colors.background.sunk} 80%, transparent)`,
+
+    // "&::after": {
+    //   boxShadow: `0 0 4px 1rem ${theme.colors.background.sunk}`,
+    // },
   },
 
   variants: [
@@ -113,15 +118,11 @@ const ThreadPreview = styled("a")(({ theme }) => ({
         position: "relative",
         "&::after": {
           content: '""',
-          position: "absolute",
-          right: "1rem",
-          top: "50%",
-          transform: "translateY(-50%)",
-          width: "0.5rem",
-          height: "0.5rem",
-          backgroundColor: theme.colors.text.brand.primary,
+          width: "10px",
+          height: "10px",
+          backgroundColor: theme.colors.tab.unread,
           borderRadius: "50%",
-          boxShadow: `0 0 4px 1rem ${theme.colors.background.top}`,
+          flexShrink: 0,
         },
       },
     },
@@ -134,6 +135,7 @@ const ThreadPreviewText = styled("div")(({ theme }) => ({
   padding: "0.625rem 0",
   gap: "0.25rem",
   overflow: "hidden",
+  flex: 1,
 
   "& h3, & p": {
     lineHeight: "100%",
