@@ -48,7 +48,7 @@ const TitleBlock = styled("div")(({ theme }) => ({
   ...titleBlockStyles,
 
   "& h1": {
-    fontSize: "1.25rem",
+    fontSize: "1.35rem",
     lineHeight: "120%",
     overflowWrap: "break-word",
     hyphens: "manual",

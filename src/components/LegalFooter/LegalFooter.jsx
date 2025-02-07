@@ -10,7 +10,8 @@ const StyledFooter = styled("footer")(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  gap: "1.5rem",
+  gap: "1rem",
+  color: theme.colors.text.ui.emptyState,
 }));
 
 const StyledNav = styled("nav")(({ theme }) => ({
@@ -23,10 +24,10 @@ const StyledNav = styled("nav")(({ theme }) => ({
   flexWrap: "wrap",
   padding: "0 1.5rem",
   // marginTop: "10rem",
-  color: theme.colors.text.ui.emptyState,
   fontSize: "1rem",
 
   "& a": {
+    fontWeight: "500",
     color: theme.colors.text.ui.emptyState,
     transition: "color 150ms ease-in-out",
     "&:hover": {
@@ -43,10 +44,11 @@ function LegalFooter({ logo = false }) {
   return (
     <StyledFooter>
       {logo && <PeelsLogo color="quaternary" />}
+      <p>
+        © {currentYear} {siteConfig.name}
+      </p>
+
       <StyledNav>
-        <p>
-          © {currentYear} {siteConfig.name}
-        </p>
         <Link href={siteConfig.links.about}>About</Link>
         <Link href={siteConfig.links.terms}>Terms</Link>
         <Link href={siteConfig.links.privacy}>Privacy</Link>

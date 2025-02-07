@@ -10,7 +10,7 @@ const buttonStyles = ({ theme }) => ({
   flexShrink: 0,
   borderRadius: `calc(${theme.corners.base} * 1)`,
   cursor: "pointer",
-  fontWeight: "600",
+  fontWeight: "500",
   display: "inline-flex", // Added to help with alignment
   alignItems: "center", // Added to help with alignment
   justifyContent: "center", // Added to help with alignment
@@ -52,7 +52,7 @@ const buttonStyles = ({ theme }) => ({
       props: { size: "massive" },
       style: {
         height: "4rem",
-        fontSize: "1.25rem",
+        fontSize: "1.3rem",
         borderRadius: `calc(${theme.corners.base} * 1.25)`,
         padding: `0 calc(${theme.spacing.unit} * 4)`,
       },
@@ -68,7 +68,7 @@ const buttonStyles = ({ theme }) => ({
       props: { size: "normal" },
       style: {
         height: "3rem",
-        fontSize: "1rem",
+        fontSize: "1.0625rem", // 17px
       },
     },
     {

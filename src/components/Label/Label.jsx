@@ -3,7 +3,7 @@ import { styled } from "@pigment-css/react";
 
 const StyledLabel = styled(HeadlessLabel)(({ theme }) => ({
   color: theme.colors.text.ui.primary,
-  fontWeight: "600",
+  fontWeight: "500",
 
   "& span": {
     fontWeight: "400",

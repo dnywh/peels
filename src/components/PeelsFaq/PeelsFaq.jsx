@@ -40,7 +40,7 @@ const StyledDetails = styled("details")(({ theme }) => ({
     content: "'+'",
     lineHeight: "80%",
     fontSize: "2rem",
-    fontWeight: "150",
+    fontWeight: "100",
     color: theme.colors.background.counter,
   },
 
@@ -76,7 +76,7 @@ const StyledDetails = styled("details")(({ theme }) => ({
     // position: "relative",
 
     fontSize: "1.2rem",
-    fontWeight: "550",
+    fontWeight: "500",
     color: theme.colors.text.ui.primary,
     padding: `calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 3)`, // Match details p padding-x
 

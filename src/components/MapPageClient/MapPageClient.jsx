@@ -194,13 +194,14 @@ const StyledHeaderText = styled("div")(({ theme }) => ({
     whiteSpace: "nowrap",
     display: "block",
     textOverflow: "ellipsis",
-
-    fontSize: "0.85rem",
   },
   "& h3": {
+    fontWeight: "500",
+    fontSize: "0.85rem",
     color: theme.colors.text.secondary,
   },
   "& p": {
+    fontSize: "0.8rem",
     color: theme.colors.text.tertiary,
   },
 }));

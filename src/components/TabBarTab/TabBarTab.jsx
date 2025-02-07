@@ -55,7 +55,7 @@ const StyledTabBarTab = styled(Link)(({ theme }) => ({
 
 const StyledTabBarTabTitle = styled("p")(({ theme }) => ({
   fontSize: "0.75rem",
-  fontWeight: "550",
+  fontWeight: "500",
 
   variants: [
     {

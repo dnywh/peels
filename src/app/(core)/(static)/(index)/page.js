@@ -63,6 +63,8 @@ const Intro = styled("div")(({ theme }) => ({
     textWrap: "balance",
     fontSize: "1.25rem",
     color: theme.colors.text.ui.quaternary,
+    letterSpacing: "-0.028em",
+
 
     "@media (min-width: 768px)": {
       fontSize: "1.5rem",
@@ -134,6 +136,7 @@ const HeadingBlock = styled("div")(({ theme }) => ({
 
   "& p": {
     fontSize: "1.15rem",
+    letterSpacing: "-0.02em",
     color: theme.colors.text.ui.quaternary,
   },
 

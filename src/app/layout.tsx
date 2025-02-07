@@ -1,4 +1,5 @@
-import { Public_Sans } from "next/font/google";
+import localFont from "next/font/local";
+
 import "@pigment-css/react/styles.css";
 import "./globals.css";
 import { Metadata } from "next";
@@ -12,12 +13,6 @@ import { globalCss, styled } from "@pigment-css/react";
 import type { ExtendTheme } from "@pigment-css/react/theme";
 
 import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
-
-const publicSans = Public_Sans({
-  display: "swap",
-  subsets: ["latin"],
-  fallback: ["system-ui", "arial"],
-});
 
 declare module "@pigment-css/react/theme" {
   interface ThemeTokens {
@@ -34,6 +29,44 @@ declare module "@pigment-css/react/theme" {
 
 // Global styles:
 globalCss`
+// National 2 font
+  @font-face {
+    font-family: 'National 2';
+    src: url(${process.env.NEXT_PUBLIC_FONTS_URL}/national-2-regular-subset.woff2) format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'National 2';
+    src: url(${process.env.NEXT_PUBLIC_FONTS_URL}/national-2-medium-subset.woff2) format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'National 2';
+    src: url(${process.env.NEXT_PUBLIC_FONTS_URL}/national-2-bold-subset.woff2) format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+    // Apply the font family to all elements
+  * {
+    font-family: 'National 2', system-ui, -apple-system, sans-serif;
+  }
+
+  // Normalize quotes and apostrophes
+* {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern", "liga", "clig", "calt", "quot", "apos";
+  font-variant-ligatures: common-ligatures;
+}
+
+
 // https://www.joshwcomeau.com/css/custom-css-reset/
 
 /* 1. Use a more-intuitive box-sizing model */
@@ -122,6 +155,8 @@ fieldset {
 html {
   scroll-behavior: smooth;
 }
+
+
 `;
 
 const Body = styled("body")(({ theme }) => ({
@@ -162,7 +197,7 @@ export default function RootLayout({
 }) {
   return (
     // Re-add suppressHydrationWarning? What was it in for?
-    <html lang="en" className={publicSans.className}>
+    <html lang="en">
       <Body>
         <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
       </Body>

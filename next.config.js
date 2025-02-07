@@ -290,8 +290,5 @@ export default withPigment(
                 large: "0.5rem",
             },
         },
-        typography: {
-            fontFamily: "Inter, sans-serif",
-        },
     }),
 });

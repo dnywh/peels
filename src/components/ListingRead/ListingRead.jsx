@@ -105,6 +105,7 @@ const ListingReadSection = styled("section")(({ theme }) => ({
   padding: " 0 1rem", // Pad by default ,override on Photos section (overflowX: "visible")
 
   "& h3": {
+    fontWeight: "500",
     marginBottom: "0.5rem",
     color: theme.colors.text.ui.secondary,
   },
