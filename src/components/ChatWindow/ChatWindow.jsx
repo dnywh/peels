@@ -73,7 +73,7 @@ const DayHeader = styled("header")(({ theme }) => ({
   },
 
   "& h3": {
-    fontWeight: "600",
+    fontWeight: "500",
     color: theme.colors.text.ui.primary,
   },
 

@@ -59,12 +59,15 @@ globalCss`
     font-family: 'National 2', system-ui, -apple-system, sans-serif;
   }
 
+  * {
   // Normalize quotes and apostrophes
-* {
   text-rendering: optimizeLegibility;
   font-feature-settings: "kern", "liga", "clig", "calt", "quot", "apos";
+  // The below two features are already set in the above feature-settings but are made explicit again, below
   font-variant-ligatures: common-ligatures;
+  font-variant-numeric: oldstyle-nums;
 }
+  
 
 
 // https://www.joshwcomeau.com/css/custom-css-reset/
