@@ -8,18 +8,8 @@ const handler = async (_request: Request): Promise<Response> => {
   try {
     const { record } = await _request.json();
     if (!record) throw new Error("No record provided");
-
     console.log("Record:", record);
-    // Record: {
-    //   id: "e34bc4fe-77e7-4281-9781-535c96fb7a1c",
-    //   content: "Simple (message contents here)",
-    //   read_at: null,
-    //   sender_id: "6b98dc1c-9d3c-45cf-a2dd-d75104b708cc",
-    //   thread_id: "896e9547-36e7-4b4a-a7a9-2ee74d8c07a4",
-    //   created_at: "2024-12-27T00:07:39.854225+00:00"
-    // }
 
-    // 2. Add error handling for required environment variables
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseUrl || !supabaseServiceKey || !RESEND_API_KEY) {
@@ -28,7 +18,6 @@ const handler = async (_request: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 3. Add error handling for database queries
     const { data: messageData, error: messageError } = await supabase
       .from("chat_messages_with_senders")
       .select("*, thread:chat_threads_with_participants!thread_id(*)")
@@ -43,27 +32,33 @@ const handler = async (_request: Request): Promise<Response> => {
 
     // Use the sender name from our view
     const senderName = messageData.sender_first_name;
-    console.log("Sender Name:", senderName);
+    console.log("Sender name:", senderName);
 
-    const senderAvatarUrl = messageData.sender_avatar
-      ? `${supabaseUrl}/storage/v1/object/public/avatars/${messageData.sender_avatar}`
-      : null;
-    console.log("Sender Avatar URL:", senderAvatarUrl);
-
-    const listingUrl =
-      `https://peels.app/listings/${messageData.thread.listing_slug}`;
-    console.log("Listing URL:", listingUrl);
+    const listingSlug = messageData.thread.listing_slug;
+    console.log("Listing slug:", listingSlug);
 
     // Determine recipient_id (the user who isn't the sender)
     const recipientId = messageData.thread.initiator_id === record.sender_id
       ? messageData.thread.owner_id
       : messageData.thread.initiator_id;
 
+    // Determine recipient's role in the chat (listing owner (host) or the thread initiator (donor)?)
+    // This ternary seems opposite to what's logical, but it is correct somehow
+    const recipientRole = messageData.thread.owner_id === record.sender_id
+      ? "initiator"
+      : "owner";
+
+    const recipientName = messageData.thread.owner_id === record.sender_id
+      ? messageData.thread.initiator_first_name
+      : messageData.thread.owner_first_name;
+
     console.log("Sender ID from chat_messages:", record.sender_id);
     console.log("Recipient ID from chat_threads:", recipientId);
     console.log("Message:", record.content);
+    console.log("Recipient Role:", recipientRole);
 
     // Do auth admin query to get recipient email (keeping this pattern for security)
+    // TODO: Minify this query to just ask for the email address
     const { data: recipientData, error: recipientError } = await supabase.auth
       .admin.getUserById(recipientId);
     console.log("Recipient data:", recipientData);
@@ -72,18 +67,14 @@ const handler = async (_request: Request): Promise<Response> => {
     const recipientEmail = recipientData?.user?.email;
     console.log("Recipient Email:", recipientEmail);
 
-    const recipientNameFromMetadata = recipientData?.user?.user_metadata
-      ?.first_name;
-    console.log("Recipient Name from Metadata:", recipientNameFromMetadata);
-
     // 4. Consolidate email template into a separate function
     const emailContent = generateEmailContent({
       senderName,
-      recipientName: recipientNameFromMetadata,
+      recipientName,
       messageContent: record.content,
       threadId: record.thread_id,
-      listingUrl,
-      senderAvatarUrl,
+      listingSlug,
+      recipientRole,
     });
 
     // 5. Add error handling for the email send
@@ -107,7 +98,6 @@ const handler = async (_request: Request): Promise<Response> => {
     }
 
     const data = await res.json();
-    // console.log("Data:", data); // Data: { id: "8a5e1ef4-5bdc-4d21-992f-3918730ce126" }
 
     return new Response(JSON.stringify(data), {
       status: 200,
@@ -131,14 +121,19 @@ function generateEmailContent(
     recipientName,
     messageContent,
     threadId,
+    listingSlug,
+    recipientRole,
   }: {
     senderName: string;
     recipientName: string;
     messageContent: string;
     threadId: string;
+    listingSlug: string;
+    recipientRole: string;
   },
 ) {
-  // TODO: Only show listing URL if the recipient is NOT the owner of the listing
+  const rootUrl = "https://www.peels.app";
+
   return `
   <h2>New message on Peels</h2>
   <p>Hi ${recipientName}, you’ve received a new message from ${senderName} on Peels:</p>
@@ -147,12 +142,22 @@ function generateEmailContent(
     <p><em>${messageContent}</em></p>
   </blockquote>
 
-  <p><strong><a href="https://peels.app/chats/${threadId}">Reply to ${senderName} on Peels</a></strong></p>
+  <p><strong><a href="${rootUrl}/chats/${threadId}">Reply to ${senderName} on Peels</a></strong></p>
 
   <p>Best, <br/>Peels team</p>
 
   <footer>
-    <p><small>You can <a href="https://peels.app/profile">manage</a> which email notifications you receive from Peels. See also our <a href="https://peels.app/support">support</a> and <a href="https://peels.app/privacy">privacy</a> pages.</small></p>
+  <p><small>
+  ${
+    recipientRole === "owner"
+      ? `
+  Don’t want emails like this? <a href="${rootUrl}/profile/listings/${listingSlug}">Manage</a> your listing to hide or remove it from Peels.
+  `
+      : `
+  You’re receiving this email because you originally reached out to ${senderName} on <a href="${rootUrl}/profile">Peels</a>.
+  `
+  }
+  </small></p>
   </footer>`;
 }
 
