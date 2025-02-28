@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 
+import { siteConfig } from "@/config/site";
+
 import Link from "next/link";
 
 import Button from "@/components/Button";
@@ -8,8 +10,13 @@ import Toast from "@/components/Toast";
 import PeelsHowItWorks from "@/components/PeelsHowItWorks";
 import PeelsFaq from "@/components/PeelsFaq";
 
-
 import { styled } from "@pigment-css/react";
+
+export const metadata = {
+  title: {
+    absolute: `${siteConfig.name}: ${siteConfig.description}`
+  },
+}
 
 const StyledMain = styled("main")({
   display: "flex",
