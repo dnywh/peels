@@ -136,13 +136,9 @@ function generateEmailContent(
 
   return `
   <h2>New message on Peels</h2>
-  <p>Hi ${recipientName}, you’ve received a new message from ${senderName} on Peels:</p>
+  <p>Hi ${recipientName}, you’ve received a new message from ${senderName}.</p>
 
-  <blockquote>
-    <p><em>${messageContent}</em></p>
-  </blockquote>
-
-  <p><strong><a href="${rootUrl}/chats/${threadId}">Reply to ${senderName} on Peels</a></strong></p>
+  <p><strong><a href="${rootUrl}/chats/${threadId}">View message from ${senderName}</a></strong></p>
 
   <p>Best, <br/>Peels team</p>
 
