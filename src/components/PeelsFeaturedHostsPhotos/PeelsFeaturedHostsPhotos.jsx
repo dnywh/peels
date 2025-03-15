@@ -13,6 +13,8 @@ const featuredListingsForPhotos = [
   "o2TTKU3vmBP9",
   "NPISVZDjJYsl",
   "HOaEy5gxgrvc",
+  "itKrzEbLPDPf",
+  "B030fsqGqMzt",
 ];
 
 const MAX_PHOTOS_TO_SHOW = 3;

@@ -1,7 +1,5 @@
 import localFont from "next/font/local";
 
-import "@pigment-css/react/styles.css";
-import "./globals.css";
 import { Metadata } from "next";
 import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site";
@@ -9,8 +7,10 @@ import { siteConfig } from "@/config/site";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
 
+import "./globals.css";
 import { globalCss, styled } from "@pigment-css/react";
 import type { ExtendTheme } from "@pigment-css/react/theme";
+import "@pigment-css/react/styles.css";
 
 import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
 
@@ -203,8 +203,8 @@ export default function RootLayout({
     <html lang="en">
       <Body>
         <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
+        <Analytics />
       </Body>
-      <Analytics />
     </html>
   );
 }
