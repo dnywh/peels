@@ -1,0 +1,42 @@
+Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)
+
+Copyright (c) 2024 Peels
+
+This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+
+To view a copy of this license, visit:
+http://creativecommons.org/licenses/by-nc/4.0/
+
+Additional Terms:
+
+1. Circular Economy Requirement
+   This software may only be used for circular economy applications that facilitate
+   the sharing, repurposing, or more efficient use of resources within communities.
+   Any derivative work must maintain this focus on resource circulation and
+   community benefit.
+
+2. Attribution Requirements
+   In addition to the standard CC BY-NC 4.0 attribution requirements, any project
+   using this code must:
+
+   - Maintain a visible link to https://www.peels.app in their application
+   - Include a reference to the original Peels project in their documentation
+   - Preserve all existing copyright notices and attributions
+
+3. Database Schema Protection
+   While the code is freely available under this license, the database schema
+   and structure remain protected by copyright. You may use and modify the schema
+   for your own circular economy project, but you may not use it for any other
+   purpose without explicit permission.
+
+4. Disclaimer
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+For the full text of the CC BY-NC 4.0 license, please see:
+https://creativecommons.org/licenses/by-nc/4.0/legalcode

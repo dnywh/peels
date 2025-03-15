@@ -1,102 +1,98 @@
 # Peels
 
-[Peels](https://www.peels.app) is a Next.js and Supabase app, hosted on Vercel. It connects people who have food scraps to others who can compost those food scraps or otherwise repurpose them, like feeding chooks. Businesses also use Peels to give away spent coffee, timber offcuts, and similar.
+[Peels](https://www.peels.app) connects people (or businesses) who have food scraps with those who can compost or repurpose them.
 
-You can think of Peels as a two-sided marketplace, with one side ('hosts') being in permanent physical locations, such as a community farm or private household. The other side ('donors') find hosts on the map and then message them to arrange food scrap drop-offs (or collection, in the case of businesses).
+## Quick Start
 
-Peels is a free, non-commercial, community project. As you can see, the code is open source. Feel free to use it as a starting point for your own circular economy projects. We also welcome and encourage [contributions](#contributing).
+```bash
+# Clone the repository
+git clone https://github.com/dnywh/peels.git
+cd peels
 
-## Getting started
+# Install dependencies
+npm install
 
-There are two ways to use this repository:
+# Copy environment file
+cp .env.example .env.local
 
-1. **Contributing to Peels**: Help building out and improving Peels
-2. **Forking Peels**: Create your own circular economy project based on our codebase
+# Start development server
+npm run dev
+```
 
-### Prerequisites
+Visit http://localhost:3000
 
-- Node.js 18+ (LTS recommended)
-- npm or yarn
-- Git
+> **Note**: You'll need some API keys for full functionality. See [Prerequisites](#prerequisites) below.
 
-If you plan to fork Peels, or just want to make light contributions, you should also sign up for the following:
+## About Peels
 
-- A Supabase account (free tier works fine)
-- A MapTiler account (for geocoding)
-- A Protomaps account (for map tiles)
+Peels is a two-sided marketplace built with Next.js and Supabase:
 
-### Contributing to Peels
+- **Hosts**: Permanent locations like community farms or households that can accept materials
+- **Donors**: Individuals and businesses with food scraps or other materials to give away
 
-1. Clone the repository:
+This is a free, non-commercial, community project. The code is open source and can be used as a starting point for your own circular economy projects.
+
+## Prerequisites
+
+### Core Requirements
+
+| Requirement | Version               |
+| ----------- | --------------------- |
+| Node.js     | 18+ (LTS recommended) |
+| npm/yarn    | Latest stable         |
+| Git         | Latest stable         |
+
+### Required Services
+
+If you're forking Peels or contributing, you'll need free accounts with:
+
+- [Supabase](https://supabase.com) - Database and authentication
+- [MapTiler](https://maptiler.com) - Geocoding
+- [Protomaps](https://protomaps.com) - Map tiles
+
+## Usage Options
+
+### 1. Contributing to Peels
+
+1. Clone and set up:
 
    ```bash
    git clone https://github.com/dnywh/peels.git
    cd peels
+   npm install
    ```
 
-2. Install dependencies:
+2. Set up environment:
+
+   - Copy `.env.example` to `.env.local`
+   - Request development credentials via our [discussions board](https://github.com/dnywh/peels/discussions)
+
+3. Start development:
+   ```bash
+   npm run dev
+   ```
+
+### 2. Forking Peels
+
+1. Review our [Usage Policy](#usage-policy) and [License](#license)
+
+2. Fork and clone:
 
    ```bash
+   git clone https://github.com/your-username/your-fork.git
+   cd your-fork
    npm install
    ```
 
 3. Set up your environment:
 
+   - Follow the services setup in [Prerequisites](#prerequisites)
    - Copy `.env.example` to `.env.local`
-   - Request development database access and API keys from the maintainers via our [discussions board](https://github.com/dnywh/peels/discussions)
-   - Once approved, you'll receive:
-     - Supabase development database credentials
-     - Development API keys for MapTiler and Protomaps
-     - Font hosting URL
+   - Add your API keys to `.env.local`
 
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-The app should now be running at [http://localhost:3000](http://localhost:3000) with a connection to our development database.
-
-### Forking Peels
-
-If you want to create your own project based on Peels:
-
-0. Make sure your project is aligned with our [license](#license)
-
-1. Fork the repository on GitHub
-
-2. Clone your fork:
-
-   ```bash
-   git clone https://github.com/your-username/your-fork.git
-   cd your-fork
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-4. Set up your services:
-
-   - Create a new Supabase project at [database.new](https://database.new)
-   - Get a free API key from [MapTiler](https://cloud.maptiler.com/)
-   - Get a free API key from [Protomaps](https://protomaps.com/)
-   - Set up your own font hosting (or modify the app to use different fonts)
-
-5. Set up your environment:
-
-   - Copy `.env.example` to `.env.local`
-   - Fill in your own API keys and URLs as documented in `.env.example`
-
-6. Initialize your database:
-
+4. Initialize and run:
    ```bash
    npx supabase db push
-   ```
-
-7. Start the development server:
-   ```bash
    npm run dev
    ```
 
@@ -113,6 +109,35 @@ peels/
 ├── supabase/              # Supabase configurations and migrations
 └── package.json           # Project dependencies and scripts
 ```
+
+## Usage Policy
+
+This project is intended for circular economy applications that:
+
+- Facilitate the sharing or repurposing of resources
+- Connect permanent locations with regular input/output needs
+- Operate on non-commercial, community-focused principles
+
+Examples of what you could build:
+
+- Tool libraries for community gardens
+- Creative materials exchange platforms
+
+## License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0), with some additional terms to reflect our [Usage Policy](#usage-policy). See the [LICENSE](LICENSE) file for details.
+
+In short: you can use Peels as a base for your own non-commercial circular economy projects but not much else.
+
+Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs) if your project doesn’t fit our license requirements.
+
+## Development Guidelines
+
+- Mobile-first responsive design (using min-width queries)
+- Pigment CSS for styling (similar to Linaria)
+- TypeScript for new features
+- Console.logs encouraged during development
+- Comprehensive testing for new features
 
 ## Contributing
 
@@ -132,43 +157,11 @@ We welcome contributions! Here's how you can help:
 6. Push to your fork: `git push origin feature/your-feature-name`
 7. Open a Pull Request
 
-### Development Guidelines
-
-- We're moving towards TypeScript for type safety
-- Styling is done with Pigment CSS (similar to Linaria)
-- Follow mobile-first responsive design principles
-- Keep console.logs for development, they help with debugging
-- Media queries should use min-width (mobile-first approach)
-
 ### Getting Help
 
-- Check existing [issues](https://github.com/yourusername/peels/issues) for known problems
+- Check existing [issues](https://github.com/dnywh/peels/issues) for known problems
 - Create a new issue if you find a bug or have a feature request
 - Join our [discussion board](https://github.com/dnywh/peels/discussions) for anything else
-
-## License
-
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0) - see the [LICENSE](LICENSE) file for details.
-
-This means you can:
-
-- Share, copy, and redistribute the code
-- Adapt and build upon the code
-- Use it as a base for your own non-commercial circular economy projects
-
-Under these conditions:
-
-- **Attribution** — You must give appropriate credit to Peels
-- **NonCommercial** — You may not use this code for commercial purposes
-- **No additional restrictions** — You may not apply legal terms that legally restrict others from doing anything the license permits
-
-The code is provided as-is and may be repurposed for your own two-sided, map-centric marketplace, as long as your project is non-commercial. Some examples of what you could build:
-
-- A platform connecting folks with spare yarn to knitters
-- A tool-sharing network for community gardens
-- Any project connecting permanent locations with regular input/output needs
-
-For commercial projects, we recommend starting with the [Next.js and Supabase Starter Kit](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs).
 
 ## Acknowledgments
 
