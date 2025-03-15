@@ -1,133 +1,178 @@
 # Peels
 
-```
-your-project/
-├── public/                 # Static assets
-├── src/                    # Next.js source code
-├── supabase/              # Supabase specific code
-│   └── functions/
-│       └── delete-account/
-│           └── index.ts      # Your edge function
-├── components.json          # shadcn/ui config
-├── tailwind.config.ts
-├── postcss.config.js
-├── next.config.js
-├── tsconfig.json
-├── package.json
-└── README.md
-```
+[Peels](https://www.peels.app) is a Next.js and Supabase app, hosted on Vercel. It connects people who have food scraps to others who can compost those food scraps or otherwise repurpose them, like feeding chooks. Businesses also use Peels to give away spent coffee, timber offcuts, and similar.
 
-## Gating
+You can think of Peels as a two-sided marketplace, with one side ('hosts') being in permanent physical locations, such as a community farm or private household. The other side ('donors') find hosts on the map and then message them to arrange food scrap drop-offs (or collection, in the case of businesses).
 
-I use src/middleware.ts to handle rerouting signed-out users from protected pages to the sign-in page.
+Peels is a free, non-commercial, community project. As you can see, the code is open source. Feel free to use it as a starting point for your own circular economy projects. We also welcome and encourage [contributions](#contributing).
 
-Pages that show conditional rendering based on whether the user is signed-in or not still need the Supabase client. But at least that will only get pinged for signed-in users (since the middleware catches and redirects guest users early). For example:
+## Getting started
 
-```ts
-export default async function ExamplePage() {
-   import { createClient } from "@/utils/supabase/server";
+There are two ways to use this repository:
 
-  const supabase = await createClient();
+1. **Contributing to Peels**: Help building out and improving Peels
+2. **Forking Peels**: Create your own circular economy project based on our codebase
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+### Prerequisites
 
-  if (!user) {
-    return (
-      <p>Something for signed out users</p>
-    );
-  }
+- Node.js 18+ (LTS recommended)
+- npm or yarn
+- Git
 
- return (<p>Something for signed in users</p>)
-```
+If you plan to fork Peels, or just want to make light contributions, you should also sign up for the following:
 
----
+- A Supabase account (free tier works fine)
+- A MapTiler account (for geocoding)
+- A Protomaps account (for map tiles)
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+### Contributing to Peels
 
-## Features
-
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
-
-## Demo
-
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
-
-## Deploy to Vercel
-
-Vercel deployment will guide you through creating a Supabase account and project.
-
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
-
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
-
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
-
-## Clone and run locally
-
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
+1. Clone the repository:
 
    ```bash
-   npx create-next-app -e with-supabase
+   git clone https://github.com/dnywh/peels.git
+   cd peels
    ```
 
-3. Use `cd` to change into the app's directory
+2. Install dependencies:
 
    ```bash
-   cd name-of-new-app
+   npm install
    ```
 
-4. Rename `.env.example` to `.env.local` and update the following:
+3. Set up your environment:
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+   - Copy `.env.example` to `.env.local`
+   - Request development database access and API keys from the maintainers via our [discussions board](https://github.com/dnywh/peels/discussions)
+   - Once approved, you'll receive:
+     - Supabase development database credentials
+     - Development API keys for MapTiler and Protomaps
+     - Font hosting URL
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
-
-5. You can now run the Next.js local development server:
-
+4. Start the development server:
    ```bash
    npm run dev
    ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+The app should now be running at [http://localhost:3000](http://localhost:3000) with a connection to our development database.
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+### Forking Peels
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+If you want to create your own project based on Peels:
 
-## Feedback and issues
+0. Make sure your project is aligned with our [license](#license)
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+1. Fork the repository on GitHub
 
-## More Supabase examples
+2. Clone your fork:
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+   ```bash
+   git clone https://github.com/your-username/your-fork.git
+   cd your-fork
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Set up your services:
+
+   - Create a new Supabase project at [database.new](https://database.new)
+   - Get a free API key from [MapTiler](https://cloud.maptiler.com/)
+   - Get a free API key from [Protomaps](https://protomaps.com/)
+   - Set up your own font hosting (or modify the app to use different fonts)
+
+5. Set up your environment:
+
+   - Copy `.env.example` to `.env.local`
+   - Fill in your own API keys and URLs as documented in `.env.example`
+
+6. Initialize your database:
+
+   ```bash
+   npx supabase db push
+   ```
+
+7. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Project structure
+
+```
+peels/
+├── src/                   # Source code
+│   ├── app/               # Next.js app router pages
+│   ├── components/        # React components
+│   ├── lib/               # Utility functions and shared logic
+│   └── middleware.ts      # Next.js middleware for auth
+├── public/                # Static assets
+├── supabase/              # Supabase configurations and migrations
+└── package.json           # Project dependencies and scripts
+```
+
+## Contributing
+
+Before making contributions:
+
+1. Read our [Code of Conduct](CODE_OF_CONDUCT.md)
+2. Check the [Issues](https://github.com/dnywh/peels/issues/new) for existing tasks
+3. For major changes, please open an issue first to discuss what you would like to change
+
+We welcome contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes
+4. Run tests and linting: `npm run lint`
+5. Commit your changes: `git commit -m 'Add some feature'`
+6. Push to your fork: `git push origin feature/your-feature-name`
+7. Open a Pull Request
+
+### Development Guidelines
+
+- We're moving towards TypeScript for type safety
+- Styling is done with Pigment CSS (similar to Linaria)
+- Follow mobile-first responsive design principles
+- Keep console.logs for development, they help with debugging
+- Media queries should use min-width (mobile-first approach)
+
+### Getting Help
+
+- Check existing [issues](https://github.com/yourusername/peels/issues) for known problems
+- Create a new issue if you find a bug or have a feature request
+- Join our [discussion board](https://github.com/dnywh/peels/discussions) for anything else
+
+## License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0) - see the [LICENSE](LICENSE) file for details.
+
+This means you can:
+
+- Share, copy, and redistribute the code
+- Adapt and build upon the code
+- Use it as a base for your own non-commercial circular economy projects
+
+Under these conditions:
+
+- **Attribution** — You must give appropriate credit to Peels
+- **NonCommercial** — You may not use this code for commercial purposes
+- **No additional restrictions** — You may not apply legal terms that legally restrict others from doing anything the license permits
+
+The code is provided as-is and may be repurposed for your own two-sided, map-centric marketplace, as long as your project is non-commercial. Some examples of what you could build:
+
+- A platform connecting folks with spare yarn to knitters
+- A tool-sharing network for community gardens
+- Any project connecting permanent locations with regular input/output needs
+
+For commercial projects, we recommend starting with the [Next.js and Supabase Starter Kit](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs).
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org)
+- Authentication and database by [Supabase](https://supabase.com)
+- Maps powered by [MapTiler](https://www.maptiler.com) and [Protomaps](https://protomaps.com)
+- Our [contributors](https://github.com/dnywh/peels/graphs/contributors)!
