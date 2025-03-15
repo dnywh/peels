@@ -15,8 +15,8 @@ The following will not be tolerated:
 - Harassment of any kind
 - Personal attacks or trolling
 - Spam or promotional content
-- Sharing others' private information
-- Any behavior that disrupts the project
+- Sharing others’ private information
+- Any behaviour that disrupts the project
 
 ## Enforcement
 
@@ -24,7 +24,7 @@ Project maintainers may remove, edit, or reject contributions that violate this 
 
 ## Getting Help
 
-If you experience serious issues, report them via:
+If you experience issues, report them via:
 
 - Opening an issue with clear evidence
 - Contacting maintainers through the discussions board

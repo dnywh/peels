@@ -37,13 +37,13 @@ npm run dev
 
 ### Required Services
 
-You’ll need to populate the environment variables with keys from following free services:
+You’ll need to populate the environment variables with keys from following services:
 
 - [Supabase](https://supabase.com): Database and authentication
 - [MapTiler](https://maptiler.com): Geocoding
 - [Protomaps](https://protomaps.com): Map tiles
 
-See [Contributing](#contributing) if you need access to shared development keys.
+See [Contributing](#environment-variables) if you need access to shared development keys.
 
 ## Project Structure
 
@@ -61,13 +61,13 @@ peels/
 
 ## Contributing to Peels
 
-Thank you for contributing! Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before you begin.
+Thank you for contributing! Please read our [Code of Conduct](https://github.com/dnywh/peels/.github/CODE_OF_CONDUCT.md) before you start.
 
 For minor improvements, feel free to just go ahead and create a pull request. For major changes, please [open an issue](https://github.com/dnywh/peels/issues) first to discuss what you would like to change.
 
 ### Environment Variables
 
-Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](https://protomaps.com/account) will work just fine for local develpoment. You’ll probably need the shared development keys for Supabase, so please introduce yourself and how you plan to help on the [discussion board](https://github.com/dnywh/peels/discussions). We’ll take it from there.
+Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](https://protomaps.com/account) will work just fine for local development. You’ll probably need the shared development keys for Supabase, so please introduce yourself and tell us how you plan to help on the [discussion board](https://github.com/dnywh/peels/discussions). We’ll go from there.
 
 > **Note**: We’re exploring ways to make local development work without a shared development key for Supabase, probably by [seeding example data](https://supabase.com/docs/guides/local-development/seeding-your-database) and doing something similar for authentication. We’d love your help with this.
 
@@ -87,6 +87,7 @@ Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](ht
    - Request development credentials via our [discussions board](https://github.com/dnywh/peels/discussions)
 
 3. Start development:
+
    ```bash
    npm run dev
    ```
@@ -152,6 +153,7 @@ Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/sup
    - Add your API keys to `.env.local`
 
 3. Initialize and run:
+
    ```bash
    npx supabase db push
    npm run dev
