@@ -1,6 +1,8 @@
 # Peels
 
-[Peels](https://www.peels.app) connects people (or businesses) who have food scraps with those who can compost or repurpose them.
+[Peels](https://www.peels.app) connects people (or businesses) who have food scraps with those who can compost or repurpose them. It’s a free, non-commercial, community project.
+
+Peels is built on Next.js and Supabase. The code is open source and can be used as a starting point for your own circular economy projects.
 
 ## Quick Start
 
@@ -12,25 +14,16 @@ cd peels
 # Install dependencies
 npm install
 
-# Copy environment file
+# Copy environment file (then add API keys)
 cp .env.example .env.local
 
 # Start development server
 npm run dev
+
+# Go to http://localhost:3000
 ```
 
-Visit http://localhost:3000
-
-> **Note**: You'll need some API keys for full functionality. See [Prerequisites](#prerequisites) below.
-
-## About Peels
-
-Peels is a two-sided marketplace built with Next.js and Supabase:
-
-- **Hosts**: Permanent locations like community farms or households that can accept materials
-- **Donors**: Individuals and businesses with food scraps or other materials to give away
-
-This is a free, non-commercial, community project. The code is open source and can be used as a starting point for your own circular economy projects.
+> **Note**: You'll need some API keys for full functionality. See [Required Services](#required-services) below.
 
 ## Prerequisites
 
@@ -44,59 +37,15 @@ This is a free, non-commercial, community project. The code is open source and c
 
 ### Required Services
 
-If you're forking Peels or contributing, you'll need free accounts with:
+You’ll need to populate the environment variables with keys from following free services:
 
-- [Supabase](https://supabase.com) - Database and authentication
-- [MapTiler](https://maptiler.com) - Geocoding
-- [Protomaps](https://protomaps.com) - Map tiles
+- [Supabase](https://supabase.com): Database and authentication
+- [MapTiler](https://maptiler.com): Geocoding
+- [Protomaps](https://protomaps.com): Map tiles
 
-## Usage Options
+See [Contributing](#contributing) if you need access to shared development keys.
 
-### 1. Contributing to Peels
-
-1. Clone and set up:
-
-   ```bash
-   git clone https://github.com/dnywh/peels.git
-   cd peels
-   npm install
-   ```
-
-2. Set up environment:
-
-   - Copy `.env.example` to `.env.local`
-   - Request development credentials via our [discussions board](https://github.com/dnywh/peels/discussions)
-
-3. Start development:
-   ```bash
-   npm run dev
-   ```
-
-### 2. Forking Peels
-
-1. Review our [Usage Policy](#usage-policy) and [License](#license)
-
-2. Fork and clone:
-
-   ```bash
-   git clone https://github.com/your-username/your-fork.git
-   cd your-fork
-   npm install
-   ```
-
-3. Set up your environment:
-
-   - Follow the services setup in [Prerequisites](#prerequisites)
-   - Copy `.env.example` to `.env.local`
-   - Add your API keys to `.env.local`
-
-4. Initialize and run:
-   ```bash
-   npx supabase db push
-   npm run dev
-   ```
-
-## Project structure
+## Project Structure
 
 ```
 peels/
@@ -110,7 +59,62 @@ peels/
 └── package.json           # Project dependencies and scripts
 ```
 
-## Usage Policy
+## Contributing to Peels
+
+Thank you for contributing! Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before you begin.
+
+For minor improvements, feel free to just go ahead and create a pull request. For major changes, please [open an issue](https://github.com/dnywh/peels/issues) first to discuss what you would like to change.
+
+### Environment Variables
+
+Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](https://protomaps.com/account) will work just fine for local develpoment. You’ll probably need the shared development keys for Supabase, so please introduce yourself and how you plan to help on the [discussion board](https://github.com/dnywh/peels/discussions). We’ll take it from there.
+
+> **Note**: We’re exploring ways to make local development work without a shared development key for Supabase, probably by [seeding example data](https://supabase.com/docs/guides/local-development/seeding-your-database) and doing something similar for authentication. We’d love your help with this.
+
+### Usage
+
+1. Clone and set up codebase:
+
+   ```bash
+   git clone https://github.com/dnywh/peels.git
+   cd peels
+   npm install
+   ```
+
+2. Populate environment variables:
+
+   - Copy `.env.example` to `.env.local`
+   - Request development credentials via our [discussions board](https://github.com/dnywh/peels/discussions)
+
+3. Start development:
+   ```bash
+   npm run dev
+   ```
+
+You might need to clear out and restart your Next.js development server in the case that you add environment variables after the above steps. Here’s how to do that:
+
+```bash
+rm -rf .next
+npm run dev
+```
+
+### Development Guidelines
+
+- We use Pigment CSS for styling at a component-level
+- We’re moving towards TypeScript for type safety
+- Heavy commenting is encouraged to make the codebase accessible to others
+
+### Getting Help
+
+- Check existing [issues](https://github.com/dnywh/peels/issues) for known problems
+- Create a [new issue](https://github.com/dnywh/peels/issues/new) if you find a bug or have a feature request
+- Join our [discussion board](https://github.com/dnywh/peels/discussions) for anything else
+
+## Forking Peels
+
+Please review our [Usage Policy](#usage-policy) and [License](#license) before you fork and built upon Peels for your own purposes.
+
+### Usage Policy
 
 This project is intended for circular economy applications that:
 
@@ -123,7 +127,7 @@ Examples of what you could build:
 - Tool libraries for community gardens
 - Creative materials exchange platforms
 
-## License
+### License
 
 This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0), with some additional terms to reflect our [Usage Policy](#usage-policy). See the [LICENSE](LICENSE) file for details.
 
@@ -131,41 +135,32 @@ In short: you can use Peels as a base for your own non-commercial circular econo
 
 Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs) if your project doesn’t fit our license requirements.
 
-## Development Guidelines
+### Usage
 
-- Mobile-first responsive design (using min-width queries)
-- Pigment CSS for styling (similar to Linaria)
-- TypeScript for new features
-- Console.logs encouraged during development
-- Comprehensive testing for new features
+1. Fork and clone:
 
-## Contributing
+   ```bash
+   git clone https://github.com/your-username/your-fork.git
+   cd your-fork
+   npm install
+   ```
 
-Before making contributions:
+2. Set up your environment:
 
-1. Read our [Code of Conduct](CODE_OF_CONDUCT.md)
-2. Check the [Issues](https://github.com/dnywh/peels/issues/new) for existing tasks
-3. For major changes, please open an issue first to discuss what you would like to change
+   - Follow the services setup in [Prerequisites](#prerequisites)
+   - Copy `.env.example` to `.env.local`
+   - Add your API keys to `.env.local`
 
-We welcome contributions! Here's how you can help:
-
-1. Fork the repository
-2. Create a new branch: `git checkout -b feature/your-feature-name`
-3. Make your changes
-4. Run tests and linting: `npm run lint`
-5. Commit your changes: `git commit -m 'Add some feature'`
-6. Push to your fork: `git push origin feature/your-feature-name`
-7. Open a Pull Request
-
-### Getting Help
-
-- Check existing [issues](https://github.com/dnywh/peels/issues) for known problems
-- Create a new issue if you find a bug or have a feature request
-- Join our [discussion board](https://github.com/dnywh/peels/discussions) for anything else
+3. Initialize and run:
+   ```bash
+   npx supabase db push
+   npm run dev
+   ```
 
 ## Acknowledgments
 
 - Built with [Next.js](https://nextjs.org)
 - Authentication and database by [Supabase](https://supabase.com)
 - Maps powered by [MapTiler](https://www.maptiler.com) and [Protomaps](https://protomaps.com)
+- Styled components built with [Pigment CSS](https://github.com/mui/pigment-css)
 - Our [contributors](https://github.com/dnywh/peels/graphs/contributors)!
