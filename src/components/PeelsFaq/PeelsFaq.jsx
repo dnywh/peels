@@ -1,109 +1,12 @@
-import { styled } from "@pigment-css/react";
+import FaqContainer from "@/Components/FaqContainer";
+import FaqDetails from "@/Components/FaqDetails";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
-// Animate details & summary with a few lines of CSS
-// https://www.youtube.com/watch?v=Vzj3jSUbMtI
-const DetailsContainer = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  backgroundColor: theme.colors.background.top,
-  borderRadius: theme.corners.base,
-  // padding: `0 ${theme.spacing.unit}`,
-  width: "100%",
-  boxShadow: `0px 0px 0px 1px ${theme.colors.border.light}`,
-}));
-
-const StyledDetails = styled("details")(({ theme }) => ({
-  "&:not(:last-of-type)": {
-    borderBottom: `1px solid ${theme.colors.border.light}`,
-  },
-
-  overflow: "hidden",
-
-  // Parent of all the details content
-  // Turn on shadow DOM settings in Chrome dev tools to inspect this
-  "&::details-content, &::-webkit-details-content": {
-    color: theme.colors.text.ui.secondary,
-    blockSize: "0",
-    transition:
-      "block-size 200ms cubic-bezier(0.4, 0, 0.2, 1), content-visibility 200ms cubic-bezier(0.4, 0, 0.2, 1)",
-    transitionBehavior: "allow-discrete",
-    // padding: `0  calc(${theme.spacing.unit} * 2)`, // Does not render on Safari, done elsewhere in the interim
-  },
-
-  "&[open]::details-content": {
-    blockSize: "auto",
-  },
-
-  "& > summary:after": {
-    content: "'+'",
-    lineHeight: "80%",
-    fontSize: "2rem",
-    fontWeight: "100",
-    color: theme.colors.background.counter,
-  },
-
-  "&[open] > summary:after": {
-    content: "'–'",
-  },
-
-  "& > p": {
-    // marginBottom: "0",
-    // paddingBlockStart: "1rem",
-    padding: `0  calc(${theme.spacing.unit} * 3)`, // Match summary padding-x. Interim solution until Safari supports targeting details-content
-
-    "& + p": {
-      marginTop: "0.5rem",
-    },
-
-    "&:last-of-type": {
-      paddingBlockEnd: "2rem",
-    },
-  },
-
-  "& > summary": {
-    cursor: "pointer",
-    borderRadius: theme.corners.base,
-    transition: "opacity 150ms ease-in-out",
-
-    textBoxTrim: "both cap alphabetic", // TODO: Future CSS property to play with. See https://piccalil.li/blog/why-im-excited-about-text-box-trim-as-a-designer/
-
-    // marginInlineStart: "1rem",
-    // listStylePosition: "outside",
-    // listStyleType: "none",
-
-    // position: "relative",
-
-    fontSize: "1.2rem",
-    fontWeight: "500",
-    color: theme.colors.text.ui.primary,
-    padding: `calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 3)`, // Match details p padding-x
-
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: "2rem",
-
-    "&::marker, &::-webkit-details-marker": {
-      // flexShrink: "0",
-      content: "none",
-      display: "none",
-      // color: theme.colors.text.ui.quaternary,
-      // fontSize: "0.75em",
-      // fontWeight: "100",
-    },
-
-    "&:hover": {
-      opacity: 0.65,
-    },
-  },
-}));
-
 function PeelsFaq() {
   return (
-    <DetailsContainer>
-      <StyledDetails name="faq">
+    <FaqContainer>
+      <FaqDetails>
         <summary>Who’s behind Peels?</summary>
         <p>
           Peels is a project led by{" "}
@@ -120,8 +23,8 @@ function PeelsFaq() {
           the project and welcome community code contributions from later this
           year.
         </p>
-      </StyledDetails>
-      <StyledDetails name="faq">
+      </FaqDetails>
+      <FaqDetails>
         <summary>How is Peels different to ShareWaste?</summary>
         <p>
           ShareWaste was a precursor to Peels with a similar idea: connecting
@@ -136,16 +39,16 @@ function PeelsFaq() {
           We’ve got plenty of other ideas in the pipeline, including general
           area guides for composting. Stay tuned for those.
         </p>
-      </StyledDetails>
-      <StyledDetails name="faq">
+      </FaqDetails>
+      <FaqDetails>
         <summary>What’s the financial model? Are you non-profit?</summary>
         <p>
           Peels is a non-commercial, community-led project. We may incorporate
           as a not-for-profit in the future and accept funding for further
           development, but we never intend to start charging for the service.
         </p>
-      </StyledDetails>
-      <StyledDetails name="faq">
+      </FaqDetails>
+      <FaqDetails>
         <summary>
           I have a FOGO bin. Is community composting still relevant?
         </summary>
@@ -154,8 +57,8 @@ function PeelsFaq() {
           yet have access to kerbside compost collection. As long as that’s the
           case, there’ll be a need for community composting resources.
         </p>
-      </StyledDetails>
-      <StyledDetails name="faq">
+      </FaqDetails>
+      <FaqDetails>
         <summary>
           I’m not comfortable putting my address on a map. Can I still
           participate?
@@ -169,8 +72,8 @@ function PeelsFaq() {
           Even if you choose to use your real name and upload a photo, only
           signed in Peels members can see those details.
         </p>
-      </StyledDetails>
-      <StyledDetails name="faq">
+      </FaqDetails>
+      <FaqDetails>
         <summary>I’d like to help build Peels. How do I get involved?</summary>
         <p>
           You’re awesome.{" "}
@@ -179,8 +82,8 @@ function PeelsFaq() {
           </EncodedEmailHyperlink>{" "}
           and we’ll chat.
         </p>
-      </StyledDetails>
-      <StyledDetails name="faq">
+      </FaqDetails>
+      <FaqDetails>
         <summary>How can I promote Peels to my community?</summary>
         <p>
           First off, thank you! Peels only works with a thriving map of
@@ -200,8 +103,8 @@ function PeelsFaq() {
           </EncodedEmailHyperlink>{" "}
           for something more specific to your community.
         </p>
-      </StyledDetails>
-      <StyledDetails name="faq">
+      </FaqDetails>
+      <FaqDetails>
         <summary>
           I represent local or state government. How can I get involved?
         </summary>
@@ -213,8 +116,8 @@ function PeelsFaq() {
           </EncodedEmailHyperlink>
           .
         </p>
-      </StyledDetails>
-    </DetailsContainer>
+      </FaqDetails>
+    </FaqContainer>
   );
 }
 
