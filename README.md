@@ -35,6 +35,8 @@ npm run dev
 | npm/yarn    | Latest stable         |
 | Git         | Latest stable         |
 
+Deno and Docker are also required if you plan to work on Supabase Functions and Edge Functions.
+
 ### Required Services
 
 You’ll need to populate the environment variables with keys from following services:
@@ -61,7 +63,7 @@ peels/
 
 ## Contributing to Peels
 
-Thank you for contributing! Please read our [Code of Conduct](https://github.com/dnywh/peels/.github/CODE_OF_CONDUCT.md) before you start.
+Thank you for contributing! Please read our [Code of Conduct](https://github.com/dnywh/peels/blob/main/.github/CODE_OF_CONDUCT.md) before you start.
 
 For minor improvements, feel free to just go ahead and create a pull request. For major changes, please [open an issue](https://github.com/dnywh/peels/issues) first to discuss what you would like to change.
 
@@ -136,7 +138,7 @@ In short: you can use Peels as a base for your own non-commercial circular econo
 
 Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs) if your project doesn’t fit our license requirements.
 
-### Usage
+### Setup
 
 1. Fork and clone:
 
