@@ -57,7 +57,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     console.error("Error checking email:", authError);
     redirectUrl.searchParams.append(
       "error",
-      "Sorry, we couldn't process your request.",
+      "Sorry, we couldn’t process your request.",
     );
     return redirect(redirectUrl.toString());
   }
@@ -141,7 +141,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Hmm. Something's not right. Mind trying again?",
+      "Hmm. Something’s not right. Mind trying again?",
     );
   }
 
@@ -171,7 +171,7 @@ export const updateFirstNameAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error updating first name:", error);
-    return { error: "Sorry, we couldn't update your first name." };
+    return { error: "Sorry, we couldn’t update your first name." };
   }
 
   return { success: true };
@@ -185,7 +185,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error sending email change email:", error);
-    return { error: "Sorry, we couldn't send an email change link." };
+    return { error: "Sorry, we couldn’t send an email change link." };
   }
 
   return { success: true };
@@ -218,7 +218,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
 //   if (error) {
 //     console.error("Error sending password reset email:", error);
-//     return { error: "Sorry, we couldn't send a password reset link." };
+//     return { error: "Sorry, we couldn’t send a password reset link." };
 //   }
 
 //   return { success: true };
@@ -243,7 +243,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Those passwords don't match.",
+      "Those passwords don’t match.",
     );
   }
 
@@ -255,7 +255,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Hmm. Something's not right. You might not have permission to reset this password, or you tried reusing a recent password.",
+      "Hmm. Something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
     );
   }
 
@@ -313,7 +313,7 @@ export const deleteListingAction = async (slug: string) => {
     console.error("Error deleting listing:", error);
     return {
       success: false,
-      message: "Hmm. Something's not right. Mind trying again?",
+      message: "Hmm. Something’s not right. Mind trying again?",
     };
   }
 };
@@ -452,7 +452,7 @@ export const createOrUpdateListingAction = async (listingData: any) => {
       if (error.code === "42501") {
         return {
           error:
-            "You've reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
+            "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
         };
       } else if (error.code === "23505") {
         return { error: "An identical listing already exists." };
@@ -469,7 +469,7 @@ export const createOrUpdateListingAction = async (listingData: any) => {
 
       if (updateError) {
         console.error("Error updating photos:", updateError);
-        return { error: "Created listing but couldn't save photos." };
+        return { error: "Created listing but couldn’t save photos." };
       }
     }
 
