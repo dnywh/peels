@@ -22,7 +22,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   const utmCampaign = formData.get("utm_campaign")?.toString();
 
   // Debug attribution data
-  console.log("Sign up debug:", {
+  console.log("Sign up data:", {
     attribution: {
       referrer,
       utmSource,
