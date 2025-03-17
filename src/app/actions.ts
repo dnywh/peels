@@ -16,16 +16,21 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   const origin = headersList.get("origin");
 
   // Get attribution data
-  const rawReferrer = headersList.get("referer");
+  const referrer = formData.get("initial_referrer")?.toString();
   const utmSource = formData.get("utm_source")?.toString();
   const utmMedium = formData.get("utm_medium")?.toString();
   const utmCampaign = formData.get("utm_campaign")?.toString();
 
-  console.log("Sign up attribution:", {
-    rawReferrer,
-    utmSource,
-    utmMedium,
-    utmCampaign,
+  // Debug attribution data
+  console.log("Sign up debug:", {
+    attribution: {
+      referrer,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+    },
+    // Log the full request URL if available
+    url: request?.url,
   });
 
   // Only preserve non-sensitive fields
@@ -77,7 +82,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
       emailRedirectTo: `${origin || getBaseUrl()}/auth/callback?type=signup`,
       data: {
         first_name: first_name,
-        http_referrer: rawReferrer,
+        http_referrer: referrer,
         utm_source: utmSource || null,
         utm_medium: utmMedium || null,
         utm_campaign: utmCampaign || null,
