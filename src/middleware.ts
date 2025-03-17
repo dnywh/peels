@@ -4,10 +4,18 @@ import { updateSession } from "@/utils/supabase/middleware";
 export async function middleware(request: NextRequest) {
   // Get the initial referrer from the request headers
   const referrer = request.headers.get("referer") || "direct";
-  console.log("Referrer:", referrer); // Logs 'Referer: null' if missing
+  console.log("Referrer:", referrer); // Logs 'Referrer: null' if missing
 
   // Get response from session update
   const response = await updateSession(request);
+
+  // Log auth header status (temporary testing)
+  const authHeader = response.headers.get("x-supabase-auth");
+  console.log("Auth header status:", {
+    exists: !!authHeader,
+    value: authHeader,
+    url: request.url,
+  });
 
   // If this is a new session, set the initial referrer in a custom header
   // This header will be available in server components and API routes

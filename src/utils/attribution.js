@@ -15,18 +15,24 @@ export function captureAttributionParams() {
         utm_campaign: params.get('utm_campaign')
     };
 
+    // Debug info
+    console.log('Attribution Debug:', {
+        currentUrl: window.location.href,
+        referrer: document.referrer,
+        hasUtmParams: Object.values(utmParams).some(value => value)
+    });
+
     // Capture initial referrer if we don't have one yet
     const hasStoredReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
-    console.log('document.referrer:', document.referrer, { hasStoredReferrer }); // Temporary debugging
     if (!hasStoredReferrer && document.referrer && !document.referrer.includes(window.location.host)) {
-        console.log('Capturing initial referrer:', document.referrer);
+        console.log('Storing referrer:', document.referrer);
         localStorage.setItem(INITIAL_REFERRER_KEY, document.referrer);
     }
 
     // Only store UTM params if we have at least one AND we don't have any stored yet
     const hasStoredUtm = localStorage.getItem(UTM_STORAGE_KEY);
     if (!hasStoredUtm && Object.values(utmParams).some(value => value)) {
-        console.log('Capturing initial UTM params:', utmParams);
+        console.log('Storing UTM params:', utmParams);
         localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utmParams));
     }
 }
