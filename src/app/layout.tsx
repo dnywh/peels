@@ -13,6 +13,7 @@ import type { ExtendTheme } from "@pigment-css/react/theme";
 import "@pigment-css/react/styles.css";
 
 import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
+import AttributionCapture from "@/components/AttributionCapture";
 
 declare module "@pigment-css/react/theme" {
   interface ThemeTokens {
@@ -199,9 +200,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // Re-add suppressHydrationWarning? What was it in for?
     <html lang="en">
       <Body>
+        <AttributionCapture />
         <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
         <Analytics />
       </Body>

@@ -12,7 +12,21 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   const password = formData.get("password")?.toString();
   const first_name = formData.get("first_name")?.toString();
   const supabase = await createClient();
-  const origin = (await headers()).get("origin");
+  const headersList = await headers();
+  const origin = headersList.get("origin");
+
+  // Get attribution data
+  const rawReferrer = headersList.get("referer");
+  const utmSource = formData.get("utm_source")?.toString();
+  const utmMedium = formData.get("utm_medium")?.toString();
+  const utmCampaign = formData.get("utm_campaign")?.toString();
+
+  console.log("Sign up attribution:", {
+    rawReferrer,
+    utmSource,
+    utmMedium,
+    utmCampaign,
+  });
 
   // Only preserve non-sensitive fields
   const preservedData = new URLSearchParams();
@@ -56,7 +70,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     return redirect(redirectUrl.toString());
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data: { user }, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -71,6 +85,22 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     console.error(error.code + " " + error.message);
     redirectUrl.searchParams.append("error", error.message);
     return redirect(redirectUrl.toString());
+  }
+
+  // Store all attribution data in profiles table
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      http_referrer: rawReferrer,
+      utm_source: utmSource || null,
+      utm_medium: utmMedium || null,
+      utm_campaign: utmCampaign || null,
+    })
+    .eq("email", email);
+
+  if (profileError) {
+    console.error("Error storing attribution data:", profileError);
+    // Don't redirect with error - the sign up still succeeded
   }
 
   // Success state
@@ -118,7 +148,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Hmm. Something’s not right. Mind trying again?",
+      "Hmm. Something's not right. Mind trying again?",
     );
   }
 
@@ -148,7 +178,7 @@ export const updateFirstNameAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error updating first name:", error);
-    return { error: "Sorry, we couldn’t update your first name." };
+    return { error: "Sorry, we couldn't update your first name." };
   }
 
   return { success: true };
@@ -162,7 +192,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error sending email change email:", error);
-    return { error: "Sorry, we couldn’t send an email change link." };
+    return { error: "Sorry, we couldn't send an email change link." };
   }
 
   return { success: true };
@@ -183,7 +213,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 //   if (!email) {
 //     return {
 //       error:
-//         "Sorry, we’re having trouble sending a password reset link to your email address. Please reach out to support.",
+//         "Sorry, we're having trouble sending a password reset link to your email address. Please reach out to support.",
 //     };
 //   }
 
@@ -195,7 +225,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
 //   if (error) {
 //     console.error("Error sending password reset email:", error);
-//     return { error: "Sorry, we couldn’t send a password reset link." };
+//     return { error: "Sorry, we couldn't send a password reset link." };
 //   }
 
 //   return { success: true };
@@ -220,7 +250,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Those passwords don’t match.",
+      "Those passwords don't match.",
     );
   }
 
@@ -232,7 +262,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Hmm. Something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
+      "Hmm. Something's not right. You might not have permission to reset this password, or you tried reusing a recent password.",
     );
   }
 
@@ -290,7 +320,7 @@ export const deleteListingAction = async (slug: string) => {
     console.error("Error deleting listing:", error);
     return {
       success: false,
-      message: "Hmm. Something’s not right. Mind trying again?",
+      message: "Hmm. Something's not right. Mind trying again?",
     };
   }
 };
@@ -429,7 +459,7 @@ export const createOrUpdateListingAction = async (listingData: any) => {
       if (error.code === "42501") {
         return {
           error:
-            "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
+            "You've reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
         };
       } else if (error.code === "23505") {
         return { error: "An identical listing already exists." };
@@ -446,7 +476,7 @@ export const createOrUpdateListingAction = async (listingData: any) => {
 
       if (updateError) {
         console.error("Error updating photos:", updateError);
-        return { error: "Created listing but couldn’t save photos." };
+        return { error: "Created listing but couldn't save photos." };
       }
     }
 

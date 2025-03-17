@@ -1,8 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { signUpAction } from "@/app/actions";
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
+import {
+  getStoredAttributionParams,
+  clearAttributionParams,
+} from "@/utils/attribution";
 
 import Form from "@/components/Form";
 import Field from "@/components/Field";
@@ -29,6 +33,12 @@ export default function SignUpForm({ defaultValues = {}, error }) {
     try {
       const formData = new FormData(event.currentTarget);
 
+      // Add stored UTM parameters to form data
+      const utmParams = getStoredAttributionParams();
+      Object.entries(utmParams).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
+      });
+
       // Reset validation errors
       setFirstNameError(null);
 
@@ -36,13 +46,16 @@ export default function SignUpForm({ defaultValues = {}, error }) {
       const validation = validateFirstName(formData.get("first_name"));
       if (!validation.isValid) {
         setFirstNameError(validation.error);
-        setIsSubmitting(false); // Important: Reset submit state if validation fails
+        setIsSubmitting(false);
         console.log("Validation failed, resetting submit state");
         return;
       }
 
-      console.log("Submitting sign up data");
+      console.log("Submitting sign up data with attribution:", utmParams);
       await signUpAction(formData);
+
+      // Clear stored attribution params after successful signup
+      clearAttributionParams();
 
       // Note: We might not reach this point if signUpAction redirects
       console.log("Sign up completed");

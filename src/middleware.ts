@@ -1,8 +1,21 @@
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  // Get the referrer from the request headers
+  const referrer = request.headers.get("referer") || "direct";
+
+  // Get response from session update
+  const response = await updateSession(request);
+
+  // If this is a new session, set the referrer in a custom header
+  // This header will be available in server components and API routes
+  if (response.headers.get("x-supabase-auth") === "new") {
+    response.headers.set("x-initial-referrer", referrer);
+    console.log("New session detected, setting referrer:", referrer);
+  }
+
+  return response;
 }
 
 export const config = {
