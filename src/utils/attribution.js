@@ -16,6 +16,7 @@ export function captureAttributionParams() {
     };
 
     // Capture initial referrer if we don't have one yet
+    console.log('document.referrer:', document.referrer, { hasStoredReferrer }); // Temporary debugging
     const hasStoredReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
     if (!hasStoredReferrer && document.referrer && !document.referrer.includes(window.location.host)) {
         console.log('Capturing initial referrer:', document.referrer);
