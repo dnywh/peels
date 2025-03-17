@@ -22,9 +22,10 @@ export function captureAttributionParams() {
         localStorage.setItem(INITIAL_REFERRER_KEY, document.referrer);
     }
 
-    // Only store if we have at least one UTM parameter
-    if (Object.values(utmParams).some(value => value)) {
-        console.log('Capturing UTM params:', utmParams);
+    // Only store UTM params if we have at least one AND we don't have any stored yet
+    const hasStoredUtm = localStorage.getItem(UTM_STORAGE_KEY);
+    if (!hasStoredUtm && Object.values(utmParams).some(value => value)) {
+        console.log('Capturing initial UTM params:', utmParams);
         localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utmParams));
     }
 }
@@ -47,6 +48,7 @@ export function getStoredAttributionParams() {
     }
 }
 
+// Unused in production, as we want to keep first-touch attribution data
 export function clearAttributionParams() {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(UTM_STORAGE_KEY);

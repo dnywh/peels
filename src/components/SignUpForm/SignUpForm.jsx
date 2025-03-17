@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 
 import { signUpAction } from "@/app/actions";
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
-import {
-  getStoredAttributionParams,
-  clearAttributionParams,
-} from "@/utils/attribution";
+import { getStoredAttributionParams } from "@/utils/attribution";
 
 import Form from "@/components/Form";
 import Field from "@/components/Field";
@@ -53,9 +50,6 @@ export default function SignUpForm({ defaultValues = {}, error }) {
 
       console.log("Submitting sign up data with attribution:", utmParams);
       await signUpAction(formData);
-
-      // Clear stored attribution params after successful signup
-      clearAttributionParams();
 
       // Note: We might not reach this point if signUpAction redirects
       console.log("Sign up completed");
