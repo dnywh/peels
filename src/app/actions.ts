@@ -77,30 +77,23 @@ export const signUpAction = async (formData: FormData, request: Request) => {
       emailRedirectTo: `${origin || getBaseUrl()}/auth/callback?type=signup`,
       data: {
         first_name: first_name,
+        http_referrer: rawReferrer,
+        utm_source: utmSource || null,
+        utm_medium: utmMedium || null,
+        utm_campaign: utmCampaign || null,
       },
     },
   });
 
-  if (error) {
-    console.error(error.code + " " + error.message);
-    redirectUrl.searchParams.append("error", error.message);
+  if (error || !user) {
+    console.error(
+      error?.code + " " + error?.message || "No user returned from sign up",
+    );
+    redirectUrl.searchParams.append(
+      "error",
+      error?.message || "Sign up failed",
+    );
     return redirect(redirectUrl.toString());
-  }
-
-  // Store all attribution data in profiles table
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .update({
-      http_referrer: rawReferrer,
-      utm_source: utmSource || null,
-      utm_medium: utmMedium || null,
-      utm_campaign: utmCampaign || null,
-    })
-    .eq("email", email);
-
-  if (profileError) {
-    console.error("Error storing attribution data:", profileError);
-    // Don't redirect with error - the sign up still succeeded
   }
 
   // Success state
