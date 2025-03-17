@@ -4,6 +4,7 @@ import { updateSession } from "@/utils/supabase/middleware";
 export async function middleware(request: NextRequest) {
   // Get the initial referrer from the request headers
   const referrer = request.headers.get("referer") || "direct";
+  console.log("Referrer:", referrer); // Logs 'Referer: null' if missing
 
   // Get response from session update
   const response = await updateSession(request);
