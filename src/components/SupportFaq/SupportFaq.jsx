@@ -1,5 +1,5 @@
-import FaqContainer from "@/Components/FaqContainer";
-import FaqDetails from "@/Components/FaqDetails";
+import FaqContainer from "@/components/FaqContainer";
+import FaqDetails from "@/components/FaqDetails";
 
 function SupportFaq() {
   return (
