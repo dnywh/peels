@@ -108,9 +108,9 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 /* 8. Improve line wrapping */
-p {
-  text-wrap: pretty;
-}
+// p {
+//   text-wrap: pretty;
+// }
 h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
