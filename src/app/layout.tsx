@@ -6,6 +6,7 @@ import { siteConfig } from "@/config/site";
 
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "./globals.css";
 import { globalCss, styled } from "@pigment-css/react";
@@ -205,6 +206,7 @@ export default function RootLayout({
         <AttributionCapture />
         <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
         <Analytics />
+        <SpeedInsights />
       </Body>
     </html>
   );
