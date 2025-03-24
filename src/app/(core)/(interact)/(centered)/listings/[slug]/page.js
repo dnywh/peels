@@ -1,11 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from 'next/navigation'
-
-import ListingRead from "@/components/ListingRead";
-
-import { styled } from "@pigment-css/react";
-
+import { siteConfig } from "@/config/site";
+import { countries } from "@/data/countries";
 import { getListingDisplayName } from "@/utils/listing";
+import ListingRead from "@/components/ListingRead";
+import { styled } from "@pigment-css/react";
 
 const StyledMain = styled("main")({
     flex: 1, // Should be shared with layout used by Profile and Listings pages
@@ -59,8 +58,27 @@ export async function generateMetadata({ params }) {
     }
 
     const listingDisplayName = getListingDisplayName(listing, user);
+    const listingCountryName = countries.find(country => country.code === listing.country_code)?.name;
+    const listingFullLocation = `${listing.area_name}, ${listingCountryName}`
+    const listingDescription = `${listingDisplayName} is ${listing.type === "residential" ? '' : ` a ${listing.type}`} based in ${listingFullLocation}. Connect with them on ${siteConfig.name}, ${siteConfig.meta.explainer}.`
+
     return {
-        title: `${listingDisplayName}`,
+        title: listingDisplayName, // Followed by title.template defined in layout metadata (e.g. ` · Peels`)
+        description: listingDescription,
+        keywords: [
+            listingFullLocation,
+            `food scraps in ${listing.area_name} ${listingCountryName}`, // Not using ${listingFullLocation} as it has a comma, thus creating a new item in the array
+            `compost ${listing.area_name}  ${listingCountryName}`,
+            `food scrap drop-off ${listing.area_name}  ${listingCountryName}`,
+            `compost drop-off ${listing.area_name}  ${listingCountryName}`,
+            ...siteConfig.meta.keywords,
+        ],
+        openGraph: {
+            title: listingDisplayName, // not appending 'Peels' since that comes through on siteName
+            description: listingDescription,
+            siteName: siteConfig.name,
+            // TODO: The `opengraph-image` does not get passed down automatically, presumedly because this counts as a separate route segment
+        },
     };
 }
 

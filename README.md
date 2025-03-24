@@ -67,6 +67,8 @@ Thank you for contributing! Please read our [Code of Conduct](https://github.com
 
 For minor improvements, feel free to just go ahead and create a pull request. For major changes, please [open an issue](https://github.com/dnywh/peels/issues) first to discuss what you would like to change.
 
+Check out the list of [existing issues](https://github.com/dnywh/peels/issues) you could help out on.
+
 ### Environment Variables
 
 Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](https://protomaps.com/account) will work just fine for local development. You’ll probably need the shared development keys for Supabase, so please introduce yourself and tell us how you plan to help on the [discussion board](https://github.com/dnywh/peels/discussions). We’ll go from there.

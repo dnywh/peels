@@ -83,8 +83,8 @@ const tokens = {
         500: 'hsla(193, 77%, 43%, 1)'
     },
     ochre: {
-        50: 'hsla(36, 26%, 99%, 1)',
-        80: 'hsla(36, 26%, 96%, 1)',
+        50: 'hsla(36, 26%, 99%, 1)', // Hardcoded in manifest.ts
+        80: 'hsla(36, 26%, 96%, 1)', // Hardcoded in manifest.ts
         100: 'hsla(22, 35%, 96%, 1)',
         150: 'hsla(22, 35%, 95%, 1)',
         200: 'hsla(22, 35%, 91%, 1)',

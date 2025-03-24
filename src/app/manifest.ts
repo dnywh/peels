@@ -7,10 +7,9 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: siteConfig.name,
     description: siteConfig.description,
     start_url: "/map",
-    // Ochre/800
-    // theme_color: "#451900", // Seems to take over on iOS, despite me defining a background_color
-    // Ochre/Special (Around Ochre/100 but a bit more saturated, from Brown Pages)
-    // background_color: "#fff6f0",
+    // Colours must be static because the manifest is generated at build time
+    background_color: "#hsla(36, 26%, 96%, 1)",
+    theme_color: "hsla(36, 26%, 96%, 1)", // Often applied to status bar on mobile
     display: "standalone",
     icons: [
       {
