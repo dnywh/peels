@@ -3,21 +3,18 @@ import { TabBarProvider } from "@/contexts/TabBarContext";
 import { styled } from "@pigment-css/react";
 
 // This layout is used for pages that have centered, vertically-scrolling content
-// May need to be forked for
 const CenteredPage = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   padding: "0.5rem",
-
-  marginBottom: theme.spacing.tabBar.spaceFor, // Accommodate TabBar
+  marginBottom: theme.spacing.tabBar.spaceFor, // Accommodate fixed TabBar on smaller devices
 
   "@media (min-width: 768px)": {
     marginBottom: "0",
-
     flexDirection: "row",
     alignItems: "stretch",
     gap: theme.spacing.gap.desktop,
-    padding: "1.5rem", //24px
+    padding: "1.5rem",
   },
 }));
 

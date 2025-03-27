@@ -248,7 +248,6 @@ const ChatWindow = memo(function ChatWindow({
     if (isDemo) return;
 
     const { data: messages, error } = await supabase
-      // TODO: Check, is there a mismatch or duplication of efforts/data between the  `listing:listings_with_owner_data` join in [[...threadId]] page.js and the data retrieved here?
       .from("chat_messages_with_senders")
       .select()
       .eq("thread_id", threadId)

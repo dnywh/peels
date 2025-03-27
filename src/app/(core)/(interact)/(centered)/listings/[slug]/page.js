@@ -32,23 +32,19 @@ const StyledMain = styled("main")({
 
 });
 
-// Move data fetching to a reusable function
 async function getListingData(slug) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-
     const { data: listing } = await supabase
-        .from('listings_with_owner_data')
+        .from(user ? 'listings_private_data' : 'listings_public_data')
         .select()
         .match({ slug })
         .single();
-
     return { user, listing };
 }
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;
-
     const { user, listing } = await getListingData(slug);
 
     if (!listing) {
@@ -63,7 +59,7 @@ export async function generateMetadata({ params }) {
     const listingDescription = `${listingDisplayName} is ${listing.type === "residential" ? '' : ` a ${listing.type}`} based in ${listingFullLocation}. Connect with them on ${siteConfig.name}, ${siteConfig.meta.explainer}.`
 
     return {
-        title: listingDisplayName, // Followed by title.template defined in layout metadata (e.g. ` · Peels`)
+        title: listingDisplayName, // Will be followed by title.template as defined in layout metadata (i.e. ` · Peels`)
         description: listingDescription,
         keywords: [
             listingFullLocation,
@@ -86,11 +82,11 @@ export default async function ListingPage({ params }) {
     const { slug } = await params;
     const { user, listing } = await getListingData(slug);
 
-    // TODO: Return 'Success' toast for new listings
-
     if (!listing) {
         notFound();
     }
+
+    // TODO: Return 'Success' toast for folks who have just created a new listing and have been redirected to it, here
 
     return (
         <StyledMain>

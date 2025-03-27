@@ -5,17 +5,19 @@ import { getListingDisplayName } from "@/utils/listing";
 // Fetch data only once and use across metadata and page
 async function getInitialData(listingSlug) {
     const supabase = await createClient();
-    const [userResponse, listingResponse] = await Promise.all([
-        supabase.auth.getUser(),
-        listingSlug ? supabase
-            .from("listings_with_owner_data")
-            .select()
-            .eq("slug", listingSlug)
-            .single() : null
-    ]);
+
+    // Get user first
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Then get listing data if slug exists
+    const listingResponse = listingSlug ? await supabase
+        .from(user ? 'listings_private_data' : 'listings_public_data')
+        .select()
+        .eq("slug", listingSlug)
+        .single() : null;
 
     return {
-        user: userResponse.data.user,
+        user,
         listing: listingResponse?.data
     };
 }

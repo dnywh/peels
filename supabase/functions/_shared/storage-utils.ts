@@ -25,6 +25,7 @@ export async function deleteListingMedia(
 ) {
     // Get listing media info
     const { data: listing, error: fetchError } = await supabase
+        // We can access the "listings" table here directly as we have a policy set allowing owners access to their full listings
         .from("listings")
         .select("avatar, photos")
         .eq("slug", slug)

@@ -21,6 +21,7 @@ serve(async (req) => {
 
         // Delete the listing
         const { error: deleteError } = await supabaseAdmin
+            // We can access the "listings" table directly here as we're doing an operation through supabaseAdmin
             .from("listings")
             .delete()
             .eq("slug", slug);

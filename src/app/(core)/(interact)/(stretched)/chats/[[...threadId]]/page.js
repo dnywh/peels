@@ -22,20 +22,19 @@ export default async function ChatsPage(props) {
     // Get threads belonging to user
     const { data: threads } = await supabase
         .from("chat_threads_with_participants")
-        // TODO: Minify this query to only use fields we need
         .select(`
             *,
             chat_messages_with_senders (*),
-            listing:listings_with_owner_data (*)
+            listing:listings_private_data (*)
         `)
         .or(`initiator_id.eq.${user?.id},owner_id.eq.${user?.id}`)
         .order("created_at", { ascending: false });
 
+    // TODO: Handle unrecognised chat URLs?
     // if (threadId && !threads?.some(t => t.id === threadId)) {
     //     console.log("Thread not found or access denied, redirecting...");
     //     redirect('/chats');
     // }
-
 
     // Calculate unread message count for context
     const totalUnreadMessages = threads?.reduce((count, thread) => {

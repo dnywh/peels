@@ -385,7 +385,7 @@ export default function MapPageClient({
     }
 
     const { data, error } = await supabase
-      .from("listings_with_owner_data")
+      .from(user ? "listings_private_data" : "listings_public_data")
       .select()
       .eq("slug", slug)
       .single();
@@ -445,7 +445,7 @@ export default function MapPageClient({
 
     // Use the same view as initial load slug
     const { data, error } = await supabase
-      .from("listings_with_owner_data")
+      .from(user ? "listings_private_data" : "listings_public_data")
       .select()
       .eq("id", listingId)
       .single();

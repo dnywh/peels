@@ -5,10 +5,10 @@ export default async function sitemap() {
   const supabase = await createClient();
 
   const { data: listings } = await supabase
-    .from("listings")
+    .from("public.listings_public_data")
     .select()
-    .eq("visibility", true)
     .in("type", ["community", "business"])
+  // Filtering out listings with false visibility is handled at the view level
 
   // Start with the homepage
   const routes = [
@@ -26,7 +26,7 @@ export default async function sitemap() {
       url: `${siteConfig.url}/listings/${listing.slug}`,
       lastModified: new Date(listing.created_at), // TODO: add a updated_at column to the listings table and use that instead
       changeFrequency: "monthly",
-      priority: 0.9,
+      priority: 0.8,
     });
   });
 
@@ -43,7 +43,7 @@ export default async function sitemap() {
       url: `${siteConfig.url}/support`,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.7,
     },
     {
       url: `${siteConfig.url}/colophon`,

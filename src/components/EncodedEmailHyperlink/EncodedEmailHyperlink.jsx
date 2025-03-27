@@ -1,7 +1,6 @@
 "use client";
-import Hyperlink from "@/components/Hyperlink";
-
 import { useState, useEffect } from "react";
+import Hyperlink from "@/components/Hyperlink";
 
 export default function EncodedEmailHyperlink({ address, children }) {
   const [decodedEmail, setDecodedEmail] = useState("");

@@ -8,6 +8,13 @@ const nextConfig = {
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
     // Allowed list of image formats, hosts
     images: {
+        // Increase expiration (Max Age) of cache
+        // https://vercel.com/docs/image-optimization#remote-images-cache-key
+        // https://vercel.com/docs/image-optimization/managing-image-optimization-costs
+        // https://nextjs.org/docs/app/api-reference/components/image#caching-behavior
+        // Can be safetly increased as all user-generated imagery use uniques slugs
+        minimumCacheTTL: 2678400, // 31 days (default value is `60`, i.e. one minute)
+        // Define where remote images can be pulled from
         remotePatterns: [
             {
                 protocol: 'https',

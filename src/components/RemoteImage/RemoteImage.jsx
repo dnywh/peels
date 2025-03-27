@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 //TODO: Use safer getPublicUrl method from Supabase
-// But this adds complication and all my URLs are already public
+// But this adds complication and all storage URLs are already public
 
 // E.g.
 // import { getAvatarUrl } from "@/utils/mediaUtils";

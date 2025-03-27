@@ -401,13 +401,6 @@ export async function fetchListingsInView(
 
   try {
     const { data, error } = await withRetry(async () => {
-      // console.log("Fetching listings with bounds:", {
-      //   south,
-      //   west,
-      //   north,
-      //   east,
-      // });
-
       return await supabase.rpc("listings_in_view", {
         min_lat: south,
         min_long: west,

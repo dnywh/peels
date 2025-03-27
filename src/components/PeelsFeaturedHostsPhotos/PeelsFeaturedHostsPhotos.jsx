@@ -60,17 +60,20 @@ function PeelsFeaturedHostsPhotos() {
   useEffect(() => {
     const loadListings = async () => {
       const { data, error } = await supabase
-        .from("listings")
+        .from("listings_public_data")
         .select()
         .in("slug", featuredListingsForPhotos)
+        // Weed-out any accidental additions that don't meet our 'featured' criteria
         .neq("type", "residential")
-        .neq("visibility", false)
-        .neq("photos", "{}")
-        .order("created_at", { ascending: false });
+        .neq("photos", "{}");
+      // Filtering out listings with false visibility is handled at the view level
+
       if (error) {
         console.error("Error loading featured listings:", error);
         return;
       }
+
+      console.log(data);
       // Randomize the array before setting state
       const shuffledData = [...data].sort(() => Math.random() - 0.5);
       setFeaturedListings(shuffledData);

@@ -44,7 +44,8 @@ export default async function ProfilePage({ searchParams }) {
   } = await supabase.auth.getUser();
 
   const { data: listings } = await supabase
-    .from("listings") // No need for listings_with_owner_data view because we're on the owner's profile page
+    // We can access the "listings" table here directly as we have a policy set allowing owners access to their full listings
+    .from("listings")
     .select()
     .eq("owner_id", user.id)
     .order('created_at', { ascending: true });
