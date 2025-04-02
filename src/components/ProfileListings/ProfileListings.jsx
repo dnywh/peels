@@ -1,14 +1,10 @@
 "use client";
 import Link from "next/link";
-
-import { getListingAvatar } from "@/utils/listing";
-
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
-
 import { styled } from "@pigment-css/react";
 
-const MAX_LISTINGS = 12; // TODO: Store this on Supabase and use in the related RLS policy, so they are always in sync
+const MAX_LISTINGS = 12; // TODO: Store this value on Supabase and use in the related RLS policy, so they are always in sync
 
 const ListingsList = styled("ul")(({ theme }) => ({
   display: "flex",

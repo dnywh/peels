@@ -73,7 +73,6 @@ function PeelsFeaturedHostsPhotos() {
         return;
       }
 
-      console.log(data);
       // Randomize the array before setting state
       const shuffledData = [...data].sort(() => Math.random() - 0.5);
       setFeaturedListings(shuffledData);

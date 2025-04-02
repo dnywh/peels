@@ -595,7 +595,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             confirmButtonText="Yes, delete listing"
             onSubmit={handleDeleteListing}
           >
-            Are you sure you want to delete your listing? This can’t be undone.
+            Are you sure you want to delete your listing? This is irreversible.
           </ButtonToDialog>
         </AdditionalSettings>
       )}
