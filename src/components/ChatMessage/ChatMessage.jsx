@@ -10,14 +10,12 @@ const ChatMessageContainer = styled("div")({
     {
       props: { direction: "sent" },
       style: {
-        textAlign: "right",
         alignItems: "flex-end",
       },
     },
     {
       props: { direction: "received" },
       style: {
-        textAlign: "left",
         alignItems: "flex-start",
       },
     },
