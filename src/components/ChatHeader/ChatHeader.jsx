@@ -166,6 +166,7 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
           {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
           {/* TODO: Extract and have a 'otherPersonName' const and a more malleable 'recipient and their listing name' as per above */}
           <h1>{otherPersonName}</h1>
+          {/* TODO: Match byline with how new-chat-message does this. I.e. when owner is looking at a message from initiator, show "Keen composter" or similar */}
           {role === "initiator" && (
             <p>
               {listing.type === "residential"
