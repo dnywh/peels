@@ -38,6 +38,8 @@ export default function RemoteImage({
   ...props
 }) {
   // Fall back to default profile image if no filename or public bucket
+  // Note that these are duplicated on the static/avatars bucket for emails
+  // So update in both places if they ever change
   if (!filename || bucket === "public") {
     const imagePath = !filename
       ? `/avatars/default/${defaultImage}`

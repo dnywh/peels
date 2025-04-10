@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
 import { NewChatMessageEmail } from "../_templates/new-chat-message.tsx";
+// Temporarily required, see below PR comment
+import { render } from 'npm:@react-email/render'; 
 
 // Look up required API keys from Supabase secrets
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -43,7 +45,7 @@ const handler = async (_request: Request): Promise<Response> => {
     const senderAvatar = messageData.sender_avatar;
     console.log("Sender avatar:", senderAvatar);
 
-    const listingAvatar = messageData.listing_avatar;
+    const listingAvatar = messageData.thread.listing_avatar;
     console.log("Listing avatar:", listingAvatar);
 
     const listingSlug = messageData.thread.listing_slug;
@@ -74,22 +76,34 @@ const handler = async (_request: Request): Promise<Response> => {
       : messageData.thread.owner_first_name;
 
     // Determine which avatar(s) to show to the recipient
-    // If the recipient is the listing owner just show the the sender's avatar
-    // If the recipient is the initiator (i.e. the sender is the listing owner) set the avatarMajorUrl to the listing's avatar
-    const avatarMajorUrl = recipientRole === "owner"
-    ? senderAvatar
-    : listingAvatar
+    let avatarMajorUrl: string | null = null;
+    let avatarMajorBucket: string | null = null;
+    let avatarMinorUrl: string | null = null;
 
-    // Since this avatarMajorUrl could be in either the `avatars` or `listing_avatars` bucket, we should send that through too
-    const avatarMajorBucket = recipientRole === "owner"
-    ? "avatars"
-    : "listing_avatars"
-
-    // If the recipient is the listing owner, we've already shown the sender's avatar in avatarMajorUrl, so return null
-    // If the recipient is the initiator (i.e. the sender is the listing owner) set the avatarMinorUrl to the sender's avatar, if they have one
-    const avatarMinorUrl = recipientRole === "owner"
-    ? null
-    : senderAvatar
+    if (recipientRole === "owner") {
+      // If the recipient is the listing owner, always show the sender's avatar as the primary avatar
+      avatarMajorUrl = senderAvatar;
+      avatarMajorBucket = "avatars";
+      avatarMinorUrl = null; // No secondary avatar needed
+      console.log("Recipient is owner. Showing sender avatar:", senderAvatar);
+    } else {
+      // If the recipient is the initiator (donor/guest)
+      if (listingType === "residential") {
+        // Special case: Residential listings don't have their own avatar.
+        // Show the sender's (host's) avatar as the primary avatar.
+        avatarMajorUrl = senderAvatar;
+        avatarMajorBucket = "avatars";
+        avatarMinorUrl = null; // No secondary avatar needed
+        console.log("Recipient is initiator (residential). Showing sender avatar:", senderAvatar);
+      } else {
+        // For non-residential listings, show the listing's avatar as primary
+        // and the sender's (host's) avatar as secondary.
+        avatarMajorUrl = listingAvatar;
+        avatarMajorBucket = "listing_avatars";
+        avatarMinorUrl = senderAvatar;
+        console.log("Recipient is initiator (non-residential). Showing listing avatar:", listingAvatar, "and sender avatar:", senderAvatar);
+      }
+    }
 
     console.log("Sender ID from chat_messages:", record.sender_id);
     console.log("Recipient ID from chat_threads:", recipientId);
@@ -111,6 +125,7 @@ const handler = async (_request: Request): Promise<Response> => {
       from: "Peels <team@peels.app>",
       to: [recipientEmail],
       subject: `${senderName} just messaged you`,
+      plainText: true,
       react: NewChatMessageEmail({
         senderName,
         recipientName,
@@ -125,6 +140,23 @@ const handler = async (_request: Request): Promise<Response> => {
         avatarMajorBucket,
         avatarMinorUrl
       }),
+      // Plain text version
+      // Can be removed once this PR is merged
+      // https://github.com/resend/resend-node/pull/469#issue-2871291956
+      text: await render(NewChatMessageEmail({
+        senderName,
+        recipientName,
+        // messageContent: record.content,
+        threadId: record.thread_id,
+        listingSlug,
+        listingAreaName,
+        recipientRole,
+        listingName,
+        listingType,
+        avatarMajorUrl,
+        avatarMajorBucket,
+        avatarMinorUrl
+      }), { plainText: true }), 
     });
 
     if (error) {

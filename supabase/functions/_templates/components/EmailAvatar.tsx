@@ -64,7 +64,7 @@ const EmailAvatar = ({
 export default EmailAvatar;
 
 const avatarRow = {
-  marginTop: "28px",
+  marginTop: "24px",
 };
 
 const twoUpColumn = {
@@ -75,14 +75,14 @@ const twoUpImgLeft = {
   margin: "-20px -32px auto auto",
   borderRadius: "12px",
   border: "4px solid #f4f4f4", // Slightly offwhite because most mail clients don't support box-shadow
-  transform: "rotate(-3deg)", // Apple Mail only
+  transform: `rotate(${assignments.rotations.avatar})`, // Apple Mail only
   boxShadow: `3px 3px 0 0 rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08)`, // Apple Mail only
 };
 const twoUpImgRight = {
   margin: "20px auto auto -6px",
   borderRadius: "10px",
   border: "4px solid #f4f4f4", // Slightly offwhite because most mail clients don't support box-shadow
-  transform: "rotate(3deg)", // Apple Mail only
+  transform: `rotate(calc(-1 * ${assignments.rotations.avatar}))`, // Apple Mail only
   boxShadow: `3px 3px 0 0 rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08)`, // Apple Mail only
 };
 
@@ -90,6 +90,6 @@ const oneUpImg = {
   margin: "auto",
   borderRadius: "12px",
   border: "4px solid #f4f4f4", // Slightly offwhite because most mail clients don't support box-shadow
-  transform: "rotate(2deg)", // Apple Mail only
+  transform: `rotate(${assignments.rotations.avatar})`, // Apple Mail only
   boxShadow: `3px 3px 0 0 rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08)`, // Apple Mail only
 };

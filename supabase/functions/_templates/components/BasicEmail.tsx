@@ -72,10 +72,10 @@ export const BasicEmail = ({
           <Section style={introSection}>
             <Img
               src={`${assetUrl}/logo${logoUnread ? "-unread" : ""}.png`}
-              width="42"
-              height="44"
               alt="Peels logo"
               style={logoImg}
+              width="42"
+              height="44"
             />
             <Heading as="h1" style={heading}>
               {headingText}

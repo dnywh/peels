@@ -1,4 +1,4 @@
-import { Heading, Text } from "npm:@react-email/components";
+import { Heading, Text, Row } from "npm:@react-email/components";
 import BasicEmail from "./components/BasicEmail.tsx";
 import EmailAvatar from "./components/EmailAvatar.tsx";
 import EmailButton from "./components/EmailButton.tsx";
@@ -69,22 +69,18 @@ export const NewChatMessageEmail = ({
         avatarMinorUrl={avatarMinorUrl ? avatarMinorUrl : undefined}
         listingType={listingType ? listingType : undefined}
       />
-      <Heading as="h2" style={senderHeading}>
-        {senderName}
-      </Heading>
 
-      <Text style={senderByline}>
-        {recipientRole === "owner"
-          ? "Keen composter"
-          : listingName
-            ? listingName
-            : `Resident of ${listingAreaName}`}
-      </Text>
+      <Row style={avatarSubtitleRow}>
+        <Heading as="h2" style={senderHeading}>
+          {senderName}
+        </Heading>
 
-      <Heading as="h2" style={senderHeading}>
-        {senderName}
-      </Heading>
-      <Text style={senderByline}>Keen composter</Text>
+        {recipientRole === "initiator" && (
+          <Text style={listingByline}>
+            {listingName ? listingName : `Resident of ${listingAreaName}`}
+          </Text>
+        )}
+      </Row>
 
       <EmailParagraph>
         Hi {recipientName}, you’ve received a new message from {senderName}.
@@ -106,6 +102,10 @@ export const NewChatMessageEmail = ({
 
 export default NewChatMessageEmail;
 
+const avatarSubtitleRow = {
+  margin: "4px auto 32px auto",
+};
+
 const senderHeading = {
   fontSize: "24px",
   lineHeight: "110%",
@@ -115,11 +115,11 @@ const senderHeading = {
   textWrap: "balance" as const,
   color: assignments.colors.text.brand.primary,
 };
-const senderByline = {
+const listingByline = {
   fontSize: "14px",
   lineHeight: "110%",
   letterSpacing: "-0.015em",
-  margin: "6px auto 32px",
+  margin: "6px auto 0",
   textAlign: "center" as const,
   textWrap: "balance" as const,
   color: assignments.colors.text.ui.quaternary,
