@@ -1,6 +1,6 @@
 # Peels
 
-[Peels](https://www.peels.app) connects people (or businesses) who have food scraps with those who can compost or repurpose them. It’s a free, non-commercial, community project.
+[Peels](https://www.peels.app) connects people with food scraps with those who compost. It’s a free, non-commercial, community project.
 
 Peels is built on Next.js and Supabase. The code is open source and can be used as a starting point for your own circular economy projects.
 

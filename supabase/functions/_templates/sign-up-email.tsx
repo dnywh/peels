@@ -29,7 +29,7 @@ export const SignUpEmail = ({
 }: SignUpEmailProps) => {
   return (
     <EmailBody
-      previewText={`Let's get you composting, ${firstName}! Here's a link to verify your Peels account.`}
+      previewText={`Let's get you composting, ${firstName}! Here’s a link to verify your Peels account.`}
       headingText="Welcome to Peels"
       footerText="You’re receiving this email because you signed up for a Peels account."
     >

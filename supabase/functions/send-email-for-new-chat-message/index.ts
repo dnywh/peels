@@ -133,7 +133,6 @@ const handler = async (_request: Request): Promise<Response> => {
       from: "Peels <team@peels.app>",
       to: [recipientEmail],
       subject: `${senderName} just messaged you`,
-      plainText: true, // TODO: Is this required? `text` below may handle this alone
       react: NewChatMessageEmail({
         senderName,
         recipientName,

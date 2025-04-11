@@ -5,7 +5,7 @@ import * as React from "npm:react";
 
 interface EmailChangeEmailProps {
   email: string;
-  // newEmail: string;
+  newEmail: string;
   supabase_url: string;
   email_action_type: string;
   redirect_to: string;
@@ -17,7 +17,7 @@ interface EmailChangeEmailProps {
 
 export const EmailChangeEmail = ({
   email,
-  // newEmail,
+  newEmail,
   supabase_url,
   email_action_type,
   redirect_to,
@@ -39,10 +39,9 @@ export const EmailChangeEmail = ({
         Change email address
       </EmailButton>
 
-      {/* Unable to access newEmail, see index.ts for information */}
-      {/* <EmailParagraph>
+      <EmailParagraph>
         As a reminder, you’re changing from {email} to {newEmail}.
-      </EmailParagraph> */}
+      </EmailParagraph>
 
       <EmailParagraph>
         Just hit ‘reply’ if you run into any issues or have questions.

@@ -260,18 +260,11 @@ function ProfileAccountSettings({ user, profile }) {
                   email.error ? "error" : email.success ? "success" : "default"
                 }
               >
-                {/* {email.error
-                  ? email.error
-                  : email.success
-                    ? "Check your email for the verification link."
-                    : "We’ll send a verification link to this email."} */}
-                {/* TODO: Supabase bug means this email must temporarily go to the existing email address */}
-                {/* See send-email-for-auth-actions/index.ts for information */}
                 {email.error
                   ? email.error
                   : email.success
-                    ? "Check your current email address for the verification link."
-                    : "We’ll send a verification link to your current email address."}
+                    ? "Check your email for the verification link."
+                    : "We’ll send a verification link to this email."}
               </InputHint>
             </Field>
             <ButtonGroup>

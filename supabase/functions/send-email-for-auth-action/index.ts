@@ -13,8 +13,8 @@ import { MagicLinkEmail } from "../_templates/magic-link-email.tsx";
 import { InviteEmail } from "../_templates/invite-email.tsx";
 import { ReauthenticationEmail } from "../_templates/reauthentication-email.tsx";
 import { renderAsync } from "npm:@react-email/components@0.0.22";
-// import { render } from "npm:@react-email/render";
 // Temporarily required, see below PR comment
+// import { render } from "npm:@react-email/render";
 
 // Look up required API keys from Supabase secrets
 const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
@@ -41,18 +41,13 @@ Deno.serve(async (req) => {
     } = wh.verify(payload, headers) as {
       user: {
         email: string;
-        // email_change: string;
-        // email_change_new: string;
+        new_email: string;
         user_metadata: {
           first_name: string; // Only reliable upon signup, as user can later outdate this value (via editing their name on profiles table)
           // lang: string;
         };
       };
       email_data: {
-        // email: string;
-        // new_email: string;
-        // email_change: string;
-        // email_change_new: string;
         token: string;
         token_hash: string;
         redirect_to: string;
@@ -65,6 +60,7 @@ Deno.serve(async (req) => {
     };
 
     // Prepare empty variables to be filled based on email_action_type
+    let emailAddress: string;
     let subject: string;
     let html: string;
     let text: string;
@@ -80,6 +76,7 @@ Deno.serve(async (req) => {
       // AKA 'reset password' or 'forgot password'
       // Sent to (signed out) visitors who go through the 'forgot password' flow
       // Only triggers an email if the visitor enters an email address that matches that of a Peels account
+      emailAddress = user.email;
       subject = "Reset your password on Peels";
       html = await renderAsync(
         React.createElement(ResetPasswordEmail, {
@@ -103,6 +100,7 @@ Deno.serve(async (req) => {
     } else if (email_action_type === "signup") {
       // Sent to new users after sign up, before they can do anything else
       // They have one hour to verify their account
+      emailAddress = user.email;
       subject = "Verify your Peels account";
       html = await renderAsync(
         React.createElement(SignUpEmail, {
@@ -129,17 +127,14 @@ Deno.serve(async (req) => {
       );
     } else if (email_action_type === "email_change") {
       // Sent to existing users who change their email address
-      // When these (signed in) submit a new email address, this email is sent to the *new* address only (currently going to the old/current address only)
-      // They must confirm this new email address via a link in that email (again, to the old/current address)
+      // When these (signed in) submit a new email address, this email is sent to the *new* address only
+      // They must confirm this new email address via a link in that email (again, sent only to the new address)
+      emailAddress = user.new_email; // Since we want to send to the *new* email address
       subject = "Confirm your email change on Peels";
       html = await renderAsync(
         React.createElement(EmailChangeEmail, {
           email: user.email, // Existing email
-          // TODO: unable to populate newEmail field. This is both problematic bcause I can't render this inline
-          // But more importantly, since I don't have that new email, I can't email them confirming it
-          // Therefore I can only email the old email address. See bug report:
-          // https://github.com/supabase/supabase/issues/30605#issuecomment-2795774027
-          // newEmail: user.email_change_new, // TODO: Both `newEmail: new_email` and `user.email_change` not working
+          newEmail: user.new_email, // New email
           supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
           token_hash,
           redirect_to,
@@ -159,6 +154,7 @@ Deno.serve(async (req) => {
     } else if (email_action_type === "magiclink") {
       // Passwordless login via email for the user
       // Sent manually via Supabase dashboard
+      emailAddress = user.email;
       subject = "Your magic link for Peels";
       html = await renderAsync(
         React.createElement(MagicLinkEmail, {
@@ -182,6 +178,7 @@ Deno.serve(async (req) => {
     } else if (email_action_type === "invite") {
       // Invite a new user
       // Sent manually via Supabase dashboard
+      emailAddress = user.email;
       subject = "You’ve been invited to Peels";
       html = await renderAsync(
         React.createElement(InviteEmail, {
@@ -205,6 +202,7 @@ Deno.serve(async (req) => {
     } else if (email_action_type === "reauthentication") {
       // OTP code
       // Sent manually via Supabase dashboard
+      emailAddress = user.email;
       subject = "Confirm reauthentication on Peels";
       html = await renderAsync(
         React.createElement(ReauthenticationEmail, {
@@ -235,7 +233,7 @@ Deno.serve(async (req) => {
     );
     const { error } = await resend.emails.send({
       from: "Peels <team@peels.app>",
-      to: [user.email], // TODO: swap out for newEmail in the `email_change` use case, as that should go to the new email address, not existing
+      to: [emailAddress],
       subject,
       html,
       text,
