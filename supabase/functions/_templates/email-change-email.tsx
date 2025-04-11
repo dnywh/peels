@@ -5,10 +5,7 @@ import * as React from "npm:react";
 
 interface EmailChangeEmailProps {
   email: string;
-  newEmail: string;
-  //   username: string;
-  //   lang: string;
-  //   token: string;
+  // newEmail: string;
   supabase_url: string;
   email_action_type: string;
   redirect_to: string;
@@ -20,10 +17,7 @@ interface EmailChangeEmailProps {
 
 export const EmailChangeEmail = ({
   email,
-  newEmail,
-  //   username,
-  //   lang,
-  //   token,
+  // newEmail,
   supabase_url,
   email_action_type,
   redirect_to,
@@ -31,7 +25,7 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => {
   return (
     <EmailBody
-      previewText="A link to change the email address you use on Peels."
+      previewText="Here’s a link to change the email address you use on Peels."
       headingText="Confirm your email change"
       footerText="You’re receiving this email because you requested an email address change on Peels."
     >
@@ -45,9 +39,10 @@ export const EmailChangeEmail = ({
         Change email address
       </EmailButton>
 
-      <EmailParagraph>
+      {/* Unable to access newEmail, see index.ts for information */}
+      {/* <EmailParagraph>
         As a reminder, you’re changing from {email} to {newEmail}.
-      </EmailParagraph>
+      </EmailParagraph> */}
 
       <EmailParagraph>
         Just hit ‘reply’ if you run into any issues or have questions.

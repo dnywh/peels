@@ -13,8 +13,8 @@ import { MagicLinkEmail } from "../_templates/magic-link-email.tsx";
 import { InviteEmail } from "../_templates/invite-email.tsx";
 import { ReauthenticationEmail } from "../_templates/reauthentication-email.tsx";
 import { renderAsync } from "npm:@react-email/components@0.0.22";
-// Temporarily required, see below PR comment
 // import { render } from "npm:@react-email/render";
+// Temporarily required, see below PR comment
 
 // Look up required API keys from Supabase secrets
 const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
@@ -37,21 +37,22 @@ Deno.serve(async (req) => {
         token_hash,
         redirect_to,
         email_action_type,
-        new_email,
       },
     } = wh.verify(payload, headers) as {
       user: {
         email: string;
-        email_change: string;
+        // email_change: string;
+        // email_change_new: string;
         user_metadata: {
-          username: string; // Only reliable upon signup, as user can later outdate this value (via editing their name on profiles table)
-          first_name: string;
-          lang: string;
+          first_name: string; // Only reliable upon signup, as user can later outdate this value (via editing their name on profiles table)
+          // lang: string;
         };
       };
       email_data: {
-        email: string; // Testing (what's the difference with user.email above?)
-        new_email: string; // Testing (desctructured above?)
+        // email: string;
+        // new_email: string;
+        // email_change: string;
+        // email_change_new: string;
         token: string;
         token_hash: string;
         redirect_to: string;
@@ -59,6 +60,7 @@ Deno.serve(async (req) => {
         site_url: string;
         token_new: string;
         token_hash_new: string;
+        // Tests
       };
     };
 
@@ -80,7 +82,6 @@ Deno.serve(async (req) => {
       subject = "Reset your password on Peels";
       html = await renderAsync(
         React.createElement(ResetPasswordEmail, {
-          // username: user["user_metadata"].username,
           // lang: user["user_metadata"].lang,
           supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
           // token,
@@ -97,7 +98,7 @@ Deno.serve(async (req) => {
       html = await renderAsync(
         React.createElement(SignUpEmail, {
           email: user.email,
-          firstName: user["user_metadata"].first_name, // Tried .username, no luck
+          firstName: user["user_metadata"].first_name, // Replaced .username. Only reliable for signup purposes, see above
           // lang: user["user_metadata"].lang,
           supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
           // token,
@@ -109,13 +110,17 @@ Deno.serve(async (req) => {
       );
     } else if (email_action_type === "email_change") {
       // Sent to existing users who change their email address
-      // When these (signed in) submit a new email address, this email is sent (to the old/current address only)
+      // When these (signed in) submit a new email address, this email is sent to the *new* address only (currently going to the old/current address only)
       // They must confirm this new email address via a link in that email (again, to the old/current address)
       subject = "Confirm your email change on Peels";
       html = await renderAsync(
         React.createElement(EmailChangeEmail, {
-          email: user.email,
-          newEmail: user.email_change, // TODO: newEmail: new_email Not working
+          email: user.email, // Existing email
+          // TODO: unable to populate newEmail field. This is both problematic bcause I can't render this inline
+          // But more importantly, since I don't have that new email, I can't email them confirming it
+          // Therefore I can only email the old email address. See bug report:
+          // https://github.com/supabase/supabase/issues/30605#issuecomment-2795774027
+          // newEmail: user.email_change_new, // TODO: Both `newEmail: new_email` and `user.email_change` not working
           supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
           token_hash,
           redirect_to,
@@ -125,7 +130,7 @@ Deno.serve(async (req) => {
       );
       // TODO: (email_action_type === "email") and/or (email_action_type === "email_change_new")
       // Poor/lack of documentation makes me unsure which of those to add, or if they are the same
-      // My guess: "email_change_new" is the currently-disabled requirement to have the *new* email addresses confirmed (in addition to confirming via the old one in "email_change")
+      // My guess: "email_change_new" is the currently-disabled requirement to have the *old* email addresses confirmed (in addition to confirming only via the new one in "email_change")
       // My guess: "email" is EmailOTPVerification, perhaps used when 2FA is enabled, as an additional OTP step to signing in
     } else if (email_action_type === "magiclink") {
       // Passwordless login via email for the user
@@ -163,12 +168,7 @@ Deno.serve(async (req) => {
       subject = "Confirm reauthentication on Peels";
       html = await renderAsync(
         React.createElement(ReauthenticationEmail, {
-          // lang: user["user_metadata"].lang,
-          // supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
           token,
-          // token_hash,
-          // redirect_to,
-          // email_action_type,
         }),
         // { plainText: true },
       );
@@ -182,11 +182,11 @@ Deno.serve(async (req) => {
 
     // Send the email
     console.log(
-      `Sending the email: ${subject}`,
+      `Sending email: ${subject}`,
     );
     const { error } = await resend.emails.send({
       from: "Peels <team@peels.app>",
-      to: [user.email],
+      to: [user.email], // TODO: swap out for newEmail in the `email_change` use case, as that should go to the new email address, not existing
       subject,
       html,
       // plainText: true,
