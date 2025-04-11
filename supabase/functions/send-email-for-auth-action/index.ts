@@ -67,6 +67,7 @@ Deno.serve(async (req) => {
     // Prepare empty variables to be filled based on email_action_type
     let subject: string;
     let html: string;
+    let text: string;
 
     console.log({ email_action_type });
     // All email action types must be included here, as this hook completely replaces the default auth emails on Supabase
@@ -89,7 +90,15 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        // { plainText: true },
+      );
+      text = await renderAsync(
+        React.createElement(ResetPasswordEmail, {
+          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
+          token_hash,
+          redirect_to,
+          email_action_type,
+        }),
+        { plainText: true },
       );
     } else if (email_action_type === "signup") {
       // Sent to new users after sign up, before they can do anything else
@@ -106,7 +115,17 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        // { plainText: true },
+      );
+      text = await renderAsync(
+        React.createElement(SignUpEmail, {
+          email: user.email,
+          firstName: user["user_metadata"].first_name,
+          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
+          token_hash,
+          redirect_to,
+          email_action_type,
+        }),
+        { plainText: true },
       );
     } else if (email_action_type === "email_change") {
       // Sent to existing users who change their email address
@@ -126,12 +145,17 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        // { plainText: true },
       );
-      // TODO: (email_action_type === "email") and/or (email_action_type === "email_change_new")
-      // Poor/lack of documentation makes me unsure which of those to add, or if they are the same
-      // My guess: "email_change_new" is the currently-disabled requirement to have the *old* email addresses confirmed (in addition to confirming only via the new one in "email_change")
-      // My guess: "email" is EmailOTPVerification, perhaps used when 2FA is enabled, as an additional OTP step to signing in
+      text = await renderAsync(
+        React.createElement(EmailChangeEmail, {
+          email: user.email,
+          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
+          token_hash,
+          redirect_to,
+          email_action_type,
+        }),
+        { plainText: true },
+      );
     } else if (email_action_type === "magiclink") {
       // Passwordless login via email for the user
       // Sent manually via Supabase dashboard
@@ -145,7 +169,15 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        // { plainText: true },
+      );
+      text = await renderAsync(
+        React.createElement(MagicLinkEmail, {
+          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
+          token_hash,
+          redirect_to,
+          email_action_type,
+        }),
+        { plainText: true },
       );
     } else if (email_action_type === "invite") {
       // Invite a new user
@@ -160,7 +192,15 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        // { plainText: true },
+      );
+      text = await renderAsync(
+        React.createElement(InviteEmail, {
+          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
+          token_hash,
+          redirect_to,
+          email_action_type,
+        }),
+        { plainText: true },
       );
     } else if (email_action_type === "reauthentication") {
       // OTP code
@@ -170,11 +210,20 @@ Deno.serve(async (req) => {
         React.createElement(ReauthenticationEmail, {
           token,
         }),
-        // { plainText: true },
+      );
+      text = await renderAsync(
+        React.createElement(ReauthenticationEmail, {
+          token,
+        }),
+        { plainText: true },
       );
     } else {
-      // Error likely reached if an email_action_type has not been defined above
+      // This error likely reached if an email_action_type has not been defined above
       // Every single one must be defined, as Supabase does not fall back to default auth emails
+      // Still TODO: (email_action_type === "email") and/or (email_action_type === "email_change_new")
+      // Poor/lack of documentation makes me unsure which of those to add, or if they are the same
+      // My guess: "email_change_new" is the currently-disabled requirement to have the *old* email addresses confirmed (in addition to confirming only via the new one in "email_change")
+      // My guess: "email" is EmailOTPVerification, perhaps used when 2FA is enabled, as an additional OTP step to signing in
       throw new Error(
         `Email action type "${email_action_type}" has not yet been implemented`,
       );
@@ -189,7 +238,7 @@ Deno.serve(async (req) => {
       to: [user.email], // TODO: swap out for newEmail in the `email_change` use case, as that should go to the new email address, not existing
       subject,
       html,
-      // plainText: true,
+      text,
     });
     if (error) {
       throw error;
