@@ -22,7 +22,7 @@ interface EmailBodyProps {
   children: ReactNode;
 }
 
-const assetUrl = Deno.env.get("STATIC_ASSET_URL");
+const staticAssetUrl = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/static`;
 
 export const EmailBody = ({
   logoUnread = false,
@@ -38,7 +38,7 @@ export const EmailBody = ({
           fontFamily="National 2"
           fallbackFontFamily={["Helvetica", "sans-serif"]}
           webFont={{
-            url: `${assetUrl}/national-2-regular.woff2`,
+            url: `${staticAssetUrl}/fonts/national-2-regular.woff2`,
             format: "woff2",
           }}
           fontWeight={400}
@@ -48,7 +48,7 @@ export const EmailBody = ({
           fontFamily="National 2"
           fallbackFontFamily={["Helvetica", "sans-serif"]}
           webFont={{
-            url: `${assetUrl}/national-2-medium.woff2`,
+            url: `${staticAssetUrl}/fonts/national-2-medium.woff2`,
             format: "woff2",
           }}
           fontWeight={500}
@@ -58,7 +58,7 @@ export const EmailBody = ({
           fontFamily="National 2"
           fallbackFontFamily={["Helvetica", "sans-serif"]}
           webFont={{
-            url: `${assetUrl}/national-2-bold.woff2`,
+            url: `${staticAssetUrl}/fonts/national-2-bold.woff2`,
             format: "woff2",
           }}
           fontWeight={700}
@@ -71,7 +71,7 @@ export const EmailBody = ({
         <Container style={container}>
           <Section style={introSection}>
             <Img
-              src={`${assetUrl}/logo${logoUnread ? "-unread" : ""}.png`}
+              src={`${staticAssetUrl}/logo${logoUnread ? "-unread" : ""}.png`}
               alt="Peels logo"
               style={logoImg}
               width="42"

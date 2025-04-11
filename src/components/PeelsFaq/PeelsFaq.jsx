@@ -92,7 +92,7 @@ function PeelsFaq() {
         <p>
           Check out our{" "}
           <Hyperlink
-            href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/promo-kit.zip`}
+            href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`}
           >
             promo kit
           </Hyperlink>{" "}

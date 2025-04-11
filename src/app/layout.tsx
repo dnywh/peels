@@ -29,12 +29,14 @@ declare module "@pigment-css/react/theme" {
   }
 }
 
+const staticAssetUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static`;
+
 // Global styles:
 globalCss`
 // National 2 font
   @font-face {
     font-family: 'National 2';
-    src: url(${process.env.NEXT_PUBLIC_FONTS_URL}/national-2-regular-subset.woff2) format('woff2');
+    src: url(${staticAssetUrl}/fonts/national-2-regular-subset.woff2) format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -42,7 +44,7 @@ globalCss`
 
   @font-face {
     font-family: 'National 2';
-    src: url(${process.env.NEXT_PUBLIC_FONTS_URL}/national-2-medium-subset.woff2) format('woff2');
+    src: url(${staticAssetUrl}/fonts/national-2-medium-subset.woff2) format('woff2');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -50,7 +52,7 @@ globalCss`
 
   @font-face {
     font-family: 'National 2';
-    src: url(${process.env.NEXT_PUBLIC_FONTS_URL}/national-2-bold-subset.woff2) format('woff2');
+    src: url(${staticAssetUrl}/fonts/national-2-bold-subset.woff2) format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: swap;

@@ -11,7 +11,6 @@ interface EmailAvatarProps {
 }
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
-// const assetUrl = Deno.env.get("STATIC_ASSET_URL");
 const storageUrl = `${supabaseUrl}/storage/v1/object/public/`;
 
 const EmailAvatar = ({
