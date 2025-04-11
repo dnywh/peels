@@ -14,8 +14,8 @@ import {
 } from "npm:@react-email/components";
 import { assignments } from "../../_shared/tokens.js";
 
-interface BasicEmailProps {
-  logoUnread: boolean;
+interface EmailBodyProps {
+  logoUnread?: boolean;
   previewText: string;
   headingText: string;
   footerText: ReactNode;
@@ -24,13 +24,13 @@ interface BasicEmailProps {
 
 const assetUrl = Deno.env.get("STATIC_ASSET_URL");
 
-export const BasicEmail = ({
-  logoUnread,
+export const EmailBody = ({
+  logoUnread = false,
   previewText,
   headingText,
   footerText,
   children,
-}: BasicEmailProps) => {
+}: EmailBodyProps) => {
   return (
     <Html style={html} lang="en">
       <Head>
@@ -93,7 +93,7 @@ export const BasicEmail = ({
   );
 };
 
-export default BasicEmail;
+export default EmailBody;
 
 const html = {
   // backgroundColor: assignments.colors.background.sunk, // For full-bleed on Apple Mail, iOS

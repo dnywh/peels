@@ -1,5 +1,5 @@
 import { Heading, Text, Row } from "npm:@react-email/components";
-import BasicEmail from "./components/BasicEmail.tsx";
+import EmailBody from "./components/EmailBody.tsx";
 import EmailAvatar from "./components/EmailAvatar.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
@@ -38,7 +38,7 @@ export const NewChatMessageEmail = ({
 }: NewChatMessageEmailProps) => {
   const rootUrl = "https://www.peels.app";
   return (
-    <BasicEmail
+    <EmailBody
       logoUnread={true}
       previewText={`Hi ${recipientName}, you’ve received a new message from ${senderName}. Visit Peels to see what they wrote.`}
       headingText="New message on Peels"
@@ -55,7 +55,7 @@ export const NewChatMessageEmail = ({
           </>
         ) : (
           <>
-            You’ve received this email because you originally reached out to{" "}
+            You’re receiving this email because you originally reached out to{" "}
             {senderName} on{" "}
             <EmailFooterLink href={`${rootUrl}/profile`}>Peels</EmailFooterLink>
             .
@@ -96,7 +96,7 @@ export const NewChatMessageEmail = ({
         <br />
         Peels team
       </EmailParagraph>
-    </BasicEmail>
+    </EmailBody>
   );
 };
 

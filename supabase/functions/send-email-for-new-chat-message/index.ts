@@ -1,9 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
-import { NewChatMessageEmail } from "../_templates/new-chat-message.tsx";
+import { NewChatMessageEmail } from "../_templates/new-chat-message-email.tsx";
 // Temporarily required, see below PR comment
-import { render } from 'npm:@react-email/render'; 
+import { render } from "npm:@react-email/render";
 
 // Look up required API keys from Supabase secrets
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -17,7 +17,7 @@ const handler = async (_request: Request): Promise<Response> => {
     console.log("Record:", record);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    console.log("Supabase URL:", supabaseUrl)
+    console.log("Supabase URL:", supabaseUrl);
 
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseUrl || !supabaseServiceKey || !RESEND_API_KEY) {
@@ -58,7 +58,7 @@ const handler = async (_request: Request): Promise<Response> => {
     console.log("Listing type:", listingType);
 
     const listingAreaName = messageData.thread.listing_area_name;
-    console.log("Listing area name:", listingAreaName)
+    console.log("Listing area name:", listingAreaName);
 
     // Determine recipient_id (the user who isn't the sender)
     const recipientId = messageData.thread.initiator_id === record.sender_id
@@ -94,14 +94,22 @@ const handler = async (_request: Request): Promise<Response> => {
         avatarMajorUrl = senderAvatar;
         avatarMajorBucket = "avatars";
         avatarMinorUrl = null; // No secondary avatar needed
-        console.log("Recipient is initiator (residential). Showing sender avatar:", senderAvatar);
+        console.log(
+          "Recipient is initiator (residential). Showing sender avatar:",
+          senderAvatar,
+        );
       } else {
         // For non-residential listings, show the listing's avatar as primary
         // and the sender's (host's) avatar as secondary.
         avatarMajorUrl = listingAvatar;
         avatarMajorBucket = "listing_avatars";
         avatarMinorUrl = senderAvatar;
-        console.log("Recipient is initiator (non-residential). Showing listing avatar:", listingAvatar, "and sender avatar:", senderAvatar);
+        console.log(
+          "Recipient is initiator (non-residential). Showing listing avatar:",
+          listingAvatar,
+          "and sender avatar:",
+          senderAvatar,
+        );
       }
     }
 
@@ -138,25 +146,28 @@ const handler = async (_request: Request): Promise<Response> => {
         listingType,
         avatarMajorUrl,
         avatarMajorBucket,
-        avatarMinorUrl
+        avatarMinorUrl,
       }),
       // Plain text version
       // Can be removed once this PR is merged
       // https://github.com/resend/resend-node/pull/469#issue-2871291956
-      text: await render(NewChatMessageEmail({
-        senderName,
-        recipientName,
-        // messageContent: record.content,
-        threadId: record.thread_id,
-        listingSlug,
-        listingAreaName,
-        recipientRole,
-        listingName,
-        listingType,
-        avatarMajorUrl,
-        avatarMajorBucket,
-        avatarMinorUrl
-      }), { plainText: true }), 
+      text: await render(
+        NewChatMessageEmail({
+          senderName,
+          recipientName,
+          // messageContent: record.content,
+          threadId: record.thread_id,
+          listingSlug,
+          listingAreaName,
+          recipientRole,
+          listingName,
+          listingType,
+          avatarMajorUrl,
+          avatarMajorBucket,
+          avatarMinorUrl,
+        }),
+        { plainText: true },
+      ),
     });
 
     if (error) {
