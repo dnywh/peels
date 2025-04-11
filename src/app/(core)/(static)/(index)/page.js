@@ -196,7 +196,8 @@ export default function Index() {
           </Button>
           {/* TODO: {user ? <Link href="/profile#TODO-listing-form-for-signed-in-users">Create a listing</Link> : <Link href="/sign-up">Sign up</Link>} */}
           <Button href="/sign-up" variant="secondary" size="massive">
-            Join the community
+            {/* Join the community */}
+            Sign up to Peels
           </Button>
         </HeroButtons>
       </Intro>

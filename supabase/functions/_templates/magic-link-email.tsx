@@ -3,9 +3,7 @@ import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
 import * as React from "npm:react";
 
-interface EmailChangeEmailProps {
-  email: string;
-  newEmail: string;
+interface MagicLinkEmailProps {
   //   username: string;
   //   lang: string;
   //   token: string;
@@ -18,9 +16,7 @@ interface EmailChangeEmailProps {
 // Translations could live here and be determined by the `lang` prop. See below for an example:
 // https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/auth-hook-react-email-resend/_templates/sign-up.tsx
 
-export const EmailChangeEmail = ({
-  email,
-  newEmail,
+export const MagicLinkEmail = ({
   //   username,
   //   lang,
   //   token,
@@ -28,26 +24,22 @@ export const EmailChangeEmail = ({
   email_action_type,
   redirect_to,
   token_hash,
-}: EmailChangeEmailProps) => {
+}: MagicLinkEmailProps) => {
   return (
     <EmailBody
-      previewText="A link to change the email address you use on Peels."
-      headingText="Confirm your email change"
-      footerText="You’re receiving this email because you requested an email address change on Peels."
+      previewText="Here’s a link to instantly sign in to Peels."
+      headingText="Your magic link"
+      footerText="You’re receiving this email because you requested help signing in to Peels."
     >
       <EmailParagraph>
-        Follow this link to confirm your new email on Peels:
+        Follow this link to instantly sign in to Peels:
       </EmailParagraph>
 
       <EmailButton
         href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
       >
-        Change email address
+        Sign in to Peels
       </EmailButton>
-
-      <EmailParagraph>
-        As a reminder, you’re changing from {email} to {newEmail}.
-      </EmailParagraph>
 
       <EmailParagraph>
         Just hit ‘reply’ if you run into any issues or have questions.
@@ -62,4 +54,4 @@ export const EmailChangeEmail = ({
   );
 };
 
-export default EmailChangeEmail;
+export default MagicLinkEmail;

@@ -21,6 +21,7 @@ export default async function ForgotPassword(props: {
           <h1>Email sent</h1>
         </FormHeader>
         <Form as="container">
+          {/* TODO: include address that was emailed, so user can notice any typos */}
           <p>{searchParams.success}</p>
         </Form>
       </>

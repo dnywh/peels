@@ -5,7 +5,7 @@ import * as React from "npm:react";
 
 interface SignUpEmailProps {
   email: string;
-  username: string;
+  firstName: string;
   //   lang: string;
   //   token: string;
   supabase_url: string;
@@ -19,7 +19,7 @@ interface SignUpEmailProps {
 
 export const SignUpEmail = ({
   email,
-  username,
+  firstName,
   //   lang,
   //   token,
   supabase_url,
@@ -29,12 +29,12 @@ export const SignUpEmail = ({
 }: SignUpEmailProps) => {
   return (
     <EmailBody
-      previewText={`Let’s get you composting, ${username}! Here’s a link to verify your Peels account.`}
+      previewText={`Let's get you composting, ${firstName}! Here's a link to verify your Peels account.`}
       headingText="Welcome to Peels"
       footerText="You’re receiving this email because you signed up for a Peels account."
     >
       <EmailParagraph>
-        We’re so glad you’re here, {username}! Follow this link to verify your
+        We’re so glad you’re here, {firstName}! Follow this link to verify your
         account:
       </EmailParagraph>
 
@@ -42,7 +42,7 @@ export const SignUpEmail = ({
         // Append `&email=user@email.com` to standard {{ .ConfirmationURL }}
         href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}&email=${email}`}
       >
-        Reset password
+        Verify your Peels account
       </EmailButton>
 
       <EmailParagraph>
