@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site";
 import FaqContainer from "@/components/FaqContainer";
 import FaqDetails from "@/components/FaqDetails";
 import Hyperlink from "@/components/Hyperlink";
@@ -19,9 +20,14 @@ function PeelsFaq() {
           traveller’s guide to reducing food waste.
         </p>
         <p>
-          We plan for Peels to be around for the long haul, so will open source
-          the project and welcome community code contributions from later this
-          year.
+          We want Peels to be around for the long haul, so have{" "}
+          <Hyperlink
+            href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`}
+            target="_blank"
+          >
+            open sourced
+          </Hyperlink>{" "}
+          the project and welcome your contributions.
         </p>
       </FaqDetails>
       <FaqDetails>
@@ -44,8 +50,9 @@ function PeelsFaq() {
         <summary>What’s the financial model? Are you non-profit?</summary>
         <p>
           Peels is a non-commercial, community-led project. We may incorporate
-          as a not-for-profit in the future and accept funding for further
-          development, but we never intend to start charging for the service.
+          as a not-for-profit in the future and accept grant funding or
+          sponsorships for further development, but we never intend to start
+          charging for the service.
         </p>
       </FaqDetails>
       <FaqDetails>
@@ -75,12 +82,26 @@ function PeelsFaq() {
       </FaqDetails>
       <FaqDetails>
         <summary>I’d like to help build Peels. How do I get involved?</summary>
+        <p>You’re awesome. Thank you.</p>
         <p>
-          You’re awesome.{" "}
+          If you’re inclined to help on the technical side, check out our{" "}
+          <Hyperlink
+            href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`}
+            target="_blank"
+          >
+            GitHub repo
+          </Hyperlink>
+          . It has information on how to contribute, plus some existing issues
+          that could do with your eyes.
+        </p>
+
+        <p>
+          Community organising is also a big part of getting Peels off the
+          ground. Please don’t hesistate to{" "}
           <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
-            Email us
+            email us
           </EncodedEmailHyperlink>{" "}
-          and we’ll chat.
+          if that’s something you could help with.
         </p>
       </FaqDetails>
       <FaqDetails>

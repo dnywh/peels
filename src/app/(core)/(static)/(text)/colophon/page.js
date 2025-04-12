@@ -1,5 +1,5 @@
+import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
-
 export const metadata = {
   title: 'Colophon',
 }
@@ -14,13 +14,11 @@ export default function Colophon() {
         ShareWaste was a precursor to Peels with a similar idea: connecting people locally to divert organic material from landfill. We’re doing our best to continue the mission, in our own way.
       </p>
 
-
-
-
       <h2>Technology</h2>
+      <p>Peels is made possible thanks the free and open source software described below. We’ve also made Peels <Hyperlink href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`} target="_blank">open source</Hyperlink> to pay it forward and hopefully inspire similar circular economy projects.</p>
       <h3>Maps</h3>
       <p>
-        <Hyperlink href="https://www.mapbox.com/">Protomaps</Hyperlink> generously provides both the map tiles for Peels and a hosted API. We’re rendering those map tiles using <Hyperlink href="https://visgl.github.io/react-map-gl/">React Map GL</Hyperlink> and <Hyperlink href="https://github.com/maplibre/maplibre-gl-js">Maplibre GL JS</Hyperlink>.
+        <Hyperlink href="https://www.mapbox.com/" target="_blank">Protomaps</Hyperlink> generously provides both the map tiles for Peels and a hosted API. We’re rendering those map tiles using <Hyperlink href="https://visgl.github.io/react-map-gl/">React Map GL</Hyperlink> and <Hyperlink href="https://github.com/maplibre/maplibre-gl-js">Maplibre GL JS</Hyperlink>.
       </p>
 
       <h3>Components</h3>
@@ -33,11 +31,11 @@ export default function Colophon() {
 
       <h3>Icons</h3>
       <p>
-        Some icons are derived from the <Hyperlink href="https://lucide.dev/">Lucide</Hyperlink> and <Hyperlink href="https://heroicons.com/">Hero Icons</Hyperlink> libraries. The rest have been drawn manually.
+        Some icons are derived from the <Hyperlink href="https://lucide.dev/" target="_blank">Lucide</Hyperlink> and <Hyperlink href="https://heroicons.com/" target="_blank">Hero Icons</Hyperlink> libraries. The rest have been drawn manually.
       </p>
 
       <h3>Everything else</h3>
-      <p>Peels benefits from a bunch of open source libraries. We’ll publish a link to our GitHub repository when that’s ready to be made public.</p>
+      <p>Peels benefits from a whole heap of other open source libraries as noted on our <Hyperlink href={`${siteConfig.repoUrl}/blob/main/package.json`} target="_blank">GitHub repository</Hyperlink>.</p>
     </>
   );
 }

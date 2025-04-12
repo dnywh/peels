@@ -146,7 +146,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Hmm. Something’s not right. Mind trying again?",
+      "Hmm, something’s not right. Mind trying again?",
     );
   }
 
@@ -190,7 +190,9 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error sending email change email:", error);
-    return { error: "Sorry, we couldn’t send an email change link." };
+    return {
+      error: "Hmm, something’s not right. Check your email or try again.",
+    };
   }
 
   return { success: true };
@@ -260,7 +262,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Hmm. Something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
+      "Hmm, something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
     );
   }
 
@@ -318,7 +320,7 @@ export const deleteListingAction = async (slug: string) => {
     console.error("Error deleting listing:", error);
     return {
       success: false,
-      message: "Hmm. Something’s not right. Mind trying again?",
+      message: "Hmm, something’s not right. Mind trying again?",
     };
   }
 };
