@@ -1,8 +1,8 @@
 # Peels
 
-[Peels](https://www.peels.app) connects people with food scraps with those who compost. It’s a free, non-commercial, community project.
+[Peels](https://www.peels.app) connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.
 
-Peels is built on Next.js and Supabase. The code is open source and can be used as a starting point for your own circular economy projects.
+Peels is built on top of Next.js and Supabase. The code is [open source](#forking-peels) and could be used as a starting point for your own circular economy projects.
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ npm run dev
 | npm/yarn    | Latest stable         |
 | Git         | Latest stable         |
 
-Deno and Docker are also required if you plan to work on Supabase Functions and Edge Functions.
+Deno and Docker are also required if you plan to work on Supabase edge functions.
 
 ### Required Services
 
@@ -49,7 +49,7 @@ See [Contributing](#environment-variables) if you need access to shared developm
 
 ## Project Structure
 
-```
+```text
 peels/
 ├── src/                   # Source code
 │   ├── app/               # Next.js app router pages
@@ -74,6 +74,8 @@ Check out the list of [existing issues](https://github.com/dnywh/peels/issues) y
 Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](https://protomaps.com/account) will work just fine for local development. You’ll probably need the shared development keys for Supabase, so please introduce yourself and tell us how you plan to help on the [discussion board](https://github.com/dnywh/peels/discussions). We’ll go from there.
 
 > **Note**: We’re exploring ways to make local development work without a shared development key for Supabase, probably by [seeding example data](https://supabase.com/docs/guides/local-development/seeding-your-database) and doing something similar for authentication. We’d love your help with this.
+
+Environmental variables can also be optionally added to [Supabase edge functions](https://github.com/dnywh/peels/blob/main/supabase/functions) for local testing. You’re unlikely to need these though, as each edge function currently requires user information and interaction.
 
 ### Usage
 
@@ -106,7 +108,7 @@ npm run dev
 ### Development Guidelines
 
 - We use Pigment CSS for styling at a component-level
-- We’re moving towards TypeScript for type safety
+- We’re slowly moving towards TypeScript for type safety
 - Heavy commenting is encouraged to make the codebase accessible to others
 
 ### Getting Help
@@ -117,26 +119,15 @@ npm run dev
 
 ## Forking Peels
 
-Please review our [Usage Policy](#usage-policy) and [License](#license) before you fork and built upon Peels for your own purposes.
+Please review our [License](#license) before you fork and built upon Peels for your own purposes.
 
-### Usage Policy
-
-This project is intended for circular economy applications that:
-
-- Facilitate the sharing or repurposing of resources
-- Connect permanent locations with regular input/output needs
-- Operate on non-commercial, community-focused principles
-
-Examples of what you could build:
-
-- Tool libraries for community gardens
-- Creative materials exchange platforms
+Peels is designed to facilitate the sharing and repurposing of resources at a local community level. It’s therefore best suited as a foundation for similar circular economy projects. For example, you could use it to help kickstart a creative materials exchange platform or tool sharing platform. Let us know what you build!
 
 ### License
 
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0), with some additional terms to reflect our [Usage Policy](#usage-policy). See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License version 3 (GPLv3). See the [LICENSE](LICENSE) file for details.
 
-In short: you can use Peels as a base for your own non-commercial circular economy projects but not much else.
+In short: you can use Peels as a base for your own projects but only if you share-alike. That means you must license whatever you make under the same GLPv3 license and make the source code similarly available as we do with Peels.
 
 Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs) if your project doesn’t fit our license requirements.
 
@@ -169,4 +160,3 @@ Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/sup
 - Authentication and database by [Supabase](https://supabase.com)
 - Maps powered by [MapTiler](https://www.maptiler.com) and [Protomaps](https://protomaps.com)
 - Styled components built with [Pigment CSS](https://github.com/mui/pigment-css)
-- Our [contributors](https://github.com/dnywh/peels/graphs/contributors)!
