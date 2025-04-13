@@ -63,11 +63,11 @@ peels/
 
 ## Contributing to Peels
 
-Thank you for contributing! Please read our [Code of Conduct](https://github.com/dnywh/peels/blob/main/.github/CODE_OF_CONDUCT.md) before you start.
+Thank you for contributing! Please read our [Code of Conduct](https://github.com/dnywh/peels/blob/main/.github/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/dnywh/peels/contribute) before you start.
 
 For minor improvements, feel free to just go ahead and create a pull request. For major changes, please [open an issue](https://github.com/dnywh/peels/issues) first to discuss what you would like to change.
 
-Check out the list of [existing issues](https://github.com/dnywh/peels/issues) you could help out on.
+Check out the list of [existing issues](https://github.com/dnywh/peels/issues) you could help out on, and our [Wiki](https://github.com/dnywh/peels/wiki) for how things are set up.
 
 ### Environment Variables
 

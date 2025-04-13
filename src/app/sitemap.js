@@ -5,10 +5,10 @@ export default async function sitemap() {
   const supabase = await createClient();
 
   const { data: listings } = await supabase
-    .from("public.listings_public_data")
+    .from("listings_public_data")
     .select()
     .in("type", ["community", "business"])
-  // Filtering out listings with false visibility is handled at the view level
+  // Filtering out listings with false visibility is handled at the view level, not here
 
   // Start with the homepage
   const routes = [

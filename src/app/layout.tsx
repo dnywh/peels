@@ -153,14 +153,16 @@ fieldset {
 }
 
 // Allow animating things like details summary
-// See: https://youtu.be/Vzj3jSUbMtI?si=3xNf56u0E29aNjhr&t=219
+// https://youtu.be/Vzj3jSUbMtI?si=3xNf56u0E29aNjhr&t=219
+// https://www.joshwcomeau.com/email/2025-03-24-animating-height-auto/
 :root {
   interpolate-size: allow-keywords;
 }
 
-// Smooth scrolling everywhere
 html {
+  // Smooth scrolling everywhere
   scroll-behavior: smooth;
+  // Animate height, like on FAQ accordions
 }
 
 

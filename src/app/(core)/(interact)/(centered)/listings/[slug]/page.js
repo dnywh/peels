@@ -56,7 +56,7 @@ export async function generateMetadata({ params }) {
     const listingDisplayName = getListingDisplayName(listing, user);
     const listingCountryName = countries.find(country => country.code === listing.country_code)?.name;
     const listingFullLocation = `${listing.area_name}, ${listingCountryName}`
-    const listingDescription = `${listingDisplayName} is ${listing.type === "residential" ? '' : ` a ${listing.type}`} based in ${listingFullLocation}. Connect with them on ${siteConfig.name}, ${siteConfig.meta.explainer}.`
+    const listingDescription = `${listingDisplayName} is ${listing.type === "residential" ? '' : ` a ${listing.type}`} based in ${listingFullLocation}. ${listing.type === "residential" ? '' : `${listing.description}`} Connect with ${listing.type === "residential" ? 'them' : `${listing.name}`} on ${siteConfig.name}, ${siteConfig.meta.explainer}.`
 
     return {
         title: listingDisplayName, // Will be followed by title.template as defined in layout metadata (i.e. ` · Peels`)
