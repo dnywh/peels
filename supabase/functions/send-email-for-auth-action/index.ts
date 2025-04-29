@@ -29,6 +29,8 @@ Deno.serve(async (req) => {
   const headers = Object.fromEntries(req.headers);
   const wh = new Webhook(hookSecret);
 
+  const timingStart = Date.now(); // Begin timer for timeout debugging
+
   try {
     const {
       user,
@@ -102,6 +104,10 @@ Deno.serve(async (req) => {
       // They have one hour to verify their account
       emailAddress = user.email;
       subject = "Verify your Peels account";
+
+      // Timeout debugging
+      console.log("[signup] Start renderAsync", timingStart);
+
       html = await renderAsync(
         React.createElement(SignUpEmail, {
           email: user.email,
@@ -114,6 +120,13 @@ Deno.serve(async (req) => {
           email_action_type,
         }),
       );
+      // Timeout debugging
+      console.log(
+        "[signup] After renderAsync HTML",
+        Date.now() - timingStart,
+        "ms",
+      );
+
       text = await renderAsync(
         React.createElement(SignUpEmail, {
           email: user.email,
@@ -124,6 +137,20 @@ Deno.serve(async (req) => {
           email_action_type,
         }),
         { plainText: true },
+      );
+      // Timeout debugging
+      console.log(
+        "[signup] After renderAsync TEXT",
+        Date.now() - timingStart,
+        "ms",
+      );
+
+      // Timeout debugging
+      const resendStart = Date.now();
+      console.log(
+        "[signup] Before Resend send",
+        resendStart - timingStart,
+        "ms since start",
       );
     } else if (email_action_type === "email_change") {
       // Sent to existing users who change their email address
@@ -228,8 +255,12 @@ Deno.serve(async (req) => {
     }
 
     // Send the email
+    const resendSendStart = Date.now();
+    // Timeout debugging
     console.log(
-      `Sending email: ${subject}`,
+      "[global] Before resend.emails.send",
+      resendSendStart - timingStart,
+      "ms since function start",
     );
     const { error } = await resend.emails.send({
       from: "Peels <team@peels.app>",
@@ -238,6 +269,13 @@ Deno.serve(async (req) => {
       html,
       text,
     });
+    const resendSendEnd = Date.now();
+    // Timeout debugging
+    console.log(
+      "[global] After resend.emails.send",
+      resendSendEnd - resendSendStart,
+      "ms for Resend send",
+    );
     if (error) {
       throw error;
     }

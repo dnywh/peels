@@ -91,6 +91,22 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   });
 
   if (error || !user) {
+    // Temporary check and special handling for Supabase hook timeout errors
+    const hookTimeoutPatterns = [
+      "Error running hook URI",
+      "Failed to reach hook within maximum time",
+    ];
+    const isHookTimeout = hookTimeoutPatterns.some((pattern) =>
+      error?.message?.includes(pattern)
+    );
+    if (isHookTimeout) {
+      redirectUrl.searchParams.append(
+        "error",
+        "Hmm, something’s not right. Mind trying again?",
+      );
+      return redirect(redirectUrl.toString());
+    }
+    // Resume normal, global, catching
     console.error(
       error?.code + " " + error?.message || "No user returned from sign up",
     );
