@@ -44,18 +44,18 @@ export default IntroHeader;
 const enterAvatarAnimation = keyframes({
   from: {
     opacity: 0,
-    transform: "rotate(0deg) translate(-3rem, 2rem) scale(0.5)",
+    transform: "rotate(0deg) translate(-2.15rem, 2rem) scale(0.5)",
   },
   to: {
     opacity: 1,
-    transform: "rotate(-15deg) translate(-3rem, -1rem) scale(1)",
+    transform: "rotate(-15deg) translate(-2.15rem, -1rem) scale(1)",
   },
 });
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   position: "absolute",
   // Set pre-animation attributes
-  transform: "rotate(0deg) translate(-3rem, 2rem) scale(0.5)",
+  transform: "rotate(0deg) translate(-2.15rem, 2rem) scale(0.5)",
   opacity: 0,
   // Animate in on load
   animation: `${enterAvatarAnimation} 500ms forwards`,
@@ -67,18 +67,18 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
 const enterMarkerAnimation = keyframes({
   from: {
     opacity: 0,
-    transform: "rotate(0deg) translate(3rem, 2rem) scale(0.5)",
+    transform: "rotate(0deg) translate(2.15rem, 2rem) scale(0.5)",
   },
   to: {
     opacity: 1,
-    transform: "rotate(12deg) translate(3rem, 0) scale(1)",
+    transform: "rotate(12deg) translate(2.15rem, 1rem) scale(1)",
   },
 });
 
 const MarkerDemo = styled("div")(({ theme }) => ({
   position: "absolute",
   // Set pre-animation attributes
-  transform: "rotate(0deg) translate(3rem, 2rem) scale(0.5)",
+  transform: "rotate(0deg) translate(2.15rem, 2rem) scale(0.5)",
   opacity: 0,
   // Animate in on load
   animation: `${enterMarkerAnimation} 550ms forwards`,
@@ -90,11 +90,11 @@ const MarkerDemo = styled("div")(({ theme }) => ({
 const enterMapAnimation = keyframes({
   from: {
     opacity: 0,
-    transform: "scale(0.9)",
+    transform: "scale(1, 0.9) rotateX(-10deg) translateY(1rem)",
   },
   to: {
     opacity: 1,
-    transform: "scale(1)",
+    transform: "scale(1, 1) rotateX(0deg) translateY(0)",
   },
 });
 
@@ -111,11 +111,6 @@ const MapContainer = styled("div")(({ theme }) => ({
   maxWidth: "36rem", // 600px
   height: "16rem",
   borderRadius: "1rem",
-  // backgroundImage: "url('/map-tiles/demo.png')",
-  // backgroundSize: "cover",
-  // backgroundPosition: "center",
-  // maskImage: "radial-gradient(black 0%, transparent 74%)",
-  // Account for optical gap created by gradient
   marginBottom: "-2.5rem",
 
   // Pseudo-element needed to mask only background
@@ -126,20 +121,18 @@ const MapContainer = styled("div")(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundImage: "url('/map-tiles/demo.png')",
-    transform: "scaleX(-1)", // Flip (TODO not working)
+    backgroundImage: "url('/map-tiles/hero.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     maskImage: "radial-gradient(black 0%, transparent 74%)",
     borderRadius: "inherit",
     zIndex: -1,
     // Set pre-animation attributes
-    transform: "scale(0.9)",
+    transform: "scale(1, 0.9) rotateX(-10deg) translateY(1rem)",
     opacity: 0,
     // Animate in on load
     animation: `${enterMapAnimation} 900ms forwards`,
-    // animationTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 1.055)",
-    // animationDelay: "0",
+    animationDelay: "0",
     transformOrigin: "bottom center",
   },
 }));
