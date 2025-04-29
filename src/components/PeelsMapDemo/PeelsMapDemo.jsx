@@ -1,13 +1,9 @@
 "use client";
-
 import { useState, useEffect } from "react";
-
 import { demoListings } from "@/data/demo/listings";
-
 import PeelsLogo from "@/components/PeelsLogo";
 import MapPin from "@/components/MapPin";
 import ListingRead from "@/components/ListingRead";
-
 import { styled } from "@pigment-css/react";
 
 const INTERVAL_DURATION = 7000;
@@ -47,35 +43,30 @@ const MapContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   gap: "1rem",
-
   alignItems: "center",
   justifyContent: "center",
-
   position: "relative",
-
-  height: "320px",
   borderRadius: "1rem",
-  backgroundImage: "url('/map-tiles/demo.png')",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  maskImage: "radial-gradient(black 0%, transparent 74%)",
-
+  height: "320px",
   "@media (min-width: 960px)": {
     height: "100%",
   },
 
-  // Add debug crosshair at center
-  // "&::after": {
-  //   content: '""',
-  //   position: "absolute",
-  //   top: "50%",
-  //   left: "50%",
-  //   width: "20px",
-  //   height: "20px",
-  //   transform: "translate(-50%, -50%)",
-  //   border: "1px solid red",
-  //   borderRadius: "50%",
-  // },
+  // Pseudo-element needed to mask only background
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundImage: "url('/map-tiles/demo.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    maskImage: "radial-gradient(black 0%, transparent 74%)",
+    borderRadius: "inherit",
+    zIndex: -1,
+  },
 }));
 
 const MarkerDemo = styled("div")(({ theme }) => ({

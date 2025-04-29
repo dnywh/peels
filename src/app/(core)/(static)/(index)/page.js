@@ -3,9 +3,8 @@ import { Suspense } from 'react';
 import { siteConfig } from "@/config/site";
 
 import Link from "next/link";
-
+import IntroHeader from "@/components/IntroHeader";
 import Button from "@/components/Button";
-import PeelsLogo from "@/components/PeelsLogo";
 import Toast from "@/components/Toast";
 import PeelsHowItWorks from "@/components/PeelsHowItWorks";
 import PeelsFaq from "@/components/PeelsFaq";
@@ -30,19 +29,13 @@ const StyledMain = styled("main")({
   marginBottom: "5rem", // Match gap
 
   "@media (min-width: 768px)": {
-    paddingTop: "24vh",
+    // paddingTop: "24vh",
     gap: "12vh", // Or ~12rem
     marginBottom: "12vh", // Match gap
   },
 });
 
 
-const IntroPeelsLogo = styled(PeelsLogo)({
-  display: "block",
-  "@media (min-width: 768px)": {
-    display: "none",
-  },
-});
 
 const Intro = styled("div")(({ theme }) => ({
   display: "flex",
@@ -183,7 +176,7 @@ export default function Index() {
       </Suspense>
 
       <Intro>
-        <IntroPeelsLogo size={40} />
+        <IntroHeader />
         <h1>Find a home for your food scraps, wherever you are</h1>
 
         <p>

@@ -85,7 +85,7 @@ const StepHeader = styled("header")(({ theme }) => ({
 
   ...sharedStepStyles({ theme }),
 
-  "&:before": {
+  "&::before": {
     content: "counter(step-counter)",
     counterIncrement: "step-counter",
     backgroundColor: theme.colors.background.counter,
@@ -98,6 +98,8 @@ const StepHeader = styled("header")(({ theme }) => ({
     borderRadius: "50%",
     fontSize: "1rem",
     fontWeight: "700",
+    // Override the oldstyle numbers just in this case, since that was affecting optical alignment
+    fontVariantNumeric: "lining-nums",
   },
 }));
 
