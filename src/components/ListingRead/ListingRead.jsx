@@ -5,6 +5,7 @@ import { Marker, NavigationControl } from "react-map-gl/maplibre";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { getListingDisplayName } from "@/utils/listing";
+import { parseTextWithLinks } from "@/utils/linkUtils";
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
 import ListingPhotoGallery from "@/components/ListingPhotoGallery";
@@ -117,7 +118,7 @@ const ListingRead = memo(function Listing({
               <h3>
                 {listing.type === "business" ? "Donation details" : "About"}
               </h3>
-              <ParagraphWithLineBreaks text={listing?.description} />
+              <MultiParagraphCluster text={listing?.description} />
             </ListingReadSection>
           )}
 
@@ -427,12 +428,22 @@ const ButtonGroup = styled("div")({
 });
 
 // A much fancier version than just using whiteSpace: "pre-wrap", which renders looking like a completely new empty paragraph in between lines
-const ParagraphWithLineBreaks = ({ text }) => {
+const MultiParagraphCluster = ({ text }) => {
   const paragraphs = text.split("\n").filter((line) => line.trim() !== ""); // Split by line breaks and filter out empty lines
   return (
     <>
       {paragraphs.map((paragraph, index) => (
-        <p key={index}>{paragraph}</p> // Render each line as a separate paragraph
+        <p key={index}>
+          {parseTextWithLinks(paragraph).map((part, i) =>
+            typeof part === "string" ? (
+              part
+            ) : (
+              <Hyperlink key={i} href={part.href} target="_blank">
+                {part.text}
+              </Hyperlink>
+            )
+          )}
+        </p>
       ))}
     </>
   );

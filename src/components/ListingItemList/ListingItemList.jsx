@@ -1,6 +1,7 @@
+import Link from "next/link";
+import { prettifyLink } from "@/utils/linkUtils";
 import AcceptedItemIcon from "@/components/AcceptedItemIcon";
 import RejectedItemIcon from "@/components/RejectedItemIcon";
-import Link from "next/link";
 import Hyperlink from "@/components/Hyperlink";
 import { styled } from "@pigment-css/react";
 
@@ -73,18 +74,18 @@ const ListLink = styled(Link)(({ theme }) => ({
   },
 }));
 
-function prettifyLink(link) {
-  if (link.includes("http")) {
-    link = link.replace("http://", "").replace("https://", ""); // Remove http/https
-    link = link.replace(/^www\./, ""); // Remove www. if present
-    link = link.split("?")[0]; // Remove query parameters
-  }
-  if (link.includes("mailto")) {
-    link = link.replace("mailto:", "");
-    return link;
-  }
-  return link;
-}
+// function prettifyLink(link) {
+//   if (link.includes("http")) {
+//     link = link.replace("http://", "").replace("https://", ""); // Remove http/https
+//     link = link.replace(/^www\./, ""); // Remove www. if present
+//     link = link.split("?")[0]; // Remove query parameters
+//   }
+//   if (link.includes("mailto")) {
+//     link = link.replace("mailto:", "");
+//     return link;
+//   }
+//   return link;
+// }
 
 function ListingItemList({ items, type = "accepted" }) {
   return (

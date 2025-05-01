@@ -382,8 +382,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 onChange={(event) => setDescription(event.target.value)}
               />
               <InputHint>
-                What kind of food scraps or similar you have to give away,
-                collection details, and similar.
+                What kind of scraps you have to give away and the collection
+                details. Save any links for the dedicated section, below.
               </InputHint>
             </Field>
           ) : (
@@ -403,10 +403,11 @@ export default function ListingWrite({ initialListing, user, profile }) {
               />
               <InputHint>
                 {listingType === "community"
-                  ? "Opening hours, composting facilities, and similar."
-                  : "Your composting set up, general availability, and similar."}{" "}
-                Write your instructions for which scraps you accept in the
-                dedicated selection, below.
+                  ? "Opening hours and composting facilities."
+                  : "Your composting set up and general availability."}{" "}
+                Save the scraps you accept{" "}
+                {listingType !== "residential" && "and any links"} for the
+                dedicated section{listingType !== "residential" && "s"}, below.
               </InputHint>
             </Field>
           )}
@@ -426,8 +427,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
               label="What scraps do you accept?"
               addButtonText="Add an item"
               addAnotherButtonText="Add another item"
-              placeholder="Something you accept (e.g. ‘fruit rinds’)"
-              secondaryPlaceholder="Something else"
+              placeholder="An item you accept (e.g. ‘fruit rinds’)"
+              secondaryPlaceholder="Another item you accept"
               items={acceptedItems}
               minRequired={1}
               handleItemChange={handleAcceptedItemChange}
@@ -439,8 +440,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
               label="What scraps do you not accept?"
               addButtonText="Add an item"
               addAnotherButtonText="Add another item"
-              placeholder="Something you don’t accept (e.g. ‘meat’)"
-              secondaryPlaceholder="Something else"
+              placeholder="An item you don’t accept (e.g. ‘meat’)"
+              secondaryPlaceholder="Another item you don’t accept"
               items={rejectedItems}
               handleItemChange={handleRejectedItemChange}
               onClick={addRejectedItem}
@@ -534,7 +535,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 required={true}
               >
                 <option value="false">
-                  This is a normal listing owned by you
+                  This is a regular listing owned by you
                 </option>
                 <option value="true">
                   This listing is a stub that others can claim
