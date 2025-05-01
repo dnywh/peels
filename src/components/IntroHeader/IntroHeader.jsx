@@ -1,13 +1,11 @@
-"use client"; // Needed to load StyledNextImage
-
-// import { getListingAvatar } from "@/utils/listing";
+"use client";
 import { useState, useEffect } from "react";
 
 import MapPin from "@/components/MapPin";
 import Avatar from "@/components/Avatar";
 import { styled, keyframes } from "@pigment-css/react";
 
-const featuredIntroPhotos = ["kensington.jpg"];
+const featuredIntroPhotos = ["kensington.jpg", "shellworks.jpg"];
 
 function IntroHeader() {
   const [randomPhoto, setRandomPhoto] = useState(featuredIntroPhotos[0]);
@@ -44,18 +42,18 @@ export default IntroHeader;
 const enterAvatarAnimation = keyframes({
   from: {
     opacity: 0,
-    transform: "rotate(0deg) translate(-2.15rem, 2rem) scale(0.5)",
+    transform: "rotate(0deg) translate(-1.5rem, 2rem) scale(0.5)",
   },
   to: {
     opacity: 1,
-    transform: "rotate(-15deg) translate(-2.15rem, -1rem) scale(1)",
+    transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(1)",
   },
 });
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   position: "absolute",
   // Set pre-animation attributes
-  transform: "rotate(0deg) translate(-2.15rem, 2rem) scale(0.5)",
+  transform: "rotate(0deg) translate(-1.5rem, 2rem) scale(0.5)",
   opacity: 0,
   // Animate in on load
   animation: `${enterAvatarAnimation} 500ms forwards`,
@@ -67,18 +65,18 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
 const enterMarkerAnimation = keyframes({
   from: {
     opacity: 0,
-    transform: "rotate(0deg) translate(2.15rem, 2rem) scale(0.5)",
+    transform: "rotate(0deg) translate(2.75rem, 2rem) scale(0.5)",
   },
   to: {
     opacity: 1,
-    transform: "rotate(12deg) translate(2.15rem, 1rem) scale(1)",
+    transform: "rotate(12deg) translate(2.75rem, 1rem) scale(1)",
   },
 });
 
 const MarkerDemo = styled("div")(({ theme }) => ({
   position: "absolute",
   // Set pre-animation attributes
-  transform: "rotate(0deg) translate(2.15rem, 2rem) scale(0.5)",
+  transform: "rotate(0deg) translate(2.75rem, 2rem) scale(0.5)",
   opacity: 0,
   // Animate in on load
   animation: `${enterMarkerAnimation} 550ms forwards`,
@@ -121,7 +119,7 @@ const MapContainer = styled("div")(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundImage: "url('/map-tiles/hero.png')",
+    backgroundImage: "url('/map-tiles/hero.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     maskImage: "radial-gradient(black 0%, transparent 74%)",
@@ -131,7 +129,7 @@ const MapContainer = styled("div")(({ theme }) => ({
     transform: "scale(1, 0.9) rotateX(-10deg) translateY(1rem)",
     opacity: 0,
     // Animate in on load
-    animation: `${enterMapAnimation} 900ms forwards`,
+    animation: `${enterMapAnimation} 1100ms forwards`,
     animationDelay: "0",
     transformOrigin: "bottom center",
   },

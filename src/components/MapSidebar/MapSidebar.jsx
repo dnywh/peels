@@ -111,6 +111,9 @@ const StepList = styled("ol")(({ theme }) => ({
       leadingTrim: "both",
       fontSize: "1em",
       fontWeight: "700",
+      // Use same override as StepHeader in PeelsHowItWorks
+      // Override the oldstyle numbers just in this case, since that was affecting optical alignment
+      fontVariantNumeric: "lining-nums",
     },
   },
 }));
