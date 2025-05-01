@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { prettifyLink } from "@/utils/linkUtils";
 import AcceptedItemIcon from "@/components/AcceptedItemIcon";
 import RejectedItemIcon from "@/components/RejectedItemIcon";
@@ -64,28 +63,6 @@ const StyledListingItemList = styled("ol")(({ theme }) => ({
     },
   ],
 }));
-
-const ListLink = styled(Link)(({ theme }) => ({
-  color: theme.colors.text.primary,
-  fontWeight: "500",
-  transition: "opacity 150ms ease-in-out",
-  "&:hover": {
-    opacity: 0.65,
-  },
-}));
-
-// function prettifyLink(link) {
-//   if (link.includes("http")) {
-//     link = link.replace("http://", "").replace("https://", ""); // Remove http/https
-//     link = link.replace(/^www\./, ""); // Remove www. if present
-//     link = link.split("?")[0]; // Remove query parameters
-//   }
-//   if (link.includes("mailto")) {
-//     link = link.replace("mailto:", "");
-//     return link;
-//   }
-//   return link;
-// }
 
 function ListingItemList({ items, type = "accepted" }) {
   return (

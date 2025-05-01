@@ -5,7 +5,9 @@ const EMAIL_REGEX = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+/gi;
 export function prettifyLink(link) {
     // Remove protocol and www
     let pretty = link.replace(/^(https?:\/\/)?(www\.)?/, '');
-    // Remove trailing slashes
+    // Remove query parameters
+    pretty = pretty.split('?')[0];
+    // Remove trailing slashes (only if at end of string)
     pretty = pretty.replace(/\/$/, '');
     // Remove mailto:
     pretty = pretty.replace(/^mailto:/, '');
