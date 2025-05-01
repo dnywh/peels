@@ -530,8 +530,8 @@ export default function ListingWrite({ initialListing, user, profile }) {
               <Label htmlFor="stub">Stub settings</Label>
               <Select
                 id="stub"
-                value={initialListing ? initialListing.is_stub : isStub}
-                onChange={(event) => setIsStub(event.target.value)}
+                value={isStub}
+                onChange={(event) => setIsStub(event.target.value === "true")}
                 required={true}
               >
                 <option value="false">
@@ -544,7 +544,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               <InputHint>
                 {isStub
                   ? "This listing will not contain your contact information. Others can claim it as their own and take it over."
-                  : "This listing will be presented normally. Other Peels members can contact you."}
+                  : "This listing will be presented just like any other."}
               </InputHint>
             </Field>
           </FormSection>

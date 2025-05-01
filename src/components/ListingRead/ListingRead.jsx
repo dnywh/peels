@@ -112,42 +112,42 @@ const ListingRead = memo(function Listing({
           />
         )}
 
-        <Cluster presentation={presentation}>
+        <ListingContents presentation={presentation}>
           {listing?.description && (
-            <ListingReadSection>
+            <ListingSection>
               <h3>
                 {listing.type === "business" ? "Donation details" : "About"}
               </h3>
               <MultiParagraphCluster text={listing?.description} />
-            </ListingReadSection>
+            </ListingSection>
           )}
 
           {listing?.accepted_items?.length > 0 && (
-            <ListingReadSection>
+            <ListingSection>
               <h3>What’s accepted</h3>
               <ListingItemList
                 items={listing?.accepted_items}
                 type="accepted"
               />
-            </ListingReadSection>
+            </ListingSection>
           )}
 
           {listing?.rejected_items?.length > 0 && (
-            <ListingReadSection>
+            <ListingSection>
               <h3>What’s not</h3>
               <ListingItemList
                 items={listing?.rejected_items}
                 type="rejected"
               />
-            </ListingReadSection>
+            </ListingSection>
           )}
-        </Cluster>
+        </ListingContents>
       </ColumnMain>
 
       {presentation !== "demo" && (
         <ColumnMinor presentation={presentation}>
           {presentation !== "drawer" && (
-            <ListingReadSection presentation={presentation}>
+            <ListingSection presentation={presentation}>
               <h3>Location</h3>
 
               <MapThumbnail
@@ -225,11 +225,11 @@ const ListingRead = memo(function Listing({
                   )}
                 </ButtonGroup>
               </MapDetails>
-            </ListingReadSection>
+            </ListingSection>
           )}
 
           {listing.photos?.length > 0 && (
-            <ListingReadSection
+            <ListingSection
               presentation={presentation}
               overflowX={
                 !user && listing.type === "residential" ? undefined : "visible"
@@ -249,18 +249,18 @@ const ListingRead = memo(function Listing({
                   />
                 </>
               )}
-            </ListingReadSection>
+            </ListingSection>
           )}
 
           {listing.links?.length > 0 && (
-            <ListingReadSection presentation={presentation}>
+            <ListingSection presentation={presentation}>
               <h3>Links</h3>
               <ListingItemList items={listing.links} type="links" />
-            </ListingReadSection>
+            </ListingSection>
           )}
 
           {presentation === "drawer" && (
-            <ListingReadSection>
+            <ListingSection>
               <Button
                 variant="secondary"
                 size="small"
@@ -269,7 +269,7 @@ const ListingRead = memo(function Listing({
               >
                 View full listing
               </Button>
-            </ListingReadSection>
+            </ListingSection>
           )}
         </ColumnMinor>
       )}
@@ -321,7 +321,7 @@ const ColumnMinor = styled("div")(({ theme }) => ({
   ],
 }));
 
-const Cluster = styled("div")(({ theme }) => ({
+const ListingContents = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "3rem", // Match in MapPageClient (StyledDrawerInner)
@@ -337,7 +337,7 @@ const Cluster = styled("div")(({ theme }) => ({
         borderRadius: theme.corners.base,
 
         "@media (min-width: 768px)": {
-          padding: "0 0.5rem", // 0.5rem + 1rem = 1.5rem used elsewhere in 'naked' ListingReadSection instances
+          padding: "0 0.5rem", // 0.5rem + 1rem = 1.5rem used elsewhere in 'naked' ListingSection instances
           backgroundColor: "unset",
           border: "unset",
           borderRadius: "unset",
@@ -347,7 +347,7 @@ const Cluster = styled("div")(({ theme }) => ({
   ],
 }));
 
-const ListingReadSection = styled("section")(({ theme }) => ({
+const ListingSection = styled("section")(({ theme }) => ({
   // width: "100%",
   padding: " 0 1rem", // Pad by default ,override on Photos section (overflowX: "visible")
 
