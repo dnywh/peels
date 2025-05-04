@@ -11,49 +11,64 @@ const featuredIntroPhotos = [
   "kensington.jpg",
 ];
 
+const featuredItems = [
+  {
+    type: "residential",
+    photo: "compost-collective-kc.jpg",
+  },
+  {
+    type: "business",
+    photo: "shellworks.jpg",
+  },
+  {
+    type: "community",
+    photo: "kensington.jpg",
+  },
+];
+
 const exitAnimationSpeed = "150ms";
 
 function IntroHeader() {
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [prevPhotoIndex, setPrevPhotoIndex] = useState(null);
+  const [itemIndex, setItemIndex] = useState(0);
+  const [prevItemIndex, setPrevItemIndex] = useState(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPrevPhotoIndex(photoIndex);
-      setPhotoIndex((current) => (current + 1) % featuredIntroPhotos.length);
+      setPrevItemIndex(itemIndex);
+      setItemIndex((current) => (current + 1) % featuredItems.length);
     }, 5500);
 
     return () => clearInterval(interval);
-  }, [photoIndex]);
+  }, [itemIndex]);
 
   return (
     <MapContainer>
-      {/* Checking for prevPhotoIndex prevents exit animation on initial render */}
+      {/* Checking for prevItemIndex prevents exit animation on initial render */}
       {/* Unique keys on MarkerDemo and StyledAvatar cause desired re-renders */}
-      {prevPhotoIndex !== null && (
+      {prevItemIndex !== null && (
         <>
-          <MarkerDemo key={`marker-exit-${prevPhotoIndex}`} isExiting={true}>
-            <MapPin selected={true} type="residential" />
+          <MarkerDemo key={`marker-exit-${prevItemIndex}`} isExiting={true}>
+            <MapPin selected={true} type={featuredItems[prevItemIndex].type} />
           </MarkerDemo>
           <StyledAvatar
-            key={`avatar-exit-${prevPhotoIndex}`}
+            key={`avatar-exit-${prevItemIndex}`}
             isExiting={true}
             isDemo={true}
-            src={`/avatars/featured/${featuredIntroPhotos[prevPhotoIndex]}`}
+            src={`/avatars/featured/${featuredItems[prevItemIndex].photo}`}
             alt="The avatar for a Peels host"
             size="massive"
           />
         </>
       )}
 
-      <MarkerDemo key={`marker-enter-${photoIndex}`} isExiting={false}>
-        <MapPin selected={true} type="residential" />
+      <MarkerDemo key={`marker-enter-${itemIndex}`} isExiting={false}>
+        <MapPin selected={true} type={featuredItems[itemIndex].type} />
       </MarkerDemo>
       <StyledAvatar
-        key={`avatar-enter-${photoIndex}`}
+        key={`avatar-enter-${itemIndex}`}
         isExiting={false}
         isDemo={true}
-        src={`/avatars/featured/${featuredIntroPhotos[photoIndex]}`}
+        src={`/avatars/featured/${featuredItems[itemIndex].photo}`}
         alt="The avatar for a Peels host"
         size="massive"
       />
