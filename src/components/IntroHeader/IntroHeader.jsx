@@ -5,7 +5,11 @@ import MapPin from "@/components/MapPin";
 import Avatar from "@/components/Avatar";
 import { styled, keyframes } from "@pigment-css/react";
 
-const featuredIntroPhotos = ["kensington.jpg", "shellworks.jpg"];
+const featuredIntroPhotos = [
+  "compost-collective-kc.jpg",
+  "kensington.jpg",
+  "shellworks.jpg",
+];
 
 function IntroHeader() {
   const [randomPhoto, setRandomPhoto] = useState(featuredIntroPhotos[0]);

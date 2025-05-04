@@ -19,6 +19,7 @@ const featuredListingsForPhotos = [
   { slug: "69tHA1CesNEl", photos: [1] },
   { slug: "FjABURjzHDMW", photos: [0, 1] },
   { slug: "MG92x2GOAeXj", photos: [0] },
+  { slug: "zUJ2ukqP4VbS", photos: [4] },
 ];
 
 const MAX_PHOTOS_TO_SHOW = 3;
