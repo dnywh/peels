@@ -7,33 +7,53 @@ import { styled, keyframes } from "@pigment-css/react";
 
 const featuredIntroPhotos = [
   "compost-collective-kc.jpg",
-  "kensington.jpg",
   "shellworks.jpg",
+  "kensington.jpg",
 ];
 
+const exitAnimationSpeed = "150ms";
+
 function IntroHeader() {
-  const [randomPhoto, setRandomPhoto] = useState(featuredIntroPhotos[0]);
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [prevPhotoIndex, setPrevPhotoIndex] = useState(null);
 
   useEffect(() => {
-    const photo =
-      featuredIntroPhotos[
-        Math.floor(Math.random() * featuredIntroPhotos.length)
-      ];
-    setRandomPhoto(photo);
-  }, []);
+    const interval = setInterval(() => {
+      setPrevPhotoIndex(photoIndex);
+      setPhotoIndex((current) => (current + 1) % featuredIntroPhotos.length);
+    }, 5500);
+
+    return () => clearInterval(interval);
+  }, [photoIndex]);
 
   return (
     <MapContainer>
-      <MarkerDemo>
+      {/* Checking for prevPhotoIndex prevents exit animation on initial render */}
+      {/* Unique keys on MarkerDemo and StyledAvatar cause desired re-renders */}
+      {prevPhotoIndex !== null && (
+        <>
+          <MarkerDemo key={`marker-exit-${prevPhotoIndex}`} isExiting={true}>
+            <MapPin selected={true} type="residential" />
+          </MarkerDemo>
+          <StyledAvatar
+            key={`avatar-exit-${prevPhotoIndex}`}
+            isExiting={true}
+            isDemo={true}
+            src={`/avatars/featured/${featuredIntroPhotos[prevPhotoIndex]}`}
+            alt="The avatar for a Peels host"
+            size="massive"
+          />
+        </>
+      )}
+
+      <MarkerDemo key={`marker-enter-${photoIndex}`} isExiting={false}>
         <MapPin selected={true} type="residential" />
       </MarkerDemo>
       <StyledAvatar
+        key={`avatar-enter-${photoIndex}`}
+        isExiting={false}
         isDemo={true}
-        src={
-          randomPhoto
-            ? `/avatars/featured/${randomPhoto}`
-            : `/avatars/featured/${featuredIntroPhotos[0]}`
-        }
+        src={`/avatars/featured/${featuredIntroPhotos[photoIndex]}`}
         alt="The avatar for a Peels host"
         size="massive"
       />
@@ -42,6 +62,28 @@ function IntroHeader() {
 }
 
 export default IntroHeader;
+
+const exitAvatarAnimation = keyframes({
+  from: {
+    opacity: 1,
+    transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(1)",
+  },
+  to: {
+    opacity: 0,
+    transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(0.9)",
+  },
+});
+
+const exitMarkerAnimation = keyframes({
+  from: {
+    opacity: 1,
+    transform: "rotate(12deg) translate(2.75rem, 1rem) scale(1)",
+  },
+  to: {
+    opacity: 0,
+    transform: "rotate(12deg)  translate(2.75rem, 1rem) scale(0.9)",
+  },
+});
 
 const enterAvatarAnimation = keyframes({
   from: {
@@ -54,16 +96,33 @@ const enterAvatarAnimation = keyframes({
   },
 });
 
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
+const StyledAvatar = styled(Avatar, {
+  shouldForwardProp: (prop) => prop !== "isExiting",
+})(({ theme }) => ({
   position: "absolute",
   // Set pre-animation attributes
   transform: "rotate(0deg) translate(-1.5rem, 2rem) scale(0.5)",
   opacity: 0,
   // Animate in on load
-  animation: `${enterAvatarAnimation} 500ms forwards`,
   animationTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 1.055)",
-  animationDelay: "420ms",
   transformOrigin: "bottom right",
+
+  variants: [
+    {
+      props: { isExiting: false },
+      style: {
+        animation: `${enterAvatarAnimation} 400ms forwards`,
+        animationDelay: "420ms",
+      },
+    },
+    {
+      props: { isExiting: true },
+      style: {
+        animation: `${exitAvatarAnimation} ${exitAnimationSpeed} forwards`,
+        animationDelay: "0ms",
+      },
+    },
+  ],
 }));
 
 const enterMarkerAnimation = keyframes({
@@ -79,14 +138,27 @@ const enterMarkerAnimation = keyframes({
 
 const MarkerDemo = styled("div")(({ theme }) => ({
   position: "absolute",
-  // Set pre-animation attributes
   transform: "rotate(0deg) translate(2.75rem, 2rem) scale(0.5)",
   opacity: 0,
-  // Animate in on load
-  animation: `${enterMarkerAnimation} 550ms forwards`,
-  animationTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 1.055)",
-  animationDelay: "220ms",
   transformOrigin: "bottom left",
+  animationTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 1.055)",
+
+  variants: [
+    {
+      props: { isExiting: false },
+      style: {
+        animation: `${enterMarkerAnimation} 450ms forwards`,
+        animationDelay: "220ms",
+      },
+    },
+    {
+      props: { isExiting: true },
+      style: {
+        animation: `${exitMarkerAnimation} ${exitAnimationSpeed} forwards`,
+        animationDelay: "0ms",
+      },
+    },
+  ],
 }));
 
 const enterMapAnimation = keyframes({
