@@ -22,6 +22,7 @@ function MultiInput({
   onClick,
   limit = 10,
   type = "text",
+  pattern = undefined,
   addButtonText = "Add",
   addAnotherButtonText = "Add another",
 }) {
@@ -64,6 +65,7 @@ function MultiInput({
             id={`${uniqueId}-${index}`}
             required={index === 0 && minRequired === 1}
             type={type}
+            pattern={pattern ? pattern : undefined}
             placeholder={index === 0 ? placeholder : secondaryPlaceholder}
             value={item}
             onChange={(e) => handleItemChange(index, e.target.value)}

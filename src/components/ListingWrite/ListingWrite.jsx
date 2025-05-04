@@ -488,6 +488,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               onClick={addLink}
               limit={3}
               type="url"
+              pattern="https?://.+"
             />
           )}
         </FormSection>
