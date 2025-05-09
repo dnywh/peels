@@ -10,16 +10,18 @@ const featuredListingsForPhotos = [
   { slug: "KX5eqmXGadu2", photos: [0] },
   { slug: "fmpYQJpmXLLn", photos: [0, 1] },
   { slug: "4y9eRikD5Dku", photos: [0, 1] },
-  { slug: "o2TTKU3vmBP9", photos: [0] },
+  // { slug: "o2TTKU3vmBP9", photos: [0] },
   { slug: "NPISVZDjJYsl", photos: [0] },
   { slug: "HOaEy5gxgrvc", photos: [0] },
-  { slug: "itKrzEbLPDPf", photos: [0] },
+  // { slug: "itKrzEbLPDPf", photos: [0] },
   { slug: "B030fsqGqMzt", photos: [0] },
   { slug: "iFtK9KoxxID9", photos: [1] },
-  { slug: "69tHA1CesNEl", photos: [1] },
+  // { slug: "69tHA1CesNEl", photos: [1] },
   { slug: "FjABURjzHDMW", photos: [0, 1] },
   { slug: "MG92x2GOAeXj", photos: [0] },
-  { slug: "zUJ2ukqP4VbS", photos: [4] },
+  { slug: "zUJ2ukqP4VbS", photos: [2, 4] },
+  { slug: "RbAsf8OqLrPf", photos: [0] },
+  { slug: "oFvkhgiPvzGJ", photos: [0] },
 ];
 
 const MAX_PHOTOS_TO_SHOW = 3;
