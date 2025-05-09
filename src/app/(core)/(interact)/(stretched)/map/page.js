@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
+import { generateListingMetadata } from "@/utils/listingUtils";
 import MapPageClient from "@/components/MapPageClient";
-import { getListingDisplayName } from "@/utils/listing";
 
 // Fetch data only once and use across metadata and page
 async function getInitialData(listingSlug) {
@@ -30,13 +30,8 @@ export async function generateMetadata({ searchParams }) {
         return { title: "Map" };
     }
 
-    if (!listing) {
-        return { title: "Listing Not Found" };
-    }
-
-    return {
-        title: `${getListingDisplayName(listing, user)}`,
-    };
+    // Use shared utility to generate metadata
+    return generateListingMetadata(listing, user);
 }
 
 export default async function Page({ searchParams }) {

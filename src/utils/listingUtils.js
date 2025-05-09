@@ -1,3 +1,6 @@
+import { siteConfig } from "@/config/site";
+import { countries } from "@/data/countries";
+
 /**
  * Get the display name for a listing based on type, user auth status, and profile data
  * @param {Object} listing - The listing object containing type, name, and profiles
@@ -103,4 +106,42 @@ export function getListingDisplayType(listing) {
 
     // We can rely on just the listing type for business listings (and anything else that doesn't have a specific display type)
     return `Local ${listing.type}`;
+}
+
+export function generateListingMetadata(listing, user, options = {}) {
+    if (!listing) {
+        return {
+            title: "Listing Not Found"
+        };
+    }
+
+    const listingDisplayName = getListingDisplayName(listing, user);
+    const listingCountryName = countries.find(country => country.code === listing.country_code)?.name;
+    const listingFullLocation = `${listing.area_name}, ${listingCountryName}`
+    const listingDescription = `${listingDisplayName} is ${listing.type === "residential" ? '' : ` a ${listing.type}`} based in ${listingFullLocation}. ${listing.type === "residential" ? '' : `${listing.description}`} Connect with ${listing.type === "residential" ? 'them' : `${listing.name}`} on ${siteConfig.name}, ${siteConfig.meta.explainer}.`
+
+    const metadata = {
+        title: listingDisplayName,
+        openGraph: {
+            title: listingDisplayName,
+            description: listingDescription,
+            siteName: siteConfig.name,
+        }
+    };
+
+    // Only include these fields for the full listing page
+    if (options.includeFullMetadata) {
+        metadata.description = listingDescription;
+        metadata.keywords = [
+            listingFullLocation,
+            `food scraps in ${listing.area_name} ${listingCountryName}`, // Not using ${listingFullLocation} as it has a comma, thus creating a new item in the array
+            `compost ${listing.area_name} ${listingCountryName}`,
+            `food scrap drop-off ${listing.area_name} ${listingCountryName}`,
+            `compost drop-off ${listing.area_name} ${listingCountryName}`,
+            ...siteConfig.meta.keywords,
+        ];
+    }
+
+    return metadata;
+
 }

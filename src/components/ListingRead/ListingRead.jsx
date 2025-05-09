@@ -4,7 +4,7 @@ import { Fragment, useState, memo, useEffect } from "react";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { getListingDisplayName } from "@/utils/listing";
+import { getListingDisplayName } from "@/utils/listingUtils";
 import { parseTextWithLinks } from "@/utils/linkUtils";
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";

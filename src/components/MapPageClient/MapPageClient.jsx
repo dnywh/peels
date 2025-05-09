@@ -23,7 +23,10 @@ import IconButton from "@/components/IconButton";
 import MapSidebar from "@/components/MapSidebar";
 
 import { styled } from "@pigment-css/react";
-import { getListingDisplayName, getListingDisplayType } from "@/utils/listing";
+import {
+  getListingDisplayName,
+  getListingDisplayType,
+} from "@/utils/listingUtils";
 import { useDeviceContext } from "@/hooks/useDeviceContext";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";

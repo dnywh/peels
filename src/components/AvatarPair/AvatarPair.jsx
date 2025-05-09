@@ -2,7 +2,7 @@ import {
   getListingAvatar,
   getListingOwnerAvatar,
   getProfileAvatar,
-} from "@/utils/listing";
+} from "@/utils/listingUtils";
 
 import Avatar from "@/components/Avatar";
 

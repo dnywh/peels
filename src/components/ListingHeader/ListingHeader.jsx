@@ -1,4 +1,4 @@
-import { getListingAvatar } from "@/utils/listing";
+import { getListingAvatar } from "@/utils/listingUtils";
 
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";

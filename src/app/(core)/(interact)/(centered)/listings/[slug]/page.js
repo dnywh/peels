@@ -1,8 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from 'next/navigation'
-import { siteConfig } from "@/config/site";
-import { countries } from "@/data/countries";
-import { getListingDisplayName } from "@/utils/listing";
+import { generateListingMetadata } from "@/utils/listingUtils";
 import ListingRead from "@/components/ListingRead";
 import { styled } from "@pigment-css/react";
 
@@ -46,36 +44,8 @@ async function getListingData(slug) {
 export async function generateMetadata({ params }) {
     const { slug } = await params;
     const { user, listing } = await getListingData(slug);
-
-    if (!listing) {
-        return {
-            title: 'Listing Not Found'
-        };
-    }
-
-    const listingDisplayName = getListingDisplayName(listing, user);
-    const listingCountryName = countries.find(country => country.code === listing.country_code)?.name;
-    const listingFullLocation = `${listing.area_name}, ${listingCountryName}`
-    const listingDescription = `${listingDisplayName} is ${listing.type === "residential" ? '' : ` a ${listing.type}`} based in ${listingFullLocation}. ${listing.type === "residential" ? '' : `${listing.description}`} Connect with ${listing.type === "residential" ? 'them' : `${listing.name}`} on ${siteConfig.name}, ${siteConfig.meta.explainer}.`
-
-    return {
-        title: listingDisplayName, // Will be followed by title.template as defined in layout metadata (i.e. ` · Peels`)
-        description: listingDescription,
-        keywords: [
-            listingFullLocation,
-            `food scraps in ${listing.area_name} ${listingCountryName}`, // Not using ${listingFullLocation} as it has a comma, thus creating a new item in the array
-            `compost ${listing.area_name}  ${listingCountryName}`,
-            `food scrap drop-off ${listing.area_name}  ${listingCountryName}`,
-            `compost drop-off ${listing.area_name}  ${listingCountryName}`,
-            ...siteConfig.meta.keywords,
-        ],
-        openGraph: {
-            title: listingDisplayName, // not appending 'Peels' since that comes through on siteName
-            description: listingDescription,
-            siteName: siteConfig.name,
-            // TODO: The `opengraph-image` does not get passed down automatically, presumedly because this counts as a separate route segment
-        },
-    };
+    // Use shared utility to generate metadata
+    return generateListingMetadata(listing, user, { includeFullMetadata: true });
 }
 
 export default async function ListingPage({ params }) {
