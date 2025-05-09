@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 import { signUpAction } from "@/app/actions";
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
-import { getStoredAttributionParams } from "@/utils/attribution";
+import { getStoredAttributionParams } from "@/utils/attributionUtils";
 
 import Form from "@/components/Form";
 import Field from "@/components/Field";
