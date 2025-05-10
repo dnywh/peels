@@ -11,6 +11,8 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const first_name = formData.get("first_name")?.toString();
+  const newsletter = formData.has("newsletter_preference"); // Will only be passed if input is checked when form submitted
+
   const supabase = await createClient();
   const headersList = await headers();
   const origin = headersList.get("origin");
@@ -23,6 +25,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
 
   // Debug attribution data
   console.log("Sign up data:", {
+    newsletter,
     attribution: {
       referrer,
       utmSource,
@@ -81,7 +84,8 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     options: {
       emailRedirectTo: `${origin || getBaseUrl()}/auth/callback?type=signup`,
       data: {
-        first_name: first_name,
+        first_name,
+        newsletter,
         http_referrer: referrer,
         utm_source: utmSource || null,
         utm_medium: utmMedium || null,

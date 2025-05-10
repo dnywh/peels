@@ -12,6 +12,7 @@ import Label from "@/components/Label";
 import InputHint from "@/components/InputHint";
 import Button from "@/components/Button";
 import LegalAgreement from "@/components/LegalAgreement";
+import CheckboxUnit from "@/components/CheckboxUnit";
 import FormMessage from "@/components/FormMessage";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
@@ -47,12 +48,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         console.log("Validation failed, resetting submit state");
         return;
       }
-
-      console.log("Submitting sign up data with attribution:", utmParams);
       await signUpAction(formData);
-
-      // Note: We might not reach this point if signUpAction redirects
-      console.log("Sign up completed");
     } catch (error) {
       console.error("Sign up error:", error);
       setIsSubmitting(false);
@@ -92,7 +88,13 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         />
       </Field>
 
-      <LegalAgreement required={true} defaultChecked={false} disabled={false} />
+      <LegalAgreement required={true} />
+      <CheckboxUnit
+        name="newsletter_preference" // Checked in server action, ignored in formData if left unchecked
+        required={false}
+      >
+        Send me occasional email updates about Peels
+      </CheckboxUnit>
 
       {(error || hasFieldErrors) && (
         <FormMessage

@@ -1,8 +1,7 @@
+import { useId } from "react";
 // Using Headless UI label for unset styling
 import { Label as HeadlessLabel } from "@headlessui/react";
-
 import Field from "@/components/Field";
-
 import { styled } from "@pigment-css/react";
 
 const StyledField = styled(Field)(({ theme }) => ({
@@ -92,21 +91,28 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
 }));
 
 function CheckboxUnit({
+  id,
+  name,
   defaultChecked = false,
   required = false,
   children,
   passiveLabel = false,
   disabled = false,
 }) {
+  // Generate a unique ID if none provided
+  const generatedId = useId();
+  const checkboxId = id || `checkbox-${generatedId}`;
+
   return (
     <StyledField>
       <StyledFieldContents>
-        <StyledLabel htmlFor="checkbox" passive={passiveLabel}>
+        <StyledLabel htmlFor={checkboxId} passive={passiveLabel}>
           {children}
         </StyledLabel>
 
         <NativeCheckbox
-          id="checkbox"
+          id={checkboxId}
+          name={name}
           type="checkbox"
           required={required}
           defaultChecked={defaultChecked ? true : undefined}
