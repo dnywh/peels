@@ -1,8 +1,9 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Button from "@/components/Button";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
+import Select from "@/components/Select";
 import Label from "@/components/Label";
 import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
@@ -10,7 +11,7 @@ import InputHint from "@/components/InputHint";
 
 import {
   updateFirstNameAction,
-  // sendPasswordResetEmailAction,
+  updateNewsletterPreferenceAction,
   sendEmailChangeEmailAction,
 } from "@/app/actions";
 
@@ -22,13 +23,6 @@ const List = styled("ul")(({ theme }) => ({
   flexDirection: "column",
   padding: ` 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // Visually match parent padding
   // gap: `calc(${theme.spacing.unit} * 1)`,
-}));
-
-const ListItemStatic = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  gap: theme.spacing.unit,
-  flex: 1,
 }));
 
 const ListItem = styled("li")(({ theme }) => ({
@@ -114,9 +108,12 @@ function ProfileAccountSettings({ user, profile }) {
   // Use our custom hook for each editable field
   const firstName = useEditableField();
   const email = useEditableField();
-  // const password = useEditableField();
+  const newsletterPreference = useEditableField();
 
   const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
+  const [tempNewsletterPreference, setTempNewsletterPreference] = useState(
+    profile?.newsletter
+  );
 
   // const handlePasswordUpdate = async (formData) => {
   //   password.setIsUpdating(true);
@@ -192,6 +189,36 @@ function ProfileAccountSettings({ user, profile }) {
 
   const handleFirstNameCancel = () => {
     firstName.reset();
+  };
+
+  const handleNewslettePreferenceUpdate = async (formData) => {
+    const nextNewsletterPreference =
+      formData.get("newsletter_preference") === "true";
+    console.log("Updating newsletter preference to", nextNewsletterPreference);
+
+    newsletterPreference.setIsUpdating(true);
+
+    try {
+      const result = await updateNewsletterPreferenceAction(formData);
+      if (result?.error) {
+        newsletterPreference.setError(result.error);
+      } else {
+        setTempNewsletterPreference(nextNewsletterPreference);
+        newsletterPreference.setIsEditing(false);
+      }
+    } catch (error) {
+      console.error("Error updating newsletter preference:", error);
+      newsletterPreference.setError(
+        "Sorry, something’s gone wrong. Please try again."
+      );
+    } finally {
+      newsletterPreference.setIsUpdating(false);
+    }
+  };
+
+  const handleNewsletterPreferenceCancel = () => {
+    setTempNewsletterPreference(profile?.newsletter);
+    newsletterPreference.reset();
   };
 
   return (
@@ -294,6 +321,69 @@ function ProfileAccountSettings({ user, profile }) {
             <Button
               variant="secondary"
               onClick={() => email.setIsEditing(true)}
+            >
+              Edit
+            </Button>
+          </>
+        )}
+      </ListItem>
+
+      <ListItem editing={newsletterPreference.isEditing}>
+        {newsletterPreference.isEditing ? (
+          <Form nested={true} action={handleNewslettePreferenceUpdate}>
+            <Field>
+              <Label>Newsletter</Label>
+              <Select
+                name="newsletter_preference"
+                value={tempNewsletterPreference}
+                onChange={(event) =>
+                  setTempNewsletterPreference(event.target.value === "true")
+                }
+                required={true}
+              >
+                <option value="false">Not subscribed</option>
+                <option value="true">Subscribed</option>
+              </Select>
+              <InputHint
+                variant={newsletterPreference.error ? "error" : "default"}
+              >
+                {newsletterPreference.error
+                  ? newsletterPreference.error
+                  : tempNewsletterPreference
+                    ? "We’ll send you occasional email updates about Peels."
+                    : "We’ll only send you necessary account or listing-related emails. "}
+              </InputHint>
+            </Field>
+
+            <ButtonGroup>
+              <SubmitButton
+                disabled={newsletterPreference.isUpdating}
+                pendingText="Updating..."
+              >
+                Update
+              </SubmitButton>
+              <Button
+                variant="secondary"
+                onClick={handleNewsletterPreferenceCancel}
+                disabled={newsletterPreference.isUpdating}
+              >
+                Cancel
+              </Button>
+            </ButtonGroup>
+          </Form>
+        ) : (
+          <>
+            <ListItemReadField>
+              <Label>Newsletter</Label>
+              <p>
+                {tempNewsletterPreference === true
+                  ? "Subscribed"
+                  : "Not subscribed"}
+              </p>
+            </ListItemReadField>
+            <Button
+              variant="secondary"
+              onClick={() => newsletterPreference.setIsEditing(true)}
             >
               Edit
             </Button>

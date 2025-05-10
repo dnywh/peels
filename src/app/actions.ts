@@ -214,6 +214,29 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
   return { success: true };
 };
 
+export const updateNewsletterPreferenceAction = async (formData: FormData) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const newsletter = formData.get("newsletter_preference") === "true";
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      newsletter,
+    })
+    .eq("id", user?.id);
+
+  if (error) {
+    console.error("Error updating newsletter preference:", error);
+    return { error: "Sorry, we couldn’t update your newsletter preference." };
+  }
+
+  return { success: true };
+};
+
 // This action triggers the password reset email to be sent to the user, called from the ProfileAccountSettings component
 // See also the very similar forgotPasswordAction which this is based on
 // export const sendPasswordResetEmailAction = async (formData: FormData) => {
