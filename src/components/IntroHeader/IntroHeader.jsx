@@ -1,15 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-
 import MapPin from "@/components/MapPin";
 import Avatar from "@/components/Avatar";
 import { styled, keyframes } from "@pigment-css/react";
-
-const featuredIntroPhotos = [
-  "compost-collective-kc.jpg",
-  "shellworks.jpg",
-  "kensington.jpg",
-];
 
 const featuredItems = [
   {
@@ -17,12 +10,20 @@ const featuredItems = [
     photo: "compost-collective-kc.jpg",
   },
   {
+    type: "community",
+    photo: "scrapdogs-aerial.jpg",
+  },
+  {
     type: "business",
-    photo: "shellworks.jpg",
+    photo: "scrapdogs-stand.jpg",
   },
   {
     type: "community",
     photo: "kensington.jpg",
+  },
+  {
+    type: "business",
+    photo: "shellworks.jpg",
   },
 ];
 
