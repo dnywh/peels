@@ -9,7 +9,7 @@ const featuredListingsForPhotos = [
   { slug: "oLbJwGqRQrzo", photos: [0] },
   { slug: "KX5eqmXGadu2", photos: [0] },
   { slug: "fmpYQJpmXLLn", photos: [0, 1] },
-  { slug: "4y9eRikD5Dku", photos: [0, 1] },
+  // { slug: "4y9eRikD5Dku", photos: [0, 1] },
   // { slug: "o2TTKU3vmBP9", photos: [0] },
   { slug: "NPISVZDjJYsl", photos: [0] },
   { slug: "HOaEy5gxgrvc", photos: [0] },
