@@ -1,21 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
-
 import {
   updateFirstNameAction,
   deleteListingAction,
   createOrUpdateListingAction,
 } from "@/app/actions";
-
-import { useSearchParams, useParams } from "next/navigation";
-
-import { siteConfig } from "@/config/site";
-
+import { useParams } from "next/navigation";
 import LocationSelect from "@/components/LocationSelect";
+import CheckboxCluster from "@/components/CheckboxCluster";
 import LegalAgreement from "@/components/LegalAgreement";
 import Form from "@/components/Form";
 import FormSection from "@/components/FormSection";
@@ -33,9 +28,7 @@ import ListingPhotosManager from "@/components/ListingPhotosManager";
 import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
-
 import FormMessage from "@/components/FormMessage";
-
 import { styled } from "@pigment-css/react";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
@@ -552,10 +545,12 @@ export default function ListingWrite({ initialListing, user, profile }) {
         )}
 
         <FormSection>
-          <LegalAgreement
-            required={true}
-            defaultChecked={initialListing ? true : undefined}
-          />
+          <CheckboxCluster>
+            <LegalAgreement
+              required={true}
+              defaultChecked={initialListing ? true : undefined}
+            />
+          </CheckboxCluster>
         </FormSection>
 
         {(Object.keys(errors).length > 0 || globalError) && (

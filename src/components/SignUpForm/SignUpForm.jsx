@@ -1,18 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
-
+import { useState } from "react";
 import { signUpAction } from "@/app/actions";
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
-
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
 import InputHint from "@/components/InputHint";
 import Button from "@/components/Button";
+import CheckboxCluster from "@/components/CheckboxCluster";
+import CheckboxRow from "@/components/CheckboxRow";
 import LegalAgreement from "@/components/LegalAgreement";
-import CheckboxUnit from "@/components/CheckboxUnit";
 import FormMessage from "@/components/FormMessage";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
@@ -88,13 +87,15 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         />
       </Field>
 
-      <LegalAgreement required={true} />
-      <CheckboxUnit
-        name="newsletter_preference" // Checked in server action, ignored in formData if left unchecked
-        required={false}
-      >
-        Send me occasional email updates about Peels
-      </CheckboxUnit>
+      <CheckboxCluster>
+        <LegalAgreement required={true} />
+        <CheckboxRow
+          name="newsletter_preference" // Checked in server action, ignored in formData if left unchecked
+          required={false}
+        >
+          Send me occasional email updates about Peels
+        </CheckboxRow>
+      </CheckboxCluster>
 
       {(error || hasFieldErrors) && (
         <FormMessage

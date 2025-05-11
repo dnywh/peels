@@ -1,11 +1,11 @@
 "use client";
 import { siteConfig } from "@/config/site";
-import CheckboxUnit from "@/components/CheckboxUnit";
+import CheckboxRow from "@/components/CheckboxRow";
 import Hyperlink from "@/components/Hyperlink";
 
 function LegalAgreement({ defaultChecked, required, disabled }) {
   return (
-    <CheckboxUnit
+    <CheckboxRow
       defaultChecked={defaultChecked}
       disabled={disabled ? "disabled" : undefined}
       required={required}
@@ -22,9 +22,8 @@ function LegalAgreement({ defaultChecked, required, disabled }) {
         <Hyperlink href={siteConfig.links.privacy} target="_blank">
           privacy policy
         </Hyperlink>
-        .
       </span>
-    </CheckboxUnit>
+    </CheckboxRow>
   );
 }
 

@@ -6,33 +6,24 @@ import { styled } from "@pigment-css/react";
 
 const StyledField = styled(Field)(({ theme }) => ({
   display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing.forms.gap.field,
-}));
-
-const StyledFieldContents = styled("div")(({ theme }) => ({
-  display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  gap: "1rem",
-  padding: "0.825rem 1rem",
+  padding: "1rem 0",
 
-  border: `1px solid ${theme.colors.border.stark}`,
-  borderRadius: `calc(${theme.corners.base} * 0.625)`,
-  backgroundColor: theme.colors.background.slight,
+  "&:not(:last-of-type)": {
+    borderBottom: `1px solid ${theme.colors.border.stark}`,
+  },
 
   "&[data-invalid]": {
-    borderColor: theme.colors.input.invalid.border,
-    borderWidth: "1.5px",
-    backgroundColor: theme.colors.background.error,
     color: theme.colors.text.ui.error,
   },
 }));
 
 const StyledLabel = styled(HeadlessLabel)(({ theme }) => ({
   // fontSize: "0.875rem",
-  color: theme.colors.text.ui.primary,
+  // color: theme.colors.text.ui.primary,
   flex: 1,
+  paddingRight: "1.5rem", // Instead of gap on parent, so this can be tappable
 }));
 
 const NativeCheckbox = styled("input")(({ theme }) => ({
@@ -90,7 +81,7 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
   },
 }));
 
-function CheckboxUnit({
+function CheckboxRow({
   id,
   name,
   defaultChecked = false,
@@ -105,22 +96,20 @@ function CheckboxUnit({
 
   return (
     <StyledField>
-      <StyledFieldContents>
-        <StyledLabel htmlFor={checkboxId} passive={passiveLabel}>
-          {children}
-        </StyledLabel>
+      <StyledLabel htmlFor={checkboxId} passive={passiveLabel}>
+        {children}
+      </StyledLabel>
 
-        <NativeCheckbox
-          id={checkboxId}
-          name={name}
-          type="checkbox"
-          required={required}
-          defaultChecked={defaultChecked ? true : undefined}
-          disabled={disabled ? "disabled" : undefined}
-        />
-      </StyledFieldContents>
+      <NativeCheckbox
+        id={checkboxId}
+        name={name}
+        type="checkbox"
+        required={required}
+        defaultChecked={defaultChecked ? true : undefined}
+        disabled={disabled ? "disabled" : undefined}
+      />
     </StyledField>
   );
 }
 
-export default CheckboxUnit;
+export default CheckboxRow;
