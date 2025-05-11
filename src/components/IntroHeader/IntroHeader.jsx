@@ -182,7 +182,7 @@ const StyledAvatar = styled(Avatar, {
     {
       props: { isExiting: false },
       style: {
-        animation: `${enterAvatarAnimation} ${ANIMATION.TIMING.ENTER.AVATAR} forwards`,
+        animation: `${enterAvatarAnimation} ${ANIMATION.TIMING.ENTER.AVATAR} ${ANIMATION.CURVE} forwards`,
         animationDelay: ANIMATION.DELAY.AVATAR,
       },
     },
@@ -207,7 +207,7 @@ const MarkerDemo = styled("div")(({ theme }) => ({
     {
       props: { isExiting: false },
       style: {
-        animation: `${enterMarkerAnimation} ${ANIMATION.TIMING.ENTER.MARKER} forwards`,
+        animation: `${enterMarkerAnimation} ${ANIMATION.TIMING.ENTER.MARKER} ${ANIMATION.CURVE} forwards`,
         animationDelay: ANIMATION.DELAY.MARKER,
       },
     },
