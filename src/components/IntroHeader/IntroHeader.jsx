@@ -27,7 +27,96 @@ const featuredItems = [
   },
 ];
 
-const exitAnimationSpeed = "150ms";
+const ANIMATION = {
+  TIMING: {
+    EXIT: "200ms",
+    ENTER: {
+      AVATAR: "400ms",
+      MARKER: "450ms",
+      MAP: "1100ms",
+    },
+  },
+  DELAY: {
+    MARKER: "220ms",
+    AVATAR: "420ms",
+  },
+  CURVE: "cubic-bezier(0.175, 0.885, 0.32, 1.055)",
+};
+
+const commonAnimationProps = {
+  animationTimingFunction: ANIMATION.CURVE,
+  willChange: "transform, opacity", // Improve performance for Safari
+};
+
+const avatarEnter = {
+  opacity: 0,
+  transform: "rotate(0deg) translate(-1.5rem, 2rem) scale(0.5)",
+};
+const avatarVisible = {
+  opacity: 1,
+  transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(1)",
+};
+const avatarExit = {
+  opacity: 0,
+  transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(0.9)",
+};
+const markerEnter = {
+  opacity: 0,
+  transform: "rotate(0deg) translate(2.75rem, 2rem) scale(0.5)",
+};
+const markerVisible = {
+  opacity: 1,
+  transform: "rotate(12deg) translate(2.75rem, 1rem) scale(1)",
+};
+const markerExit = {
+  opacity: 0,
+  transform: "rotate(12deg) translate(2.75rem, 1rem) scale(0.9)",
+};
+
+const mapEnter = {
+  opacity: 0,
+  transform: "scale(1, 0.9) rotateX(-10deg) translateY(1rem)",
+};
+const mapVisible = {
+  opacity: 1,
+  transform: "scale(1, 1) rotateX(0deg) translateY(0)",
+};
+
+const exitAvatarAnimation = keyframes({
+  from: {
+    ...avatarVisible,
+  },
+  to: {
+    ...avatarExit,
+  },
+});
+
+const exitMarkerAnimation = keyframes({
+  from: {
+    ...markerVisible,
+  },
+  to: {
+    ...markerExit,
+  },
+});
+
+const enterAvatarAnimation = keyframes({
+  from: {
+    ...avatarEnter,
+  },
+  to: {
+    ...avatarVisible,
+  },
+});
+
+const enterMarkerAnimation = keyframes({
+  from: {
+    ...markerEnter,
+  },
+  to: {
+    ...markerVisible,
+  },
+});
 
 function IntroHeader() {
   const [itemIndex, setItemIndex] = useState(0);
@@ -79,99 +168,53 @@ function IntroHeader() {
 
 export default IntroHeader;
 
-const exitAvatarAnimation = keyframes({
-  from: {
-    opacity: 1,
-    transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(1)",
-  },
-  to: {
-    opacity: 0,
-    transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(0.9)",
-  },
-});
-
-const exitMarkerAnimation = keyframes({
-  from: {
-    opacity: 1,
-    transform: "rotate(12deg) translate(2.75rem, 1rem) scale(1)",
-  },
-  to: {
-    opacity: 0,
-    transform: "rotate(12deg)  translate(2.75rem, 1rem) scale(0.9)",
-  },
-});
-
-const enterAvatarAnimation = keyframes({
-  from: {
-    opacity: 0,
-    transform: "rotate(0deg) translate(-1.5rem, 2rem) scale(0.5)",
-  },
-  to: {
-    opacity: 1,
-    transform: "rotate(-15deg) translate(-1.5rem, -1rem) scale(1)",
-  },
-});
-
 const StyledAvatar = styled(Avatar, {
   shouldForwardProp: (prop) => prop !== "isExiting",
 })(({ theme }) => ({
   position: "absolute",
   // Set pre-animation attributes
-  transform: "rotate(0deg) translate(-1.5rem, 2rem) scale(0.5)",
-  opacity: 0,
+  ...avatarEnter,
   // Animate in on load
-  animationTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 1.055)",
+  ...commonAnimationProps,
   transformOrigin: "bottom right",
 
   variants: [
     {
       props: { isExiting: false },
       style: {
-        animation: `${enterAvatarAnimation} 400ms forwards`,
-        animationDelay: "420ms",
+        animation: `${enterAvatarAnimation} ${ANIMATION.TIMING.ENTER.AVATAR} forwards`,
+        animationDelay: ANIMATION.DELAY.AVATAR,
       },
     },
     {
       props: { isExiting: true },
       style: {
-        animation: `${exitAvatarAnimation} ${exitAnimationSpeed} forwards`,
-        animationDelay: "0ms",
+        animation: `${exitAvatarAnimation} ${ANIMATION.TIMING.EXIT} forwards`,
       },
     },
   ],
 }));
 
-const enterMarkerAnimation = keyframes({
-  from: {
-    opacity: 0,
-    transform: "rotate(0deg) translate(2.75rem, 2rem) scale(0.5)",
-  },
-  to: {
-    opacity: 1,
-    transform: "rotate(12deg) translate(2.75rem, 1rem) scale(1)",
-  },
-});
-
 const MarkerDemo = styled("div")(({ theme }) => ({
   position: "absolute",
-  transform: "rotate(0deg) translate(2.75rem, 2rem) scale(0.5)",
-  opacity: 0,
+  // Set pre-animation attributes
+  ...markerEnter,
+  // Animate in on load
+  ...commonAnimationProps,
   transformOrigin: "bottom left",
-  animationTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 1.055)",
 
   variants: [
     {
       props: { isExiting: false },
       style: {
-        animation: `${enterMarkerAnimation} 450ms forwards`,
-        animationDelay: "220ms",
+        animation: `${enterMarkerAnimation} ${ANIMATION.TIMING.ENTER.MARKER} forwards`,
+        animationDelay: ANIMATION.DELAY.MARKER,
       },
     },
     {
       props: { isExiting: true },
       style: {
-        animation: `${exitMarkerAnimation} ${exitAnimationSpeed} forwards`,
-        animationDelay: "0ms",
+        animation: `${exitMarkerAnimation} ${ANIMATION.TIMING.EXIT} forwards`,
       },
     },
   ],
@@ -179,12 +222,10 @@ const MarkerDemo = styled("div")(({ theme }) => ({
 
 const enterMapAnimation = keyframes({
   from: {
-    opacity: 0,
-    transform: "scale(1, 0.9) rotateX(-10deg) translateY(1rem)",
+    ...mapEnter,
   },
   to: {
-    opacity: 1,
-    transform: "scale(1, 1) rotateX(0deg) translateY(0)",
+    ...mapVisible,
   },
 });
 
@@ -218,11 +259,10 @@ const MapContainer = styled("div")(({ theme }) => ({
     borderRadius: "inherit",
     zIndex: -1,
     // Set pre-animation attributes
-    transform: "scale(1, 0.9) rotateX(-10deg) translateY(1rem)",
-    opacity: 0,
+    ...mapEnter,
     // Animate in on load
-    animation: `${enterMapAnimation} 1100ms forwards`,
-    animationDelay: "0",
+    ...commonAnimationProps,
+    animation: `${enterMapAnimation} ${ANIMATION.TIMING.ENTER.MAP} forwards`,
     transformOrigin: "bottom center",
   },
 }));
