@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
@@ -7,7 +8,7 @@ export const metadata = {
 
 # Privacy policy
 
-_Last updated: 19th January 2025_
+Last updated: <Hyperlink href={`${siteConfig.repoUrl}/commits/main/src/app/(core)/(static)/(text)/privacy`} target="\_blank">11th May 2025</Hyperlink>
 
 Peels is committed to protecting your privacy. This privacy policy explains how we collect, use, and store your personal information, as well as your rights regarding that information. By using Peels, you agree to the practices described in this privacy policy.
 
@@ -55,6 +56,8 @@ We use your personal information to:
 - Facilitate connections between users (e.g., Donors and Hosts).
 - Notify you of important updates or service changes (e.g., terms updates).
 - Ensure the platform's security and functionality.
+
+With your explicit consent (opt-in), we may also use your email address to send occasional newsletters about Peels. You can unsubscribe at any time via the link in emails or your profile settings.
 
 We may share anonymised, aggregated data (e.g., statistics about composting activity) with local councils, nonprofits, or similar organisations to promote sustainability and improve waste education. This data will never identify you personally.
 
