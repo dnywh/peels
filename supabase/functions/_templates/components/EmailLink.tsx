@@ -2,19 +2,20 @@ import * as React from "npm:react";
 import { ReactNode } from "npm:react";
 import { Link as ReactEmailLink } from "npm:@react-email/components";
 
-interface EmailFooterLinkProps {
+interface EmailLinkProps {
   href: string;
   children: ReactNode;
 }
-
-const EmailFooterLink = ({ href, children }: EmailFooterLinkProps) => (
-  <ReactEmailLink style={footerLink} href={href}>
+// A link component that inherits the style of the text it's a child of
+const EmailLink = ({ href, children }: EmailLinkProps) => (
+  <ReactEmailLink style={basicLink} href={href}>
     {children}
   </ReactEmailLink>
 );
-export default EmailFooterLink;
+export default EmailLink;
 
-const footerLink = {
+const basicLink = {
   color: "inherit",
+  textStyle: "inherit",
   textDecoration: "underline",
 };

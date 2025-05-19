@@ -19,4 +19,8 @@ const paragraph = {
   lineHeight: "140%",
   // marginBottom: "24px",
   color: assignments.colors.text.ui.primary,
+
+  em: {
+    fontWeight: "500",
+  },
 };

@@ -101,7 +101,7 @@ const html = {
 
 const body = {
   backgroundColor: assignments.colors.background.sunk, // For Gmail
-  padding: "40px 12px 24px", // Was margin
+  padding: "40px 12px 24px",
   borderRadius: "8px",
 };
 
@@ -138,14 +138,6 @@ const mainContentSection = {
   borderRadius: "16px",
 };
 
-const paragraph = {
-  fontSize: "16px",
-  // lineHeight: "26px",
-  lineHeight: "150%",
-  // marginBottom: "24px",
-  color: assignments.colors.text.ui.primary,
-};
-
 const footerSection = {
   padding: "0 24px", // Inset a little bit
   textAlign: "center" as const,
@@ -156,9 +148,4 @@ const footer = {
   color: assignments.colors.text.ui.quaternary,
   fontSize: "14px",
   lineHeight: "150%",
-};
-
-const footerLink = {
-  color: "inherit",
-  textDecoration: "underline",
 };

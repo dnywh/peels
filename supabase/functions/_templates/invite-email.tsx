@@ -1,7 +1,7 @@
-import { Link } from "npm:@react-email/components";
 import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
+import EmailLink from "./components/EmailLink.tsx";
 import * as React from "npm:react";
 
 interface InviteEmailProps {
@@ -34,8 +34,8 @@ export const InviteEmail = ({
       footerText="You’re receiving this email because someone at Peels invited you to join."
     >
       <EmailParagraph>
-        Someone at <Link href={rootUrl}>Peels</Link> has invited you to try it
-        out. Follow this link to accept the invite:
+        Someone at <EmailLink href={rootUrl}>Peels</EmailLink> has invited you
+        to try it out. Follow this link to accept the invite:
       </EmailParagraph>
 
       <EmailButton

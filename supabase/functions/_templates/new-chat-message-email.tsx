@@ -3,7 +3,7 @@ import EmailBody from "./components/EmailBody.tsx";
 import EmailAvatar from "./components/EmailAvatar.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
-import EmailFooterLink from "./components/EmailFooterLink.tsx";
+import EmailLink from "./components/EmailLink.tsx";
 import { assignments } from "../_shared/tokens.js";
 import * as React from "npm:react";
 
@@ -46,19 +46,16 @@ export const NewChatMessageEmail = ({
         recipientRole === "owner" ? (
           <>
             Don’t want emails like this?{" "}
-            <EmailFooterLink
-              href={`${rootUrl}/profile/listings/${listingSlug}`}
-            >
+            <EmailLink href={`${rootUrl}/profile/listings/${listingSlug}`}>
               Manage
-            </EmailFooterLink>{" "}
+            </EmailLink>{" "}
             your listing to hide or remove it from Peels.
           </>
         ) : (
           <>
             You’re receiving this email because you originally reached out to{" "}
             {senderName} on{" "}
-            <EmailFooterLink href={`${rootUrl}/profile`}>Peels</EmailFooterLink>
-            .
+            <EmailLink href={`${rootUrl}/profile`}>Peels</EmailLink>.
           </>
         )
       }
