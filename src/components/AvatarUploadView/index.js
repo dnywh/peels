@@ -1,2 +1,2 @@
-export * from './AvatarUploadView';
-export { default } from './AvatarUploadView';
+export * from "./AvatarUploadView";
+export { default } from "./AvatarUploadView";

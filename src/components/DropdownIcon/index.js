@@ -1,2 +1,2 @@
-export * from './DropdownIcon';
-export { default } from './DropdownIcon';
+export * from "./DropdownIcon";
+export { default } from "./DropdownIcon";

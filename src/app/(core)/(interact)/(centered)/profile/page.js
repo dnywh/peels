@@ -9,8 +9,8 @@ import LegalFooter from "@/components/LegalFooter";
 import { styled } from "@pigment-css/react";
 
 export const metadata = {
-  title: 'Profile',
-}
+  title: "Profile",
+};
 
 const NakedSection = styled("section")(({ theme }) => ({
   display: "flex",
@@ -34,8 +34,8 @@ const Section = styled("section")(({ theme }) => ({
 
 // This page could be static instead of dynamic by handling searchParams in a client component instead and using Suspense here. See the homepage and Toast component as an example.
 export default async function ProfilePage({ searchParams }) {
-  const message = (await searchParams)?.message
-  const error = (await searchParams)?.error
+  const message = (await searchParams)?.message;
+  const error = (await searchParams)?.error;
 
   const supabase = await createClient();
   // Get user data and listings in one query
@@ -48,14 +48,13 @@ export default async function ProfilePage({ searchParams }) {
     .from("listings")
     .select()
     .eq("owner_id", user.id)
-    .order('created_at', { ascending: true });
+    .order("created_at", { ascending: true });
 
   const { data: profile } = await supabase
     .from("profiles")
     .select()
     .eq("id", user.id)
     .single();
-
 
   return (
     <>
@@ -85,4 +84,3 @@ export default async function ProfilePage({ searchParams }) {
     </>
   );
 }
-

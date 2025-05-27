@@ -1,2 +1,2 @@
-export * from './PeelsTab';
-export { default } from './PeelsTab';
+export * from "./PeelsTab";
+export { default } from "./PeelsTab";

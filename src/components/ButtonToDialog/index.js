@@ -1,2 +1,2 @@
-export * from './ButtonToDialog';
-export { default } from './ButtonToDialog';
+export * from "./ButtonToDialog";
+export { default } from "./ButtonToDialog";

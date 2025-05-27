@@ -7,7 +7,7 @@ export default async function sitemap() {
   const { data: listings } = await supabase
     .from("listings_public_data")
     .select()
-    .in("type", ["community", "business"])
+    .in("type", ["community", "business"]);
   // Filtering out listings with false visibility is handled at the view level, not here
 
   // Start with the homepage
@@ -20,7 +20,7 @@ export default async function sitemap() {
     },
   ];
 
-  // Add all listings pages 
+  // Add all listings pages
   listings.forEach((listing) => {
     routes.push({
       url: `${siteConfig.url}/listings/${listing.slug}`,
@@ -29,7 +29,6 @@ export default async function sitemap() {
       priority: 0.8,
     });
   });
-
 
   // Add any static pages here
   const staticPages = [

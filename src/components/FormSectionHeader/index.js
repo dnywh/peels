@@ -1,2 +1,2 @@
-export * from './FormSectionHeader';
-export { default } from './FormSectionHeader';
+export * from "./FormSectionHeader";
+export { default } from "./FormSectionHeader";

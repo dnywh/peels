@@ -4,45 +4,49 @@ import MapPageClient from "@/components/MapPageClient";
 
 // Fetch data only once and use across metadata and page
 async function getInitialData(listingSlug) {
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    // Get user first
-    const { data: { user } } = await supabase.auth.getUser();
+  // Get user first
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    // Then get listing data if slug exists
-    const listingResponse = listingSlug ? await supabase
-        .from(user ? 'listings_private_data' : 'listings_public_data')
+  // Then get listing data if slug exists
+  const listingResponse = listingSlug
+    ? await supabase
+        .from(user ? "listings_private_data" : "listings_public_data")
         .select()
         .eq("slug", listingSlug)
-        .single() : null;
+        .single()
+    : null;
 
-    return {
-        user,
-        listing: listingResponse?.data
-    };
+  return {
+    user,
+    listing: listingResponse?.data,
+  };
 }
 
 export async function generateMetadata({ searchParams }) {
-    const listingSlug = (await searchParams)?.listing;
-    const { user, listing } = await getInitialData(listingSlug);
+  const listingSlug = (await searchParams)?.listing;
+  const { user, listing } = await getInitialData(listingSlug);
 
-    if (!listingSlug) {
-        return { title: "Map" };
-    }
+  if (!listingSlug) {
+    return { title: "Map" };
+  }
 
-    // Use shared utility to generate metadata
-    return generateListingMetadata(listing, user);
+  // Use shared utility to generate metadata
+  return generateListingMetadata(listing, user);
 }
 
 export default async function Page({ searchParams }) {
-    const listingSlug = (await searchParams)?.listing;
-    const { user, listing } = await getInitialData(listingSlug);
+  const listingSlug = (await searchParams)?.listing;
+  const { user, listing } = await getInitialData(listingSlug);
 
-    return (
-        <MapPageClient
-            user={user}
-            initialListingSlug={listingSlug}
-            initialListing={listing}
-        />
-    );
+  return (
+    <MapPageClient
+      user={user}
+      initialListingSlug={listingSlug}
+      initialListing={listing}
+    />
+  );
 }

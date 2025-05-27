@@ -1,2 +1,2 @@
-export * from './EncodedEmailHyperlink';
-export { default } from './EncodedEmailHyperlink';
+export * from "./EncodedEmailHyperlink";
+export { default } from "./EncodedEmailHyperlink";

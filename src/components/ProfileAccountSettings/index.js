@@ -1,2 +1,2 @@
-export * from './ProfileAccountSettings';
-export { default } from './ProfileAccountSettings';
+export * from "./ProfileAccountSettings";
+export { default } from "./ProfileAccountSettings";

@@ -1,2 +1,2 @@
-export * from './TabBarTab';
-export { default } from './TabBarTab';
+export * from "./TabBarTab";
+export { default } from "./TabBarTab";

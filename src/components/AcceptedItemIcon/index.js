@@ -1,2 +1,2 @@
-export * from './AcceptedItemIcon';
-export { default } from './AcceptedItemIcon';
+export * from "./AcceptedItemIcon";
+export { default } from "./AcceptedItemIcon";

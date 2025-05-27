@@ -1,2 +1,2 @@
-export * from './ProfileEditField';
-export { default } from './ProfileEditField';
+export * from "./ProfileEditField";
+export { default } from "./ProfileEditField";

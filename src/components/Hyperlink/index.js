@@ -1,2 +1,2 @@
-export * from './Hyperlink';
-export { default } from './Hyperlink';
+export * from "./Hyperlink";
+export { default } from "./Hyperlink";

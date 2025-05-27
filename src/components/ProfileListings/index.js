@@ -1,2 +1,2 @@
-export * from './ProfileListings';
-export { default } from './ProfileListings';
+export * from "./ProfileListings";
+export { default } from "./ProfileListings";

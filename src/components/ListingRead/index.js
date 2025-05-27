@@ -1,2 +1,2 @@
-export * from './ListingRead';
-export { default } from './ListingRead';
+export * from "./ListingRead";
+export { default } from "./ListingRead";

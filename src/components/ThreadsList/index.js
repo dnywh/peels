@@ -1,2 +1,2 @@
-export * from './ThreadsList';
-export { default } from './ThreadsList';
+export * from "./ThreadsList";
+export { default } from "./ThreadsList";

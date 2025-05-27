@@ -1,2 +1,2 @@
-export * from './ListingPhotoGallery';
-export { default } from './ListingPhotoGallery';
+export * from "./ListingPhotoGallery";
+export { default } from "./ListingPhotoGallery";

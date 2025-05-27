@@ -1,2 +1,2 @@
-export * from './PeelsLogo';
-export { default } from './PeelsLogo';
+export * from "./PeelsLogo";
+export { default } from "./PeelsLogo";

@@ -1,2 +1,2 @@
-export * from './MultiInput';
-export { default } from './MultiInput';
+export * from "./MultiInput";
+export { default } from "./MultiInput";

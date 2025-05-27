@@ -1,2 +1,2 @@
-export * from './ChatComposer';
-export { default } from './ChatComposer';
+export * from "./ChatComposer";
+export { default } from "./ChatComposer";

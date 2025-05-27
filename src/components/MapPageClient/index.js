@@ -1,2 +1,2 @@
-export * from './MapPageClient';
-export { default } from './MapPageClient';
+export * from "./MapPageClient";
+export { default } from "./MapPageClient";

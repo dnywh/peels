@@ -1,2 +1,2 @@
-export * from './CheckboxRow';
-export { default } from './CheckboxRow';
+export * from "./CheckboxRow";
+export { default } from "./CheckboxRow";

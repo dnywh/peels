@@ -1,2 +1,2 @@
-export * from './ProfileIcon';
-export { default } from './ProfileIcon';
+export * from "./ProfileIcon";
+export { default } from "./ProfileIcon";

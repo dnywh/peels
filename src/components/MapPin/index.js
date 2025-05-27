@@ -1,2 +1,2 @@
-export * from './MapPin';
-export { default } from './MapPin';
+export * from "./MapPin";
+export { default } from "./MapPin";

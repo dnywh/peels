@@ -1,2 +1,2 @@
-export * from './ChatsIcon';
-export { default } from './ChatsIcon';
+export * from "./ChatsIcon";
+export { default } from "./ChatsIcon";

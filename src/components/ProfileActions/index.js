@@ -1,2 +1,2 @@
-export * from './ProfileActions';
-export { default } from './ProfileActions';
+export * from "./ProfileActions";
+export { default } from "./ProfileActions";

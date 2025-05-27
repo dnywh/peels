@@ -1,2 +1,2 @@
-export * from './ProfileHeader';
-export { default } from './ProfileHeader';
+export * from "./ProfileHeader";
+export { default } from "./ProfileHeader";

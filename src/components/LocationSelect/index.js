@@ -1,2 +1,2 @@
-export * from './LocationSelect';
-export { default } from './LocationSelect';
+export * from "./LocationSelect";
+export { default } from "./LocationSelect";

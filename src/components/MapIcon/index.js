@@ -1,2 +1,2 @@
-export * from './MapIcon';
-export { default } from './MapIcon';
+export * from "./MapIcon";
+export { default } from "./MapIcon";

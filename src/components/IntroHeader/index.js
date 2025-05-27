@@ -1,2 +1,2 @@
-export * from './IntroHeader';
-export { default } from './IntroHeader';
+export * from "./IntroHeader";
+export { default } from "./IntroHeader";

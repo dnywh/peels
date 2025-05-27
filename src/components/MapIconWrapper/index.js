@@ -1,2 +1,2 @@
-export * from './MapIconWrapper';
-export { default } from './MapIconWrapper';
+export * from "./MapIconWrapper";
+export { default } from "./MapIconWrapper";

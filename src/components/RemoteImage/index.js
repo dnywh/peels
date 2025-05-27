@@ -1,2 +1,2 @@
-export * from './RemoteImage';
-export { default } from './RemoteImage';
+export * from "./RemoteImage";
+export { default } from "./RemoteImage";

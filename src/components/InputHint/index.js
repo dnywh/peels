@@ -1,2 +1,2 @@
-export * from './InputHint';
-export { default } from './InputHint';
+export * from "./InputHint";
+export { default } from "./InputHint";

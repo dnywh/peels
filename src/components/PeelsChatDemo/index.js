@@ -1,2 +1,2 @@
-export * from './PeelsChatDemo';
-export { default } from './PeelsChatDemo';
+export * from "./PeelsChatDemo";
+export { default } from "./PeelsChatDemo";

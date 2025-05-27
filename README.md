@@ -110,6 +110,7 @@ npm run dev
 - We use Pigment CSS for styling at a component-level
 - We’re slowly moving towards TypeScript for type safety
 - Heavy commenting is encouraged to make the codebase accessible to others
+- Code formatting is handled by Prettier. Please ensure your code is formatted according to `.prettierrc` before submitting a pull request
 
 ### Getting Help
 

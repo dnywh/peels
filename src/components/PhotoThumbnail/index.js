@@ -1,2 +1,2 @@
-export * from './PhotoThumbnail';
-export { default } from './PhotoThumbnail';
+export * from "./PhotoThumbnail";
+export { default } from "./PhotoThumbnail";

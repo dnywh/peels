@@ -1,2 +1,2 @@
-export * from './PeelsHowItWorks';
-export { default } from './PeelsHowItWorks';
+export * from "./PeelsHowItWorks";
+export { default } from "./PeelsHowItWorks";

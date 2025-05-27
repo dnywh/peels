@@ -1,2 +1,2 @@
-export * from './Lozenge';
-export { default } from './Lozenge';
+export * from "./Lozenge";
+export { default } from "./Lozenge";

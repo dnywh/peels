@@ -1,2 +1,2 @@
-export * from './LegalAgreement';
-export { default } from './LegalAgreement';
+export * from "./LegalAgreement";
+export { default } from "./LegalAgreement";

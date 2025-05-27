@@ -34,12 +34,7 @@ Deno.serve(async (req) => {
   try {
     const {
       user,
-      email_data: {
-        token,
-        token_hash,
-        redirect_to,
-        email_action_type,
-      },
+      email_data: { token, token_hash, redirect_to, email_action_type },
     } = wh.verify(payload, headers) as {
       user: {
         email: string;
@@ -88,7 +83,7 @@ Deno.serve(async (req) => {
           token_hash,
           redirect_to,
           email_action_type,
-        }),
+        })
       );
       text = await renderAsync(
         React.createElement(ResetPasswordEmail, {
@@ -97,7 +92,7 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        { plainText: true },
+        { plainText: true }
       );
     } else if (email_action_type === "signup") {
       // Sent to new users after sign up, before they can do anything else
@@ -118,13 +113,13 @@ Deno.serve(async (req) => {
           token_hash,
           redirect_to,
           email_action_type,
-        }),
+        })
       );
       // Timeout debugging
       console.log(
         "[signup] After renderAsync HTML",
         Date.now() - timingStart,
-        "ms",
+        "ms"
       );
 
       text = await renderAsync(
@@ -136,13 +131,13 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        { plainText: true },
+        { plainText: true }
       );
       // Timeout debugging
       console.log(
         "[signup] After renderAsync TEXT",
         Date.now() - timingStart,
-        "ms",
+        "ms"
       );
 
       // Timeout debugging
@@ -150,7 +145,7 @@ Deno.serve(async (req) => {
       console.log(
         "[signup] Before Resend send",
         resendStart - timingStart,
-        "ms since start",
+        "ms since start"
       );
     } else if (email_action_type === "email_change") {
       // Sent to existing users who change their email address
@@ -166,7 +161,7 @@ Deno.serve(async (req) => {
           token_hash,
           redirect_to,
           email_action_type,
-        }),
+        })
       );
       text = await renderAsync(
         React.createElement(EmailChangeEmail, {
@@ -176,7 +171,7 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        { plainText: true },
+        { plainText: true }
       );
     } else if (email_action_type === "magiclink") {
       // Passwordless login via email for the user
@@ -191,7 +186,7 @@ Deno.serve(async (req) => {
           token_hash,
           redirect_to,
           email_action_type,
-        }),
+        })
       );
       text = await renderAsync(
         React.createElement(MagicLinkEmail, {
@@ -200,7 +195,7 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        { plainText: true },
+        { plainText: true }
       );
     } else if (email_action_type === "invite") {
       // Invite a new user
@@ -215,7 +210,7 @@ Deno.serve(async (req) => {
           token_hash,
           redirect_to,
           email_action_type,
-        }),
+        })
       );
       text = await renderAsync(
         React.createElement(InviteEmail, {
@@ -224,7 +219,7 @@ Deno.serve(async (req) => {
           redirect_to,
           email_action_type,
         }),
-        { plainText: true },
+        { plainText: true }
       );
     } else if (email_action_type === "reauthentication") {
       // OTP code
@@ -234,13 +229,13 @@ Deno.serve(async (req) => {
       html = await renderAsync(
         React.createElement(ReauthenticationEmail, {
           token,
-        }),
+        })
       );
       text = await renderAsync(
         React.createElement(ReauthenticationEmail, {
           token,
         }),
-        { plainText: true },
+        { plainText: true }
       );
     } else {
       // This error likely reached if an email_action_type has not been defined above
@@ -250,7 +245,7 @@ Deno.serve(async (req) => {
       // My guess: "email_change_new" is the currently-disabled requirement to have the *old* email addresses confirmed (in addition to confirming only via the new one in "email_change")
       // My guess: "email" is EmailOTPVerification, perhaps used when 2FA is enabled, as an additional OTP step to signing in
       throw new Error(
-        `Email action type "${email_action_type}" has not yet been implemented`,
+        `Email action type "${email_action_type}" has not yet been implemented`
       );
     }
 
@@ -260,7 +255,7 @@ Deno.serve(async (req) => {
     console.log(
       "[global] Before resend.emails.send",
       resendSendStart - timingStart,
-      "ms since function start",
+      "ms since function start"
     );
     const { error } = await resend.emails.send({
       from: "Peels <team@peels.app>",
@@ -274,7 +269,7 @@ Deno.serve(async (req) => {
     console.log(
       "[global] After resend.emails.send",
       resendSendEnd - resendSendStart,
-      "ms for Resend send",
+      "ms for Resend send"
     );
     if (error) {
       throw error;
@@ -291,7 +286,7 @@ Deno.serve(async (req) => {
       {
         status: 401,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 

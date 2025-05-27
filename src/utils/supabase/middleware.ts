@@ -32,7 +32,7 @@ export const updateSession = async (request: NextRequest) => {
             );
           },
         },
-      },
+      }
     );
 
     // This will refresh session if expired - required for Server Components
@@ -46,8 +46,8 @@ export const updateSession = async (request: NextRequest) => {
         return NextResponse.redirect(
           new URL(
             `/sign-in?redirect_to=${request.nextUrl.pathname}`,
-            request.url,
-          ),
+            request.url
+          )
         );
       }
     }

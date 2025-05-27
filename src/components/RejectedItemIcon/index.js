@@ -1,2 +1,2 @@
-export * from './RejectedItemIcon';
-export { default } from './RejectedItemIcon';
+export * from "./RejectedItemIcon";
+export { default } from "./RejectedItemIcon";

@@ -1,2 +1,2 @@
-export * from './ChatHeader';
-export { default } from './ChatHeader';
+export * from "./ChatHeader";
+export { default } from "./ChatHeader";

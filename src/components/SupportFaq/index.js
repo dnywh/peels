@@ -1,2 +1,2 @@
-export * from './SupportFaq';
-export { default } from './SupportFaq';
+export * from "./SupportFaq";
+export { default } from "./SupportFaq";

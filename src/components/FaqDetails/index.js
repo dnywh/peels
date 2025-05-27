@@ -1,2 +1,2 @@
-export * from './FaqDetails';
-export { default } from './FaqDetails';
+export * from "./FaqDetails";
+export { default } from "./FaqDetails";

@@ -1,2 +1,2 @@
-export * from './LegalFooter';
-export { default } from './LegalFooter';
+export * from "./LegalFooter";
+export { default } from "./LegalFooter";

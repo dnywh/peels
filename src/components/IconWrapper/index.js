@@ -1,2 +1,2 @@
-export * from './IconWrapper';
-export { default } from './IconWrapper';
+export * from "./IconWrapper";
+export { default } from "./IconWrapper";

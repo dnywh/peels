@@ -1,2 +1,2 @@
-export * from './ChatPageClient';
-export { default } from './ChatPageClient';
+export * from "./ChatPageClient";
+export { default } from "./ChatPageClient";
