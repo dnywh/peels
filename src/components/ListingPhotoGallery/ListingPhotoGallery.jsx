@@ -47,8 +47,8 @@ const PhotosList = styled("ul")(({ theme }) => ({
   ],
 }));
 
-const ListingPhotoRemoteImageThumnail = styled(RemoteImage)(({ theme }) => ({
-  mixBlendMode: "multiply", // So box-shadow on parent is visible
+const ListingPhotoRemoteImageThumbnail = styled(RemoteImage)(({ theme }) => ({
+  mixBlendMode: "multiply", // So boxShadow on parent is visible
   // width: "100px",
   // height: "10rem",
   objectFit: "cover",
@@ -107,7 +107,7 @@ function ListingPhotoGallery({ presentation, photos }) {
             {({ ref, open }) => (
               // Thumbnail
               <li key={index} ref={ref} onClick={open}>
-                <ListingPhotoRemoteImageThumnail
+                <ListingPhotoRemoteImageThumbnail
                   bucket="listing_photos"
                   filename={photo}
                   alt={`Listing photo ${index + 1}`}

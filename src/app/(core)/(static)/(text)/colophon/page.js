@@ -8,10 +8,12 @@ export default function Colophon() {
   return (
     <>
       <h1>Colophon</h1>
-      <p>Peels is built upon some great concepts, technology, and tooling, with the highlights mentioned below. Check out our <Hyperlink href={`${siteConfig.repoUrl}/blob/main/package.json`} target="_blank">GitHub repository</Hyperlink> for a full list of open source technologies used.</p>
+      <p>Peels is built upon some great concepts, technology, and tooling, with some highlights mentioned below.</p>
 
       <h2>Technology</h2>
-      <p>Peels is made possible thanks the free and open source software described below. We’ve similarly made Peels <Hyperlink href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`} target="_blank">open source</Hyperlink> to pay it forward and perhaps inspire other circular economy projects.</p>
+      <p>Peels is made possible thanks to the free and open source software described below. Check out our <Hyperlink href={`${siteConfig.repoUrl}/blob/main/package.json`} target="_blank">GitHub repository</Hyperlink> for a full list of open source technologies used.</p>
+
+      <p>We’ve made Peels similarly <Hyperlink href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`} target="_blank">open source</Hyperlink> to pay it forward and perhaps inspire other circular economy projects.</p>
 
       <h3>Maps</h3>
       <p>
@@ -29,7 +31,7 @@ export default function Colophon() {
         Peels relies on a few ‘headless’ React components under the hood, namely <Hyperlink href="https://headlessui.com/" target="_blank">HeadlessUI</Hyperlink> and <Hyperlink href="https://www.radix-ui.com/primitives" target="_blank">Radix UI</Hyperlink>. They provide a solid foundation for accessibility (and helped get us off the ground quickly).
       </p>
       <p>
-        We don’t really use any custom components beyond the aforementioned primitive, headless, ones. The one major exception is the map drawer. That’s built on top of Emil Kowalski’s buttery-smooth <Hyperlink href="https://vaul.emilkowal.ski/" target="_blank">Vaul</Hyperlink> drawer component.
+        We don’t really use any custom components beyond the aforementioned primitive, headless, ones. The one major exception is the map drawer, based on the <Hyperlink href="https://vaul.emilkowal.ski/" target="_blank">Vaul</Hyperlink> drawer component.
       </p>
 
       <h3>Icons</h3>
@@ -46,11 +48,11 @@ export default function Colophon() {
       </p>
 
       <h3>Mapping platforms</h3>
-      <p>A bit vague, yes. We just take for granted how central mapping is to our everyday life, and that it didn’t just come out of the ether. Smart people developed interface paradigms (and satellites) that we use daily to find things in physical space around us.</p>
+      <p>We take for granted how central mapping is to our everyday lives. Smart people developed interface paradigms (and satellites) that we use daily to find things in physical space around us.</p>
 
-      <p>Peels is a beneficiary of this work. We all know what pins on a map mea. We know what will likely happen when we tap one, and how to jump between pins or pan around the world.</p>
+      <p>Peels is a beneficiary of this work. We all know what pins on a map means. We know what will likely happen when we tap one, and how to jump between pins or pan around the world.</p>
 
-      <p><Hyperlink href="https://maphappenings.com" target="_blank">Map Happenings</Hyperlink> does a great job describing the history of mapping platforms, in case you find this sort of thing interesting.</p>
+      <p><Hyperlink href="https://maphappenings.com" target="_blank">Map Happenings</Hyperlink> does a great job describing the history of mapping platforms, in case you’d like to learn more.</p>
     </>
   );
 }
