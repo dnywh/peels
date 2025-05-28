@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { signUpAction } from "@/app/actions";
-import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
+import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
@@ -40,7 +40,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
       setFirstNameError(null);
 
       // Client-side validation
-      const validation = validateFirstName(formData.get("first_name"));
+      const validation = validateName(formData.get("first_name"));
       if (!validation.isValid) {
         setFirstNameError(validation.error);
         setIsSubmitting(false);

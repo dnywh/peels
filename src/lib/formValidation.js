@@ -1,9 +1,10 @@
-export const validateFirstName = (firstName) => {
-  const trimmedName = firstName?.toString().trim();
+// Trim blank characters from both the start and end of a name
+export const validateName = (name) => {
+  const trimmedName = name?.toString().trim();
   if (!trimmedName) {
     return {
       isValid: false,
-      error: "You can’t have an empty first name.",
+      error: "You can’t have an empty name.",
     };
   }
   return {

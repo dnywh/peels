@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
+import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
 import {
   updateFirstNameAction,
   deleteListingAction,
@@ -149,20 +149,25 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
     // Validate required fields
     const nextErrors = {};
+    let validatedName = name; // Store the validated name
 
     if (listingType === "residential") {
       // Only validate and update first name if it was changed
       if (name !== profile.first_name) {
-        const validation = validateFirstName(name);
+        const validation = validateName(name);
         if (!validation.isValid) {
           nextErrors.name = validation.error;
+        } else {
+          validatedName = validation.value; // Store the trimmed value
         }
       }
     } else {
       // For business/community listings, validate the name field
-      const validation = validateFirstName(name);
+      const validation = validateName(name);
       if (!validation.isValid) {
-        nextErrors.name = `You can’t have an empty ${listingType !== "residential" && listingType} name.`;
+        nextErrors.name = `You can't have an empty ${listingType} name.`;
+      } else {
+        validatedName = validation.value; // Store the trimmed value
       }
     }
 
@@ -179,9 +184,14 @@ export default function ListingWrite({ initialListing, user, profile }) {
     try {
       // For residential listings, update the profile first name if changed
       if (listingType === "residential" && profile.first_name !== name) {
-        console.log("Updating first name from", profile.first_name, "to", name);
+        console.log(
+          "Updating first name from",
+          profile.first_name,
+          "to",
+          validatedName
+        );
         const formData = new FormData();
-        formData.append("first_name", name);
+        formData.append("first_name", validatedName);
         const result = await updateFirstNameAction(formData);
         if (result?.error) {
           setErrors({ name: result.error });
@@ -202,7 +212,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
         type: listingType,
         ...(listingType !== "residential" && avatar && { avatar }),
         // Only include name for non-residential listings
-        ...(listingType !== "residential" && { name }),
+        ...(listingType !== "residential" && { name: validatedName }),
         description,
         location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
         // Temporarily store the coordinates as longitude and latitude floats in the database as well
