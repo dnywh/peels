@@ -16,7 +16,7 @@ import {
 } from "@/app/actions";
 
 import { styled } from "@pigment-css/react";
-import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
+import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
 
 const List = styled("ul")(({ theme }) => ({
   display: "flex",
@@ -162,7 +162,7 @@ function ProfileAccountSettings({ user, profile }) {
   };
 
   const handleFirstNameUpdate = async (formData) => {
-    const validation = validateFirstName(formData.get("first_name"));
+    const validation = validateName(formData.get("first_name"));
     if (!validation.isValid) {
       firstName.setError(validation.error);
       return;
