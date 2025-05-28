@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 export const signUpAction = async (formData: FormData, request: Request) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
-  const first_name = formData.get("first_name")?.toString();
+  const first_name = formData.get("first_name")?.toString().trimEnd();
   const newsletter = formData.has("newsletter_preference"); // Will only be passed if input is checked when form submitted
 
   const supabase = await createClient();
@@ -195,7 +195,7 @@ export const updateFirstNameAction = async (formData: FormData) => {
   const { error } = await supabase
     .from("profiles")
     .update({
-      first_name: formData.get("first_name")?.toString(),
+      first_name: formData.get("first_name")?.toString().trimEnd(),
     })
     .eq("id", user?.id);
 
