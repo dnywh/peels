@@ -493,6 +493,16 @@ export const createOrUpdateListingAction = async (listingData: any) => {
   try {
     console.log("Server action: Creating/updating listing");
 
+    // Check name validation
+    if (listingData.type !== "residential" && listingData.name) {
+      const nameValidation = validateName(listingData.name);
+      if (!nameValidation.isValid) {
+        return { error: nameValidation.error };
+      }
+      // Use the validated value
+      listingData.name = nameValidation.value;
+    }
+
     // Insert/update the listing
     const { data, error } = await supabase
       .from("listings")
