@@ -9,8 +9,9 @@ interface NewFeatureEmailProps {
   recipientName: string;
 }
 
+// An email template for one-off announcements to users
 export const NewFeatureEmail = ({ recipientName }: NewFeatureEmailProps) => {
-  const rootUrl = "https://www.peels.app";
+  const siteUrl = "https://www.peels.app";
   return (
     <EmailBody
       previewText={`We’ve just added a newsletter option to Peels. Here’s how to opt-in if you’d like to get it. Just head to your Profile and edit the ‘Newsletter’ option.`}
@@ -19,7 +20,7 @@ export const NewFeatureEmail = ({ recipientName }: NewFeatureEmailProps) => {
         <>
           You’re receiving this email because you have an account on Peels and
           this change affects our privacy policy. You can update your
-          preferences <EmailLink href={`${rootUrl}/profile`}>here</EmailLink>.
+          preferences <EmailLink href={`${siteUrl}/profile`}>here</EmailLink>.
         </>
       }
     >
@@ -32,10 +33,10 @@ export const NewFeatureEmail = ({ recipientName }: NewFeatureEmailProps) => {
       <EmailParagraph>
         Should you wish to subscribe, sign in to Peels and{" "}
         <EmailTextEmphasized>edit the ‘Newsletter’ option</EmailTextEmphasized>{" "}
-        on <EmailLink href={`${rootUrl}/profile`}>your Profile page</EmailLink>.
+        on <EmailLink href={`${siteUrl}/profile`}>your Profile page</EmailLink>.
       </EmailParagraph>
 
-      <EmailButton href={`${rootUrl}/profile`}>
+      <EmailButton href={`${siteUrl}/profile`}>
         Enable it on your Profile
       </EmailButton>
 
@@ -57,7 +58,7 @@ export const NewFeatureEmail = ({ recipientName }: NewFeatureEmailProps) => {
       <EmailParagraph>
         By the way, we’ve updated our{" "}
         <EmailLink
-          href={`${rootUrl}/privacy#:~:text=With%20your%20explicit%20consent%20(opt%2Din)%2C%20we%20may%20also%20use%20your%20email%20address%20to%20send%20occasional%20newsletters%20about%20Peels.%20You%20can%20unsubscribe%20at%20any%20time%20via%20the%20link%20in%20emails%20or%20your%20profile%20settings.`}
+          href={`${siteUrl}/privacy#:~:text=With%20your%20explicit%20consent%20(opt%2Din)%2C%20we%20may%20also%20use%20your%20email%20address%20to%20send%20occasional%20newsletters%20about%20Peels.%20You%20can%20unsubscribe%20at%20any%20time%20via%20the%20link%20in%20emails%20or%20your%20profile%20settings.`}
         >
           privacy policy
         </EmailLink>{" "}

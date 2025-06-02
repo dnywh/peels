@@ -14,7 +14,7 @@ import {
 } from "npm:@react-email/components";
 import { assignments } from "../../_shared/tokens.js";
 
-interface EmailBodyProps {
+export interface EmailBodyProps {
   logoUnread?: boolean;
   previewText: string;
   headingText: string;
@@ -24,13 +24,13 @@ interface EmailBodyProps {
 
 const staticAssetUrl = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/static`;
 
-export const EmailBody = ({
+const EmailBody: React.FC<EmailBodyProps> = ({
   logoUnread = false,
   previewText,
   headingText,
   footerText,
   children,
-}: EmailBodyProps) => {
+}) => {
   return (
     <Html style={html} lang="en">
       <Head>
@@ -146,6 +146,6 @@ const footerSection = {
 
 const footer = {
   color: assignments.colors.text.ui.quaternary,
-  fontSize: "14px",
-  lineHeight: "150%",
+  fontSize: "13px",
+  lineHeight: "145%",
 };

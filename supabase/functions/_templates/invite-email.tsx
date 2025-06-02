@@ -26,7 +26,7 @@ export const InviteEmail = ({
   redirect_to,
   token_hash,
 }: InviteEmailProps) => {
-  const rootUrl = "https://www.peels.app";
+  const siteUrl = "https://www.peels.app";
   return (
     <EmailBody
       previewText="Lucky you! You’re invited to try out Peels."
@@ -34,7 +34,7 @@ export const InviteEmail = ({
       footerText="You’re receiving this email because someone at Peels invited you to join."
     >
       <EmailParagraph>
-        Someone at <EmailLink href={rootUrl}>Peels</EmailLink> has invited you
+        Someone at <EmailLink href={siteUrl}>Peels</EmailLink> has invited you
         to try it out. Follow this link to accept the invite:
       </EmailParagraph>
 

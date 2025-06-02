@@ -3,24 +3,19 @@ import { ReactNode } from "npm:react";
 import { Text as ReactEmailText } from "npm:@react-email/components";
 import { assignments } from "../../_shared/tokens.js";
 
-interface EmailParagraphProps {
+export interface EmailParagraphProps {
   children: ReactNode;
 }
 
-const EmailParagraph = ({ children }: EmailParagraphProps) => (
+const EmailParagraph: React.FC<EmailParagraphProps> = ({ children }) => (
   <ReactEmailText style={paragraph}>{children}</ReactEmailText>
 );
 
 export default EmailParagraph;
 
 const paragraph = {
-  fontSize: "16px",
-  // lineHeight: "26px",
-  lineHeight: "140%",
-  // marginBottom: "24px",
-  color: assignments.colors.text.ui.primary,
-
-  em: {
-    fontWeight: "500",
-  },
+  fontSize: 16,
+  lineHeight: "145%",
+  letterSpacing: "-0.01em",
+  color: assignments.colors.text.ui.secondary,
 };

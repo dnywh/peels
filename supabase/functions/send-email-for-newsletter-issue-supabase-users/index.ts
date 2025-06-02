@@ -1,17 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
-import { NewFeatureEmail } from "../_templates/new-feature-email.tsx";
+import { NewsletterIssueEmail } from "../_templates/newsletter-issue-email.tsx";
 // Temporarily required for rendering a text version
 // The `react` email sending method does not yet supports text version
 // https://github.com/resend/resend-node/pull/469
 import { render } from "npm:@react-email/render";
 
-// Look up required env variables and API keys from Supabase secrets
-const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
+// Look up required API keys from Supabase secrets
+const newsletterEmailAddress = Deno.env.get("NEWSLETTER_EMAIL_ADDRESS");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const resend = new Resend(RESEND_API_KEY);
 
+// This edge function handles the sending of newsletter issues to Peels users
+// who opted-in to the newsletter after sign-up or later on in their profile
 const handler = async (_request: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -22,12 +24,14 @@ const handler = async (_request: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // First, get all profiles that haven't been emailed
+    // First, get all profiles that are opted-in to the newsletter
+    // And have not yet been emailed this issue
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
       .select("id, first_name")
-      .eq("emailed_about_latest_feature", false)
-      .limit(35);
+      .eq("newsletter", true)
+      .eq("emailed_latest_issue", false)
+      .limit(60); // Limit to around 50 (half a day's limit)
 
     if (profilesError) {
       throw new Error(`Failed to fetch profiles: ${profilesError.message}`);
@@ -73,22 +77,24 @@ const handler = async (_request: Request): Promise<Response> => {
         await new Promise((resolve) => setTimeout(resolve, 750));
 
         // TEST MODE: Only email yourself
-        // const testEmail = "todo";
+        // const testEmail = "you@example.com";
         // console.log(
         //   `TEST MODE: Would email ${userEmail}, but sending to ${testEmail} instead`,
         // );
 
         const { data, error } = await resend.emails.send({
-          from: `Peels <${generalEmailAddress}>`,
+          from: `Danny from Peels <${newsletterEmailAddress}>`,
           // to: [testEmail], // Send to yourself instead of userEmail
           to: [userEmail],
-          subject: "An update to Peels",
-          react: NewFeatureEmail({
+          subject: "Our first few months of Peels",
+          react: NewsletterIssueEmail({
             recipientName: profile.first_name || "there",
+            externalAudience: false,
           }),
           text: await render(
-            NewFeatureEmail({
+            NewsletterIssueEmail({
               recipientName: profile.first_name || "there",
+              externalAudience: false,
             }),
             {
               plainText: true,
@@ -114,7 +120,7 @@ const handler = async (_request: Request): Promise<Response> => {
         // Only update the flag if email was successful
         const { error: updateError } = await supabase
           .from("profiles")
-          .update({ emailed_about_latest_feature: true })
+          .update({ emailed_latest_issue: true })
           .eq("id", profile.id);
 
         if (updateError) {

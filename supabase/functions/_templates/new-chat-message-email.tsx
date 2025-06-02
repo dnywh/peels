@@ -36,7 +36,7 @@ export const NewChatMessageEmail = ({
   listingName,
   listingType,
 }: NewChatMessageEmailProps) => {
-  const rootUrl = "https://www.peels.app";
+  const siteUrl = "https://www.peels.app";
   return (
     <EmailBody
       logoUnread={true}
@@ -46,7 +46,7 @@ export const NewChatMessageEmail = ({
         recipientRole === "owner" ? (
           <>
             Don’t want emails like this?{" "}
-            <EmailLink href={`${rootUrl}/profile/listings/${listingSlug}`}>
+            <EmailLink href={`${siteUrl}/profile/listings/${listingSlug}`}>
               Manage
             </EmailLink>{" "}
             your listing to hide or remove it from Peels.
@@ -55,7 +55,7 @@ export const NewChatMessageEmail = ({
           <>
             You’re receiving this email because you originally reached out to{" "}
             {senderName} on{" "}
-            <EmailLink href={`${rootUrl}/profile`}>Peels</EmailLink>.
+            <EmailLink href={`${siteUrl}/profile`}>Peels</EmailLink>.
           </>
         )
       }
@@ -84,7 +84,7 @@ export const NewChatMessageEmail = ({
         Check it out on Peels:
       </EmailParagraph>
 
-      <EmailButton href={`${rootUrl}/chats/${threadId}`}>
+      <EmailButton href={`${siteUrl}/chats/${threadId}`}>
         View message
       </EmailButton>
 
