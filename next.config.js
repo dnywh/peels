@@ -286,6 +286,7 @@ export default withPigment(withMDX(nextConfig), {
       avatar: "-3deg",
     },
     corners: {
+      thumbnail: "0.375rem", // 6px
       base: "1rem", // 16px
       avatar: {
         small: "0.375rem",

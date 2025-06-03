@@ -2,29 +2,189 @@ import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 import RemoteImage from "@/components/RemoteImage";
-import Image from "next/image";
+import NewsletterMetadata from "@/components/NewsletterMetadata";
+import NewsletterTitle from "@/components/NewsletterTitle";
+import NewsletterBody from "@/components/NewsletterBody";
+import NewsletterAside from "@/components/NewsletterAside";
+import NewsletterImageGridContainer from "@/components/NewsletterImageGridContainer";
+import NewsletterImage from "@/components/NewsletterImage";
+import { styled } from "@pigment-css/react";
 
 export const metadata = {
   title: "Celebrating the first few months of Peels",
 };
 
-# Celebrating the first few months of Peels
+<NewsletterTitle>{metadata.title}</NewsletterTitle>
+<NewsletterMetadata
+  from="Danny at Peels"
+  date="2025-06-03"
+  replyTo="ZGFubnlAcGVlbHMuYXBw"
+/>
 
-Welcome to the **first issue** of the Peels newsletter. As a reminder, <Hyperlink href="#">Peels</Hyperlink> is a volunteer-led community
+<NewsletterBody>
+Hi there,
+
+Welcome to the first issue of the Peels newsletter. As a reminder, <Hyperlink href={siteConfig.url}>Peels</Hyperlink> is a volunteer-led community
 composting platform that launched in January this year.
 
-{/* <Image
-  src="https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/static/newsletter/1/peels-map.jpg"
+We’ll be sending out updates 2–3 times a year, with a focus on how Peels supports community composting around the world.
+
+<NewsletterAside title="About this email">
+  This is the shareable web version of the email newsletter sent out to
+  subscribers. <Hyperlink href={siteConfig.url}>Join Peels</Hyperlink> to
+  receive future issues.
+</NewsletterAside>
+
+---
+
+## What’s new
+
+Peels started in January with zero composters and zero publicity. Since then (thanks to folks like you), **we now have almost 300 listings** around the world.
+
+<NewsletterImage
+  bucket="static/newsletter/1"
+  filename="peels-map.jpg"
   alt="A map showing all the Peels host pins around the world"
   width={944}
   height={232}
+  caption="A world map of Peels hosts, including far-flung places like Portugal, Hawaii, Alaska, Peru, Hungary, and Argentina."
 />
 
-<Image
-  src="https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/static/newsletter/1/github-repo.png"
-  alt="A map showing all the Peels host pins around the world"
+Most of our hosts are in Australia and the USA, but we’re also seeing
+compost communities spring up in New Zealand and the UK.
+
+Below are just a few of our lovely hosts who happen have photos on their listings:
+
+<NewsletterImageGridContainer
+  caption={
+    <>
+      Clockwise from top-left: Kirrily in Broome,{" "}
+      <Hyperlink
+        href={`${siteConfig.url}/map?listing=YsJerEnaUVjv`}
+        target="_blank"
+      >
+        Seed the Ground
+      </Hyperlink>{" "}
+      on the Gold Coast,{" "}
+      <Hyperlink
+        href={`${siteConfig.url}/map?listing=0WhK28YBfSSS`}
+        target="_blank"
+      >
+        ScrapDogs
+      </Hyperlink>{" "}
+      in Maine, Jake in Colorado,{" "}
+      <Hyperlink
+        href={`${siteConfig.url}/map?listing=MG92x2GOAeXj`}
+        target="_blank"
+      >
+        Let’s Grow Preston
+      </Hyperlink>
+      , and{" "}
+      <Hyperlink
+        href={`${siteConfig.url}/map?listing=FjABURjzHDMW`}
+        target="_blank"
+      >
+        Shellworks
+      </Hyperlink>{" "}
+      in London.
+    </>
+  }
+>
+  <NewsletterImage
+    bucket="static/newsletter/1"
+    filename="kirrily.jpg"
+    alt="A woman holding a pumpkin in her garden"
+    width={944}
+    height={148}
+  />
+  <NewsletterImage
+    bucket="static/newsletter/1"
+    filename="seed-the-ground.jpg"
+    alt="Two women in front of a compost collection point"
+    width={944}
+    height={148}
+  />
+  <NewsletterImage
+    bucket="static/newsletter/1"
+    filename="shellworks.jpg"
+    alt="A light-industrial building with 'Shellworks' signage"
+    width={944}
+    height={148}
+  />
+  <NewsletterImage
+    bucket="static/newsletter/1"
+    filename="scrapdogs.jpg"
+    alt="A woman at a compost information stall"
+    width={944}
+    height={148}
+  />
+  <NewsletterImage
+    bucket="static/newsletter/1"
+    filename="lets-grow-preston.jpg"
+    alt="Two people happily turning a compost pile"
+    width={944}
+    height={148}
+  />
+  <NewsletterImage
+    bucket="static/newsletter/1"
+    filename="jake.jpg"
+    alt="A thriving vegetable garden with compost bays at the back"
+    width={944}
+    height={148}
+  />
+</NewsletterImageGridContainer>
+
+If you’re a Peels host and haven’t yet been contacted, thanks for your patience. Donor sign ups are growing steadily. In the meantime, **consider adding a photo to your listing**. Photos help donors feel more confident about reaching out.
+
+### A deeper dive
+
+If you want to hear more about Peels’ first few months and how it relates to community composting more broadly, check out <Hyperlink href="https://loccal.org/2025/05/06/the-loccal-loop-icaw-edition-may-2025-newsletter/" target="_blank">
+this LOCCAL event</Hyperlink> that I (Danny) recently spoke at. You can skip to the 28 minute mark or, alternatively, flick through <Hyperlink href="https://loccal.org/2025/05/21/putting-community-composting-on-the-map-with-peels/" target="_blank">the written version</Hyperlink>.
+
+I’d love to hear from you: **what are your ideas** for reaching more would-be composters? **What’s happening in your community** that Peels could better support?
+
+---
+
+## What’s next
+
+Peels is growing but we can’t do it alone. We’re looking for fellow volunteers to help with **community outreach** and **technical contributions**.
+
+## Community outreach
+
+Many would-be compost donors and hosts simply haven’t heard about Peels. As a team of one (sometimes two), our outreach is limited.
+
+**Please <EncodedEmailHyperlink address="ZGFubnlAcGVlbHMuYXBw">reach out</EncodedEmailHyperlink> if you or someone you know can help promote Peels in your local area**. Whether it’s to councils, waste educators, or local networks, any help is appreciated. Our <Hyperlink href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`}>promo kit</Hyperlink> is also a good place to start.
+
+## Technical contributions
+
+Peels is now open source! That means **the <Hyperlink href={siteConfig.repoUrl} target="_blank">source code is public</Hyperlink>, documented, and ready for contributions**. We had our first community contribution just the other day from Hugo in Canada.
+
+<NewsletterImage
+  bucket="static/newsletter/1"
+  filename="github-repo.png"
+  alt="The Peels GitHub repository"
   width={472}
   height={264}
-/> */}
+  caption={
+    <>
+      Help us spread the word about Peels to your community, or get stuck in to{" "}
+      <Hyperlink href={siteConfig.repoUrl} target="_blank">
+        the code
+      </Hyperlink>
+      !
+    </>
+  }
+/>
 
-_This page will contain the newsletter issue contents later today. If you’d like to subscribe to future issues, simply [sign up](/sign-up) to Peels. Thanks for your patience!_
+You don’t need to write code to contribute to the ‘product’. For example, we’re tackling <Hyperlink href={`${siteConfig.repoUrl}/discussions/4`} target="\_blank">a tricky issue</Hyperlink> with how people are using the donor listing category in unexpected ways. **Got ideas? <Hyperlink href={`${siteConfig.repoUrl}/discussions`} target="\_blank">Join the discussion</Hyperlink>**!
+
+---
+
+Finally, if you know someone who has yet to make a listing or hasn’t reached out about a drop-off, **please encourage them to do so**.
+
+Thanks for reading. What would you like to see more (or less) of on Peels or in future newsletter issues? I’d love to hear your thoughts.
+
+Happy composting,
+Danny from Peels
+
+</NewsletterBody>

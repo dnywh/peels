@@ -51,7 +51,7 @@ const img = {
   margin: 0,
   mixBlendMode: "multiply", // So boxShadow on parent is visible in email clients that support it
   width: "100%",
-  borderRadius: 8,
+  borderRadius: 8, // Should ideally match theme.corners.thumbnail (6px),
   objectFit: "cover",
   // border: "1px solid rgba(0, 0, 0, 0.12)",
 };

@@ -1,6 +1,7 @@
 import FaqContainer from "@/components/FaqContainer";
 import FaqDetails from "@/components/FaqDetails";
 
+// FAQ for using Peels
 function SupportFaq() {
   return (
     <FaqContainer>

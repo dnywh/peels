@@ -4,6 +4,7 @@ import FaqDetails from "@/components/FaqDetails";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
+// General FAQ for 'about Peels'
 function PeelsFaq() {
   return (
     <FaqContainer>
