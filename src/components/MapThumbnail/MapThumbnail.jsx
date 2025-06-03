@@ -23,11 +23,8 @@ const MapContainer = styled("div")(({ theme }) => ({
 const MapBorder = styled("div")(({ theme }) => ({
   borderRadius: RADIUS,
   boxShadow: `0 0 0 2px ${theme.colors.border.elevated} inset`,
-  width: "100%",
-  height: "100%",
   position: "absolute",
-  top: 0,
-  left: 0,
+  inset: 0,
   pointerEvents: "none", // Important, so map contents (i.e. pin(s)) can be interacted with
 }));
 

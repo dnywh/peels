@@ -34,10 +34,7 @@ const LoadingSpinner = styled("div")(({ theme }) => ({
   fontSize: "20px",
 
   position: "absolute",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
+  inset: 0,
   backgroundColor: theme.colors.background.overlay,
   color: theme.colors.text.overlay,
   // Match Avatar
