@@ -19,6 +19,10 @@ const featuredItems = [
   },
   {
     type: "community",
+    photo: "soil-sisters-singleton.jpg",
+  },
+  {
+    type: "community",
     photo: "kensington.jpg",
   },
   {
