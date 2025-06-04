@@ -10,7 +10,7 @@ import EmailLink from "./components/EmailLink.tsx";
 import EmailHr from "./components/EmailHr.tsx";
 import * as React from "npm:react";
 
-interface NewsletterIssueEmailProps {
+interface NewsletterIssueOneEmailProps {
   recipientName: string;
   externalAudience: boolean;
 }
@@ -19,11 +19,11 @@ const dwEmailAddress = Deno.env.get("DW_EMAIL_ADDRESS");
 const staticAssetUrl = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/static`;
 
 // An email template for newsletter issues, both to opted-in users and broadcast audiences
-// Edit inline content for each new newsletter issue
-export const NewsletterIssueEmail = ({
+// Make a new copy for each new newsletter issue so contents aren't overriden (and can be borrowed for future issues)
+export const NewsletterIssueOneEmail = ({
   recipientName = "there",
   externalAudience,
-}: NewsletterIssueEmailProps) => {
+}: NewsletterIssueOneEmailProps) => {
   const siteUrl = "https://www.peels.app";
   const repoUrl = "https://github.com/dnywh/peels";
   const issueAssetUrl = `${staticAssetUrl}/newsletter/1`;
@@ -332,7 +332,7 @@ export const NewsletterIssueEmail = ({
   );
 };
 
-export default NewsletterIssueEmail;
+export default NewsletterIssueOneEmail;
 
 const gridImgColLeft = { width: "50%", paddingRight: 8 };
 const gridImgColRight = { width: "50%", paddingLeft: 8 };

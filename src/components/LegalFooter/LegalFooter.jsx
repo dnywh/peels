@@ -6,27 +6,32 @@ import { styled } from "@pigment-css/react";
 const currentYear = new Date().getFullYear();
 
 const StyledFooter = styled("footer")(({ theme }) => ({
+  marginTop: "5rem", // Fallback if prior sibling has no marginBottom defined
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
   gap: "1rem",
   color: theme.colors.text.ui.emptyState,
+
+  "& p": {
+    fontSize: "0.875rem", // Match links below
+  },
 }));
 
 const StyledNav = styled("nav")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  gap: "0.75rem",
+  gap: "0.5rem 0.75rem",
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
   flexWrap: "wrap",
-  padding: "0 1.5rem",
-  // marginTop: "10rem",
-  fontSize: "1rem",
+  padding: "0 2.5rem", // Inset slightly for balanced wrapping
+  fontSize: "0.875rem",
 
   "& a": {
+    margin: 0,
     fontWeight: "500",
     color: theme.colors.text.ui.emptyState,
     transition: "color 150ms ease-in-out",
@@ -53,6 +58,7 @@ function LegalFooter({ logo = false }) {
         <Link href={siteConfig.links.terms}>Terms</Link>
         <Link href={siteConfig.links.privacy}>Privacy</Link>
         <Link href={siteConfig.links.support}>Support</Link>
+        <Link href={siteConfig.links.newsletter}>Newsletter</Link>
         <Link href={siteConfig.links.colophon}>Colophon</Link>
       </StyledNav>
     </StyledFooter>

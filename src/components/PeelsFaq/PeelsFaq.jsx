@@ -99,7 +99,7 @@ function PeelsFaq() {
         <p>
           Community organising is also a big part of getting Peels off the
           ground. Please don’t hesistate to{" "}
-          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+          <EncodedEmailHyperlink address={siteConfig.email.support}>
             email us
           </EncodedEmailHyperlink>{" "}
           if that’s something you could help with.
@@ -120,7 +120,7 @@ function PeelsFaq() {
           </Hyperlink>{" "}
           which includes social media tiles and and a printable poster in both
           letter and A4 sizes. Don’t hesistate to{" "}
-          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+          <EncodedEmailHyperlink address={siteConfig.email.support}>
             reach out
           </EncodedEmailHyperlink>{" "}
           for something more specific to your community.
@@ -133,7 +133,7 @@ function PeelsFaq() {
         <p>
           We’ve already partnered with councils from all over Australia, and are
           always keen to work with more (around the world, too!). Please{" "}
-          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+          <EncodedEmailHyperlink address={siteConfig.email.support}>
             email us
           </EncodedEmailHyperlink>
           .

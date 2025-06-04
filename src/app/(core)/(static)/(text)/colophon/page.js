@@ -1,5 +1,6 @@
 import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
+
 export const metadata = {
   title: "Colophon",
 };
@@ -7,11 +8,11 @@ export const metadata = {
 export default function Colophon() {
   return (
     <>
-      <h1>Colophon</h1>
+      {/* <h1>Colophon</h1>
       <p>
         Peels is built upon some great concepts, technology, and tooling, with
         some highlights mentioned below.
-      </p>
+      </p> */}
 
       <h2>Technology</h2>
       <p>

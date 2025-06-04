@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "npm:resend";
-import { NewsletterIssueEmail } from "../_templates/newsletter-issue-email.tsx";
+import { NewsletterIssueOneEmail } from "../_templates/newsletter-issue-one-email.tsx";
 // Temporarily required for rendering a text version
 // The `react` email sending method does not yet supports text version
 // https://github.com/resend/resend-node/pull/469
@@ -26,12 +26,12 @@ const handler = async (_request: Request): Promise<Response> => {
         audienceId: newsletterAudienceId,
         from: `Danny from Peels <${newsletterEmailAddress}>`,
         subject: "Our first few months of Peels",
-        react: NewsletterIssueEmail({
+        react: NewsletterIssueOneEmail({
           recipientName: "{{{FIRST_NAME|there}}}",
           externalAudience: true,
         }),
         text: await render(
-          NewsletterIssueEmail({
+          NewsletterIssueOneEmail({
             recipientName: "there",
             externalAudience: true,
           }),

@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
-
 import { Drawer } from "vaul"; // TODO: Import only used subcomponents?
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"; // TODO: Build own version: https://www.joshwcomeau.com/snippets/react-components/visually-hidden/
+import { siteConfig } from "@/config/site";
 import AvatarPair from "@/components/AvatarPair";
 import IconButton from "@/components/IconButton";
 import DropdownMenu from "@/components/DropdownMenu";
@@ -202,7 +202,7 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
               >
                 Sorry to hear you’re having trouble with {otherPersonName}.
                 Please{" "}
-                <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+                <EncodedEmailHyperlink address={siteConfig.email.support}>
                   contact us
                 </EncodedEmailHyperlink>{" "}
                 to report the issue or to block them from contacting you any

@@ -3,6 +3,7 @@ import Form from "@/components/Form";
 import FormFooter from "@/components/FormFooter";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import { siteConfig } from "@/config/site";
 import SignUpForm from "@/components/SignUpForm";
 
 export const metadata = {
@@ -43,7 +44,7 @@ export default async function SignUp(props: {
           <p>
             Never received the email? Check your spam folder.{" "}
             {/* TODO: Resend verification email to {searchParams.email}. */}
-            <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+            <EncodedEmailHyperlink address={siteConfig.email.support}>
               Reach out
             </EncodedEmailHyperlink>{" "}
             if you still need help.

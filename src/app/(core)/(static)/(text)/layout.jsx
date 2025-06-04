@@ -1,16 +1,25 @@
+import StaticPageHeader from "@/components/StaticPageHeader";
 import { styled } from "@pigment-css/react";
+
+export default async function Layout({ children }) {
+  return (
+    <>
+      <StaticPageHeader title="TODO Title" subtitle="TODO subtitle goes here" />
+      <Main>{children}</Main>
+    </>
+  );
+}
 
 const Main = styled("main")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
-  maxWidth: "720px",
+  maxWidth: "640px",
   margin: "4rem auto 0",
   backgroundColor: theme.colors.background.top,
   padding: "2rem 2rem 3.5rem",
   borderRadius: theme.corners.base,
   border: `1px solid ${theme.colors.border.base}`,
-  marginBottom: "3rem",
 
   "& h1": {
     fontSize: "2.5rem",
@@ -85,12 +94,7 @@ const Main = styled("main")(({ theme }) => ({
     },
 
     "& p, & li": {
-      fontSize: "1.25rem",
-      lineHeight: "160%",
+      fontSize: "1.125rem",
     },
   },
 }));
-
-export default async function Layout({ children }) {
-  return <Main>{children}</Main>;
-}

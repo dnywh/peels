@@ -1,8 +1,9 @@
+import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 import Button from "@/components/Button";
-import { styled } from "@pigment-css/react";
 import PeelsLogo from "@/components/PeelsLogo";
+import { styled } from "@pigment-css/react";
 
 const StyledListingCta = styled("aside")(({ theme }) => ({
   backgroundColor: theme.colors.background.slight,
@@ -63,7 +64,7 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
           </p>
           <p>
             Are you the owner?{" "}
-            <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+            <EncodedEmailHyperlink address={siteConfig.email.support}>
               Reach out
             </EncodedEmailHyperlink>{" "}
             to claim this listing or to request changes.

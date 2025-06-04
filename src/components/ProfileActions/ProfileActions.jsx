@@ -1,5 +1,5 @@
 import { signOutAction, deleteAccountAction } from "@/app/actions";
-
+import { siteConfig } from "@/config/site";
 import Button from "@/components/Button";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
@@ -58,7 +58,7 @@ export default function ProfileActions({ listings }) {
           cancelButtonText="Done"
         >
           We’re still working on this feature. In the meantime,{" "}
-          <EncodedEmailHyperlink address="c3VwcG9ydEBwZWVscy5hcHA=">
+          <EncodedEmailHyperlink address={siteConfig.email.support}>
             reach out
           </EncodedEmailHyperlink>{" "}
           and ask us to export your data manually.

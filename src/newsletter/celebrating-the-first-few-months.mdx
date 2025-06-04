@@ -2,26 +2,28 @@ import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 import RemoteImage from "@/components/RemoteImage";
-import NewsletterMetadata from "@/components/NewsletterMetadata";
+
 import NewsletterTitle from "@/components/NewsletterTitle";
-import NewsletterBody from "@/components/NewsletterBody";
 import NewsletterAside from "@/components/NewsletterAside";
 import NewsletterImageGridContainer from "@/components/NewsletterImageGridContainer";
 import NewsletterImage from "@/components/NewsletterImage";
 import { styled } from "@pigment-css/react";
 
 export const metadata = {
+  // issue: 1,
   title: "Celebrating the first few months of Peels",
+  authors: ["Danny White"],
+  description:
+    "It’s been a big first few months of Peels. Here’s an update on what happened and what we’re working towards.",
+
 };
 
-<NewsletterTitle>{metadata.title}</NewsletterTitle>
-<NewsletterMetadata
-  from="Danny at Peels"
-  date="2025-06-03"
-  replyTo="ZGFubnlAcGVlbHMuYXBw"
-/>
+export const customMetadata = {
+  issueNumber: 1,
+  // images: ["abc", "edf"],
+  publishDate: "2025-06-03T09:00:00+10:00",
+};
 
-<NewsletterBody>
 Hi there,
 
 Welcome to the first issue of the Peels newsletter. As a reminder, <Hyperlink href={siteConfig.url}>Peels</Hyperlink> is a volunteer-led community
@@ -153,7 +155,7 @@ Peels is growing but we can’t do it alone. We’re looking for fellow voluntee
 
 Many would-be compost donors and hosts simply haven’t heard about Peels. As a team of one (sometimes two), our outreach is limited.
 
-**Please <EncodedEmailHyperlink address="ZGFubnlAcGVlbHMuYXBw">reach out</EncodedEmailHyperlink> if you or someone you know can help promote Peels in your local area**. Whether it’s to councils, waste educators, or local networks, any help is appreciated. Our <Hyperlink href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`}>promo kit</Hyperlink> is also a good place to start.
+**Please <EncodedEmailHyperlink address={siteConfig.email.dw}>reach out</EncodedEmailHyperlink> if you or someone you know can help promote Peels in your local area**. Whether it’s to councils, waste educators, or local networks, any help is appreciated. Our <Hyperlink href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`}>promo kit</Hyperlink> is also a good place to start.
 
 ## Technical contributions
 
@@ -186,5 +188,3 @@ Thanks for reading. What would you like to see more (or less) of on Peels or in 
 
 Happy composting,
 Danny from Peels
-
-</NewsletterBody>

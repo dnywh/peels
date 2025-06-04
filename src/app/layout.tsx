@@ -164,8 +164,6 @@ html {
   scroll-behavior: smooth;
   // Animate height, like on FAQ accordions
 }
-
-
 `;
 
 const Body = styled("body")(({ theme }) => ({
@@ -188,6 +186,18 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     siteName: siteConfig.name,
     url: siteConfig.url,
+  },
+  // RSS feed for newsletter
+  // https://didoesdigital.com/blog/nextjs-blog-09-rss/
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        {
+          title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches route.ts)
+          url: `${siteConfig.url}/newsletter/index.xml`,
+        },
+      ],
+    },
   },
 };
 

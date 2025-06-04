@@ -17,7 +17,6 @@ const Content = styled("div")(({ theme }) => ({
   padding: "2rem 1.25rem 3.5rem",
   borderRadius: theme.corners.base,
   border: `1px solid ${theme.colors.border.base}`,
-  marginBottom: "3rem",
 
   // Match EmailHr
   "& hr": {

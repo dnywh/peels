@@ -25,7 +25,7 @@ const StyledMain = styled("main")({
 
   paddingTop: "10vh",
   gap: "5rem", // Match section paddingTop
-  marginBottom: "5rem", // Match gap
+  // marginBottom: "5rem", // Match gap
 
   "@media (min-width: 768px)": {
     // paddingTop: "24vh",

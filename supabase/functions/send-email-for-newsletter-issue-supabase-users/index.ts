@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
-import { NewsletterIssueEmail } from "../_templates/newsletter-issue-email.tsx";
+import { NewsletterIssueOneEmail } from "../_templates/newsletter-issue-one-email.tsx";
 // Temporarily required for rendering a text version
 // The `react` email sending method does not yet supports text version
 // https://github.com/resend/resend-node/pull/469
@@ -87,12 +87,12 @@ const handler = async (_request: Request): Promise<Response> => {
           // to: [testEmail], // Send to yourself instead of userEmail
           to: [userEmail],
           subject: "Our first few months of Peels",
-          react: NewsletterIssueEmail({
+          react: NewsletterIssueOneEmail({
             recipientName: profile.first_name || "there",
             externalAudience: false,
           }),
           text: await render(
-            NewsletterIssueEmail({
+            NewsletterIssueOneEmail({
               recipientName: profile.first_name || "there",
               externalAudience: false,
             }),
