@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Hyperlink from "@/components/Hyperlink";
 import NewsletterImage from "@/components/NewsletterImage";
 import { styled } from "@pigment-css/react";
@@ -11,38 +12,87 @@ function NewsletterIssueRow({
   featuredImages,
 }) {
   return (
-    <Row key={slug}>
-      {featured && "Most recent item!"}
-      <h3>
-        <Hyperlink prefetch={false} href={`/newsletter/${slug}`}>
-          {`${title}`}
-        </Hyperlink>
-      </h3>
-      <p>
-        Issue #{issueNumber} · {date}
-      </p>
-      {/* TODO: ignore if featured === false */}
-      {featuredImages &&
-        featuredImages.map((image) => (
-          <NewsletterImage
-            key={image}
-            bucket={`static/newsletter/${issueNumber}`}
-            filename={image}
-            alt="A map showing all the Peels host pins around the world"
-            width={944}
-            height={232}
-            caption="A world map of Peels hosts, including far-flung places like Portugal, Hawaii, Alaska, Peru, Hungary, and Argentina."
-          />
-        ))}
-    </Row>
+    <ListItem key={slug}>
+      <LinkedRow prefetch={false} href={`/newsletter/${slug}`}>
+        {/* {featured && "Featured because I'm the most recent item!"} */}
+        <Text>
+          <h3>{title}</h3>
+          <p>
+            Issue #{issueNumber} · {date}
+          </p>
+        </Text>
+        {/* TODO: ignore if featured === false */}
+        {featuredImages && (
+          <Images>
+            {featuredImages.map((image) => (
+              <NewsletterImage
+                key={image}
+                bucket={`static/newsletter/${issueNumber}`}
+                filename={image}
+                alt="A preview image from this newsletter issue"
+                width={256}
+                height={256}
+              />
+            ))}
+          </Images>
+        )}
+      </LinkedRow>
+    </ListItem>
   );
 }
 
 export default NewsletterIssueRow;
 
-const Row = styled("li")(({ theme }) => ({
+const ListItem = styled("li")(({ theme }) => ({
   backgroundColor: theme.colors.background.top,
-  padding: "2rem 2rem 3.5rem",
   borderRadius: theme.corners.base,
   border: `1px solid ${theme.colors.border.base}`,
+  overflow: "clip",
+}));
+
+const LinkedRow = styled(Link)(({ theme }) => ({
+  padding: "2rem",
+  display: "flex",
+  flexDirection: "column",
+  gap: "3rem",
+
+  "@media (min-width: 768px)": {
+    flexDirection: "row",
+    gap: "1.5rem",
+  },
+
+  transition: "opacity 150ms ease-in-out, transform 150ms ease-in-out",
+
+  "&:hover": {
+    opacity: 0.5,
+    // transform: "scale(0.99875)",
+  },
+}));
+
+const Text = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  "@media (min-width: 768px)": {
+    flex: 2, // Leave some room for image(s)
+  },
+}));
+
+const Images = styled("div")(({ theme }) => ({
+  flex: 1,
+  // position: "absolute",
+  // bottom: 0,
+  // right: "2rem",
+
+  position: "relative",
+  // position
+
+  "& > figure": {
+    // opacity: 0.5,
+    position: "absolute",
+    right: 0,
+    width: 128,
+    height: 128,
+    transform: "rotate(8deg)",
+  },
 }));

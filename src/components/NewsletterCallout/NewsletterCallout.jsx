@@ -1,3 +1,5 @@
+import Link from "next/link";
+import HeadingBlock from "@/components/HeadingBlock";
 import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
 

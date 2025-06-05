@@ -1,10 +1,16 @@
 // https://didoesdigital.com/blog/nextjs-blog-06-metadata-and-navigation/
+import { siteConfig } from "@/config/site";
 import { getAllNewsletterIssuesData } from "@/app/(core)/(static)/newsletter/_lib/getAllNewsletterIssuesData";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import NewsletterIssueRow from "@/components/NewsletterIssueRow";
+import NewsletterIssuesList from "@/components/NewsletterIssuesList";
 import NewsletterCallout from "@/components/NewsletterCallout";
-import { siteConfig } from "@/config/site";
+import StaticPageSection from "@/components/StaticPageSection";
+import Link from "next/link";
+import HeadingBlock from "@/components/HeadingBlock";
 import Hyperlink from "@/components/Hyperlink";
+import { styled } from "@pigment-css/react";
+import StaticPageMain from "@/components/StaticPageMain";
 
 export const metadata = {
   title: "Newsletter",
@@ -17,55 +23,33 @@ export const metadata = {
   //   },
 };
 
-export default async function NewsletterPage() {
-  const newsletterIssues = await getAllNewsletterIssuesData();
-
+export default function NewsletterPage() {
   return (
-    <>
-      <StaticPageHeader
-        title="Newsletter"
-        subtitle={
-          <>
-            {siteConfig.newsletter.description}{" "}
-            <Hyperlink href={siteConfig.links.join}>Join Peels</Hyperlink> to
-            get future issues in your inbox.
-          </>
-        }
-      />
-      <h2>Issues</h2>
-      {/* TODO: move below to a component that can be reused at bottom of individual newsletter issue pages */}
-      <ul>
-        {newsletterIssues.map(
-          (
-            {
-              slug,
-              metadata: { title },
-              customMetadata: { issueNumber, featuredImages },
-              formattedDate,
-            },
-            index
-          ) => (
-            <NewsletterIssueRow
-              key={slug}
-              featured={index === 0}
-              slug={slug}
-              title={title}
-              issueNumber={issueNumber}
-              date={formattedDate}
-              featuredImages={featuredImages}
-            />
-          )
-        )}
-      </ul>
+    <StaticPageMain>
+      <div>
+        <StaticPageHeader
+          title="Newsletter"
+          subtitle={
+            <>
+              {siteConfig.newsletter.description}{" "}
+              <Link href={siteConfig.links.join}>Join Peels</Link> to get future
+              issues in your inbox.
+            </>
+          }
+        />
+        <NewsletterIssuesList />
+      </div>
 
-      {/* TODO make this section reusable on both layouts */}
-      <h2>Get these in your inbox</h2>
-      <p>
-        Opt-in to receive future issues of the newsletter via email. Or
-        subscribe to the{" "}
-        <Hyperlink href="/newsletter/feed.xml">RSS feed</Hyperlink>.
-      </p>
-      <NewsletterCallout />
-    </>
+      <StaticPageSection>
+        <HeadingBlock>
+          <h2>Get these in your inbox</h2>
+          <p>
+            Opt-in to receive future issues of the newsletter via email. Or
+            subscribe to the <Link href="/newsletter/feed.xml">RSS feed</Link>.
+          </p>
+        </HeadingBlock>
+        <NewsletterCallout />
+      </StaticPageSection>
+    </StaticPageMain>
   );
 }

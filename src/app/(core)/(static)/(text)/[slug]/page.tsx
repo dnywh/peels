@@ -4,6 +4,8 @@ import StaticPageHeader from "@/components/StaticPageHeader";
 import LongformTextContainer from "@/components/LongformTextContainer";
 import { getTextPageMetadata } from "../_lib/getTextPageMetadata";
 import { formatPublishDate } from "@/utils/dateUtils";
+import { styled } from "@pigment-css/react";
+import StaticPageMain from "@/components/StaticPageMain";
 
 export async function generateMetadata({ params }) {
   const { metadata } = await getTextPageMetadata(params.slug);
@@ -39,11 +41,13 @@ export default async function TextPage({ params }) {
   const TextPageMarkdown = dynamic(() => import(`../content/${slug}.mdx`));
 
   return (
-    <>
-      <StaticPageHeader title={pageTitle} subtitle={pageDescription} />
-      <LongformTextContainer>
-        <TextPageMarkdown />
-      </LongformTextContainer>
-    </>
+    <StaticPageMain>
+      <div>
+        <StaticPageHeader title={pageTitle} subtitle={pageDescription} />
+        <LongformTextContainer>
+          <TextPageMarkdown />
+        </LongformTextContainer>
+      </div>
+    </StaticPageMain>
   );
 }

@@ -264,7 +264,18 @@ export default withPigment(withMDX(nextConfig), {
     spacing: {
       unit: "0.5rem", // 8px
       gap: {
+        page: {
+          md: "5rem",
+          lg: "12vh",
+        },
+        section: "2.75rem",
+        sectionInner: "0.5rem",
         desktop: "1.5rem",
+      },
+      container: {
+        text: {
+          maxWidth: "720px",
+        },
       },
       forms: {
         maxWidth: "36rem",

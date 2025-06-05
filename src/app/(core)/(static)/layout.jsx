@@ -29,7 +29,7 @@ export default async function Layout({ children }) {
         <StyledAccountButton />
         <TabBar breakpoint="md" position="fixed" />
         {children}
-        <LegalFooter logo={true} />
+        <LegalFooter />
         <TabBar breakpoint="sm" />
       </StaticPage>
     </TabBarProvider>

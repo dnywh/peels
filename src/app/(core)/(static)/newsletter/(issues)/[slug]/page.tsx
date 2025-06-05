@@ -1,13 +1,19 @@
 // https://didoesdigital.com/blog/nextjs-blog-02-add-mdx/
 // https://didoesdigital.com/blog/nextjs-blog-06-metadata-and-navigation/
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import LongformTextContainer from "@/components/LongformTextContainer";
 import NewsletterCallout from "@/components/NewsletterCallout";
+import NewsletterIssuesList from "@/components/NewsletterIssuesList";
 import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
 import { getAllNewsletterIssuesData } from "@/app/(core)/(static)/newsletter/_lib/getAllNewsletterIssuesData";
 import { getNewsletterIssueMetadata } from "@/app/(core)/(static)/newsletter/_lib/getNewsletterIssueData";
+import StaticPageSection from "@/components/StaticPageSection";
+import HeadingBlock from "@/components/HeadingBlock";
+
 import type { Metadata } from "next/types";
 
 // Update the type to make params a Promise
@@ -55,28 +61,35 @@ export default async function NewsletterIssuePage({
   console.log(authors); // TODO: Open Graph authors
 
   return (
-    <>
-      <StaticPageHeader
-        title={title}
-        subtitle={`Issue #${issueNumber} · Published ${formattedDate}`}
-        parent="Newsletter"
-      />
+    <StaticPageMain>
+      <div>
+        <StaticPageHeader
+          title={title}
+          subtitle={`Issue #${issueNumber} · Published ${formattedDate}`}
+          parent="Newsletter"
+        />
+        <LongformTextContainer>
+          <NewsletterIssueMarkdown />
+        </LongformTextContainer>
+      </div>
 
-      <LongformTextContainer>
-        <NewsletterIssueMarkdown />
-      </LongformTextContainer>
+      <StaticPageSection>
+        <HeadingBlock>
+          <h2>Get these in your inbox</h2>
+          <p>
+            Opt-in to receive future issues of the newsletter via email. Or
+            subscribe to the <Link href="/newsletter/feed.xml">RSS feed</Link>.
+          </p>
+        </HeadingBlock>
+        <NewsletterCallout />
+      </StaticPageSection>
 
-      {/* TODO make this section reusable on both layouts */}
-      <h2>Get these in your inbox</h2>
-      <p>
-        Opt-in to receive future issues of the newsletter via email. Or
-        subscribe to the{" "}
-        <Hyperlink href="/newsletter/feed.xml">RSS feed</Hyperlink>.
-      </p>
-      <NewsletterCallout />
-
-      <h2>What’s come before</h2>
-      <p>TODO: past newsletter issues</p>
-    </>
+      <StaticPageSection>
+        <HeadingBlock>
+          <h2>Past issues</h2>
+        </HeadingBlock>
+        <NewsletterIssuesList activeSlug={slug} />
+      </StaticPageSection>
+    </StaticPageMain>
   );
 }

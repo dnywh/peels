@@ -45,21 +45,21 @@ const StyledNav = styled("nav")(({ theme }) => ({
   },
 }));
 
-function LegalFooter({ logo = false }) {
+function LegalFooter() {
   return (
     <StyledFooter>
-      {logo && <PeelsLogo color="quaternary" />}
+      <PeelsLogo color="quaternary" />
       <p>
         © {currentYear} {siteConfig.name}
       </p>
 
       <StyledNav>
         <Link href={siteConfig.links.about}>About</Link>
-        <Link href={siteConfig.links.terms}>Terms</Link>
-        <Link href={siteConfig.links.privacy}>Privacy</Link>
         <Link href={siteConfig.links.support}>Support</Link>
         <Link href={siteConfig.links.newsletter}>Newsletter</Link>
         <Link href={siteConfig.links.colophon}>Colophon</Link>
+        <Link href={siteConfig.links.terms}>Terms</Link>
+        <Link href={siteConfig.links.privacy}>Privacy</Link>
       </StyledNav>
     </StyledFooter>
   );

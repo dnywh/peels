@@ -1,3 +1,4 @@
+import { sharedSectionTextBlockStyles } from "@/styles/commonStyles";
 import { styled } from "@pigment-css/react";
 
 function StaticPageHeader({
@@ -21,17 +22,28 @@ function StaticPageHeader({
 export default StaticPageHeader;
 
 const Header = styled("header")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-  maxWidth: "640px",
+  margin: "4rem auto 3rem",
 
-  textAlign: "center",
-  textWrap: "balance",
+  ...sharedSectionTextBlockStyles({ theme }),
+  maxWidth: "720px",
 
   "& h1": {
-    fontSize: "2.5rem",
+    // fontSize: "3.5rem",
+    // color: theme.colors.text.primary,
+
+    // Matches index page.js
+    // TODO: consolidate or separate properly
+    maxWidth: "24ch",
+    fontSize: "2.75rem",
+    letterSpacing: "-0.03em",
+    lineHeight: "1.05",
+    fontWeight: "775",
     color: theme.colors.text.primary,
+
+    "@media (min-width: 768px)": {
+      // fontSize: "4.75rem",
+      fontSize: "4rem",
+    },
   },
 
   "& p": {

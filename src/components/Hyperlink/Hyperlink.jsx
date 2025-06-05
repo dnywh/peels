@@ -14,6 +14,7 @@ const getSharedStyles = ({ theme }) => ({
 const StyledLink = styled(Link)(getSharedStyles);
 const StyledAnchor = styled("a")(getSharedStyles);
 
+// An pre-styled anchor element (or button that looks like one)
 export default function Hyperlink({ as = Link, children, href, ...props }) {
   if (as === "anchor") {
     return (

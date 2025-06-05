@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site";
 import SupportFaq from "@/components/SupportFaq";
 import PeelsFaq from "@/components/PeelsFaq";
 import { styled } from "@pigment-css/react";
+import StaticPageMain from "@/components/StaticPageMain";
 
 export const metadata = {
   title: "Support",
@@ -12,7 +13,8 @@ export const metadata = {
 
 export default function Support() {
   return (
-    <>
+    <StaticPageMain>
+      {/* <div> */}
       <StaticPageHeader
         title="Support"
         subtitle={
@@ -26,11 +28,37 @@ export default function Support() {
           </>
         }
       />
-      <h2>Using Peels</h2>
-      <SupportFaq />
 
-      <h2>About Peels</h2>
-      <PeelsFaq />
-    </>
+      <Content>
+        <Section>
+          <h2>Using Peels</h2>
+          <SupportFaq />
+        </Section>
+
+        <Section>
+          <h2>About Peels</h2>
+          <PeelsFaq />
+        </Section>
+      </Content>
+      {/* </div> */}
+    </StaticPageMain>
   );
 }
+
+const Content = styled("div")(({ theme }) => ({
+  margin: "0 auto",
+  maxWidth: theme.spacing.container.text.maxWidth,
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing.gap.page.sm,
+
+  "@media (min-width: 768px)": {
+    gap: theme.spacing.gap.page.md,
+  },
+}))
+
+const Section = styled("section")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing.gap.sectionInner,
+}))
