@@ -2,23 +2,25 @@
 // https://didoesdigital.com/blog/nextjs-blog-09-rss/
 import type { Metadata } from "next/types";
 import { notFound } from "next/navigation";
+import { formatPublishDate } from "@/utils/dateUtils";
 
 export type IssueMetadata = Metadata & {
-    // issue: number;
     title: string;
     description: string;
     authors: Array<string>;
 };
 
 export type CustomMetadata = {
-    issueNumber: number;
     publishDate: string;
+    issueNumber: number;
+    featuredImages: Array<string>;
 };
 
 export type NewsletterIssueData = {
     slug: string;
     metadata: IssueMetadata;
     customMetadata: CustomMetadata;
+    formattedDate: string;
 };
 
 export async function getNewsletterIssueMetadata(
@@ -47,6 +49,11 @@ export async function getNewsletterIssueMetadata(
                 slug,
                 metadata: file.metadata,
                 customMetadata: file.customMetadata,
+                formattedDate: `${
+                    formatPublishDate(
+                        file.customMetadata.publishDate,
+                    )
+                }`,
             };
         } else {
             throw new Error(`Unable to find metadata for ${slug}.mdx`);

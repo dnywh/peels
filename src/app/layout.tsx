@@ -194,7 +194,7 @@ export const metadata: Metadata = {
       "application/rss+xml": [
         {
           title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches route.ts)
-          url: `${siteConfig.url}/newsletter/index.xml`,
+          url: `${siteConfig.url}/newsletter/feed.xml`,
         },
       ],
     },

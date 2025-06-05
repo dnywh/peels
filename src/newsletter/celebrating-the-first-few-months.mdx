@@ -10,9 +10,8 @@ import NewsletterImage from "@/components/NewsletterImage";
 import { styled } from "@pigment-css/react";
 
 export const metadata = {
-  // issue: 1,
   title: "Celebrating the first few months of Peels",
-  authors: ["Danny White"],
+  authors: ["Danny White"], // TODO: Expose in Open Graph or remove entirely. Should it be `[name: "Danny White"]`?
   description:
     "It’s been a big first few months of Peels. Here’s an update on what happened and what we’re working towards.",
 
@@ -20,7 +19,7 @@ export const metadata = {
 
 export const customMetadata = {
   issueNumber: 1,
-  // images: ["abc", "edf"],
+  featuredImages: ["peels-map.jpg", "kirrily.jpg"],
   publishDate: "2025-06-03T09:00:00+10:00",
 };
 

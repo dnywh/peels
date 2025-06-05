@@ -1,14 +1,16 @@
 import { siteConfig } from "@/config/site";
-import Hyperlink from "@/components/Hyperlink";
 import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
 
 export const metadata = {
   title: "Privacy",
+  description:
+    "This privacy policy explains how we collect, use, and store your personal information, as well as your rights regarding that information.",
 };
 
-# Privacy policy
-
-Last updated: <Hyperlink href={`${siteConfig.repoUrl}/commits/main/src/app/(core)/(static)/(text)/privacy`} target="\_blank">11th May 2025</Hyperlink>
+export const customMetadata = {
+  verboseTitle: "Privacy policy",
+  updatedDate: "2025-05-11T09:00:00+10:00",
+};
 
 Peels is committed to protecting your privacy. This privacy policy explains how we collect, use, and store your personal information, as well as your rights regarding that information. By using Peels, you agree to the practices described in this privacy policy.
 

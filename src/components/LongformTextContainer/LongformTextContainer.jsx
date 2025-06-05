@@ -1,29 +1,38 @@
-import StaticPageHeader from "@/components/StaticPageHeader";
 import { styled } from "@pigment-css/react";
 
-export default async function Layout({ children }) {
-  return (
-    <>
-      <StaticPageHeader title="TODO Title" subtitle="TODO subtitle goes here" />
-      <Main>{children}</Main>
-    </>
-  );
+// Often used for MD files like newsletter issues, privacy policy, colophon, etc
+function LongformTextContainer({ children }) {
+  return <Content>{children}</Content>;
 }
 
-const Main = styled("main")(({ theme }) => ({
+export default LongformTextContainer;
+
+const Content = styled("div")(({ theme }) => ({
+  // Fully separate from or merge with (text) Main styles
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
   maxWidth: "640px",
   margin: "4rem auto 0",
   backgroundColor: theme.colors.background.top,
-  padding: "2rem 2rem 3.5rem",
+  padding: "2rem 1.25rem 3.5rem",
   borderRadius: theme.corners.base,
   border: `1px solid ${theme.colors.border.base}`,
 
+  // Match EmailHr
+  "& hr": {
+    margin: "32px 0",
+    borderColor: theme.colors.border.elevated,
+    borderTopWidth: 1,
+  },
+
   "& h1": {
-    fontSize: "2.5rem",
+    fontSize: "2.25rem",
     color: theme.colors.text.primary,
+  },
+
+  "& h2, h3, h4, h5, h6": {
+    fontWeight: 500,
   },
 
   "& h2": {
@@ -42,6 +51,10 @@ const Main = styled("main")(({ theme }) => ({
     color: theme.colors.text.secondary,
     lineHeight: "160%",
     fontSize: "1rem",
+
+    "& strong": {
+      fontWeight: 500,
+    },
   },
 
   "& p + p, & ul + p, & ol + p": {
@@ -94,7 +107,8 @@ const Main = styled("main")(({ theme }) => ({
     },
 
     "& p, & li": {
-      fontSize: "1.125rem",
+      fontSize: "1.25rem",
+      lineHeight: "160%",
     },
   },
 }));

@@ -7,7 +7,7 @@ const feed = new Feed({
     title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches layout.tsx)
     description: siteConfig.newsletter.description,
     id: `${siteConfig.url}/newsletter`,
-    link: `${siteConfig.url}/newsletter/index.xml`,
+    link: `${siteConfig.url}/newsletter/feed.xml`,
     language: "en",
     copyright: `All rights reserved ${
         new Date().getFullYear()

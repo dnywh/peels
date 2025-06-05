@@ -1,11 +1,14 @@
 import { styled } from "@pigment-css/react";
 
-// export interface EmailAsideProps {
-//   title: string;
-//   children: ReactNode;
-// }
-
-function StaticPageHeader({ title, subtitle, parent }: { title: any; subtitle: any; parent?: any; }) {
+function StaticPageHeader({
+  title,
+  subtitle,
+  parent,
+}: {
+  title: any;
+  subtitle: any;
+  parent?: any;
+}) {
   return (
     <Header>
       {parent && <a href="./">{parent}</a>}

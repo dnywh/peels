@@ -2,7 +2,7 @@
 // https://didoesdigital.com/blog/nextjs-blog-06-metadata-and-navigation/
 import dynamic from "next/dynamic";
 import StaticPageHeader from "@/components/StaticPageHeader";
-import NewsletterBody from "@/components/NewsletterBody";
+import LongformTextContainer from "@/components/LongformTextContainer";
 import NewsletterCallout from "@/components/NewsletterCallout";
 import { siteConfig } from "@/config/site";
 import Hyperlink from "@/components/Hyperlink";
@@ -42,19 +42,13 @@ export default async function NewsletterIssuePage({
   params,
 }: NewsletterIssuePageProps) {
   const { slug } = await params;
-  const { metadata, customMetadata } = await getNewsletterIssueMetadata(slug);
+  const { metadata, customMetadata, formattedDate } =
+    await getNewsletterIssueMetadata(slug);
   const title = `${metadata.title ?? ""}`;
   const authors = `${metadata.authors ?? ""}`;
   const issueNumber = customMetadata.issueNumber;
-  const dateOptions = {
-    year: "numeric" as const,
-    month: "long" as const,
-    day: "numeric" as const,
-  };
-  const publishDate = new Date(customMetadata.publishDate).toLocaleDateString(
-    undefined, // varies according to local timezone and default locale
-    dateOptions
-  );
+
+  //  Dynamically import MDX files
   const NewsletterIssueMarkdown = dynamic(
     () => import(`@/newsletter/${slug}.mdx`)
   );
@@ -64,15 +58,25 @@ export default async function NewsletterIssuePage({
     <>
       <StaticPageHeader
         title={title}
-        subtitle={`Issue #${issueNumber ?? "?"} · Sent ${publishDate}`}
+        subtitle={`Issue #${issueNumber} · Published ${formattedDate}`}
         parent="Newsletter"
       />
 
-      <NewsletterBody>
+      <LongformTextContainer>
         <NewsletterIssueMarkdown />
-      </NewsletterBody>
+      </LongformTextContainer>
 
+      {/* TODO make this section reusable on both layouts */}
+      <h2>Get these in your inbox</h2>
+      <p>
+        Opt-in to receive future issues of the newsletter via email. Or
+        subscribe to the{" "}
+        <Hyperlink href="/newsletter/feed.xml">RSS feed</Hyperlink>.
+      </p>
       <NewsletterCallout />
+
+      <h2>What’s come before</h2>
+      <p>TODO: past newsletter issues</p>
     </>
   );
 }
