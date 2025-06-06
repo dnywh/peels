@@ -41,13 +41,15 @@ export default async function TextPage({ params }) {
   const TextPageMarkdown = dynamic(() => import(`../content/${slug}.mdx`));
 
   return (
+    // // Largely matches newsletter/(issues) page.tsx
     <StaticPageMain>
-      <div>
+      {/* Wrap header and main content in plain section so they visually hug */}
+      <section>
         <StaticPageHeader title={pageTitle} subtitle={pageDescription} />
         <LongformTextContainer>
           <TextPageMarkdown />
         </LongformTextContainer>
-      </div>
+      </section>
     </StaticPageMain>
   );
 }

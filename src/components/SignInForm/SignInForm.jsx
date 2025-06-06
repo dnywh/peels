@@ -10,7 +10,7 @@ import Label from "@/components/Label";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import FieldHeader from "@/components/FieldHeader";
-import Hyperlink from "@/components/Hyperlink";
+import StrongLink from "@/components/StrongLink";
 import FormMessage from "@/components/FormMessage";
 
 function SignInForm({ searchParams }) {
@@ -58,7 +58,7 @@ function SignInForm({ searchParams }) {
       <Field>
         <FieldHeader>
           <Label htmlFor="password">Password</Label>
-          <Hyperlink href="/forgot-password">Forgot password?</Hyperlink>
+          <StrongLink href="/forgot-password">Forgot password?</StrongLink>
         </FieldHeader>
         <Input
           type="password"

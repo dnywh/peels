@@ -1,42 +1,16 @@
 import { createClient } from "@/utils/supabase/server";
-
 import ProfileHeader from "@/components/ProfileHeader";
 import ProfileAccountSettings from "@/components/ProfileAccountSettings";
 import ProfileListings from "@/components/ProfileListings";
 import ProfileActions from "@/components/ProfileActions";
 import LegalFooter from "@/components/LegalFooter";
-
 import { styled } from "@pigment-css/react";
 
-export const metadata = {
-  title: "Profile",
-};
-
-const NakedSection = styled("section")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-}));
-
-const Section = styled("section")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1.5rem",
-  backgroundColor: theme.colors.background.top,
-  border: `1px solid ${theme.colors.border.base}`,
-  borderRadius: theme.corners.base,
-  padding: `calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // + 1.5 units internally, for consistency with other sections that may or may not have hover padding internally
-
-  "& > h2": {
-    fontSize: "1.5rem",
-    marginLeft: `calc(${theme.spacing.unit} * 1.5)`, // Match above padding
-  },
-}));
 
 // This page could be static instead of dynamic by handling searchParams in a client component instead and using Suspense here. See the homepage and Toast component as an example.
 export default async function ProfilePage({ searchParams }) {
   const message = (await searchParams)?.message;
   const error = (await searchParams)?.error;
-
   const supabase = await createClient();
   // Get user data and listings in one query
   const {
@@ -84,3 +58,27 @@ export default async function ProfilePage({ searchParams }) {
     </>
   );
 }
+
+export const metadata = {
+  title: "Profile",
+};
+
+const NakedSection = styled("section")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+}));
+
+const Section = styled("section")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1.5rem",
+  backgroundColor: theme.colors.background.top,
+  border: `1px solid ${theme.colors.border.base}`,
+  borderRadius: theme.corners.base,
+  padding: `calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // + 1.5 units internally, for consistency with other sections that may or may not have hover padding internally
+
+  "& > h2": {
+    fontSize: "1.5rem",
+    marginLeft: `calc(${theme.spacing.unit} * 1.5)`, // Match above padding
+  },
+}));

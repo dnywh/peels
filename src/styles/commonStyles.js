@@ -14,3 +14,14 @@ export const sharedSectionTextBlockStyles = ({ theme }) => ({
         textWrap: "balance",
     },
 });
+
+
+// For use when anchor tags simply inherit the styling of the parent container 
+// I.e. don't stand out until hovered
+export const sharedAnchorTagStyles = ({ theme }) => ({
+    color: "inherit",
+    transition: theme.transitions.textColor,
+    "&:hover": {
+        color: theme.colors.text.primary,
+    },
+})

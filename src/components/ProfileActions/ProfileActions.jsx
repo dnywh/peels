@@ -2,7 +2,7 @@ import { signOutAction, deleteAccountAction } from "@/app/actions";
 import { siteConfig } from "@/config/site";
 import Button from "@/components/Button";
 import ButtonToDialog from "@/components/ButtonToDialog";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 
 import { styled } from "@pigment-css/react";
 
@@ -58,9 +58,9 @@ export default function ProfileActions({ listings }) {
           cancelButtonText="Done"
         >
           We’re still working on this feature. In the meantime,{" "}
-          <EncodedEmailHyperlink address={siteConfig.email.support}>
+          <EncodedEmailLink address={siteConfig.email.support}>
             reach out
-          </EncodedEmailHyperlink>{" "}
+          </EncodedEmailLink>{" "}
           and ask us to export your data manually.
         </ButtonToDialog>
       </ListItem>

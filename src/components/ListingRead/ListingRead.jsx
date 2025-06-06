@@ -13,7 +13,7 @@ import MapThumbnail from "@/components/MapThumbnail";
 import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
 import ListingChatDrawer from "@/components/ListingChatDrawer";
-import Hyperlink from "@/components/Hyperlink";
+import StrongLink from "@/components/StrongLink";
 import { styled } from "@pigment-css/react";
 
 // Memoize the Listing component
@@ -238,7 +238,7 @@ const ListingRead = memo(function Listing({
               <h3>Photos</h3>
               {!user && listing.type === "residential" ? (
                 <p>
-                  <Hyperlink href="/sign-in">Sign in</Hyperlink> to see this
+                  <StrongLink href="/sign-in">Sign in</StrongLink> to see this
                   host’s photos.
                 </p>
               ) : (
@@ -438,9 +438,9 @@ const MultiParagraphCluster = ({ text }) => {
             typeof part === "string" ? (
               part
             ) : (
-              <Hyperlink key={i} href={part.href} target="_blank">
+              <StrongLink key={i} href={part.href} target="_blank">
                 {part.text}
-              </Hyperlink>
+              </StrongLink>
             )
           )}
         </p>

@@ -1,5 +1,7 @@
 import { styled } from "@pigment-css/react";
 
+// Used as an aside within a newsletter, such as explaining the context of the issue
+// Analagous to EmailAside
 function NewsletterAside({ title, children }) {
   return (
     <Aside>
@@ -14,9 +16,6 @@ export default NewsletterAside;
 const Aside = styled("aside")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-
-  // maxWidth: "512px",
-
   backgroundColor: theme.colors.background.sunk,
   padding: "2rem",
   borderRadius: theme.corners.base,

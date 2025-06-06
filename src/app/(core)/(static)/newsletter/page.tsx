@@ -7,8 +7,9 @@ import NewsletterIssuesList from "@/components/NewsletterIssuesList";
 import NewsletterCallout from "@/components/NewsletterCallout";
 import StaticPageSection from "@/components/StaticPageSection";
 import Link from "next/link";
-import HeadingBlock from "@/components/HeadingBlock";
-import Hyperlink from "@/components/Hyperlink";
+import HeaderBlock from "@/components/HeaderBlock";
+import FooterBlock from "@/components/FooterBlock";
+import StrongLink from "@/components/StrongLink";
 import { styled } from "@pigment-css/react";
 import StaticPageMain from "@/components/StaticPageMain";
 
@@ -26,29 +27,26 @@ export const metadata = {
 export default function NewsletterPage() {
   return (
     <StaticPageMain>
-      <div>
-        <StaticPageHeader
-          title="Newsletter"
-          subtitle={
-            <>
-              {siteConfig.newsletter.description}{" "}
-              <Link href={siteConfig.links.join}>Join Peels</Link> to get future
-              issues in your inbox.
-            </>
-          }
-        />
+      <StaticPageHeader
+        title="Newsletter"
+        subtitle={siteConfig.newsletter.description}
+      />
+      <StaticPageSection padding={null}>
         <NewsletterIssuesList />
-      </div>
+      </StaticPageSection>
 
       <StaticPageSection>
-        <HeadingBlock>
+        <HeaderBlock>
           <h2>Get these in your inbox</h2>
-          <p>
-            Opt-in to receive future issues of the newsletter via email. Or
-            subscribe to the <Link href="/newsletter/feed.xml">RSS feed</Link>.
-          </p>
-        </HeadingBlock>
+          <p>Opt-in to receive future issues of the newsletter via email.</p>
+        </HeaderBlock>
         <NewsletterCallout />
+        <FooterBlock>
+          <p>
+            Or subscribe to the{" "}
+            <Link href="/newsletter/feed.xml">RSS feed</Link>.
+          </p>
+        </FooterBlock>
       </StaticPageSection>
     </StaticPageMain>
   );

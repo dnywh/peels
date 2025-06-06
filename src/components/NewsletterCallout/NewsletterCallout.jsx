@@ -1,31 +1,37 @@
 import Link from "next/link";
-import HeadingBlock from "@/components/HeadingBlock";
+import HeaderBlock from "@/components/HeaderBlock";
 import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
 
-const guestText =
-  "Want to get future issues? Sign up to Peels and opt-in to the newsletter.";
-// Interested? Sign up to Peels to receive future newsletter issues.
-const guestAction = "Sign up";
-
 const guest = {
   cta: {
-    headline: "Get the newsletter",
-    text: "Want to get future issues? Sign up to Peels and opt-in to the newsletter.",
+    headline: "You’re not signed in",
+    text: "Join Peels to opt-in to the newsletter.",
   },
   button: {
     text: "Sign up",
     href: "/sign-up",
   },
 };
-const userTextNotYetSubscribed =
-  "Want to get future issues? Edit your profile settings"; // TODO: Inline edit of this setting
+
+const user = {
+  cta: {
+    headline: "You’re not subscribed",
+    text: "Change your newsletter preference on your Profile.",
+  },
+  button: {
+    text: "Edit newsletter preference",
+    href: "/profile",
+  },
+};
+
 const userTextAlreadySubscribed =
   "You’re already subscribed to the Peels newsletter. Feel free to share this page with a friend!";
 
+// Advertising the newsletter (sits outside of the newsletter bounds)
 function NewsletterCallout() {
   return (
-    <Aside>
+    <Callout>
       <Text>
         <h2>{guest.cta.headline}</h2>
         <p>{guest.cta.text}</p>
@@ -33,17 +39,18 @@ function NewsletterCallout() {
       <Button variant="primary" href={guest.button.href}>
         {guest.button.text}
       </Button>
-    </Aside>
+    </Callout>
   );
 }
 
 export default NewsletterCallout;
 
-const Aside = styled("aside")(({ theme }) => ({
+const Callout = styled("section")(({ theme }) => ({
+  width: "100%",
+  maxWidth: theme.spacing.container.maxWidth.aside,
+
   display: "flex",
   flexDirection: "column",
-
-  // maxWidth: "512px",
 
   backgroundColor: theme.colors.background.top,
   padding: "2rem",

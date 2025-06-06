@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Hyperlink from "@/components/Hyperlink";
+import StrongLink from "@/components/StrongLink";
 import NewsletterImage from "@/components/NewsletterImage";
 import { styled } from "@pigment-css/react";
 
@@ -51,6 +51,7 @@ const ListItem = styled("li")(({ theme }) => ({
 }));
 
 const LinkedRow = styled(Link)(({ theme }) => ({
+  color: "inherit",
   padding: "2rem",
   display: "flex",
   flexDirection: "column",

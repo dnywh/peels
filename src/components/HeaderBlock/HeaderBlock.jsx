@@ -1,17 +1,19 @@
-import { sharedSectionTextBlockStyles } from "@/styles/commonStyles";
+import {
+  sharedSectionTextBlockStyles,
+  sharedAnchorTagStyles,
+} from "@/styles/commonStyles";
 import { styled } from "@pigment-css/react";
 
-function HeadingBlock({ children }) {
-  console.log("HeadingBlock rendered", sharedSectionTextBlockStyles);
-  return <StyledHeadingBlock>{children}</StyledHeadingBlock>;
+function HeaderBlock({ children }) {
+  return <StyledHeaderBlock>{children}</StyledHeaderBlock>;
 }
 
-export default HeadingBlock;
+export default HeaderBlock;
 
-const StyledHeadingBlock = styled("div")(({ theme }) => ({
+const StyledHeaderBlock = styled("header")(({ theme }) => ({
   ...sharedSectionTextBlockStyles({ theme }),
 
-  maxWidth: "720px",
+  maxWidth: theme.spacing.container.maxWidth.media,
   padding: `0 calc(${theme.spacing.unit} * 1.5)`,
 
   "& h2": {
@@ -25,6 +27,10 @@ const StyledHeadingBlock = styled("div")(({ theme }) => ({
     fontSize: "1.15rem",
     letterSpacing: "-0.02em",
     color: theme.colors.text.ui.quaternary,
+
+    "& a": {
+      ...sharedAnchorTagStyles({ theme }),
+    },
   },
 
   "@media (min-width: 768px)": {

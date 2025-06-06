@@ -2,17 +2,18 @@ import { styled } from "@pigment-css/react";
 
 // Often used for MD files like newsletter issues, privacy policy, colophon, etc
 function LongformTextContainer({ children }) {
-  return <Content>{children}</Content>;
+  return <StyledLongformTextContent>{children}</StyledLongformTextContent>;
 }
 
 export default LongformTextContainer;
 
-const Content = styled("div")(({ theme }) => ({
+const StyledLongformTextContent = styled("div")(({ theme }) => ({
   // Fully separate from or merge with (text) Main styles
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
-  maxWidth: "640px",
+  width: "100%",
+  maxWidth: theme.spacing.container.maxWidth.text, // Matches Profile
   margin: "4rem auto 0",
   backgroundColor: theme.colors.background.top,
   padding: "2rem 1.25rem 3.5rem",

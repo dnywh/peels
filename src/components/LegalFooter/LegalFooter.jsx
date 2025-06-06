@@ -34,7 +34,7 @@ const StyledNav = styled("nav")(({ theme }) => ({
     margin: 0,
     fontWeight: "500",
     color: theme.colors.text.ui.emptyState,
-    transition: "color 150ms ease-in-out",
+    transition: theme.transitions.textColor,
     "&:hover": {
       color: theme.colors.text.secondary,
     },

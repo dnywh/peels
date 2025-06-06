@@ -7,7 +7,7 @@ import IconButton from "@/components/IconButton";
 import DropdownMenu from "@/components/DropdownMenu";
 import Button from "@/components/Button";
 import ButtonToDialog from "@/components/ButtonToDialog";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 
 import { styled } from "@pigment-css/react";
 
@@ -202,9 +202,9 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
               >
                 Sorry to hear you’re having trouble with {otherPersonName}.
                 Please{" "}
-                <EncodedEmailHyperlink address={siteConfig.email.support}>
+                <EncodedEmailLink address={siteConfig.email.support}>
                   contact us
-                </EncodedEmailHyperlink>{" "}
+                </EncodedEmailLink>{" "}
                 to report the issue or to block them from contacting you any
                 more.
               </ButtonToDialog>

@@ -1,8 +1,8 @@
 import { siteConfig } from "@/config/site";
 import FaqContainer from "@/components/FaqContainer";
 import FaqDetails from "@/components/FaqDetails";
-import Hyperlink from "@/components/Hyperlink";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import StrongLink from "@/components/StrongLink";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 
 // General FAQ for 'about Peels'
 function PeelsFaq() {
@@ -12,9 +12,9 @@ function PeelsFaq() {
         <summary>Who’s behind Peels?</summary>
         <p>
           Peels is a project led by{" "}
-          <Hyperlink href="https://dannywhite.net" target="_blank">
+          <StrongLink href="https://dannywhite.net" target="_blank">
             Danny White
-          </Hyperlink>
+          </StrongLink>
           , a product designer with 10 years experience working on products
           including Airbnb, ChatGPT, Kickstarter, and Facebook. He helped start
           the composting program at Pocket City Farms and previously built a
@@ -22,12 +22,12 @@ function PeelsFaq() {
         </p>
         <p>
           We want Peels to be around for the long haul, so have{" "}
-          <Hyperlink
+          <StrongLink
             href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`}
             target="_blank"
           >
             open sourced
-          </Hyperlink>{" "}
+          </StrongLink>{" "}
           the project and welcome your contributions.
         </p>
       </FaqDetails>
@@ -86,12 +86,12 @@ function PeelsFaq() {
         <p>You’re awesome. Thank you.</p>
         <p>
           If you’re inclined to help on the technical side, check out our{" "}
-          <Hyperlink
+          <StrongLink
             href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`}
             target="_blank"
           >
             GitHub repo
-          </Hyperlink>
+          </StrongLink>
           . It has information on how to contribute, plus some existing issues
           that could do with your eyes.
         </p>
@@ -99,9 +99,9 @@ function PeelsFaq() {
         <p>
           Community organising is also a big part of getting Peels off the
           ground. Please don’t hesistate to{" "}
-          <EncodedEmailHyperlink address={siteConfig.email.support}>
+          <EncodedEmailLink address={siteConfig.email.support}>
             email us
-          </EncodedEmailHyperlink>{" "}
+          </EncodedEmailLink>{" "}
           if that’s something you could help with.
         </p>
       </FaqDetails>
@@ -113,16 +113,16 @@ function PeelsFaq() {
         </p>
         <p>
           Check out our{" "}
-          <Hyperlink
+          <StrongLink
             href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`}
           >
             promo kit
-          </Hyperlink>{" "}
+          </StrongLink>{" "}
           which includes social media tiles and and a printable poster in both
           letter and A4 sizes. Don’t hesistate to{" "}
-          <EncodedEmailHyperlink address={siteConfig.email.support}>
+          <EncodedEmailLink address={siteConfig.email.support}>
             reach out
-          </EncodedEmailHyperlink>{" "}
+          </EncodedEmailLink>{" "}
           for something more specific to your community.
         </p>
       </FaqDetails>
@@ -133,9 +133,9 @@ function PeelsFaq() {
         <p>
           We’ve already partnered with councils from all over Australia, and are
           always keen to work with more (around the world, too!). Please{" "}
-          <EncodedEmailHyperlink address={siteConfig.email.support}>
+          <EncodedEmailLink address={siteConfig.email.support}>
             email us
-          </EncodedEmailHyperlink>
+          </EncodedEmailLink>
           .
         </p>
       </FaqDetails>

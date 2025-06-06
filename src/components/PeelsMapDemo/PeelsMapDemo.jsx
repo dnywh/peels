@@ -33,7 +33,7 @@ const Left = styled("div")(({ theme }) => ({
 
   "@media (min-width: 960px)": {
     gap: "1rem",
-    maxWidth: "640px",
+    maxWidth: theme.spacing.container.maxWidth.text,
     height: "512px",
     // marginLeft: "5rem", // Match margins on ListingDemo
   },

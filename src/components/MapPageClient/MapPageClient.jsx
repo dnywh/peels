@@ -16,7 +16,6 @@ import { config, geolocation } from "@maptiler/client";
 import MapSearch from "@/components/MapSearch";
 import MapImmersive from "@/components/MapImmersive";
 import ListingRead from "@/components/ListingRead";
-import GuestActions from "@/components/GuestActions";
 
 import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";

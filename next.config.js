@@ -252,6 +252,7 @@ export default withPigment(withMDX(nextConfig), {
           secondary: tokens.rock[800],
           tertiary: tokens.rock[700],
           quaternary: tokens.rock[600],
+          quinary: tokens.rock[400],
           emptyState: tokens.rock[300],
           error: tokens.ochre[600],
         },
@@ -268,14 +269,19 @@ export default withPigment(withMDX(nextConfig), {
           md: "5rem",
           lg: "12vh",
         },
-        section: "2.75rem",
+        section: {
+          md: "2.15rem",
+          lg: "2.75rem",
+        },
         sectionInner: "0.5rem",
         desktop: "1.5rem",
       },
       container: {
-        text: {
-          maxWidth: "720px",
-        },
+        maxWidth: {
+          media: "720px", // Homepage content, newsletter issues
+          text: "640px", // Markdown, Profile
+          aside: "512px" // NewsletterCallout
+        }
       },
       forms: {
         maxWidth: "36rem",
@@ -304,5 +310,9 @@ export default withPigment(withMDX(nextConfig), {
         large: "0.5rem",
       },
     },
+    transitions: {
+      textColor: "color 150ms ease-in-out",
+      svgColor: "stroke 150ms ease-in-out", // svgs that accompany text, like the parent link in StaticPageHeader
+    }
   }),
 });

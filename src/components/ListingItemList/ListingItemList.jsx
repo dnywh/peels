@@ -1,7 +1,7 @@
 import { prettifyLink } from "@/utils/linkUtils";
 import AcceptedItemIcon from "@/components/AcceptedItemIcon";
 import RejectedItemIcon from "@/components/RejectedItemIcon";
-import Hyperlink from "@/components/Hyperlink";
+import StrongLink from "@/components/StrongLink";
 import { styled } from "@pigment-css/react";
 
 // TODO:  Use ::marker method with SVG inline, once Data URI is supported in Pigment
@@ -72,9 +72,9 @@ function ListingItemList({ items, type = "accepted" }) {
           {type === "accepted" && <AcceptedItemIcon />}
           {type === "rejected" && <RejectedItemIcon />}
           {type === "links" ? (
-            <Hyperlink href={item} target="_blank">
+            <StrongLink href={item} target="_blank">
               {prettifyLink(item)}
-            </Hyperlink>
+            </StrongLink>
           ) : (
             item
           )}

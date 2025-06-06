@@ -1,64 +1,48 @@
 import StaticPageHeader from "@/components/StaticPageHeader";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 import { siteConfig } from "@/config/site";
 import SupportFaq from "@/components/SupportFaq";
 import PeelsFaq from "@/components/PeelsFaq";
-import { styled } from "@pigment-css/react";
 import StaticPageMain from "@/components/StaticPageMain";
+import StaticPageSection from "@/components/StaticPageSection";
+import HeaderBlock from "@/components/HeaderBlock";
+import { styled } from "@pigment-css/react";
 
 export const metadata = {
   title: "Support",
-  description: "Answers to common questions on, and about, Peels."
+  description: "Answers to common questions about Peels."
 };
 
 export default function Support() {
   return (
     <StaticPageMain>
-      {/* <div> */}
       <StaticPageHeader
         title="Support"
         subtitle={
           <>
             We periodically update this page with answers to common questions.
             Feel free to{" "}
-            <EncodedEmailHyperlink address={siteConfig.email.support}>
+            <EncodedEmailLink as="plain" address={siteConfig.email.support}>
               email us
-            </EncodedEmailHyperlink>{" "}
+            </EncodedEmailLink>{" "}
             for help with anything else.
           </>
         }
       />
 
-      <Content>
-        <Section>
+      <StaticPageSection padding={null}>
+        <HeaderBlock>
           <h2>Using Peels</h2>
-          <SupportFaq />
-        </Section>
+        </HeaderBlock>
+        <SupportFaq />
+      </StaticPageSection>
 
-        <Section>
+      <StaticPageSection>
+        <HeaderBlock>
           <h2>About Peels</h2>
-          <PeelsFaq />
-        </Section>
-      </Content>
-      {/* </div> */}
+        </HeaderBlock>
+        <PeelsFaq />
+      </StaticPageSection>
     </StaticPageMain>
   );
 }
-
-const Content = styled("div")(({ theme }) => ({
-  margin: "0 auto",
-  maxWidth: theme.spacing.container.text.maxWidth,
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing.gap.page.sm,
-
-  "@media (min-width: 768px)": {
-    gap: theme.spacing.gap.page.md,
-  },
-}))
-
-const Section = styled("section")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing.gap.sectionInner,
-}))

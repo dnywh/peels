@@ -1,6 +1,6 @@
 import { siteConfig } from "@/config/site";
-import Hyperlink from "@/components/Hyperlink";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import StrongLink from "@/components/StrongLink";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 import Button from "@/components/Button";
 import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
@@ -64,9 +64,9 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
           </p>
           <p>
             Are you the owner?{" "}
-            <EncodedEmailHyperlink address={siteConfig.email.support}>
+            <EncodedEmailLink address={siteConfig.email.support}>
               Reach out
-            </EncodedEmailHyperlink>{" "}
+            </EncodedEmailLink>{" "}
             to claim this listing or to request changes.
           </p>
         </Text>
@@ -84,7 +84,7 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
         Sign in to contact
       </Button>
       <p>
-        First time here? <Hyperlink href="/sign-up">Sign up</Hyperlink>
+        First time here? <StrongLink href="/sign-up">Sign up</StrongLink>
       </p>
     </StyledListingCta>
   );

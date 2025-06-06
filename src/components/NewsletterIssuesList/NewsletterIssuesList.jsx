@@ -1,11 +1,11 @@
 // https://didoesdigital.com/blog/nextjs-blog-06-metadata-and-navigation/
 import { siteConfig } from "@/config/site";
 import { getAllNewsletterIssuesData } from "@/app/(core)/(static)/newsletter/_lib/getAllNewsletterIssuesData";
-import HeadingBlock from "@/components/HeadingBlock";
+import HeaderBlock from "@/components/HeaderBlock";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import NewsletterIssueRow from "@/components/NewsletterIssueRow";
 import NewsletterCallout from "@/components/NewsletterCallout";
-import Hyperlink from "@/components/Hyperlink";
+import StrongLink from "@/components/StrongLink";
 import StyledList from "@/components/StyledList";
 import { styled } from "@pigment-css/react";
 

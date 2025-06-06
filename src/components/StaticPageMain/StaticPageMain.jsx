@@ -1,7 +1,7 @@
 import { styled } from "@pigment-css/react";
 
-function StaticPageMain({ children }) {
-  return <StyledMain>{children}</StyledMain>;
+function StaticPageMain({ padding = null, children }) {
+  return <StyledMain padding={padding}>{children}</StyledMain>;
 }
 
 export default StaticPageMain;
@@ -13,16 +13,22 @@ const StyledMain = styled("main")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
 
-  // paddingTop: "10vh",
-  gap: theme.spacing.gap.page.md, // Match StaticPageSection paddingTop
-  // marginBottom: theme.spacing.gap.page.md, // Match gap
-
-  // gap: theme.spacing.gap.page.sm,
-  gap: "5rem",
-
+  //  Match rhythm in defined in StaticPageSection
+  gap: theme.spacing.gap.page.md,
   "@media (min-width: 768px)": {
-    // paddingTop: "24vh",
-    // gap: theme.spacing.gap.page.lg, // Or ~12rem
-    // marginBottom: theme.spacing.gap.page.lg, // Match gap
+    gap: theme.spacing.gap.page.md,
   },
+
+  variants: [
+    {
+      props: { padding: "wide" },
+      style: {
+        //  Match rhythm in defined in StaticPageSection
+        paddingTop: theme.spacing.gap.page.md,
+        "@media (min-width: 768px)": {
+          paddingTop: theme.spacing.gap.page.lg,
+        },
+      },
+    },
+  ],
 }));

@@ -21,7 +21,7 @@ export default StyledList;
 const UnorderedList = styled("ul")(({ theme }) => ({
   margin: "auto",
   width: "100%",
-  maxWidth: theme.spacing.container.text.maxWidth,
+  maxWidth: theme.spacing.container.maxWidth.media,
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",

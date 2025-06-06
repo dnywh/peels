@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { sharedSectionTextBlockStyles } from "@/styles/commonStyles";
+import { sharedSectionTextBlockStyles, sharedAnchorTagStyles } from "@/styles/commonStyles";
 import { siteConfig } from "@/config/site";
 import IntroHeader from "@/components/IntroHeader";
 import Button from "@/components/Button";
@@ -9,7 +9,8 @@ import PeelsHowItWorks from "@/components/PeelsHowItWorks";
 import PeelsFaq from "@/components/PeelsFaq";
 import StaticPageSection from "@/components/StaticPageSection";
 import NewsletterIssuesList from "@/components/NewsletterIssuesList";
-import HeadingBlock from "@/components/HeadingBlock";
+import HeaderBlock from "@/components/HeaderBlock";
+import FooterBlock from "@/components/FooterBlock";
 import { styled } from "@pigment-css/react";
 
 export const metadata = {
@@ -48,47 +49,40 @@ export default function Index() {
         </HeroButtons>
       </Intro>
 
-      <StaticPageSection size="large" >
-        <HeadingBlock>
+      <StaticPageSection padding="wide">
+        <HeaderBlock>
           <h2>Here’s how it works</h2>
           <p>
             Sharing food scraps with neighbours, community gardens, or even
             local businesses is easy. Here’s how.
           </p>
-        </HeadingBlock>
+        </HeaderBlock>
         <PeelsHowItWorks />
       </StaticPageSection>
 
-      <StaticPageSection size="large" id="faq-section">
-        <HeadingBlock>
+      <StaticPageSection padding="wide" id="newsletter-section">
+        <HeaderBlock>
+          <h2>Hot off the press</h2>
+          <p>
+            {siteConfig.newsletter.description}
+          </p>
+        </HeaderBlock>
+        <NewsletterIssuesList />
+      </StaticPageSection>
+
+      <StaticPageSection padding="wide" id="faq-section">
+        <HeaderBlock>
           <h2>You might be wondering...</h2>
           <p>
             Doesn’t this already exist? What’s your mission? You’ve got
             questions, we’ve (hopefully) got answers.
           </p>
-        </HeadingBlock>
+        </HeaderBlock>
         <PeelsFaq />
         <FooterBlock>
           <p>
             Head to our <Link href="/support">Support</Link> page if you have
             more questions.
-          </p>
-        </FooterBlock>
-      </StaticPageSection>
-
-      <StaticPageSection size="large" id="newsletter-section">
-        <HeadingBlock>
-          <h2>Hot off the press</h2>
-          <p>
-            {siteConfig.newsletter.description}
-          </p>
-        </HeadingBlock>
-        <NewsletterIssuesList />
-        <FooterBlock>
-          <p>
-            Opt-in to receive future issues of the newsletter via email. Or
-            subscribe to the{" "}
-            <Link href="/newsletter/feed.xml">RSS feed</Link>.
           </p>
         </FooterBlock>
       </StaticPageSection>
@@ -164,18 +158,3 @@ const HeroButtons = styled("div")(({ theme }) => ({
   },
 }));
 
-
-const FooterBlock = styled("footer")(({ theme }) => ({
-  ...sharedSectionTextBlockStyles({ theme }),
-  "& p": {
-    color: theme.colors.text.ui.quaternary,
-  },
-
-  "& a": {
-    color: "inherit",
-    transition: "color 150ms ease-in-out",
-    "&:hover": {
-      color: theme.colors.text.primary,
-    },
-  },
-}));

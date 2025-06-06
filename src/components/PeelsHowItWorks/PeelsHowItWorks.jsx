@@ -63,7 +63,7 @@ const sharedStepStyles = ({ theme }) => ({
 
     "& > a": {
       color: "inherit",
-      transition: "color 150ms ease-in-out",
+      transition: theme.transitions.textColor,
       "&:hover": {
         color: theme.colors.text.primary,
       },

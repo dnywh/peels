@@ -1,8 +1,8 @@
 import FormHeader from "@/components/FormHeader";
 import Form from "@/components/Form";
 import FormFooter from "@/components/FormFooter";
-import Hyperlink from "@/components/Hyperlink";
-import EncodedEmailHyperlink from "@/components/EncodedEmailHyperlink";
+import StrongLink from "@/components/StrongLink";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 import { siteConfig } from "@/config/site";
 import SignUpForm from "@/components/SignUpForm";
 
@@ -44,9 +44,9 @@ export default async function SignUp(props: {
           <p>
             Never received the email? Check your spam folder.{" "}
             {/* TODO: Resend verification email to {searchParams.email}. */}
-            <EncodedEmailHyperlink address={siteConfig.email.support}>
+            <EncodedEmailLink address={siteConfig.email.support}>
               Reach out
-            </EncodedEmailHyperlink>{" "}
+            </EncodedEmailLink>{" "}
             if you still need help.
           </p>
         </FormFooter>
@@ -77,7 +77,7 @@ export default async function SignUp(props: {
       <FormFooter>
         <p>
           Already have an account?{" "}
-          <Hyperlink href="/sign-in">Sign in</Hyperlink>
+          <StrongLink href="/sign-in">Sign in</StrongLink>
         </p>
       </FormFooter>
     </>

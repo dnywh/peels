@@ -1,5 +1,5 @@
 import FormHeader from "@/components/FormHeader";
-import Hyperlink from "@/components/Hyperlink";
+import StrongLink from "@/components/StrongLink";
 import SignInForm from "@/components/SignInForm";
 import FormFooter from "@/components/FormFooter";
 
@@ -27,7 +27,7 @@ export default async function SignIn(props: {
 
       <FormFooter>
         <p>
-          First time here? <Hyperlink href="/sign-up">Sign up</Hyperlink>
+          First time here? <StrongLink href="/sign-up">Sign up</StrongLink>
         </p>
       </FormFooter>
     </>

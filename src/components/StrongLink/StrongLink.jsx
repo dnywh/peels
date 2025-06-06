@@ -12,18 +12,20 @@ const getSharedStyles = ({ theme }) => ({
 });
 
 const StyledLink = styled(Link)(getSharedStyles);
-const StyledAnchor = styled("a")(getSharedStyles);
+const StyledPlainAnchor = styled("a")(getSharedStyles);
 
 // An pre-styled anchor element (or button that looks like one)
-export default function Hyperlink({ as = Link, children, href, ...props }) {
+export default function StrongLink({ as = Link, children, href, ...props }) {
+  // For use on email addresses, where Next Link doesn't play nice
+  // https://dannywhite.net/notes/next-link-email/
   if (as === "anchor") {
     return (
-      <StyledAnchor href={href} {...props}>
+      <StyledPlainAnchor href={href} {...props}>
         {children}
-      </StyledAnchor>
+      </StyledPlainAnchor>
     );
   }
-
+  // Otherwise...
   return (
     <StyledLink href={href} {...props}>
       {children}
