@@ -10,6 +10,7 @@ const feed = new Feed({
     description: siteConfig.newsletter.description,
     id: `${siteConfig.url}/newsletter`,
     link: `${siteConfig.url}/newsletter/feed.xml`,
+    // favicon: "http://example.com/favicon.ico", TODO
     language: "en",
     copyright: `All rights reserved ${
         new Date().getFullYear()
@@ -26,11 +27,13 @@ export async function GET() {
             title: `${issue.metadata.title ?? ""}`,
             link: `${siteConfig.url}/newsletter/${issue.slug}`,
             description: `${issue.metadata.description ?? ""}`,
+            // author: {issue.metadata.authors ? issue.metadata.authors : "Peels"}  TODO
+            // image: {issues.customMetadata.featuredImages[0]} TODO
             content: `${
                 issue.metadata.description
                     ? `<p>${issue.metadata.description}</p>`
                     : ""
-            }<p><a href="${issueLink}">Read the full issue on Peels</a></p>.`,
+            }<p><a href="${issueLink}">Read this full issue on Peels</a></p>`,
             date: new Date(issue.customMetadata.publishDate),
         });
     });

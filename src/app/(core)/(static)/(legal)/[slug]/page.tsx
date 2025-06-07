@@ -19,7 +19,13 @@ export async function generateMetadata({
   const { metadata } = await getLegalPageMetadata(slug);
 
   if (metadata) {
-    return metadata;
+    return {
+      ...metadata,
+      openGraph: {
+        ...metadata.openGraph,
+        type: "article",
+      },
+    };
   } else {
     throw new Error(`No metadata found for text page: ${slug}`);
   }

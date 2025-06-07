@@ -10,14 +10,12 @@ import FooterBlock from "@/components/FooterBlock";
 import StaticPageMain from "@/components/StaticPageMain";
 
 export const metadata = {
-  title: "Newsletter",
+  title: `Newsletter · ${siteConfig.name}`,
   description: siteConfig.newsletter.description,
-  //   TODO: Why is the above not inherited automatically in Open Graph?
-  //  The below show be templatised, if used
-  //   openGraph: {
-  //     title: "Newsletter",
-  //     description: siteConfig.newsletter.description,
-  //   },
+  openGraph: {
+    title: `Newsletter · ${siteConfig.name}`,
+    description: siteConfig.newsletter.description,
+  },
 };
 
 export default function NewsletterPage() {

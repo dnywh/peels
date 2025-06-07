@@ -185,7 +185,7 @@ export const metadata: Metadata = {
     type: "website",
     description: siteConfig.description,
     siteName: siteConfig.name,
-    url: siteConfig.url,
+    // url: siteConfig.url, // Should be the canonical URL of your object, not site root URL
   },
   // RSS feed for newsletter
   // https://didoesdigital.com/blog/nextjs-blog-09-rss/

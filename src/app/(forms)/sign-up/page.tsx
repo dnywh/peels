@@ -8,6 +8,9 @@ import SignUpForm from "@/components/SignUpForm";
 
 export const metadata = {
   title: "Sign Up",
+  openGraph: {
+    title: `Sign Up · ${siteConfig.name}`,
+  },
 };
 
 export default async function SignUp(props: {

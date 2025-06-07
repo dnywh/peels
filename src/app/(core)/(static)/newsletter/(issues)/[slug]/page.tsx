@@ -24,7 +24,14 @@ export async function generateMetadata({
   const { metadata } = await getNewsletterIssueMetadata(slug);
 
   if (metadata) {
-    return metadata;
+    return {
+      ...metadata,
+      openGraph: {
+        ...metadata.openGraph,
+        type: "article",
+        // authors: metadata.authors, // Add authors to OpenGraph
+      },
+    };
   } else {
     throw new Error(`No metadata found for newsletter issue: ${slug}`);
   }

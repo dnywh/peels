@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site";
 import FormHeader from "@/components/FormHeader";
 import StrongLink from "@/components/StrongLink";
 import SignInForm from "@/components/SignInForm";
@@ -5,6 +6,9 @@ import FormFooter from "@/components/FormFooter";
 
 export const metadata = {
   title: "Sign In",
+  openGraph: {
+    title: `Sign In · ${siteConfig.name}`,
+  },
 };
 
 export default async function SignIn(props: {

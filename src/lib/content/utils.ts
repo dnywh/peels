@@ -3,6 +3,7 @@
 
 import { readdir } from "fs/promises";
 import type { Dirent } from "fs";
+import { siteConfig } from "@/config/site";
 import { formatPublishDate } from "@/utils/dateUtils";
 
 // Common file utilities
@@ -76,7 +77,10 @@ export function validateBaseCustomMetadata(
 
 // Common data formatting
 export function formatContentData<
-    T extends { customMetadata?: { [key: string]: string } },
+    T extends {
+        metadata: { title: string; description: string };
+        customMetadata?: { [key: string]: string };
+    },
 >(
     data: T,
     dateField: string = "publishDate",
@@ -92,8 +96,16 @@ export function formatContentData<
         };
     }
 
-    return {
+    // Add OpenGraph metadata
+    const metadata = {
         ...data,
         formattedDate: formatPublishDate(data.customMetadata[dateField]),
+        openGraph: {
+            title: data.metadata.title,
+            description: data.metadata.description,
+            type: "article", // Assuming 'article' since these are all longform text pages
+        },
     };
+
+    return metadata;
 }

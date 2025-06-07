@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { siteConfig } from "@/config/site";
 import { generateListingMetadata } from "@/utils/listingUtils";
 import MapPageClient from "@/components/MapPageClient";
 
@@ -14,10 +15,10 @@ async function getInitialData(listingSlug) {
   // Then get listing data if slug exists
   const listingResponse = listingSlug
     ? await supabase
-        .from(user ? "listings_private_data" : "listings_public_data")
-        .select()
-        .eq("slug", listingSlug)
-        .single()
+      .from(user ? "listings_private_data" : "listings_public_data")
+      .select()
+      .eq("slug", listingSlug)
+      .single()
     : null;
 
   return {
@@ -31,7 +32,12 @@ export async function generateMetadata({ searchParams }) {
   const { user, listing } = await getInitialData(listingSlug);
 
   if (!listingSlug) {
-    return { title: "Map" };
+    return {
+      title: "Map",
+      openGraph: {
+        title: `Map · ${siteConfig.name}`,
+      }
+    };
   }
 
   // Use shared utility to generate metadata

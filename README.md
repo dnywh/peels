@@ -65,7 +65,7 @@ peels/
 
 Thank you for contributing! Please read our [Code of Conduct](https://github.com/dnywh/peels/blob/main/.github/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/dnywh/peels/contribute) before you start.
 
-Check out the list of [issues](https://github.com/dnywh/peels/issues) you could help out on, [discussions](https://github.com/dnywh/peels/discussions) about future improvements, and our [wiki](https://github.com/dnywh/peels/wiki) for information on how things are set up.
+Check out the list of [issues](https://github.com/dnywh/peels/issues) you could help out on, [discussions](https://github.com/dnywh/peels/discussions) about future improvements, and our [wiki](https://peels.notion.site/207b37e1678f80259217f54cd9d1f637) for information on how things are set up.
 
 For minor improvements, feel free to just go ahead and create a pull request. For major changes, please [open an issue](https://github.com/dnywh/peels/issues) first to discuss what you would like to change.
 

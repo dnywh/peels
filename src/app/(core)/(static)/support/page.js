@@ -9,7 +9,11 @@ import HeaderBlock from "@/components/HeaderBlock";
 
 export const metadata = {
   title: "Support",
-  description: "Answers to common questions about Peels."
+  description: "Answers to common questions about Peels.",
+  openGraph: {
+    title: `Support · ${siteConfig.name}`,
+    description: "Answers to common questions about Peels.",
+  }
 };
 
 export default function Support() {
