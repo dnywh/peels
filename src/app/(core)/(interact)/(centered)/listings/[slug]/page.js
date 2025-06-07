@@ -4,7 +4,7 @@ import { generateListingMetadata } from "@/utils/listingUtils";
 import ListingRead from "@/components/ListingRead";
 import { styled } from "@pigment-css/react";
 
-const StyledMain = styled("main")({
+const StyledMain = styled("main")(({ theme }) => ({
   flex: 1, // Should be shared with layout used by Profile and Listings pages
   margin: "2rem auto", // Should be shared with layout used by Profile and Listings pages
   maxWidth: theme.spacing.container.maxWidth.text, // Might be shared with layout used by Profile and Listings pages, depending if the latter is two columns on larger breakpoints
@@ -27,7 +27,7 @@ const StyledMain = styled("main")({
     maxWidth: "1344px",
     gridTemplateColumns: "8fr 4fr",
   },
-});
+}));
 
 async function getListingData(slug) {
   const supabase = await createClient();

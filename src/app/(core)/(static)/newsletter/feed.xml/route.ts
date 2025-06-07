@@ -3,6 +3,8 @@ import { Feed } from "feed";
 import { getAllNewsletterIssues } from "@/lib/content/handlers/newsletter";
 import { siteConfig } from "@/config/site";
 
+export const dynamic = "force-static"; // Force as prerendered static content on build, not dynamic (otherwise issues don't populate)
+
 const feed = new Feed({
     title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches layout.tsx)
     description: siteConfig.newsletter.description,
