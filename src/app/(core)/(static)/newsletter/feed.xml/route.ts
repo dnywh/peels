@@ -26,8 +26,11 @@ export async function GET() {
             title: `${issue.metadata.title ?? ""}`,
             link: `${siteConfig.url}/newsletter/${issue.slug}`,
             description: `${issue.metadata.description ?? ""}`,
-            content:
-                `Check this issue out <a href="${issueLink}">on Peels</a>.`,
+            content: `${
+                issue.metadata.description
+                    ? `<p>${issue.metadata.description}</p>`
+                    : ""
+            }<p><a href="${issueLink}">Read the full issue on Peels</a></p>.`,
             date: new Date(issue.customMetadata.publishDate),
         });
     });
