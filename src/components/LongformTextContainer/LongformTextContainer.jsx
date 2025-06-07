@@ -8,7 +8,7 @@ function LongformTextContainer({ children }) {
 export default LongformTextContainer;
 
 const StyledLongformTextContent = styled("div")(({ theme }) => ({
-  // Fully separate from or merge with (text) Main styles
+  // Fully separate from or merge with (legal) Main styles
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",

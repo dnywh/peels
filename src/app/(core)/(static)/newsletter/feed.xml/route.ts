@@ -1,6 +1,6 @@
-// https://didoesdigital.com/blog/nextjs-blog-09-rss/
+// https://www.notion.so/peels/Markdown-Pages-20bb37e1678f806a9649c3c658ab6258?source=copy_link
 import { Feed } from "feed";
-import { getAllNewsletterIssuesData } from "@/app/(core)/(static)/newsletter/_lib/getAllNewsletterIssuesData";
+import { getAllNewsletterIssues } from "@/lib/content/handlers/newsletter";
 import { siteConfig } from "@/config/site";
 
 const feed = new Feed({
@@ -15,15 +15,18 @@ const feed = new Feed({
 });
 
 export async function GET() {
-    const newsletterIssues = await getAllNewsletterIssuesData();
+    const newsletterIssues = await getAllNewsletterIssues();
+    // console.log(newsletterIssues);
 
     newsletterIssues.forEach((issue) => {
+        const issueLink = `${siteConfig.url}/newsletter/${issue.slug}`;
         feed.addItem({
             title: `${issue.metadata.title ?? ""}`,
-            link: `https://example.com/blog/${issue.slug}`,
+            link: `${siteConfig.url}/newsletter/${issue.slug}`,
             description: `${issue.metadata.description ?? ""}`,
-            // content: issue.children,
-            date: new Date(issue.customMetadata.publishDate), // TODO: set this to the issue's publish date
+            content:
+                `Check this issue out <a href="${issueLink}">on Peels</a>.`,
+            date: new Date(issue.customMetadata.publishDate),
         });
     });
 

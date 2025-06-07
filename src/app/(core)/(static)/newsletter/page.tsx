@@ -1,4 +1,3 @@
-// https://didoesdigital.com/blog/nextjs-blog-06-metadata-and-navigation/
 import { siteConfig } from "@/config/site";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import NewsletterIssueRow from "@/components/NewsletterIssueRow";
@@ -8,8 +7,6 @@ import StaticPageSection from "@/components/StaticPageSection";
 import Link from "next/link";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
-import StrongLink from "@/components/StrongLink";
-import { styled } from "@pigment-css/react";
 import StaticPageMain from "@/components/StaticPageMain";
 
 export const metadata = {

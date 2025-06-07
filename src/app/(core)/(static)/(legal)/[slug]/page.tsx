@@ -4,19 +4,19 @@ import type { Metadata } from "next/types";
 import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import LongformTextContainer from "@/components/LongformTextContainer";
-import { getAllTextPagesData } from "@/app/(core)/(static)/(text)/_lib/getAllTextPagesData";
-import { getTextPageMetadata } from "@/app/(core)/(static)/(text)/_lib/getTextPageData";
+import { getAllContentSlugs } from "@/lib/content/utils";
+import { getLegalPageMetadata } from "@/lib/content/handlers/legal";
 import { formatPublishDate } from "@/utils/dateUtils";
 
-type TextPageProps = {
+type LegalPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({
   params,
-}: TextPageProps): Promise<Metadata> {
+}: LegalPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { metadata } = await getTextPageMetadata(slug);
+  const { metadata } = await getLegalPageMetadata(slug);
 
   if (metadata) {
     return metadata;
@@ -26,17 +26,13 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  const textPages = await getAllTextPagesData();
-  const textPagesStaticParams = textPages.map((page) => ({
-    slug: page.slug,
-  }));
-
-  return textPagesStaticParams;
+  const slugs = await getAllContentSlugs("legal");
+  return slugs.map((slug) => ({ slug }));
 }
 
-export default async function TextPage({ params }: TextPageProps) {
+export default async function LegalPage({ params }: LegalPageProps) {
   const { slug } = await params;
-  const { metadata, customMetadata } = await getTextPageMetadata(slug);
+  const { metadata, customMetadata } = await getLegalPageMetadata(slug);
 
   // Set unique inline title if verbose title passed through (assuming customMetadata has even been provided)
   // E.g. 'Privacy' in the <title> and 'Privacy policy' in the inline <h1>
@@ -56,7 +52,9 @@ export default async function TextPage({ params }: TextPageProps) {
     : metadata.description;
 
   //   Dynamically import MDX files
-  const TextPageMarkdown = dynamic(() => import(`../content/${slug}.mdx`));
+  const LegalPageMarkdown = dynamic(
+    () => import(`@/content/legal/${slug}.mdx`)
+  );
 
   return (
     // // Largely matches newsletter/(issues) page.tsx
@@ -65,7 +63,7 @@ export default async function TextPage({ params }: TextPageProps) {
       <section>
         <StaticPageHeader title={pageTitle} subtitle={pageDescription} />
         <LongformTextContainer>
-          <TextPageMarkdown />
+          <LegalPageMarkdown />
         </LongformTextContainer>
       </section>
     </StaticPageMain>
