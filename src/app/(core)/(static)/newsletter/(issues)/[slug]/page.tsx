@@ -16,7 +16,6 @@ import StaticPageSection from "@/components/StaticPageSection";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 
-// Update the type to make params a Promise
 type NewsletterIssuePageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -35,7 +34,6 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  //   const newsletterIssues = ["celebrating-the-first-few-months", "second-post"]; // FIXME: Read from file system
   const newsletterIssues = await getAllNewsletterIssuesData();
   const newsletterIssuesStaticParams = newsletterIssues.map((issue) => ({
     slug: issue.slug,
@@ -58,7 +56,7 @@ export default async function NewsletterIssuePage({
   const NewsletterIssueMarkdown = dynamic(
     () => import(`@/newsletter/${slug}.mdx`)
   );
-  console.log(authors); // TODO: Open Graph authors
+  //   console.log(authors); // TODO: Open Graph authors
 
   return (
     // Largely matches (text) page.tsx, with some additions below the textual content

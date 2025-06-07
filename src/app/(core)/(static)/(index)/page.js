@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { sharedSectionTextBlockStyles, sharedAnchorTagStyles } from "@/styles/commonStyles";
 import { siteConfig } from "@/config/site";
 import IntroHeader from "@/components/IntroHeader";
 import Button from "@/components/Button";
@@ -49,7 +48,7 @@ export default function Index() {
         </HeroButtons>
       </Intro>
 
-      <StaticPageSection padding="wide">
+      <StaticPageSection padding="lg">
         <HeaderBlock>
           <h2>Here’s how it works</h2>
           <p>
@@ -60,7 +59,7 @@ export default function Index() {
         <PeelsHowItWorks />
       </StaticPageSection>
 
-      <StaticPageSection padding="wide" id="newsletter-section">
+      <StaticPageSection padding="lg" id="newsletter-section">
         <HeaderBlock>
           <h2>Hot off the press</h2>
           <p>
@@ -70,7 +69,7 @@ export default function Index() {
         <NewsletterIssuesList />
       </StaticPageSection>
 
-      <StaticPageSection padding="wide" id="faq-section">
+      <StaticPageSection padding="lg" id="faq-section">
         <HeaderBlock>
           <h2>You might be wondering...</h2>
           <p>

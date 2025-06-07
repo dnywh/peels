@@ -1,27 +1,45 @@
-// See similar newsletter setup for documentation
+// For documentation, see analagous setup for newsletter issues
 import dynamic from "next/dynamic";
+import type { Metadata } from "next/types";
+import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import LongformTextContainer from "@/components/LongformTextContainer";
-import { getTextPageMetadata } from "../_lib/getTextPageMetadata";
+import { getAllTextPagesData } from "@/app/(core)/(static)/(text)/_lib/getAllTextPagesData";
+import { getTextPageMetadata } from "@/app/(core)/(static)/(text)/_lib/getTextPageData";
 import { formatPublishDate } from "@/utils/dateUtils";
-import { styled } from "@pigment-css/react";
-import StaticPageMain from "@/components/StaticPageMain";
 
-export async function generateMetadata({ params }) {
-  const { metadata } = await getTextPageMetadata(params.slug);
-  return metadata;
+type TextPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({
+  params,
+}: TextPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const { metadata } = await getTextPageMetadata(slug);
+
+  if (metadata) {
+    return metadata;
+  } else {
+    throw new Error(`No metadata found for text page: ${slug}`);
+  }
 }
 
 export async function generateStaticParams() {
-  return [{ slug: "colophon" }, { slug: "terms" }, { slug: "privacy" }];
+  const textPages = await getAllTextPagesData();
+  const textPagesStaticParams = textPages.map((page) => ({
+    slug: page.slug,
+  }));
+
+  return textPagesStaticParams;
 }
 
-export default async function TextPage({ params }) {
-  const { slug } = params;
+export default async function TextPage({ params }: TextPageProps) {
+  const { slug } = await params;
   const { metadata, customMetadata } = await getTextPageMetadata(slug);
 
   // Set unique inline title if verbose title passed through (assuming customMetadata has even been provided)
-  // E.g. 'Privacy' in <title>, 'Privacy policy' on inline <h1>
+  // E.g. 'Privacy' in the <title> and 'Privacy policy' in the inline <h1>
   const pageTitle = customMetadata
     ? customMetadata.verboseTitle
       ? customMetadata.verboseTitle

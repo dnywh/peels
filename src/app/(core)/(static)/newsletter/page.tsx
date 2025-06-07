@@ -1,6 +1,5 @@
 // https://didoesdigital.com/blog/nextjs-blog-06-metadata-and-navigation/
 import { siteConfig } from "@/config/site";
-import { getAllNewsletterIssuesData } from "@/app/(core)/(static)/newsletter/_lib/getAllNewsletterIssuesData";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import NewsletterIssueRow from "@/components/NewsletterIssueRow";
 import NewsletterIssuesList from "@/components/NewsletterIssuesList";

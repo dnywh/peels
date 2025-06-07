@@ -49,11 +49,9 @@ export async function getNewsletterIssueMetadata(
                 slug,
                 metadata: file.metadata,
                 customMetadata: file.customMetadata,
-                formattedDate: `${
-                    formatPublishDate(
-                        file.customMetadata.publishDate,
-                    )
-                }`,
+                formattedDate: formatPublishDate(
+                    file.customMetadata.publishDate,
+                ),
             };
         } else {
             throw new Error(`Unable to find metadata for ${slug}.mdx`);

@@ -1,8 +1,17 @@
 import { styled } from "@pigment-css/react";
 
-function StaticPageSection({ padding = "normal", children, ...props }) {
+interface StaticPageSectionProps {
+  padding?: "md" | "lg" | null;
+  children?: React.ReactNode;
+}
+
+function StaticPageSection({
+  padding = "md",
+  children,
+  ...props
+}: StaticPageSectionProps) {
   return (
-    <Section padding={padding} {...props}>
+    <Section padding={padding ?? ""} {...props}>
       {children}
     </Section>
   );
@@ -19,16 +28,18 @@ const Section = styled("section")(({ theme }) => ({
   maxWidth: theme.spacing.container.maxWidth.media,
 
   variants: [
-    // props: { padding: null }     // top-of-page use, like in Newsletter or Support
+    // {
+    //   props: { padding: "" }, // When {null} is passed. Top-of-page use, like in Newsletter or Support
+    // },
     {
-      props: { padding: "normal" }, // Standard static page use with a small gap
+      props: { padding: "md" }, // Standard static page use with a small gap
       style: {
         paddingTop: theme.spacing.gap.page.md, // Match page gap in StaticPageMain
         borderTop: `1px solid ${theme.colors.border.light}`,
       },
     },
     {
-      props: { padding: "wide" }, // Homepage use
+      props: { padding: "lg" }, // Homepage use
       style: {
         // Match homepage rhythm
         gap: theme.spacing.gap.section.lg,

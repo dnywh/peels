@@ -30,27 +30,6 @@ function StaticPageHeader({
 
 export default StaticPageHeader;
 
-const StyledLink = styled(Link)(({ theme }) => ({
-  ...sharedAnchorTagStyles({ theme }),
-  display: "flex",
-  alignItems: "center",
-  gap: "0.125rem",
-  color: theme.colors.text.ui.quinary, // theme.colors.text.tertiary,
-  transition: theme.transitions.textColor,
-
-  "& svg": {
-    stroke: theme.colors.text.ui.quinary,
-    transition: theme.transitions.svgColor,
-  },
-
-  "&:hover": {
-    color: theme.colors.text.ui.emptyState,
-    "& svg": {
-      stroke: theme.colors.text.ui.emptyState,
-    },
-  },
-}));
-
 const Header = styled("header")(({ theme }) => ({
   margin: "5rem auto 3rem",
 
@@ -82,6 +61,27 @@ const Header = styled("header")(({ theme }) => ({
 
     "& a": {
       ...sharedAnchorTagStyles({ theme }),
+    },
+  },
+}));
+
+const StyledLink = styled(Link)(({ theme }) => ({
+  ...sharedAnchorTagStyles({ theme }),
+  display: "flex",
+  alignItems: "center",
+  gap: "0.125rem",
+  color: theme.colors.text.ui.quinary, // theme.colors.text.tertiary,
+  transition: theme.transitions.textColor,
+
+  "& svg": {
+    stroke: theme.colors.text.ui.quinary,
+    transition: theme.transitions.svgColor,
+  },
+
+  "&:hover": {
+    color: theme.colors.text.ui.emptyState,
+    "& svg": {
+      stroke: theme.colors.text.ui.emptyState,
     },
   },
 }));

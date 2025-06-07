@@ -273,7 +273,7 @@ export default withPigment(withMDX(nextConfig), {
           md: "2.15rem",
           lg: "2.75rem",
         },
-        sectionInner: "0.5rem",
+        sectionInner: "0.625rem",
         desktop: "1.5rem",
       },
       container: {

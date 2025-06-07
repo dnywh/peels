@@ -1,12 +1,11 @@
-import StaticPageHeader from "@/components/StaticPageHeader";
-import EncodedEmailLink from "@/components/EncodedEmailLink";
 import { siteConfig } from "@/config/site";
+import StaticPageMain from "@/components/StaticPageMain";
+import StaticPageHeader from "@/components/StaticPageHeader";
+import StaticPageSection from "@/components/StaticPageSection";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 import SupportFaq from "@/components/SupportFaq";
 import PeelsFaq from "@/components/PeelsFaq";
-import StaticPageMain from "@/components/StaticPageMain";
-import StaticPageSection from "@/components/StaticPageSection";
 import HeaderBlock from "@/components/HeaderBlock";
-import { styled } from "@pigment-css/react";
 
 export const metadata = {
   title: "Support",

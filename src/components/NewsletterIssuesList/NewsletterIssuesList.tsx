@@ -9,7 +9,13 @@ import StrongLink from "@/components/StrongLink";
 import StyledList from "@/components/StyledList";
 import { styled } from "@pigment-css/react";
 
-export default async function NewsletterIssuesList({ activeSlug = null }) {
+interface NewsletterIssuesListProps {
+  activeSlug?: string | null;
+}
+
+export default async function NewsletterIssuesList({
+  activeSlug = null,
+}: NewsletterIssuesListProps) {
   const newsletterIssues = await getAllNewsletterIssuesData();
 
   // Importing StyledList as a separate, barebones, slightly-styled component to avoid Pigment CSS + Next.js server component boundary issues
