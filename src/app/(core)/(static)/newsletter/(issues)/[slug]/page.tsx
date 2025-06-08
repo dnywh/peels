@@ -21,13 +21,18 @@ export async function generateMetadata({
   params,
 }: NewsletterIssuePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { metadata } = await getNewsletterIssueMetadata(slug);
+  const { metadata, customMetadata } = await getNewsletterIssueMetadata(slug);
 
   if (metadata) {
     return {
       ...metadata,
       openGraph: {
         ...metadata.openGraph,
+        images: [
+          {
+            url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/newsletter/${customMetadata.issueNumber}/${customMetadata.featuredImages[0]}`,
+          },
+        ],
         type: "article",
         // authors: metadata.authors, // Add authors to OpenGraph
       },

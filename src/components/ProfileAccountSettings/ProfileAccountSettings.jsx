@@ -112,7 +112,7 @@ function ProfileAccountSettings({ user, profile }) {
 
   const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
   const [tempNewsletterPreference, setTempNewsletterPreference] = useState(
-    profile?.newsletter
+    profile?.is_newsletter_subscribed
   );
 
   // const handlePasswordUpdate = async (formData) => {
@@ -217,7 +217,7 @@ function ProfileAccountSettings({ user, profile }) {
   };
 
   const handleNewsletterPreferenceCancel = () => {
-    setTempNewsletterPreference(profile?.newsletter);
+    setTempNewsletterPreference(profile?.is_newsletter_subscribed);
     newsletterPreference.reset();
   };
 

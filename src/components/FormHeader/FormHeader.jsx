@@ -1,4 +1,6 @@
+import { sharedSectionTextBlockStyles } from "@/styles/commonStyles";
 import IconButton from "@/components/IconButton";
+
 import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
 
@@ -39,13 +41,8 @@ const Header = styled("header")(({ theme }) => ({
 }));
 
 const Text = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.35rem",
-
-  textAlign: "center",
-  position: "relative",
-  textWrap: "balance",
+  ...sharedSectionTextBlockStyles({ theme }),
+  maxWidth: theme.spacing.container.textOpticalWidth,
 
   "& h1": {
     fontSize: "2.75rem",
@@ -57,7 +54,7 @@ const Text = styled("div")(({ theme }) => ({
 
   "& p": {
     fontSize: "1rem",
-    lineHeight: "120%",
+    lineHeight: "135%",
     fontWeight: "normal",
     color: theme.colors.text.ui.secondary,
   },

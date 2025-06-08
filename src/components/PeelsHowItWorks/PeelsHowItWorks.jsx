@@ -58,8 +58,7 @@ const sharedStepStyles = ({ theme }) => ({
   "& >  p": {
     fontSize: "1rem",
     color: theme.colors.text.ui.quaternary,
-    // But make a little narrower than the homepage
-    maxWidth: "36ch",
+    maxWidth: theme.spacing.container.textOpticalWidth,
 
     "& > a": {
       color: "inherit",

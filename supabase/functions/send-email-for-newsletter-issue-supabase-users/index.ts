@@ -29,7 +29,7 @@ const handler = async (_request: Request): Promise<Response> => {
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
       .select("id, first_name")
-      .eq("newsletter", true)
+      .eq("is_newsletter_subscribed", true)
       .eq("emailed_latest_issue", false)
       .limit(60); // Limit to around 50 (half a day's limit)
 

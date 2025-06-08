@@ -61,12 +61,17 @@ export default function Index() {
 
       <StaticPageSection padding="lg" id="newsletter-section">
         <HeaderBlock>
-          <h2>Hot off the press</h2>
+          <h2>What’s new</h2>
           <p>
             {siteConfig.newsletter.description}
           </p>
         </HeaderBlock>
         <NewsletterIssuesList />
+        <FooterBlock>
+          <p>
+            Check out our <Link href="/newsletter">Newsletter</Link> page for all past issues and how to subscribe.
+          </p>
+        </FooterBlock>
       </StaticPageSection>
 
       <StaticPageSection padding="lg" id="faq-section">

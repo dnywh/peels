@@ -21,7 +21,7 @@ export type BaseCustomMetadata = Record<string, never>;
 // Newsletter-specific types
 export type NewsletterCustomMetadata = BaseCustomMetadata & {
     issueNumber: number;
-    featuredImages?: Array<string>;
+    featuredImages: Array<string>;
     publishDate: string;
 };
 

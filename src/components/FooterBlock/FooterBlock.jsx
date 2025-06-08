@@ -14,6 +14,7 @@ const StyledFooterBlock = styled("footer")(({ theme }) => ({
   ...sharedSectionTextBlockStyles({ theme }),
   "& p": {
     color: theme.colors.text.ui.quaternary,
+    maxWidth: theme.spacing.container.textOpticalWidth,
   },
 
   "& a": {

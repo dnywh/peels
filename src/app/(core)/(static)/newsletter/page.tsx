@@ -10,7 +10,7 @@ import FooterBlock from "@/components/FooterBlock";
 import StaticPageMain from "@/components/StaticPageMain";
 
 export const metadata = {
-  title: `Newsletter · ${siteConfig.name}`,
+  title: "Newsletter",
   description: siteConfig.newsletter.description,
   openGraph: {
     title: `Newsletter · ${siteConfig.name}`,

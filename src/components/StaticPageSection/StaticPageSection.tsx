@@ -44,6 +44,7 @@ const Section = styled("section")(({ theme }) => ({
         // Match homepage rhythm
         gap: theme.spacing.gap.section.lg,
         paddingTop: theme.spacing.gap.page.md,
+        borderTop: `1px solid ${theme.colors.border.light}`,
         "@media (min-width: 768px)": {
           paddingTop: theme.spacing.gap.page.lg,
         },

@@ -43,8 +43,7 @@ export const ResetPasswordEmail = ({
       </EmailButton>
 
       <EmailParagraph>
-        Only tap that link if it was really you who requested it. Just hit
-        ‘reply’ if you run into any issues or have questions.
+        Just hit ‘reply’ if you run into any issues or have questions.
       </EmailParagraph>
 
       <EmailParagraph>

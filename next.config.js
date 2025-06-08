@@ -281,7 +281,8 @@ export default withPigment(withMDX(nextConfig), {
           media: "720px", // Homepage content, newsletter issues
           text: "640px", // Markdown, Profile
           aside: "512px" // NewsletterCallout
-        }
+        },
+        textOpticalWidth: "36ch",
       },
       forms: {
         maxWidth: "36rem",

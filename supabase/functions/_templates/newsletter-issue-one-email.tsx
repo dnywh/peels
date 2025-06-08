@@ -30,7 +30,7 @@ export const NewsletterIssueOneEmail = ({
   return (
     <EmailBody
       previewText={`It’s been a big first few months of Peels. Here’s an update on what happened and what we’re working towards.`}
-      headingText={`Celebrating the first few months of Peels`}
+      headingText={`Celebrating the First Few Months of Peels`}
       footerText={
         <>
           {externalAudience ? (

@@ -186,7 +186,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   return encodedRedirect(
     "success",
     "/forgot-password",
-    "Check your inbox for a password reset link, assuming that email address is linked to a Peels account.",
+    "Check your inbox (and spam) for a password reset link, assuming that email address is linked to a Peels account.",
   );
 };
 
@@ -326,7 +326,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   encodedRedirect(
     "success",
     "/profile/reset-password",
-    "Got it! Your password has been updated.",
+    "Your password has been updated. Let’s get back to composting!",
   );
 };
 

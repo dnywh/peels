@@ -14,7 +14,7 @@ export default NewsletterImage;
 
 export const StyledRemoteImage = styled(RemoteImage)(({ theme }) => ({
   // Match EmailImage
-  backgroundColor: theme.colors.background.top,
+  backgroundColor: theme.colors.background.sunk,
   borderRadius: theme.corners.thumbnail,
   border: `1px solid ${theme.colors.border.base}`,
   objectFit: "cover",
