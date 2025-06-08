@@ -22,33 +22,35 @@ export default async function NewsletterIssuesList() {
           />
         </section>
 
-        <section>
-          <h2>Past issues</h2>
-          <PastIssuesList>
-            {newsletterIssues.map(
-              (
-                {
-                  slug,
-                  metadata: { title },
-                  customMetadata: { issueNumber, featuredImages },
-                  formattedDate,
-                },
-                index
-              ) =>
-                index > 0 && (
-                  <NewsletterIssueRow
-                    key={slug}
-                    featured={false}
-                    slug={slug}
-                    title={title}
-                    issueNumber={issueNumber}
-                    date={formattedDate}
-                    featuredImages={featuredImages}
-                  />
-                )
-            )}
-          </PastIssuesList>
-        </section>
+        {newsletterIssues.length > 1 && (
+          <section>
+            <h2>Past issues</h2>
+            <PastIssuesList>
+              {newsletterIssues.map(
+                (
+                  {
+                    slug,
+                    metadata: { title },
+                    customMetadata: { issueNumber, featuredImages },
+                    formattedDate,
+                  },
+                  index
+                ) =>
+                  index > 0 && (
+                    <NewsletterIssueRow
+                      key={slug}
+                      featured={false}
+                      slug={slug}
+                      title={title}
+                      issueNumber={issueNumber}
+                      date={formattedDate}
+                      featuredImages={featuredImages}
+                    />
+                  )
+              )}
+            </PastIssuesList>
+          </section>
+        )}
       </StyledList>
     </>
   );

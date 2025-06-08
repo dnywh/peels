@@ -34,11 +34,18 @@ const UnorderedList = styled("ul")(({ theme }) => ({
 
     "& h2": {
       color: theme.colors.text.ui.emptyState,
-      marginLeft: "2rem", // Match padding (left) on NewsletterIssueRow text
       fontSize: "0.875rem",
       fontWeight: 500,
       textTransform: "uppercase",
       letterSpacing: "0.0875em",
+      marginLeft: "2rem", // Match padding (left) on NewsletterIssueRow text
+
+      // textAlign: "center",
+
+      // "@media (min-width: 768px)": {
+      //   textAlign: "left",
+      //   marginLeft: "2rem", // Match padding (left) on NewsletterIssueRow text
+      // },
     },
   },
 }));
