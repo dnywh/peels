@@ -34,7 +34,7 @@ export async function generateMetadata({
           },
         ],
         type: "article",
-        // authors: metadata.authors, // Add authors to OpenGraph
+        // authors: metadata.authors, // TODO: Add authors to OpenGraph
       },
     };
   } else {
@@ -91,14 +91,6 @@ export default async function NewsletterIssuePage({
           </p>
         </FooterBlock>
       </StaticPageSection>
-
-      {/* TODO: Uncomment when 2+ issues exist */}
-      {/* <StaticPageSection>
-        <HeaderBlock>
-          <h2>Past issues</h2>
-        </HeaderBlock>
-        <NewsletterIssuesList activeSlug={slug} />
-      </StaticPageSection> */}
     </StaticPageMain>
   );
 }

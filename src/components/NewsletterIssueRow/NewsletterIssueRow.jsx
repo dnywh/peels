@@ -3,8 +3,11 @@ import StrongLink from "@/components/StrongLink";
 import NewsletterImage from "@/components/NewsletterImage";
 import { styled } from "@pigment-css/react";
 
+const imageWidth = 192;
+const imageHeight = imageWidth * 0.667;
+
 function NewsletterIssueRow({
-  featured,
+  featured = false,
   slug,
   title,
   issueNumber,
@@ -13,25 +16,30 @@ function NewsletterIssueRow({
 }) {
   return (
     <ListItem key={slug}>
-      <LinkedRow prefetch={false} href={`/newsletter/${slug}`}>
+      <LinkedRow
+        featured={featured.toString()} // Required because Link component forwards all props to the underlying DOM element
+        prefetch={false}
+        href={`/newsletter/${slug}`}
+      >
         {/* {featured && "Featured because I'm the most recent item!"} */}
-        <Text>
+        <Text featured={featured}>
           <h3>{title}</h3>
           <p>
             Issue #{issueNumber} · {date}
           </p>
         </Text>
         {/* TODO: ignore if featured === false */}
-        {featuredImages && (
+        {featured && (
           <Images>
-            {featuredImages.map((image) => (
+            {featuredImages?.map((image) => (
               <NewsletterImage
                 key={image}
                 bucket={`static/newsletter/${issueNumber}`}
                 filename={image}
-                alt="A preview image from this newsletter issue"
-                width={256}
-                height={256}
+                alt={`An image described in issue ${issueNumber}`}
+                width={imageWidth}
+                height={imageHeight}
+                border={false}
               />
             ))}
           </Images>
@@ -54,46 +62,91 @@ const LinkedRow = styled(Link)(({ theme }) => ({
   color: "inherit",
   padding: "2rem",
   display: "flex",
-  flexDirection: "column",
-  gap: "3rem",
+  gap: "2rem",
 
-  "@media (min-width: 768px)": {
-    flexDirection: "row",
-    gap: "1.5rem",
-  },
+  variants: [
+    {
+      props: { featured: "true" },
+      style: {
+        display: "grid",
+        gridTemplateRows: "1fr 1fr",
+        "@media (min-width: 768px)": {
+          padding: "3rem 2rem",
+          gridTemplateColumns: "8fr 6fr",
+          gridTemplateRows: "1fr",
+        },
+      },
+    },
+  ],
 
-  transition: "opacity 150ms ease-in-out, transform 150ms ease-in-out",
+  transition: "opacity 150ms ease-in-out",
 
   "&:hover": {
     opacity: 0.5,
-    // transform: "scale(0.99875)",
   },
 }));
 
 const Text = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  flex: 1,
+  gap: "0.5rem",
   "@media (min-width: 768px)": {
-    flex: 2, // Leave some room for image(s)
+    // flex: 3, // Leave some room for image(s)
   },
+
+  "& h3": {
+    fontSize: "1.5rem",
+    lineHeight: "115%",
+    textWrap: "balance",
+    color: theme.colors.text.brand.primary,
+  },
+
+  "& p": {
+    color: theme.colors.text.ui.quaternary,
+    lineHeight: "115%",
+  },
+
+  variants: [
+    {
+      props: { featured: true },
+      style: {
+        "& h3": {
+          fontSize: "2rem",
+        },
+      },
+    },
+  ],
 }));
 
 const Images = styled("div")(({ theme }) => ({
-  flex: 1,
-  // position: "absolute",
-  // bottom: 0,
-  // right: "2rem",
-
-  position: "relative",
-  // position
+  flexGrow: 1,
+  // position: "relative",
 
   "& > figure": {
-    // opacity: 0.5,
-    position: "absolute",
-    right: 0,
-    width: 128,
-    height: 128,
-    transform: "rotate(8deg)",
+    // transform: "rotate(8deg)",
+    position: "relative",
+    width: `${imageWidth}px`,
+    // height: `${imageHeight}px`,
+
+    // ThumbnailContainer
+    "& div": {
+      position: "absolute",
+    },
+    // Bottom image
+    "&:nth-child(1)": {
+      "& div": {
+        transform: "rotate(-6deg)",
+        top: "2rem",
+      },
+    },
+    // Top image
+    "&:nth-child(2)": {
+      "& div": {
+        // ThumbnailContainer
+        transform: "rotate(10deg)",
+        right: "-8rem", // Affects width, maybe due to flex behavior
+        top: "1.5rem",
+      },
+    },
   },
 }));

@@ -3,7 +3,7 @@ import { styled } from "@pigment-css/react";
 const StyledLozenge = styled("span")(({ theme }) => ({
   background: theme.colors.background.slight,
   textTransform: "uppercase",
-  fontWeight: "700",
+  fontWeight: 700,
   letterSpacing: "0.05rem",
   fontSize: "0.675rem",
   padding: "0.25rem 0.5rem",

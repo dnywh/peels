@@ -46,11 +46,10 @@ export const NewsletterIssueOneEmail = ({
               <EmailLink href={`${siteUrl}/profile`}>here</EmailLink>.
             </>
           )}{" "}
-          View or share this issue{" "}
           <EmailLink
             href={`${siteUrl}/newsletter/celebrating-the-first-few-months`}
           >
-            online
+            View or share this issue online
           </EmailLink>
           .
         </>

@@ -24,5 +24,21 @@ const UnorderedList = styled("ul")(({ theme }) => ({
   maxWidth: theme.spacing.container.maxWidth.media,
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: theme.spacing.gap.section.md,
+
+  // Must be defined here for same reasons as described at the top of this file
+  "& section": {
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing.gap.sectionInner,
+
+    "& h2": {
+      color: theme.colors.text.ui.emptyState,
+      marginLeft: "2rem", // Match padding (left) on NewsletterIssueRow text
+      fontSize: "0.875rem",
+      fontWeight: 500,
+      textTransform: "uppercase",
+      letterSpacing: "0.0875em",
+    },
+  },
 }));

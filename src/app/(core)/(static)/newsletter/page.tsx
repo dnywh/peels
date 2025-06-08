@@ -8,6 +8,7 @@ import Link from "next/link";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import StaticPageMain from "@/components/StaticPageMain";
+import { styled } from "@pigment-css/react";
 
 export const metadata = {
   title: "Newsletter",
@@ -21,13 +22,13 @@ export const metadata = {
 export default function NewsletterPage() {
   return (
     <StaticPageMain>
-      <StaticPageHeader
-        title="Newsletter"
-        subtitle={siteConfig.newsletter.description}
-      />
-      <StaticPageSection padding={null}>
+      <AboveTheFoldSection>
+        <StaticPageHeader
+          title="Newsletter"
+          subtitle={siteConfig.newsletter.description}
+        />
         <NewsletterIssuesList />
-      </StaticPageSection>
+      </AboveTheFoldSection>
 
       <StaticPageSection>
         <HeaderBlock>
@@ -45,3 +46,16 @@ export default function NewsletterPage() {
     </StaticPageMain>
   );
 }
+
+const AboveTheFoldSection = styled("section")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  width: "100%",
+  maxWidth: theme.spacing.container.maxWidth.media,
+  gap: theme.spacing.gap.section.md,
+
+  "@media (min-width: 768px)": {
+    gap: theme.spacing.gap.section.lg,
+  },
+}));
