@@ -10,7 +10,7 @@ const feed = new Feed({
     description: siteConfig.newsletter.description,
     id: `${siteConfig.url}/newsletter`,
     link: `${siteConfig.url}/newsletter/feed.xml`,
-    // favicon: "http://example.com/favicon.ico", TODO
+    favicon: `${siteConfig.url}/favicon.ico`,
     language: "en",
     copyright: `All rights reserved ${
         new Date().getFullYear()
@@ -19,16 +19,17 @@ const feed = new Feed({
 
 export async function GET() {
     const newsletterIssues = await getAllNewsletterIssues();
-    // console.log(newsletterIssues);
 
     newsletterIssues.forEach((issue) => {
         const issueLink = `${siteConfig.url}/newsletter/${issue.slug}`;
         feed.addItem({
-            title: `${issue.metadata.title ?? ""}`,
+            title: issue.metadata.title ?? "",
             link: `${siteConfig.url}/newsletter/${issue.slug}`,
-            description: `${issue.metadata.description ?? ""}`,
-            // author: {issue.metadata.authors ? issue.metadata.authors : "Peels"}  TODO
-            // image: {issues.customMetadata.featuredImages[0]} TODO
+            description: issue.metadata.description ?? "",
+            author: issue.metadata.authors.map((author) => ({
+                name: author,
+            })),
+            image: issue.customMetadata.ogImage,
             content: `${
                 issue.metadata.description
                     ? `<p>${issue.metadata.description}</p>`

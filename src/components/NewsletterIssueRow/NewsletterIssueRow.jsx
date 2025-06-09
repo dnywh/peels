@@ -12,7 +12,7 @@ function NewsletterIssueRow({
   title,
   issueNumber,
   date,
-  featuredImages,
+  previewImages,
 }) {
   return (
     <ListItem key={slug}>
@@ -21,22 +21,20 @@ function NewsletterIssueRow({
         prefetch={false}
         href={`/newsletter/${slug}`}
       >
-        {/* {featured && "Featured because I'm the most recent item!"} */}
         <Text featured={featured}>
           <h3>{title}</h3>
           <p>
             Issue #{issueNumber} · {date}
           </p>
         </Text>
-        {/* TODO: ignore if featured === false */}
         {featured && (
           <Images>
-            {featuredImages?.map((image) => (
+            {previewImages?.map((image) => (
               <NewsletterImage
                 key={image}
                 bucket={`static/newsletter/${issueNumber}`}
                 filename={image}
-                alt={`An image described in issue ${issueNumber}`}
+                alt={`An image from issue ${issueNumber}`}
                 width={imageWidth}
                 height={imageHeight}
                 border={false}
@@ -64,6 +62,7 @@ const LinkedRow = styled(Link)(({ theme }) => ({
   padding: "2rem",
   display: "flex",
   gap: "2rem",
+  // containerType: "inline-size",
 
   variants: [
     {
@@ -91,9 +90,6 @@ const Text = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
-  "@media (min-width: 768px)": {
-    // flex: 3, // Leave some room for image(s)
-  },
 
   "& h3": {
     fontSize: "1.5rem",
@@ -120,8 +116,15 @@ const Text = styled("div")(({ theme }) => ({
 }));
 
 const Images = styled("div")(({ theme }) => ({
-  flexGrow: 1,
+  // flexGrow: 1,
   // position: "relative",
+
+  display: "flex",
+  flexDirection: "row-reverse",
+  // "@container (max-width: 512px)": {
+  "@media (min-width: 768px)": {
+    display: "unset",
+  },
 
   "& > figure": {
     // transform: "rotate(8deg)",
@@ -143,17 +146,28 @@ const Images = styled("div")(({ theme }) => ({
     // Bottom image
     "&:nth-child(1)": {
       "& div": {
-        transform: "rotate(-6deg)",
-        top: "2rem",
+        transform: "rotate(6deg)",
+        top: "1rem",
+
+        "@media (min-width: 768px)": {
+          transform: "rotate(-6deg)",
+          top: "1.5rem",
+        },
       },
     },
     // Top image
     "&:nth-child(2)": {
       "& div": {
         // ThumbnailContainer
-        transform: "rotate(10deg)",
-        right: "-8rem", // Affects width, maybe due to flex behavior
-        top: "1.5rem",
+        transform: "rotate(-10deg)",
+        top: "0.75rem",
+        right: "-4rem", // Affects width, maybe due to flex behavior
+
+        "@media (min-width: 768px)": {
+          transform: "rotate(10deg)",
+          top: "3rem",
+          right: "-7rem",
+        },
       },
     },
   },

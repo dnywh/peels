@@ -15,10 +15,13 @@ export default async function NewsletterIssuesList() {
           <NewsletterIssueRow
             featured={true}
             slug={newsletterIssues[0].slug}
-            title={newsletterIssues[0].metadata.title}
+            title={
+              newsletterIssues[0].customMetadata.verboseTitle ??
+              newsletterIssues[0].metadata.title
+            }
             issueNumber={newsletterIssues[0].customMetadata.issueNumber}
             date={newsletterIssues[0].formattedDate}
-            featuredImages={newsletterIssues[0].customMetadata.featuredImages}
+            previewImages={newsletterIssues[0].customMetadata.previewImages}
           />
         </section>
 
@@ -31,7 +34,11 @@ export default async function NewsletterIssuesList() {
                   {
                     slug,
                     metadata: { title },
-                    customMetadata: { issueNumber, featuredImages },
+                    customMetadata: {
+                      issueNumber,
+                      verboseTitle,
+                      previewImages,
+                    },
                     formattedDate,
                   },
                   index
@@ -41,10 +48,10 @@ export default async function NewsletterIssuesList() {
                       key={slug}
                       featured={false}
                       slug={slug}
-                      title={title}
+                      title={verboseTitle ?? title}
                       issueNumber={issueNumber}
                       date={formattedDate}
-                      featuredImages={featuredImages}
+                      previewImages={previewImages}
                     />
                   )
               )}

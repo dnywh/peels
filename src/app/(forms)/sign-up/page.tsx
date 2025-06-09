@@ -20,6 +20,7 @@ export default async function SignUp(props: {
     email?: string;
     first_name?: string;
     from?: string;
+    newsletter_preference?: string;
   }>;
 }) {
   // TODO: How are these searchParams working without special Next.js magic?
@@ -73,6 +74,7 @@ export default async function SignUp(props: {
         defaultValues={{
           first_name: searchParams.first_name,
           email: searchParams.email,
+          newsletter_preference: searchParams.newsletter_preference,
         }}
         error={searchParams.error}
       />

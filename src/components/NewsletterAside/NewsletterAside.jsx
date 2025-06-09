@@ -18,8 +18,10 @@ export default function NewsletterAside() {
         This is the web version of the email newsletter sent out to subscribers.{" "}
         {!status.isAuthenticated ? (
           <>
-            <StrongLink href="/sign-up">Join Peels</StrongLink> to receive
-            future issues.
+            <StrongLink href="/sign-up?newsletter_preference=true">
+              Join Peels
+            </StrongLink>{" "}
+            to receive future issues.
           </>
         ) : status.isNewsletterSubscribed ? (
           "Feel free to share it far and wide."

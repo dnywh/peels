@@ -92,6 +92,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         <CheckboxRow
           name="newsletter_preference" // Checked in server action, ignored in formData if left unchecked
           required={false}
+          defaultChecked={defaultValues.newsletter_preference}
         >
           Send me occasional email updates about Peels
         </CheckboxRow>

@@ -36,7 +36,7 @@ function UnauthenticatedCallout() {
         </p>
       </Text>
       <ButtonContainer>
-        <Button variant="primary" href="/sign-up">
+        <Button variant="primary" href="/sign-up?newsletter_preference=true">
           Join Peels
         </Button>
         <Button variant="secondary" href="/sign-in">

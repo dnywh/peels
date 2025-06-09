@@ -7,7 +7,6 @@ import type { Metadata } from "next/types";
 export type BaseMetadata = Metadata & {
     title: string;
     description: string;
-    // authors: Array<string>;
 };
 
 // Newsletter-specific metadata
@@ -21,13 +20,15 @@ export type BaseCustomMetadata = Record<string, never>;
 // Newsletter-specific types
 export type NewsletterCustomMetadata = BaseCustomMetadata & {
     issueNumber: number;
-    featuredImages: Array<string>;
+    verboseTitle: string;
+    ogImage: string;
+    previewImages: Array<string>;
     publishDate: string;
 };
 
 export type NewsletterIssueData = {
     slug: string;
-    metadata: BaseMetadata;
+    metadata: NewsletterMetadata;
     customMetadata: NewsletterCustomMetadata;
     formattedDate: string;
 };

@@ -5,7 +5,6 @@ import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import LongformTextContainer from "@/components/LongformTextContainer";
 import NewsletterCallout from "@/components/NewsletterCallout";
-import NewsletterIssuesList from "@/components/NewsletterIssuesList";
 import { siteConfig } from "@/config/site";
 import { getAllContentSlugs } from "@/lib/content/utils";
 import { getNewsletterIssueMetadata } from "@/lib/content/handlers/newsletter";
@@ -30,11 +29,11 @@ export async function generateMetadata({
         ...metadata.openGraph,
         images: [
           {
-            url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/newsletter/${customMetadata.issueNumber}/${customMetadata.featuredImages[0]}`,
+            url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/newsletter/${customMetadata.issueNumber}/${customMetadata.ogImage}`,
           },
         ],
         type: "article",
-        // authors: metadata.authors, // TODO: Add authors to OpenGraph
+        authors: metadata.authors,
       },
     };
   } else {
@@ -53,8 +52,10 @@ export default async function NewsletterIssuePage({
   const { slug } = await params;
   const { metadata, customMetadata, formattedDate } =
     await getNewsletterIssueMetadata(slug);
-  const title = `${metadata.title ?? ""}`;
-  const authors = `${metadata.authors ?? ""}`;
+  const title = customMetadata.verboseTitle
+    ? customMetadata.verboseTitle
+    : metadata.title;
+  // const authors = `${metadata.authors ?? ""}`;
   const issueNumber = customMetadata.issueNumber;
 
   //  Dynamically import MDX files

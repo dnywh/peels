@@ -50,8 +50,8 @@ export function validateNewsletterCustomMetadata(
     if (
         !customMetadata?.issueNumber ||
         !customMetadata?.publishDate ||
-        (customMetadata.featuredImages &&
-            !Array.isArray(customMetadata.featuredImages))
+        (customMetadata.previewImages &&
+            !Array.isArray(customMetadata.previewImages))
     ) {
         throw new Error(
             `Missing required newsletter custom metadata fields in: ${slug}`,
