@@ -23,13 +23,14 @@ export async function GET() {
     newsletterIssues.forEach((issue) => {
         const issueLink = `${siteConfig.url}/newsletter/${issue.slug}`;
         feed.addItem({
-            title: issue.metadata.title ?? "",
+            title: issue.metadata.title,
             link: `${siteConfig.url}/newsletter/${issue.slug}`,
-            description: issue.metadata.description ?? "",
+            description: issue.metadata.description,
             author: issue.metadata.authors.map((author) => ({
                 name: author,
             })),
-            image: issue.customMetadata.ogImage,
+            image:
+                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/newsletter/${issue.customMetadata.issueNumber}/${issue.customMetadata.ogImage}`,
             content: `${
                 issue.metadata.description
                     ? `<p>${issue.metadata.description}</p>`

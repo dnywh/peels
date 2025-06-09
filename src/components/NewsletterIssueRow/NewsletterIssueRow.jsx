@@ -87,6 +87,7 @@ const LinkedRow = styled(Link)(({ theme }) => ({
 }));
 
 const Text = styled("div")(({ theme }) => ({
+  // TODO: The children of this div aren't wrapping properly
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
