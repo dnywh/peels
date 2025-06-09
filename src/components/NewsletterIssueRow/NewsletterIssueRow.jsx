@@ -131,6 +131,13 @@ const Images = styled("div")(({ theme }) => ({
     // ThumbnailContainer
     "& div": {
       position: "absolute",
+
+      // Address Next Image requirements:
+      // ... has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+      // "& > img": {
+      //   width: "auto",
+      //   height: "auto",
+      // },
     },
     // Bottom image
     "&:nth-child(1)": {

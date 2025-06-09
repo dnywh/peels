@@ -1,7 +1,8 @@
-"use client";
-
+"use client"; // For useNewsletterStatus
 import { useNewsletterStatus } from "@/hooks/useNewsletterStatus";
+// import Image from "next/image";
 import Button from "@/components/Button";
+import PostageStamp from "@/components/PostageStamp";
 import { styled } from "@pigment-css/react";
 
 const userConfig = {
@@ -27,6 +28,7 @@ const userConfig = {
 function UnauthenticatedCallout() {
   return (
     <Callout>
+      <PostageStamp />
       <Text>
         <h3>Join Peels to get the newsletter</h3>
         <p>
@@ -58,6 +60,7 @@ export default function NewsletterCallout() {
 
   return (
     <Callout>
+      <PostageStamp />
       <Text>
         <h3>
           {status.isNewsletterSubscribed
@@ -125,7 +128,6 @@ const Text = styled("div")(({ theme }) => ({
   // Calc theme.spacing.container.maxWidth.aside - paddingX - borders (512-32-32-1-1=446)
   "@container (min-width: 446px)": {
     // marginTop: "1rem",
-    // marginRight: "8.25rem", // Offset backgroundImage to the side of this text
   },
 
   "& > *": {
@@ -137,6 +139,9 @@ const Text = styled("div")(({ theme }) => ({
     fontWeight: 500,
     fontSize: "1.5rem",
     lineHeight: "115%",
+    // Offset backgroundImage to the side of this text
+    marginTop: "2.5rem",
+    marginRight: "7.5rem",
   },
 }));
 

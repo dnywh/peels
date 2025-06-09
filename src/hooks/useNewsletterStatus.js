@@ -11,11 +11,11 @@ export function useNewsletterStatus() {
         error: null,
         isLoading: true,
     });
+    const supabase = createClient();
 
     useEffect(() => {
         async function checkNewsletterStatus() {
             try {
-                const supabase = createClient();
                 const {
                     data: { user },
                     error: userError,
@@ -65,7 +65,8 @@ export function useNewsletterStatus() {
         }
         checkNewsletterStatus();
 
-        const supabase = createClient();
+
+        // Optional: Subscribe to auth changes
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange(() => {
