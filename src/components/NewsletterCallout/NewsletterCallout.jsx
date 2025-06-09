@@ -1,3 +1,5 @@
+"use client";
+
 import { useNewsletterStatus } from "@/hooks/useNewsletterStatus";
 import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
@@ -47,42 +49,35 @@ function UnauthenticatedCallout() {
 // Advertising the newsletter (sits outside of the newsletter bounds)
 // and providing information on how to opt-in (whether signed up already or not)
 // See also NewsletterAside which does a similar job, albeit inside the newsletter bounds
-export default async function NewsletterCallout() {
-  try {
-    const { isNewsletterSubscribed, isAuthenticated, error } =
-      await useNewsletterStatus();
+export default function NewsletterCallout() {
+  const status = useNewsletterStatus();
 
-    // Show unauthenticated state for both errors and unauthenticated users
-    if (error || !isAuthenticated) {
-      return <UnauthenticatedCallout />;
-    }
-
-    return (
-      <Callout>
-        <Text>
-          <h3>
-            {isNewsletterSubscribed
-              ? userConfig.alreadySubscribed.title
-              : userConfig.notYetSubscribed.title}
-          </h3>
-          <p>
-            {isNewsletterSubscribed
-              ? userConfig.alreadySubscribed.description
-              : userConfig.notYetSubscribed.description}
-          </p>
-        </Text>
-        <Button
-          variant={isNewsletterSubscribed ? "secondary" : "primary"}
-          href={userConfig.notYetSubscribed.button.href}
-        >
-          {userConfig.notYetSubscribed.button.text}
-        </Button>
-      </Callout>
-    );
-  } catch (error) {
-    console.error("Error in NewsletterCallout:", error);
+  if (status.isLoading || status.error || !status.isAuthenticated) {
     return <UnauthenticatedCallout />;
   }
+
+  return (
+    <Callout>
+      <Text>
+        <h3>
+          {status.isNewsletterSubscribed
+            ? userConfig.alreadySubscribed.title
+            : userConfig.notYetSubscribed.title}
+        </h3>
+        <p>
+          {status.isNewsletterSubscribed
+            ? userConfig.alreadySubscribed.description
+            : userConfig.notYetSubscribed.description}
+        </p>
+      </Text>
+      <Button
+        variant={status.isNewsletterSubscribed ? "secondary" : "primary"}
+        href={userConfig.notYetSubscribed.button.href}
+      >
+        {userConfig.notYetSubscribed.button.text}
+      </Button>
+    </Callout>
+  );
 }
 
 const Callout = styled("div")(({ theme }) => ({
@@ -93,28 +88,31 @@ const Callout = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   borderRadius: theme.corners.base,
+  background: theme.colors.background.top,
   border: `1px solid ${theme.colors.border.base}`,
-  backgroundColor: theme.colors.background.top,
   overflow: "hidden",
   position: "relative",
 
-  // Pseudo-element needed to rotate background
-  "&::after": {
-    content: '""',
-    position: "absolute",
-    inset: 0,
-    width: "100%",
-    height: "100%",
-    background: "url('/stamp.png') no-repeat top right",
-    backgroundSize: "224px",
-    opacity: 0.75,
-    maskImage: "radial-gradient(rgba(0,0,0,.5) 0%, rgba(0,0,0,0.15) 72%)",
-    transform: "rotate(-16deg) translate(96px, 8px)",
+  // // Pseudo-element needed to rotate background
+  // "&::after": {
+  //   content: '""',
+  //   position: "absolute",
+  //   top: "-50%",
+  //   left: "-50%",
+  //   width: "200%",
+  //   height: "200%",
+  //   zIndex: -1,
+  //   background: `url('/stamp.png') ${theme.colors.background.top} no-repeat center center`,
+  //   backgroundSize: "224px auto",
+  //   // opacity: 0.75,
+  //   // maskImage: "radial-gradient(rgba(0,0,0,.5) 0%, rgba(0,0,0,0.15) 72%)",
+  //   // transform: "rotate(-16deg) translate(96px, 8px)",
+  //   transform: "rotate(-16deg) translate(186px, -72px)",
 
-    "@container (min-width: 446px)": {
-      transform: "rotate(-16deg) translate(80px, 28px)",
-    },
-  },
+  //   "@container (min-width: 446px)": {
+  //     // transform: "rotate(-16deg) translate(80px, 28px)",
+  //   },
+  // },
 }));
 
 const Text = styled("div")(({ theme }) => ({
@@ -122,12 +120,12 @@ const Text = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
-  marginTop: "6.5rem", // Offset backgroundImage above this text
+  // marginTop: "6.5rem", // Offset backgroundImage above this text
 
   // Calc theme.spacing.container.maxWidth.aside - paddingX - borders (512-32-32-1-1=446)
   "@container (min-width: 446px)": {
-    marginTop: "1rem",
-    marginRight: "8.25rem", // Offset backgroundImage to the side of this text
+    // marginTop: "1rem",
+    // marginRight: "8.25rem", // Offset backgroundImage to the side of this text
   },
 
   "& > *": {

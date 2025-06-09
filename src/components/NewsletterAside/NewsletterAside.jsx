@@ -1,4 +1,4 @@
-import { useNewsletterStatus } from "@/hooks/useNewsletterStatus";
+// import { useNewsletterStatus } from "@/hooks/useNewsletterStatus";
 import StrongLink from "@/components/StrongLink";
 import { styled } from "@pigment-css/react";
 
@@ -7,8 +7,10 @@ import { styled } from "@pigment-css/react";
 // and providing information on how to opt-in (whether signed up already or not)
 // See also NewsletterCallout which does a similar job, albeit outside of the newsletter bounds
 export default async function NewsletterAside() {
-  const { isNewsletterSubscribed, isAuthenticated } =
-    await useNewsletterStatus();
+  // const { isNewsletterSubscribed, isAuthenticated } =
+  //   await useNewsletterStatus();
+
+  const isAuthenticated = false; // TODO: Temporary
 
   return (
     <Aside>

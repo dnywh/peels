@@ -15,7 +15,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   const first_name = firstNameValidation.isValid
     ? firstNameValidation.value
     : null;
-  const newsletter = formData.has("newsletter_preference"); // Will only be passed if input is checked when form submitted
+  const newsletterPreference = formData.has("newsletter_preference"); // Will only be passed if input is checked when form submitted
 
   const supabase = await createClient();
   const headersList = await headers();
@@ -29,7 +29,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
 
   // Debug attribution data
   console.log("Sign up data:", {
-    newsletter,
+    newsletterPreference,
     attribution: {
       referrer,
       utmSource,
@@ -94,7 +94,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
       emailRedirectTo: `${origin || getBaseUrl()}/auth/callback?type=signup`,
       data: {
         first_name,
-        newsletter,
+        is_newsletter_subscribed: newsletterPreference,
         http_referrer: referrer,
         utm_source: utmSource || null,
         utm_medium: utmMedium || null,
@@ -238,12 +238,12 @@ export const updateNewsletterPreferenceAction = async (formData: FormData) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const newsletter = formData.get("newsletter_preference") === "true";
+  const newsletterPreference = formData.get("newsletter_preference") === "true";
 
   const { error } = await supabase
     .from("profiles")
     .update({
-      newsletter,
+      is_newsletter_subscribed: newsletterPreference,
     })
     .eq("id", user?.id);
 
