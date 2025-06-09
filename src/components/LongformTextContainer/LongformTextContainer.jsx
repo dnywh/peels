@@ -21,39 +21,37 @@ const StyledLongformTextContent = styled("div")(({ theme }) => ({
   border: `1px solid ${theme.colors.border.base}`,
 
   // Match EmailHr
-  "& hr": {
-    margin: "32px 0",
+  "& > hr": {
+    margin: "2rem 0",
     borderColor: theme.colors.border.elevated,
     borderTopWidth: 1,
+    borderBottomWidth: 0,
   },
 
-  "& h1": {
-    fontSize: "2.25rem",
-    color: theme.colors.text.primary,
-  },
-
-  "& h2, h3, h4, h5, h6": {
+  "& > h2, > h3, > h4, > h5, > h6": {
+    lineHeight: theme.typography.lineHeight.h,
     fontWeight: 500,
+    color: theme.colors.text.brand.primary,
   },
 
-  "& h2": {
-    fontSize: "1.75rem",
+  "& > h2": {
+    fontSize: "1.5rem",
   },
 
-  "& h3": {
+  "& > h3": {
     fontSize: "1.25rem",
   },
 
-  "& h4": {
-    fontSize: "1.25rem",
+  "& > h4": {
+    fontSize: "1.1rem",
   },
 
-  "& p, & li": {
+  "& > p, & li": {
+    fontSize: theme.typography.size.p.md,
     color: theme.colors.text.secondary,
-    lineHeight: "160%",
-    fontSize: "1rem",
+    lineHeight: theme.typography.lineHeight.p.md,
 
-    "& strong": {
+    "& > strong": {
       fontWeight: 500,
     },
   },
@@ -91,25 +89,20 @@ const StyledLongformTextContent = styled("div")(({ theme }) => ({
   },
 
   "@media (min-width: 768px)": {
-    margin: "4rem auto 3rem",
-
-    "& h1": {
-      fontSize: "3rem",
+    "& > h2": {
+      fontSize: "1.875rem",
     },
-    "& h2": {
-      fontSize: "2rem",
-    },
-    "& h3": {
+    "& > h3": {
       fontSize: "1.5rem",
     },
 
-    "& h4": {
+    "& > h4": {
       fontSize: "1.25rem",
     },
 
-    "& p, & li": {
-      fontSize: "1.25rem",
-      lineHeight: "160%",
+    "& > p, & li": {
+      fontSize: theme.typography.size.p.lg,
+      lineHeight: theme.typography.lineHeight.p.lg,
     },
   },
 }));

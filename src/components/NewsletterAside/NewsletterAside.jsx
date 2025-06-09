@@ -37,7 +37,21 @@ export default function NewsletterAside() {
 const Aside = styled("aside")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
+  gap: "0.5rem",
   backgroundColor: theme.colors.background.sunk,
   padding: "2rem",
+  margin: "2rem 0 0",
   borderRadius: theme.corners.base,
+
+  "& h3, & p": {
+    fontSize: theme.typography.size.p.md,
+    "@media (min-width: 768px)": {
+      fontSize: theme.typography.size.p.lg,
+    },
+  },
+
+  "& h3": {
+    color: theme.colors.text.ui.tertiary,
+    fontWeight: 300,
+  },
 }));

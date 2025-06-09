@@ -13,6 +13,7 @@ const EmailCaption: React.FC<EmailCaptionProps> = ({ children }) => (
 
 export default EmailCaption;
 
+// Analagous to NewsletterImageFigcaption
 const caption = {
   margin: "16px 0 0",
   fontSize: 13,

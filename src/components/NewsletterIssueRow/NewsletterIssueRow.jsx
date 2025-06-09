@@ -40,6 +40,7 @@ function NewsletterIssueRow({
                 width={imageWidth}
                 height={imageHeight}
                 border={false}
+                margin={false}
               />
             ))}
           </Images>

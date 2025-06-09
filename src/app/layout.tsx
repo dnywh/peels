@@ -127,7 +127,7 @@ h1, h2, h3, h4, h5, h6 {
 
 // Custom styles
 // Remove underlines by default, except for links in paragraphs
-a:not(p a) {
+a:not(p a, figcaption a) {
   text-decoration: none;
 }
 

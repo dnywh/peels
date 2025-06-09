@@ -38,7 +38,7 @@ export default EmailImage;
 
 // For images that are displayed by themselves, i.e. not in a grid
 const imgSectionWithMargin = {
-  margin: "40px 0",
+  margin: "32px 0",
 };
 
 const imgContainer = {

@@ -314,6 +314,23 @@ export default withPigment(withMDX(nextConfig), {
     transitions: {
       textColor: "color 150ms ease-in-out",
       svgColor: "stroke 150ms ease-in-out", // svgs that accompany text, like the parent link in StaticPageHeader
+    },
+    typography: {
+      size: {
+        p: {
+          sm: "0.875rem", // 14px
+          md: "1rem", // 16px 
+          lg: "1.125rem", // 18px
+        }
+      },
+      lineHeight: {
+        h: "115%",
+        p: {
+          sm: "145%",
+          md: "155%",
+          lg: "160%",
+        }
+      }
     }
   }),
 });

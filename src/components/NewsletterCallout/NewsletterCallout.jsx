@@ -1,6 +1,5 @@
 "use client"; // For useNewsletterStatus
 import { useNewsletterStatus } from "@/hooks/useNewsletterStatus";
-// import Image from "next/image";
 import Button from "@/components/Button";
 import PostageStamp from "@/components/PostageStamp";
 import { styled } from "@pigment-css/react";
@@ -95,27 +94,6 @@ const Callout = styled("div")(({ theme }) => ({
   border: `1px solid ${theme.colors.border.base}`,
   overflow: "hidden",
   position: "relative",
-
-  // // Pseudo-element needed to rotate background
-  // "&::after": {
-  //   content: '""',
-  //   position: "absolute",
-  //   top: "-50%",
-  //   left: "-50%",
-  //   width: "200%",
-  //   height: "200%",
-  //   zIndex: -1,
-  //   background: `url('/stamp.png') ${theme.colors.background.top} no-repeat center center`,
-  //   backgroundSize: "224px auto",
-  //   // opacity: 0.75,
-  //   // maskImage: "radial-gradient(rgba(0,0,0,.5) 0%, rgba(0,0,0,0.15) 72%)",
-  //   // transform: "rotate(-16deg) translate(96px, 8px)",
-  //   transform: "rotate(-16deg) translate(186px, -72px)",
-
-  //   "@container (min-width: 446px)": {
-  //     // transform: "rotate(-16deg) translate(80px, 28px)",
-  //   },
-  // },
 }));
 
 const Text = styled("div")(({ theme }) => ({
@@ -123,12 +101,6 @@ const Text = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
-  // marginTop: "6.5rem", // Offset backgroundImage above this text
-
-  // Calc theme.spacing.container.maxWidth.aside - paddingX - borders (512-32-32-1-1=446)
-  "@container (min-width: 446px)": {
-    // marginTop: "1rem",
-  },
 
   "& > *": {
     textWrap: "balance",
@@ -138,7 +110,7 @@ const Text = styled("div")(({ theme }) => ({
     color: theme.colors.text.ui.secondary,
     fontWeight: 500,
     fontSize: "1.5rem",
-    lineHeight: "115%",
+    lineHeight: theme.typography.lineHeight.h,
     // Offset backgroundImage to the side of this text
     marginTop: "2.5rem",
     marginRight: "7.5rem",

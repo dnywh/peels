@@ -1,18 +1,32 @@
 import RemoteImage from "@/components/RemoteImage";
+import NewsletterImageFigcaption from "@/components/NewsletterImageFigcaption";
 import { styled } from "@pigment-css/react";
 
-function NewsletterImage({ caption, border = true, ...props }) {
+function NewsletterImage({ caption, margin = true, border = true, ...props }) {
   return (
-    <figure>
+    <Figure margin={margin}>
       <ThumbnailContainer>
         <StyledRemoteImage border={border.toString()} {...props} />
       </ThumbnailContainer>
-      {caption && <figcaption>{caption}</figcaption>}
-    </figure>
+      {caption && (
+        <NewsletterImageFigcaption>{caption}</NewsletterImageFigcaption>
+      )}
+    </Figure>
   );
 }
 
 export default NewsletterImage;
+
+const Figure = styled("figure")(({ theme }) => ({
+  variants: [
+    {
+      props: { margin: true },
+      style: {
+        margin: "2rem 0",
+      },
+    },
+  ],
+}));
 
 const ThumbnailContainer = styled("div")(({ theme }) => ({
   // Match EmailImage and PhotoThumbnail
@@ -22,7 +36,7 @@ const ThumbnailContainer = styled("div")(({ theme }) => ({
 }));
 
 const StyledRemoteImage = styled(RemoteImage)(({ theme }) => ({
-  // width: "100%",
+  width: "100%",
   objectFit: "cover",
   mixBlendMode: "multiply", // So box-shadow on parent is visible
   // Match EmailImage
