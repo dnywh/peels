@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
-
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site";
@@ -201,16 +202,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <Body>
         <AttributionCapture />
-        <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
+        <NextIntlClientProvider>
+          <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
+        </NextIntlClientProvider>
         <Analytics />
         <SpeedInsights />
       </Body>

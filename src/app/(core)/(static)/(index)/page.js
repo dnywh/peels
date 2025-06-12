@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { useTranslations } from 'next-intl';
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import IntroHeader from "@/components/IntroHeader";
@@ -20,6 +21,8 @@ export const metadata = {
 
 
 export default function Index() {
+  const t = useTranslations('Index');
+
   return (
     <StyledMain>
       {/* Moved search params to Toast component so that this page can remain static. Just requires Suspense here to work*/}
@@ -29,11 +32,10 @@ export default function Index() {
 
       <Intro>
         <IntroHeader />
-        <h1>Find a home for your food scraps, wherever you are</h1>
+        <h1>{t('title')}</h1>
 
         <p>
-          Peels connects folks with food scraps to those who compost. It’s a
-          free, non-commercial, community project.
+          {t('subtitle')}
         </p>
 
         <HeroButtons>

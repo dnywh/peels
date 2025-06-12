@@ -1,3 +1,4 @@
+import createNextIntlPlugin from 'next-intl/plugin';
 import { withPigment, extendTheme } from "@pigment-css/nextjs-plugin";
 import createMDX from "@next/mdx";
 
@@ -55,6 +56,8 @@ const nextConfig = {
   },
 };
 
+const withNextIntl = createNextIntlPlugin();
+
 const withMDX = createMDX({
   // Add markdown plugins here, as desired
 });
@@ -107,7 +110,7 @@ const tokens = {
   },
 };
 
-export default withPigment(withMDX(nextConfig), {
+export default withPigment(withNextIntl(withMDX(nextConfig)), {
   theme: extendTheme({
     colors: {
       logo: {
