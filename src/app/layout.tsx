@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
+import { cookies, headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { getBaseUrl } from "@/utils/url";
