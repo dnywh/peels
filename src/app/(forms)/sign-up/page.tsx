@@ -1,9 +1,9 @@
+import { siteConfig } from "@/config/site";
 import FormHeader from "@/components/FormHeader";
 import Form from "@/components/Form";
 import FormFooter from "@/components/FormFooter";
 import StrongLink from "@/components/StrongLink";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
-import { siteConfig } from "@/config/site";
 import SignUpForm from "@/components/SignUpForm";
 
 export const metadata = {

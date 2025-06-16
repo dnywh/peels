@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { siteConfig } from "@/config/site";
 import { signUpAction } from "@/app/actions";
 import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
@@ -13,6 +14,7 @@ import CheckboxCluster from "@/components/CheckboxCluster";
 import CheckboxRow from "@/components/CheckboxRow";
 import LegalAgreement from "@/components/LegalAgreement";
 import FormMessage from "@/components/FormMessage";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,11 +103,20 @@ export default function SignUpForm({ defaultValues = {}, error }) {
       {(error || hasFieldErrors) && (
         <FormMessage
           message={{
-            error:
-              error ||
-              (hasFieldErrors
-                ? "Please fix the above error and then try again."
-                : "Hmm, something went wrong. Please try again."),
+            error: error ? (
+              <>
+                {error?.endsWith(".") ? error : `${error}.`} If you think this
+                might be wrong, please{" "}
+                <EncodedEmailLink address={siteConfig.email.support}>
+                  email us
+                </EncodedEmailLink>
+                .
+              </>
+            ) : hasFieldErrors ? (
+              "Please fix the above error and then try again."
+            ) : (
+              "Hmm, something went wrong. Please try again."
+            ),
           }}
         />
       )}
