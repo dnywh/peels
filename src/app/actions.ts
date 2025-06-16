@@ -105,6 +105,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
 
   if (error || !user) {
     // Temporary check and special handling for Supabase hook timeout errors
+    // See https://github.com/dnywh/peels/issues/3
     const hookTimeoutPatterns = [
       "Error running hook URI",
       "Failed to reach hook within maximum time",
@@ -119,7 +120,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
       );
       return redirect(redirectUrl.toString());
     }
-    // Resume normal, global, catching
+    // Back to general error catching
     console.error(
       error?.code + " " + error?.message || "No user returned from sign up",
     );
