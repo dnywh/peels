@@ -1,7 +1,7 @@
 "use client";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 import { useTabBar } from "@/contexts/TabBarContext";
-
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import PeelsTab from "@/components/PeelsTab";
 import TabBarTab from "@/components/TabBarTab";
@@ -106,16 +106,17 @@ const StyledTabBarNav = styled("nav")(({ theme }) => ({
   },
 }));
 
-const NAVIGATION_ITEMS = [
-  { title: "Map", Icon: MapIcon, href: "/map" },
-  { title: "Chats", Icon: ChatsIcon, href: "/chats" },
-  { title: "Profile", Icon: ProfileIcon, href: "/profile" },
-];
-
 function TabBar({ breakpoint = "sm", ...props }) {
+  const t = useTranslations("App");
   const pathname = usePathname();
   const { tabBarProps } = useTabBar();
   const { shouldShowUnreadIndicator } = useUnreadMessages();
+
+  const NAVIGATION_ITEMS = [
+    { title: t("map"), Icon: MapIcon, href: "/map" },
+    { title: t("chats"), Icon: ChatsIcon, href: "/chats" },
+    { title: t("profile"), Icon: ProfileIcon, href: "/profile" },
+  ];
 
   // Only use visibility prop on small breakpoint. Larger breakpoints should always be visible.
   if (!tabBarProps.visible && breakpoint === "sm") return null;
@@ -146,7 +147,7 @@ function TabBar({ breakpoint = "sm", ...props }) {
         {/* Show 'home' AKA 'about' as the last tab item on smaller breakpoints */}
         {breakpoint === "sm" && (
           <TabBarTab
-            title="About"
+            title={t("about")}
             icon={
               <AboutIcon
                 size={24}

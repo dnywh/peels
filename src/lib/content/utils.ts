@@ -3,6 +3,7 @@
 
 import { readdir } from "fs/promises";
 import type { Dirent } from "fs";
+import { join } from "path";
 import { siteConfig } from "@/config/site";
 import { formatPublishDate } from "@/utils/dateUtils";
 
@@ -18,7 +19,9 @@ export async function getAllContentSlugs(
     contentType: "newsletter" | "legal",
 ): Promise<string[]> {
     try {
-        const dirents = await readdir(`./src/content/${contentType}/`, {
+        // Get the absolute path to the project root to avoid potential problems with build processes across deployments
+        const contentPath = join(process.cwd(), "src", "content", contentType);
+        const dirents = await readdir(contentPath, {
             withFileTypes: true,
         });
 

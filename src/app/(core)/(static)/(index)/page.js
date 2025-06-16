@@ -1,10 +1,11 @@
 import { Suspense } from "react";
+import { useTranslations } from 'next-intl';
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import IntroHeader from "@/components/IntroHeader";
-import Button from "@/components/Button";
 import Toast from "@/components/Toast";
 import PeelsHowItWorks from "@/components/PeelsHowItWorks";
+import HeroButtons from "@/components/HeroButtons";
 import PeelsFaq from "@/components/PeelsFaq";
 import StaticPageSection from "@/components/StaticPageSection";
 import NewsletterIssuesList from "@/components/NewsletterIssuesList";
@@ -20,74 +21,50 @@ export const metadata = {
 
 
 export default function Index() {
+  const t = useTranslations('Index');
+
   return (
     <StyledMain>
-      {/* Moved search params to Toast component so that this page can remain static. Just requires Suspense here to work*/}
+      {/* Search params in Toast component so that this page can remain static. Just requires Suspense here to work */}
       <Suspense>
         <Toast />
       </Suspense>
 
       <Intro>
         <IntroHeader />
-        <h1>Find a home for your food scraps, wherever you are</h1>
+        <h1>{t('title')}</h1>
+        <p>{t('subtitle')}</p>
 
-        <p>
-          Peels connects folks with food scraps to those who compost. It’s a
-          free, non-commercial, community project.
-        </p>
-
-        <HeroButtons>
-          <Button href="/map" variant="primary" size="massive">
-            Browse the map
-          </Button>
-          {/* TODO: {user ? <Link href="/profile#TODO-listing-form-for-signed-in-users">Create a listing</Link> : <Link href="/sign-up">Sign up</Link>} */}
-          <Button href="/sign-up" variant="secondary" size="massive">
-            {/* Join the community */}
-            Sign up to Peels
-          </Button>
-        </HeroButtons>
+        <HeroButtons />
       </Intro>
 
       <StaticPageSection padding="lg">
         <HeaderBlock>
-          <h2>Here’s how it works</h2>
-          <p>
-            Sharing food scraps with neighbours, community gardens, or even
-            local businesses is easy. Here’s how.
-          </p>
+          <h2>{t('howItWorks.title')}</h2>
+          <p>{t('howItWorks.subtitle')}</p>
         </HeaderBlock>
         <PeelsHowItWorks />
       </StaticPageSection>
 
       <StaticPageSection padding="lg" id="newsletter-section">
         <HeaderBlock>
-          <h2>What’s new</h2>
-          <p>
-            {siteConfig.newsletter.description}
-          </p>
+          <h2>{t('newsletter.title')}</h2>
+          <p>{t('newsletter.subtitle')}</p>
         </HeaderBlock>
         <NewsletterIssuesList />
         <FooterBlock>
-          <p>
-            Check out our <Link href="/newsletter">Newsletter</Link> page for all past issues and how to subscribe.
-          </p>
+          <p>{t.rich('newsletter.footer', { page: (chunks) => <Link href="/newsletter">{chunks}</Link> })}</p>
         </FooterBlock>
       </StaticPageSection>
 
       <StaticPageSection padding="lg" id="faq-section">
         <HeaderBlock>
-          <h2>You might be wondering...</h2>
-          <p>
-            Doesn’t this already exist? What’s your mission? You’ve got
-            questions, we’ve (hopefully) got answers.
-          </p>
+          <h2>{t('faq.title')}</h2>
+          <p>{t('faq.subtitle')}</p>
         </HeaderBlock>
         <PeelsFaq />
         <FooterBlock>
-          <p>
-            Head to our <Link href="/support">Support</Link> page if you have
-            more questions.
-          </p>
+          <p>{t.rich('faq.footer', { page: (chunks) => <Link href="/support">{chunks}</Link> })}</p>
         </FooterBlock>
       </StaticPageSection>
     </StyledMain>
@@ -145,20 +122,5 @@ const Intro = styled("div")(({ theme }) => ({
   },
 }));
 
-const HeroButtons = styled("div")(({ theme }) => ({
-  marginTop: "1rem",
-  width: "100%",
-  maxWidth: theme.spacing.tabBar.maxWidth, // Visually match width of tab bar on mobile
-  justifyContent: "center",
-  display: "flex",
-  flexDirection: "column",
-  gap: `calc(${theme.spacing.unit} * 2)`,
 
-  "@media (min-width: 768px)": {
-    marginTop: "2rem",
-    width: "fit-content",
-    maxWidth: "none",
-    flexDirection: "row",
-  },
-}));
 

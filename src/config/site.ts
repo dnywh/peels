@@ -20,6 +20,7 @@ export const siteConfig = {
   },
   newsletter: {
     description:
+      // TODO: Store in translations files instead
       "Occasional updates on how Peels is supporting community composting around the world.",
   },
   meta: {

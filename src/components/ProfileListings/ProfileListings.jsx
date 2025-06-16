@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
 import { styled } from "@pigment-css/react";
@@ -111,6 +112,7 @@ const Text = styled("div")(({ theme }) => ({
 }));
 
 export default function ProfileListings({ user, profile, listings }) {
+  const t = useTranslations("Profile");
   if (!listings) return null;
 
   return (
@@ -153,7 +155,7 @@ export default function ProfileListings({ user, profile, listings }) {
             <AddYourFirstListingLink href="/profile/listings/new">
               <NewListingAvatar aria-hidden="true">+</NewListingAvatar>
               <Text special={true}>
-                <h3>Add a listing</h3>
+                <h3>{t("addListing")}</h3>
                 <p>
                   Put yourself, your community spot, or your business on the map
                 </p>

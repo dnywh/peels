@@ -1,0 +1,56 @@
+{
+  "App": {
+    "map": "Mapa",
+    "chats": "Chats",
+    "profile": "Perfil",
+    "about": "Acerca"
+  },
+  "Actions": {
+    "signUp": "Registrarse",
+    "signIn": "Iniciar sesión"
+  },
+  "Index": {
+    "title": "Encuentra un hogar para tus restos de comida, estés donde estés",
+    "subtitle": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
+    "buttons": {
+      "browseMap": "Explorar el mapa",
+      "signUp": "Registrarse en Peels",
+      "addListing": "Agregar un anuncio"
+    },
+    "howItWorks": {
+      "title": "Así funciona",
+      "subtitle": "Compartir restos de comida con vecinos, huertas comunitarias o incluso negocios locales es fácil. Te contamos cómo."
+    },
+    "newsletter": {
+      "title": "Novedades",
+      "subtitle": "Actualizaciones ocasionales sobre cómo Peels apoya el compostaje comunitario en todo el mundo.",
+      "footer": "Visita nuestra página de <page>Boletines</page> para ver ediciones anteriores y cómo suscribirte."
+    },
+    "faq": {
+      "title": "Quizás te preguntes...",
+      "subtitle": "¿Esto no existe ya? ¿Cuál es nuestra misión? Tienes preguntas, y (esperamos) tenemos respuestas.",
+      "footer": "Visita nuestra página de <page>Ayuda</page> si tienes más preguntas."
+    }
+  },
+  "SignUp": {
+    "header": {
+      "signUpTo": "Registrarse en",
+      "contactHosts": "contactar con anfitriones",
+      "startComposting": "empezar a hacer compost",
+      "checkYourEmail": "Revisa tu correo"
+    },
+    "body": {
+      "thanks": "Gracias por registrarte{name, select, empty {} other {, {name}}}. Por favor revisa tu bandeja de entrada y la carpeta de spam para el enlace de verificación. Este enlace caduca en una hora."
+    },
+    "footer": {
+      "nextSteps": "Revisa tu bandeja de entrada y la carpeta de spam para el enlace de verificación. Este enlace caduca en una hora.",
+      "neverGotEmail": "¿No recibiste el correo? Revisa tu carpeta de spam.",
+      "reachOut": "Contáctanos",
+      "stillNeedHelp": "si aún necesitas ayuda.",
+      "haveAccount": "¿Ya tienes una cuenta?"
+    }
+  },
+  "Profile": {
+    "addListing": "Agregar un anuncio"
+  }
+}

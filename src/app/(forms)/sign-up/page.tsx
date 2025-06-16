@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
 import FormHeader from "@/components/FormHeader";
 import Form from "@/components/Form";
@@ -23,6 +24,11 @@ export default async function SignUp(props: {
     newsletter_preference?: string;
   }>;
 }) {
+  // const t = await getTranslations("SignUp");
+  // Step out of "SignUp" because this component currently uses Actions translations too
+  // Ideally this Actions translation(s) part is extracted into its own component
+  const t = await getTranslations();
+
   // TODO: How are these searchParams working without special Next.js magic?
   // I could simplify my server -> client set up elsewhere if I just use this more seemingly 'native' way
   const searchParams = await props.searchParams;
@@ -32,26 +38,22 @@ export default async function SignUp(props: {
     return (
       <>
         <FormHeader button="none">
-          <h1>Check your email</h1>
+          <h1>{t("SignUp.header.checkYourEmail")}</h1>
         </FormHeader>
         <Form as="container">
-          <>
-            <p>
-              Thanks for signing up
-              {searchParams.first_name && `, ${searchParams.first_name}`}!
-              Please check your inbox and spam for a verification link. This
-              link will expire in an hour from now.
-            </p>
-          </>
+          <p>
+            {t("SignUp.body.thanks", { name: searchParams.first_name ?? "" })}
+          </p>
         </Form>
         <FormFooter>
           <p>
-            Never received the email? Check your spam folder.{" "}
-            {/* TODO: Resend verification email to {searchParams.email}. */}
+            {t("SignUp.footer.neverGotEmail")}{" "}
+            {/* TODO: Allow for verification email to be resent to {searchParams.email} after a countdown,
+                before this 'reach out'becomes an option. */}
             <EncodedEmailLink address={siteConfig.email.support}>
-              Reach out
+              {t("SignUp.footer.reachOut")}
             </EncodedEmailLink>{" "}
-            if you still need help.
+            {t("SignUp.footer.stillNeedHelp")}
           </p>
         </FormFooter>
       </>
@@ -60,13 +62,14 @@ export default async function SignUp(props: {
 
   return (
     <>
-      {/* TODO: Make FormHeader action conditional based on whether this page (which should be a component) is rendered modally or as a page */}
+      {/* TODO if modal, overlay sign up UI added: 
+      Make FormHeader action conditional based on whether this page (which should be a component) is rendered modally or as a page */}
       <FormHeader button="back">
         <h1>
-          Sign up to{" "}
+          {t("SignUp.header.signUpTo")}{" "}
           {searchParams.from === "listing"
-            ? "contact hosts"
-            : "start composting"}
+            ? t("SignUp.header.contactHosts")
+            : t("SignUp.header.startComposting")}
         </h1>
       </FormHeader>
 
@@ -81,8 +84,8 @@ export default async function SignUp(props: {
 
       <FormFooter>
         <p>
-          Already have an account?{" "}
-          <StrongLink href="/sign-in">Sign in</StrongLink>
+          {t("SignUp.footer.haveAccount")}{" "}
+          <StrongLink href="/sign-in">{t("Actions.signIn")}</StrongLink>
         </p>
       </FormFooter>
     </>
