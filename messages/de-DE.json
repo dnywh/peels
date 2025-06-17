@@ -1,0 +1,56 @@
+{
+  "App": {
+    "map": "Map",
+    "chats": "Chats",
+    "profile": "Profile",
+    "about": "About"
+  },
+  "Actions": {
+    "signUp": "Sign up",
+    "signIn": "Sign in"
+  },
+  "Index": {
+    "title": "Find a home for your food scraps, wherever you are",
+    "subtitle": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
+    "buttons": {
+      "browseMap": "Browse the map",
+      "signUp": "Sign up to Peels",
+      "addListing": "Add a listing"
+    },
+    "howItWorks": {
+      "title": "Here’s how it works",
+      "subtitle": "Sharing food scraps with neighbours, community gardens, or even local businesses is easy. Here’s how."
+    },
+    "newsletter": {
+      "title": "What’s new",
+      "subtitle": "Occasional updates on how Peels is supporting community composting around the world.",
+      "footer": "Check out our <page>Newsletter</page> page for all past issues and how to subscribe."
+    },
+    "faq": {
+      "title": "You might be wondering...",
+      "subtitle": "Doesn’t this already exist? What’s your mission? You’ve got questions, we’ve (hopefully) got answers.",
+      "footer": "Head to our <page>Support</page> page if you have more questions."
+    }
+  },
+  "SignUp": {
+    "header": {
+      "signUpTo": "Sign up to",
+      "contactHosts": "contact hosts",
+      "startComposting": "start composting",
+      "checkYourEmail": "Check your email"
+    },
+    "body": {
+      "thanks": "Thanks for signing up{name, select, empty {} other {, {name}}}! Please check your inbox and spam for a verification link. This link will expire in an hour from now."
+    },
+    "footer": {
+      "nextSteps": "Please check your inbox and spam for a verification link. This link will expire in an hour from now.",
+      "neverGotEmail": "Never received the email? Check your spam folder.",
+      "reachOut": "Reach out",
+      "stillNeedHelp": "if you still need help.",
+      "haveAccount": "Already have an account?"
+    }
+  },
+  "Profile": {
+    "addListing": "Add a listing"
+  }
+}
