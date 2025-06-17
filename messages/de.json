@@ -19,7 +19,20 @@
     },
     "howItWorks": {
       "title": "So funktioniert es",
-      "subtitle": "Essensreste mit Nachbarn, Gemeinschaftsgärten oder sogar lokalen Unternehmen zu teilen, ist ganz einfach. So geht’s."
+      "subtitle": "Essensreste mit Nachbarn, Gemeinschaftsgärten oder sogar lokalen Unternehmen zu teilen, ist ganz einfach. So geht’s.",
+      "footer": "That’s all there is to it! <page>Get out there</page> and meet your neighbours.",
+      "findAHost": {
+        "title": "Find a host",
+        "subtitle": "Select a marker on the map to see who’s nearby."
+      },
+      "contact": {
+        "title": "Contact",
+        "subtitle": "Arrange to drop-off or collect your scraps via chat."
+      },
+      "dropOff": {
+        "title": "Drop-off",
+        "subtitle": " Or collect, if you’ve reached out to a local business with scraps to give away."
+      }
     },
     "newsletter": {
       "title": "Was ist neu",
