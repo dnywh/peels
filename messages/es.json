@@ -6,51 +6,110 @@
     "about": "Acerca"
   },
   "Actions": {
-    "signUp": "Regístrate",
+    "signUp": "Registrarse",
     "signIn": "Iniciar sesión"
   },
   "Index": {
-    "title": "Encuentra un hogar para tus restos de comida, dondequiera que estés",
-    "subtitle": "Peels conecta a la gente con los desperdicios de alimentos a los que componen. Es un proyecto comunitario gratuito, no comercial.",
+    "title": "Encuentra un hogar para tus restos de comida, estés donde estés",
+    "subtitle": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
     "buttons": {
-      "browseMap": "Ver el mapa",
-      "signUp": "Regístrate en Peels",
-      "addListing": "Añadir un listado"
+      "browseMap": "Explorar el mapa",
+      "signUp": "Registrarse en Peels",
+      "addListing": "Agregar un anuncio"
     },
     "howItWorks": {
-      "title": "Así es como funciona",
-      "subtitle": "Es fácil compartir comida con vecinos, jardines comunitarios o incluso negocios locales. Así es."
+      "title": "Así funciona",
+      "subtitle": "Compartir restos de comida con vecinos, huertas comunitarias o incluso negocios locales es fácil. Te contamos cómo.",
+      "footer": "¡Eso es todo lo que hay que hacer! <page>Sal ahí</page> y conoce a tus vecinos.",
+      "findAHost": {
+        "title": "Buscar un host",
+        "subtitle": "Selecciona un marcador en el mapa para ver quién está cerca."
+      },
+      "contact": {
+        "title": "Contacto",
+        "subtitle": "Organiza para desplegar o recoger tus restos a través del chat."
+      },
+      "dropOff": {
+        "title": "Soltar",
+        "subtitle": " O recolecta, si has llegado a un negocio local con chatarras para regalar."
+      }
     },
     "newsletter": {
       "title": "Novedades",
-      "subtitle": "Ocasional actualizaciones sobre cómo Peels está apoyando la composición de la comunidad en todo el mundo.",
-      "footer": "Echa un vistazo a nuestra página <page>Boletín</page> para todos los asuntos anteriores y cómo suscribirse."
+      "subtitle": "Actualizaciones ocasionales sobre cómo Peels apoya el compostaje comunitario en todo el mundo.",
+      "footer": "Visita nuestra página de <page>Boletines</page> para ver ediciones anteriores y cómo suscribirte."
     },
     "faq": {
-      "title": "Puede que te estés preguntando...",
-      "subtitle": "¿No existe esto? ¿Cuál es tu misión? Tienes preguntas, tenemos (esperemos) respuestas.",
-      "footer": "Dirígete a nuestra página de <page>Soporte</page> si tienes más preguntas."
+      "title": "Quizás te preguntes...",
+      "subtitle": "¿Esto no existe ya? ¿Cuál es nuestra misión? Tienes preguntas, y (esperamos) tenemos respuestas.",
+      "footer": "Visita nuestra página de <page>Ayuda</page> si tienes más preguntas."
     }
   },
   "SignUp": {
     "header": {
-      "signUpTo": "Regístrate en",
-      "contactHosts": "contactos de hosts",
-      "startComposting": "empezar a compostar",
-      "checkYourEmail": "Revisa tu email"
+      "signUpTo": "Registrarse en",
+      "contactHosts": "contactar con anfitriones",
+      "startComposting": "empezar a hacer compost",
+      "checkYourEmail": "Revisa tu correo"
     },
     "body": {
       "thanks": "¡Gracias por registrarte{name, select, empty {} other {, {name}}}¡ Por favor revisa tu bandeja de entrada y spam para ver el enlace de verificación. Este enlace caducará dentro de una hora."
     },
     "footer": {
-      "nextSteps": "Por favor revisa tu bandeja de entrada y spam para un enlace de verificación. Este enlace expirará en una hora a partir de ahora.",
-      "neverGotEmail": "¿Nunca has recibido el correo electrónico? Revisa tu carpeta de spam.",
-      "reachOut": "Alcanzar",
-      "stillNeedHelp": "si todavía necesita ayuda.",
+      "nextSteps": "Revisa tu bandeja de entrada y la carpeta de spam para el enlace de verificación. Este enlace caduca en una hora.",
+      "neverGotEmail": "¿No recibiste el correo? Revisa tu carpeta de spam.",
+      "reachOut": "Contáctanos",
+      "stillNeedHelp": "si aún necesitas ayuda.",
       "haveAccount": "¿Ya tienes una cuenta?"
     }
   },
   "Profile": {
-    "addListing": "Añadir un listado"
+    "addListing": "Agregar un anuncio"
+  },
+  "Support": {
+    "title": "Soporte",
+    "subtitle": "We periodically update this page with answers to common questions. Feel free to <email>email us</email> for help with anything else.",
+    "peelsFaq": {
+      "title": "Acerca de Peels",
+      "whosBehind": {
+        "question": "¿Quién está detrás de Peels?",
+        "answer": "<p>Peels es un proyecto liderado por <danny>Danny White</danny>, un diseñador de productos con 10 años de experiencia trabajando en productos incluyendo Airbnb, ChatGPT, Kickstarter y Facebook. Ayudó a iniciar el programa de composición en Pocket City Farms y previamente construyó una guía de viajero para reducir los residuos de alimentos.</p><p>Queremos que los pelos estén por el largo trayecto, así tiene <opensource>de código abierto</opensource> el proyecto y agradece sus contribuciones.</p>"
+      },
+      "howDifferent": {
+        "question": "¿Cómo difieren los Peels de ShareWaste?",
+        "answer": "<p>ShareWaste era un precursor de Peels con una idea similar: conectar a la gente localmente para desviar material orgánico del vertedero. Lamentablemente, ShareWaste cerró a finales de 2024.</p><p>Ahora mismo, estamos tratando de llenar el hueco que dejó ShareWase. Puedes pensar en Peels como un reemplazo directo de ShareWaste.</p><p>Tenemos muchas otras ideas en el pipeline, incluyendo guías de área general para el compostaje. Estate atento a estas.</p>"
+      },
+      "financialModel": {
+        "question": "¿Cuál es el modelo financiero? ¿Es usted sin ánimo de lucro?",
+        "answer": "Peels es un proyecto no comercial dirigido por la comunidad. Podemos incorporar como una organización sin ánimo de lucro en el futuro y aceptar subvenciones o patrocinios para futuros desarrollos pero nunca pretendemos empezar a cobrar por el servicio."
+      },
+      "fogo": {
+        "question": "Tengo una papelera de FOGO, ¿sigue siendo relevante la composición de la comunidad?",
+        "answer": "¡Suerte! Desafortunadamente, eres una minoría. La mayoría de la gente todavía no tiene acceso a la colección de compost bordado. Mientras sea así, se necesitarán recursos comunitarios de composición."
+      },
+      "mapPrivacy": {
+        "question": "No me siento cómodo poniendo mi dirección en un mapa. ¿Puedo participar todavía?",
+        "answer": "<p>Yes! We encourage folks with residential listings to ‘roughen’ their location to a nearby street corner or similar, and use a pseudonym if they feel more comfortable doing so.</p><p>Even if you choose to use your real name and upload a photo, only signed in Peels members can see those details.</p>"
+      },
+      "getInvolved": {
+        "question": "Me gustaría ayudar a construir Peels. ¿Cómo me desentiendo?",
+        "answer": "<p>You’re awesome. Thank you.</p><p>If you’re inclined to help on the technical side, check out our <repo>GitHub repo</repo>. It has information on how to contribute, plus some existing issues that could do with your eyes.</p> <p>Community organising is also a big part of getting Peels off the ground. Please don’t hesistate to <email>email us</email> if that’s something you could help with.</p>"
+      },
+      "promotion": {
+        "question": "¿Cómo puedo promocionar Peels a mi comunidad?",
+        "answer": "<p>¡Primero que nada, gracias! Peels solo trabaja con un impresionante mapa de listados, así que sacar la palabra es crucial.</p><p>Echa un vistazo a nuestro <promoKit>kit promocional</promoKit> que incluye baldosas de redes sociales y un póster imprimible en tamaños A4 y ambos. No dudes en <email>alcanzar</email> para algo más específico para tu comunidad.</p>"
+      },
+      "government": {
+        "question": "Yo represento al gobierno local o estatal, ¿cómo puedo deshacerme?",
+        "answer": "<p>We’ve already partnered with councils from all over Australia, and are always keen to work with more (around the world, too!). Please <email>email us</email>.</p>"
+      }
+    },
+    "supportFaq": {
+      "title": "Usando Peels",
+      "manageEmails": {
+        "question": "¿Cómo puedo administrar qué correos electrónicos recibo?",
+        "answer": "<p>We only send emails that are necessary to keep Peels working. That includes one or two account-related emails, and emails to notify you whenever a fellow Peels member has sent you message.</p><p>Email notifications are required for listing hosts, as it means a prospective donor has enquired about dropping off scraps (or picking something up). Hosts who longer wish to receive emails can either hide their listing from the map (making it impossible for new donors to reach out) or delete their listing entirely (meaning previous donors can no longer message, either).</p><p>People without listings cannot be messaged (and thus emailed) unless they initiate contact with a host first.</p><p>Anyone can report or block individual Peels members via our messaging system. Blocking someone means they can no longer message or email you.</p>"
+      }
+    }
   }
 }
