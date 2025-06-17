@@ -6,51 +6,64 @@
     "about": "Acerca"
   },
   "Actions": {
-    "signUp": "Regístrate",
+    "signUp": "Registrarse",
     "signIn": "Iniciar sesión"
   },
   "Index": {
-    "title": "Encuentra un hogar para tus restos de comida, dondequiera que estés",
-    "subtitle": "Peels conecta a la gente con los desperdicios de alimentos a los que componen. Es un proyecto comunitario gratuito, no comercial.",
+    "title": "Encuentra un hogar para tus restos de comida, estés donde estés",
+    "subtitle": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
     "buttons": {
-      "browseMap": "Ver el mapa",
-      "signUp": "Regístrate en Peels",
-      "addListing": "Añadir un listado"
+      "browseMap": "Explorar el mapa",
+      "signUp": "Registrarse en Peels",
+      "addListing": "Agregar un anuncio"
     },
     "howItWorks": {
-      "title": "Así es como funciona",
-      "subtitle": "Es fácil compartir comida con vecinos, jardines comunitarios o incluso negocios locales. Así es."
+      "title": "Así funciona",
+      "subtitle": "Compartir restos de comida con vecinos, huertas comunitarias o incluso negocios locales es fácil. Te contamos cómo.",
+      "footer": "That’s all there is to it! <page>Get out there</page> and meet your neighbours.",
+      "findAHost": {
+        "title": "Find a host",
+        "subtitle": "Select a marker on the map to see who’s nearby."
+      },
+      "contact": {
+        "title": "Contact",
+        "subtitle": "Arrange to drop-off or collect your scraps via chat."
+      },
+      "dropOff": {
+        "title": "Drop-off",
+        "subtitle": " Or collect, if you’ve reached out to a local business with scraps to give away."
+      }
     },
     "newsletter": {
       "title": "Novedades",
-      "subtitle": "Ocasional actualizaciones sobre cómo Peels está apoyando la composición de la comunidad en todo el mundo.",
-      "footer": "Echa un vistazo a nuestra página <page>Boletín</page> para todos los asuntos anteriores y cómo suscribirse."
+      "subtitle": "Actualizaciones ocasionales sobre cómo Peels apoya el compostaje comunitario en todo el mundo.",
+      "footer": "Visita nuestra página de <page>Boletines</page> para ver ediciones anteriores y cómo suscribirte."
     },
     "faq": {
-      "title": "Puede que te estés preguntando...",
-      "subtitle": "¿No existe esto? ¿Cuál es tu misión? Tienes preguntas, tenemos (esperemos) respuestas.",
-      "footer": "Dirígete a nuestra página de <page>Soporte</page> si tienes más preguntas."
+      "title": "Quizás te preguntes...",
+      "subtitle": "¿Esto no existe ya? ¿Cuál es nuestra misión? Tienes preguntas, y (esperamos) tenemos respuestas.",
+      "footer": "Visita nuestra página de <page>Ayuda</page> si tienes más preguntas."
     }
   },
   "SignUp": {
     "header": {
-      "signUpTo": "Regístrate en",
-      "contactHosts": "contactos de hosts",
-      "startComposting": "empezar a compostar",
-      "checkYourEmail": "Revisa tu email"
+      "signUpTo": "Registrarse en",
+      "contactHosts": "contactar con anfitriones",
+      "startComposting": "empezar a hacer compost",
+      "checkYourEmail": "Revisa tu correo"
     },
     "body": {
       "thanks": "¡Gracias por registrarte{name, select, empty {} other {, {name}}}¡ Por favor revisa tu bandeja de entrada y spam para ver el enlace de verificación. Este enlace caducará dentro de una hora."
     },
     "footer": {
-      "nextSteps": "Por favor revisa tu bandeja de entrada y spam para un enlace de verificación. Este enlace expirará en una hora a partir de ahora.",
-      "neverGotEmail": "¿Nunca has recibido el correo electrónico? Revisa tu carpeta de spam.",
-      "reachOut": "Alcanzar",
-      "stillNeedHelp": "si todavía necesita ayuda.",
+      "nextSteps": "Revisa tu bandeja de entrada y la carpeta de spam para el enlace de verificación. Este enlace caduca en una hora.",
+      "neverGotEmail": "¿No recibiste el correo? Revisa tu carpeta de spam.",
+      "reachOut": "Contáctanos",
+      "stillNeedHelp": "si aún necesitas ayuda.",
       "haveAccount": "¿Ya tienes una cuenta?"
     }
   },
   "Profile": {
-    "addListing": "Añadir un listado"
+    "addListing": "Agregar un anuncio"
   }
 }
