@@ -1,56 +1,56 @@
 {
   "App": {
-    "map": "Map",
+    "map": "Karte",
     "chats": "Chats",
-    "profile": "Profile",
-    "about": "About"
+    "profile": "Profil",
+    "about": "Über"
   },
   "Actions": {
-    "signUp": "Sign up",
-    "signIn": "Sign in"
+    "signUp": "Registrieren",
+    "signIn": "Anmelden"
   },
   "Index": {
-    "title": "Find a home for your food scraps, wherever you are",
-    "subtitle": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
+    "title": "Finde ein Zuhause für deine Nahrungsergänzungen, wo auch immer du bist",
+    "subtitle": "Peels verbindet die Menschen mit Lebensmittelkratzern mit denen, die komponieren. Es ist ein kostenloses und nicht-kommerzielles Gemeinschaftsprojekt.",
     "buttons": {
-      "browseMap": "Browse the map",
-      "signUp": "Sign up to Peels",
-      "addListing": "Add a listing"
+      "browseMap": "Karte durchsuchen",
+      "signUp": "Bei Peels anmelden",
+      "addListing": "Angebot hinzufügen"
     },
     "howItWorks": {
-      "title": "Here’s how it works",
-      "subtitle": "Sharing food scraps with neighbours, community gardens, or even local businesses is easy. Here’s how."
+      "title": "So funktioniert es",
+      "subtitle": "Essensreste mit Nachbarn, Gemeinschaftsgärten oder sogar lokalen Unternehmen zu teilen, ist ganz einfach. So geht’s."
     },
     "newsletter": {
-      "title": "What’s new",
-      "subtitle": "Occasional updates on how Peels is supporting community composting around the world.",
-      "footer": "Check out our <page>Newsletter</page> page for all past issues and how to subscribe."
+      "title": "Was ist neu",
+      "subtitle": "Gelegentlich aktualisiert Peels die Community-Kompostierung auf der ganzen Welt.",
+      "footer": "Schauen Sie sich unsere <page>Newsletter</page> Seite für alle letzten Ausgaben an und wie Sie sich anmelden."
     },
     "faq": {
-      "title": "You might be wondering...",
-      "subtitle": "Doesn’t this already exist? What’s your mission? You’ve got questions, we’ve (hopefully) got answers.",
-      "footer": "Head to our <page>Support</page> page if you have more questions."
+      "title": "Sie werden sich vielleicht wundern...",
+      "subtitle": "Besteht das nicht bereits? Was ist deine Mission? Du hast Fragen, wir haben (hoffentlich) Antworten bekommen.",
+      "footer": "Besuchen Sie unsere <page>Support</page> Seite, wenn Sie weitere Fragen haben."
     }
   },
   "SignUp": {
     "header": {
-      "signUpTo": "Sign up to",
-      "contactHosts": "contact hosts",
-      "startComposting": "start composting",
-      "checkYourEmail": "Check your email"
+      "signUpTo": "Registrieren bei",
+      "contactHosts": "um Gastgeber zu kontaktieren",
+      "startComposting": "Beginnen Sie mit der Kompostierung",
+      "checkYourEmail": "Überprüfe deine E-Mail"
     },
     "body": {
-      "thanks": "Thanks for signing up{name, select, empty {} other {, {name}}}! Please check your inbox and spam for a verification link. This link will expire in an hour from now."
+      "thanks": "Vielen Dank für Ihre Anmeldung{name, select, empty {} other {, {name}}}Bitte überprüfen Sie Ihren Posteingang und Spam auf einen Bestätigungslink. Dieser Link läuft in einer Stunde ab."
     },
     "footer": {
-      "nextSteps": "Please check your inbox and spam for a verification link. This link will expire in an hour from now.",
-      "neverGotEmail": "Never received the email? Check your spam folder.",
-      "reachOut": "Reach out",
-      "stillNeedHelp": "if you still need help.",
-      "haveAccount": "Already have an account?"
+      "nextSteps": "Bitte überprüfen Sie Ihren Posteingang und Spam auf einen Bestätigungslink. Dieser Link läuft in einer Stunde ab.",
+      "neverGotEmail": "Sie haben die E-Mail noch nie erhalten? Überprüfen Sie Ihren Spam-Ordner.",
+      "reachOut": "Erreichbar",
+      "stillNeedHelp": "wenn Sie immer noch Hilfe benötigen.",
+      "haveAccount": "Haben Sie bereits ein Konto?"
     }
   },
   "Profile": {
-    "addListing": "Add a listing"
+    "addListing": "Angebot hinzufügen"
   }
 }
