@@ -1,8 +1,54 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import PeelsMapDemo from "@/components/PeelsMapDemo";
 import PeelsChatDemo from "@/components/PeelsChatDemo";
 import PeelsFeaturedHostsPhotos from "@/components/PeelsFeaturedHostsPhotos";
 import { styled } from "@pigment-css/react";
+
+function PeelsHowItWorks() {
+  const t = useTranslations("Index.howItWorks");
+  return (
+    <OrderedList>
+      <Step>
+        <PeelsMapDemo
+          stepHeader={
+            <StepHeader>
+              <h3>{t("findAHost.title")}</h3>
+              <p>{t("findAHost.subtitle")}</p>
+            </StepHeader>
+          }
+        />
+      </Step>
+
+      <Step anchor="left" id="contact">
+        <StepHeader>
+          <h3>{t("contact.title")}</h3>
+          <p>{t("contact.subtitle")}</p>
+        </StepHeader>
+        <PeelsChatDemo />
+      </Step>
+
+      <Step id="drop-off">
+        <StepHeader>
+          <h3>{t("dropOff.title")}</h3>
+          <p>{t("dropOff.subtitle")}</p>
+        </StepHeader>
+
+        <PeelsFeaturedHostsPhotos />
+
+        <StepFooter>
+          <p>
+            {t.rich("footer", {
+              page: (chunks) => <Link href="/sign-up">{chunks}</Link>,
+            })}
+          </p>
+        </StepFooter>
+      </Step>
+    </OrderedList>
+  );
+}
+
+export default PeelsHowItWorks;
 
 const OrderedList = styled("ol")(({ theme }) => ({
   marginTop: "2rem",
@@ -113,49 +159,3 @@ function Step({ title, anchor, children, ...props }) {
     </StyledStep>
   );
 }
-
-function PeelsHowItWorks() {
-  return (
-    <OrderedList>
-      <Step>
-        <PeelsMapDemo
-          stepHeader={
-            <StepHeader>
-              <h3>Find a host</h3>
-              <p>Select a marker on the map to see who’s nearby.</p>
-            </StepHeader>
-          }
-        />
-      </Step>
-
-      <Step anchor="left" id="contact">
-        <StepHeader>
-          <h3>Contact</h3>
-          <p>Arrange to drop-off or collect your scraps via chat.</p>
-        </StepHeader>
-        <PeelsChatDemo />
-      </Step>
-
-      <Step id="drop-off">
-        <StepHeader>
-          <h3>Drop-off</h3>
-          <p>
-            Or collect, if you’ve reached out to a local business with scraps to
-            give away.
-          </p>
-        </StepHeader>
-
-        <PeelsFeaturedHostsPhotos />
-
-        <StepFooter>
-          <p>
-            That’s all there is to it!{" "}
-            <Link href="/sign-up">Get out there</Link> and meet your neighbours.
-          </p>
-        </StepFooter>
-      </Step>
-    </OrderedList>
-  );
-}
-
-export default PeelsHowItWorks;

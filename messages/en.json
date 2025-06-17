@@ -19,7 +19,20 @@
     },
     "howItWorks": {
       "title": "Here’s how it works",
-      "subtitle": "Sharing food scraps with neighbours, community gardens, or even local businesses is easy. Here’s how."
+      "subtitle": "Sharing food scraps with neighbours, community gardens, or even local businesses is easy. Here’s how.",
+      "footer": "That’s all there is to it! <page>Get out there</page> and meet your neighbours.",
+      "findAHost": {
+        "title": "Find a host",
+        "subtitle": "Select a marker on the map to see who’s nearby."
+      },
+      "contact": {
+        "title": "Contact",
+        "subtitle": "Arrange to drop-off or collect your scraps via chat."
+      },
+      "dropOff": {
+        "title": "Drop-off",
+        "subtitle": " Or collect, if you’ve reached out to a local business with scraps to give away."
+      }
     },
     "newsletter": {
       "title": "What’s new",
