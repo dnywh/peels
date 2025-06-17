@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { siteConfig } from "@/config/site";
 import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
@@ -13,36 +14,38 @@ export const metadata = {
   openGraph: {
     title: `Support · ${siteConfig.name}`,
     description: "Answers to common questions about Peels.",
-  }
+  },
 };
 
 export default function Support() {
+  const t = useTranslations("Support");
   return (
     <StaticPageMain>
       <StaticPageHeader
-        title="Support"
+        title={t("title")}
         subtitle={
           <>
-            We periodically update this page with answers to common questions.
-            Feel free to{" "}
-            <EncodedEmailLink as="plain" address={siteConfig.email.support}>
-              email us
-            </EncodedEmailLink>{" "}
-            for help with anything else.
+            {t.rich("subtitle", {
+              email: (chunks) => (
+                <EncodedEmailLink as="plain" address={siteConfig.email.support}>
+                  {chunks}
+                </EncodedEmailLink>
+              ),
+            })}
           </>
         }
       />
 
       <StaticPageSection padding={null}>
         <HeaderBlock>
-          <h2>Using Peels</h2>
+          <h2>{t("supportFaq.title")}</h2>
         </HeaderBlock>
         <SupportFaq />
       </StaticPageSection>
 
       <StaticPageSection>
         <HeaderBlock>
-          <h2>About Peels</h2>
+          <h2>{t("peelsFaq.title")}</h2>
         </HeaderBlock>
         <PeelsFaq />
       </StaticPageSection>

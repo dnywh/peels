@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/utils/supabase/client";
 import Button from "@/components/Button";
 
 export default function AccountButton({ children, ...props }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const t = useTranslations("Actions");
   const supabase = createClient();
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function AccountButton({ children, ...props }) {
     </Button>
   ) : (
     <Button href="/sign-in" variant="secondary" {...props}>
-      Sign in
+      {t("signIn")}
     </Button>
   );
 }
