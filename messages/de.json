@@ -1,0 +1,56 @@
+{
+  "App": {
+    "map": "Karte",
+    "chats": "Chats",
+    "profile": "Profil",
+    "about": "Über"
+  },
+  "Actions": {
+    "signUp": "Registrieren",
+    "signIn": "Anmelden"
+  },
+  "Index": {
+    "title": "Finde ein Zuhause für deine Nahrungsergänzungen, wo auch immer du bist",
+    "subtitle": "Peels verbindet die Menschen mit Lebensmittelkratzern mit denen, die komponieren. Es ist ein kostenloses und nicht-kommerzielles Gemeinschaftsprojekt.",
+    "buttons": {
+      "browseMap": "Karte durchsuchen",
+      "signUp": "Bei Peels anmelden",
+      "addListing": "Angebot hinzufügen"
+    },
+    "howItWorks": {
+      "title": "So funktioniert es",
+      "subtitle": "Essensreste mit Nachbarn, Gemeinschaftsgärten oder sogar lokalen Unternehmen zu teilen, ist ganz einfach. So geht’s."
+    },
+    "newsletter": {
+      "title": "Was ist neu",
+      "subtitle": "Gelegentlich aktualisiert Peels die Community-Kompostierung auf der ganzen Welt.",
+      "footer": "Schauen Sie sich unsere <page>Newsletter</page> Seite für alle letzten Ausgaben an und wie Sie sich anmelden."
+    },
+    "faq": {
+      "title": "Sie werden sich vielleicht wundern...",
+      "subtitle": "Besteht das nicht bereits? Was ist deine Mission? Du hast Fragen, wir haben (hoffentlich) Antworten bekommen.",
+      "footer": "Besuchen Sie unsere <page>Support</page> Seite, wenn Sie weitere Fragen haben."
+    }
+  },
+  "SignUp": {
+    "header": {
+      "signUpTo": "Registrieren bei",
+      "contactHosts": "um Gastgeber zu kontaktieren",
+      "startComposting": "Beginnen Sie mit der Kompostierung",
+      "checkYourEmail": "Überprüfe deine E-Mail"
+    },
+    "body": {
+      "thanks": "Vielen Dank für Ihre Anmeldung{name, select, empty {} other {, {name}}}Bitte überprüfen Sie Ihren Posteingang und Spam auf einen Bestätigungslink. Dieser Link läuft in einer Stunde ab."
+    },
+    "footer": {
+      "nextSteps": "Bitte überprüfen Sie Ihren Posteingang und Spam auf einen Bestätigungslink. Dieser Link läuft in einer Stunde ab.",
+      "neverGotEmail": "Sie haben die E-Mail noch nie erhalten? Überprüfen Sie Ihren Spam-Ordner.",
+      "reachOut": "Erreichbar",
+      "stillNeedHelp": "wenn Sie immer noch Hilfe benötigen.",
+      "haveAccount": "Haben Sie bereits ein Konto?"
+    }
+  },
+  "Profile": {
+    "addListing": "Angebot hinzufügen"
+  }
+}
