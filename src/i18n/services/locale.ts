@@ -30,6 +30,7 @@ export async function getUserLocale() {
         if (locales.includes(firstLanguage)) {
             return firstLanguage;
         }
+        // crowdin.yml reflects this two_letters_code preference
     }
 
     // Always return defaultLocale if no other locale is found
