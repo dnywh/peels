@@ -65,7 +65,7 @@ peels/
 
 Thank you for contributing! Please read our [Code of Conduct](https://github.com/dnywh/peels/blob/main/.github/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/dnywh/peels/contribute) before you start.
 
-Check out the list of [issues](https://github.com/dnywh/peels/issues) you could help out on, [discussions](https://github.com/dnywh/peels/discussions) about future improvements, and our [wiki](https://peels.notion.site/207b37e1678f80259217f54cd9d1f637) for information on how things are set up.
+Check out the list of [issues](https://github.com/dnywh/peels/issues) you could help out on, [discussions](https://github.com/dnywh/peels/discussions) about future improvements, and our [Wiki](https://peels.notion.site/207b37e1678f80259217f54cd9d1f637) for information on how things are set up.
 
 For minor improvements, feel free to just go ahead and create a pull request. For major changes, please [open an issue](https://github.com/dnywh/peels/issues) first to discuss what you would like to change.
 
@@ -161,5 +161,8 @@ Check out our [Colophon](https://www.peels.app/colophon) page for the full list.
 
 - Built with [Next.js](https://nextjs.org)
 - Authentication and database by [Supabase](https://supabase.com)
+- Translations powered by [next-intl](https://next-intl.dev/) and [Crowdin](https://crowdin.com/)
 - Maps powered by [MapTiler](https://www.maptiler.com) and [Protomaps](https://protomaps.com)
 - Styled components built with [Pigment CSS](https://github.com/mui/pigment-css)
+
+See the [Colophon](https://www.peels.app/colophon) and [Wiki](https://peels.notion.site/207b37e1678f80259217f54cd9d1f637) for more.
