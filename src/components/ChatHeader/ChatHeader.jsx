@@ -202,7 +202,7 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
               >
                 Sorry to hear you’re having trouble with {otherPersonName}.
                 Please{" "}
-                <EncodedEmailLink address={siteConfig.email.support}>
+                <EncodedEmailLink address={siteConfig.encodedEmail.support}>
                   contact us
                 </EncodedEmailLink>{" "}
                 to report the issue or to block them from contacting you any

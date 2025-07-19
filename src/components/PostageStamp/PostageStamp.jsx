@@ -21,6 +21,6 @@ const StyledImage = styled(Image)(({ theme }) => ({
   position: "absolute",
   top: 0,
   right: 0,
-  opacity: 0.32,
+  opacity: 0.28,
   transform: "rotate(-16deg) translate(90px, -8px) scale(0.95)",
 }));

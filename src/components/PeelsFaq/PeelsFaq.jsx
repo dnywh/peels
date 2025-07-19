@@ -21,7 +21,7 @@ function PeelsFaq() {
           ),
           opensource: (chunks) => (
             <StrongLink
-              href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`}
+              href={`${siteConfig.repoUrl}?tab=readme-ov-file`}
               target="_blank"
             >
               {chunks}
@@ -55,14 +55,14 @@ function PeelsFaq() {
           p: (chunks) => <p>{chunks}</p>,
           repo: (chunks) => (
             <StrongLink
-              href={`${siteConfig.repoUrl}?tab=readme-ov-file#forking-peels`}
+              href={`${siteConfig.repoUrl}?tab=readme-ov-file`}
               target="_blank"
             >
               {chunks}
             </StrongLink>
           ),
           email: (chunks) => (
-            <EncodedEmailLink address={siteConfig.email.support}>
+            <EncodedEmailLink address={siteConfig.encodedEmail.support}>
               {chunks}
             </EncodedEmailLink>
           ),
@@ -80,7 +80,7 @@ function PeelsFaq() {
             </StrongLink>
           ),
           email: (chunks) => (
-            <EncodedEmailLink address={siteConfig.email.support}>
+            <EncodedEmailLink address={siteConfig.encodedEmail.support}>
               {chunks}
             </EncodedEmailLink>
           ),
@@ -91,7 +91,7 @@ function PeelsFaq() {
         {t.rich("government.answer", {
           p: (chunks) => <p>{chunks}</p>,
           email: (chunks) => (
-            <EncodedEmailLink address={siteConfig.email.support}>
+            <EncodedEmailLink address={siteConfig.encodedEmail.support}>
               {chunks}
             </EncodedEmailLink>
           ),

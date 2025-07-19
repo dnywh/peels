@@ -54,7 +54,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   if (!email || !password || !first_name) {
     redirectUrl.searchParams.append(
       "error",
-      "A first name, email, and password are required.",
+      "A first name, email, and password are required."
     );
     return redirect(redirectUrl.toString());
   }
@@ -64,14 +64,14 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     "check_if_email_exists",
     {
       email_to_check: email,
-    },
+    }
   );
 
   if (authError) {
     console.error("Error checking email:", authError);
     redirectUrl.searchParams.append(
       "error",
-      "Sorry, we couldn’t process your request.",
+      "Sorry, we couldn’t process your request."
     );
     return redirect(redirectUrl.toString());
   }
@@ -79,7 +79,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
   if (existingAuthUser) {
     redirectUrl.searchParams.append(
       "error",
-      "An account with this email already exists. Please sign in instead.",
+      "An account with this email already exists. Please sign in instead."
     );
     return redirect(redirectUrl.toString());
   }
@@ -116,17 +116,17 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     if (isHookTimeout) {
       redirectUrl.searchParams.append(
         "error",
-        "Hmm, something’s not right. Mind trying again?",
+        "Hmm, something’s not right. Mind trying again?"
       );
       return redirect(redirectUrl.toString());
     }
     // Back to general error catching
     console.error(
-      error?.code + " " + error?.message || "No user returned from sign up",
+      error?.code + " " + error?.message || "No user returned from sign up"
     );
     redirectUrl.searchParams.append(
       "error",
-      error?.message || "Sign up failed",
+      error?.message || "Sign up failed"
     );
     return redirect(redirectUrl.toString());
   }
@@ -176,7 +176,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Hmm, something’s not right. Mind trying again?",
+      "Hmm, something’s not right. Mind trying again?"
     );
   }
 
@@ -187,7 +187,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   return encodedRedirect(
     "success",
     "/forgot-password",
-    "Check your inbox (and spam) for a password reset link, assuming that email address is linked to a Peels account.",
+    "Check your inbox (and spam) for a password reset link, assuming that email address is linked to a Peels account."
   );
 };
 
@@ -300,7 +300,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Both those fields are required.",
+      "Both those fields are required."
     );
   }
 
@@ -308,7 +308,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Those passwords don’t match.",
+      "Those passwords don’t match."
     );
   }
 
@@ -320,14 +320,14 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Hmm, something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
+      "Hmm, something’s not right. You might not have permission to reset this password, or you tried reusing a recent password."
     );
   }
 
   encodedRedirect(
     "success",
     "/profile/reset-password",
-    "Your password has been updated. Let’s get back to composting!",
+    "Your password has been updated. Let’s get back to composting!"
   );
 };
 
@@ -358,7 +358,7 @@ export const deleteListingAction = async (slug: string) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ slug }), // Send the slug in the request body
-      },
+      }
     );
 
     console.log("Response status:", response.status);
@@ -404,7 +404,7 @@ export const deleteAccountAction = async () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ user_id: user.id }),
-      },
+      }
     );
 
     console.log("Response status:", response.status);
@@ -413,8 +413,7 @@ export const deleteAccountAction = async () => {
     // const data = await response.json();
     // console.log("Response data:", data);
 
-    redirectPath =
-      `/sign-in?success=Your account has been deleted. Sorry to see you go.`;
+    redirectPath = `/sign-in?success=Your account has been deleted. Sorry to see you go.`;
 
     // if (!response.ok) {
     //   console.error("Delete account failed:", data);
@@ -438,7 +437,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 async function withRetry<T>(
   fn: () => Promise<T>,
   retries = 3,
-  backoff = 300,
+  backoff = 300
 ): Promise<T> {
   try {
     return await fn();
@@ -453,7 +452,7 @@ export async function fetchListingsInView(
   south: number,
   west: number,
   north: number,
-  east: number,
+  east: number
 ) {
   const supabase = await createClient();
 

@@ -58,7 +58,7 @@ export default function ProfileActions({ listings }) {
           cancelButtonText="Done"
         >
           We’re still working on this feature. In the meantime,{" "}
-          <EncodedEmailLink address={siteConfig.email.support}>
+          <EncodedEmailLink address={siteConfig.encodedEmail.support}>
             reach out
           </EncodedEmailLink>{" "}
           and ask us to export your data manually.

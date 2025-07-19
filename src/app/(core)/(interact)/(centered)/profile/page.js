@@ -62,8 +62,6 @@ export default async function ProfilePage({ searchParams }) {
   );
 }
 
-
-
 const NakedSection = styled("section")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",

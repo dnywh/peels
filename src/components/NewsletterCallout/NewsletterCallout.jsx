@@ -92,6 +92,7 @@ const Callout = styled("div")(({ theme }) => ({
   borderRadius: theme.corners.base,
   background: theme.colors.background.top,
   border: `1px solid ${theme.colors.border.base}`,
+  // For PostageStamp
   overflow: "hidden",
   position: "relative",
 }));

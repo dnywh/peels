@@ -1,4 +1,4 @@
-import createNextIntlPlugin from 'next-intl/plugin';
+import createNextIntlPlugin from "next-intl/plugin";
 import { withPigment, extendTheme } from "@pigment-css/nextjs-plugin";
 import createMDX from "@next/mdx";
 
@@ -283,7 +283,7 @@ export default withPigment(withNextIntl(withMDX(nextConfig)), {
         maxWidth: {
           media: "720px", // Homepage content, newsletter issues
           text: "640px", // Markdown, Profile
-          aside: "512px" // NewsletterCallout
+          aside: "512px", // NewsletterCallout
         },
         textOpticalWidth: "36ch",
       },
@@ -322,9 +322,9 @@ export default withPigment(withNextIntl(withMDX(nextConfig)), {
       size: {
         p: {
           sm: "0.875rem", // 14px
-          md: "1rem", // 16px 
+          md: "1rem", // 16px
           lg: "1.125rem", // 18px
-        }
+        },
       },
       lineHeight: {
         h: "115%",
@@ -332,8 +332,8 @@ export default withPigment(withNextIntl(withMDX(nextConfig)), {
           sm: "145%",
           md: "155%",
           lg: "160%",
-        }
-      }
-    }
+        },
+      },
+    },
   }),
 });

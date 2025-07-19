@@ -15,10 +15,10 @@ async function getInitialData(listingSlug) {
   // Then get listing data if slug exists
   const listingResponse = listingSlug
     ? await supabase
-      .from(user ? "listings_private_data" : "listings_public_data")
-      .select()
-      .eq("slug", listingSlug)
-      .single()
+        .from(user ? "listings_private_data" : "listings_public_data")
+        .select()
+        .eq("slug", listingSlug)
+        .single()
     : null;
 
   return {
@@ -36,7 +36,7 @@ export async function generateMetadata({ searchParams }) {
       title: "Map",
       openGraph: {
         title: `Map · ${siteConfig.name}`,
-      }
+      },
     };
   }
 

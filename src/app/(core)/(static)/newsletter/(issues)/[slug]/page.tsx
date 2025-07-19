@@ -67,7 +67,7 @@ export default async function NewsletterIssuePage({
   return (
     // Largely matches (legal) page.tsx, with some additions below the textual content
     <StaticPageMain>
-      {/* Wrap header and main content in plain section so they visually hug */}
+      {/* Nest header and main content together so they visually hug */}
       <section>
         <StaticPageHeader
           title={title}

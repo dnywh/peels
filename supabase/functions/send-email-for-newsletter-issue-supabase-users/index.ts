@@ -44,13 +44,13 @@ const handler = async (_request: Request): Promise<Response> => {
     for (const profile of profiles) {
       try {
         // Get user email from auth
-        const { data: userData, error: userError } = await supabase.auth.admin
-          .getUserById(profile.id);
+        const { data: userData, error: userError } =
+          await supabase.auth.admin.getUserById(profile.id);
 
         if (userError) {
           console.error(
             `Failed to fetch user data for ${profile.id}:`,
-            userError,
+            userError
           );
           results.push({
             userId: profile.id,
@@ -98,7 +98,7 @@ const handler = async (_request: Request): Promise<Response> => {
             }),
             {
               plainText: true,
-            },
+            }
           ),
           headers: {
             "List-Unsubscribe": "<https://www.peels.app/profile>",
@@ -126,7 +126,7 @@ const handler = async (_request: Request): Promise<Response> => {
         if (updateError) {
           console.error(
             `Failed to update flag for ${profile.id}:`,
-            updateError,
+            updateError
           );
           results.push({
             userId: profile.id,
@@ -160,7 +160,7 @@ const handler = async (_request: Request): Promise<Response> => {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   } catch (error) {
     console.error("Error:", error);
