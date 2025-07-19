@@ -3,8 +3,8 @@ import { siteConfig } from "@/config/site";
 import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import StaticPageSection from "@/components/StaticPageSection";
-
 import EmailSelector from "@/components/EmailSelector/EmailSelector";
+import { styled } from "@pigment-css/react";
 
 export const metadata = {
   title: "Contact",
@@ -20,11 +20,20 @@ export default function Contact() {
 
   return (
     <StaticPageMain>
-      <StaticPageHeader title={t("title")} subtitle={t("subtitle")} />
-
-      <StaticPageSection padding={null}>
+      {/* Nest header and main content together so they visually hug */}
+      <HuggingContent>
+        <StaticPageHeader title={t("title")} subtitle={t("subtitle")} />
         <EmailSelector />
-      </StaticPageSection>
+      </HuggingContent>
     </StaticPageMain>
   );
 }
+
+const HuggingContent = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: theme.spacing.gap.section.md,
+  width: "100%",
+  maxWidth: theme.spacing.container.maxWidth.media,
+}));

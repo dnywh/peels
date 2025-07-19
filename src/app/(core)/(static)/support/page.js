@@ -1,9 +1,9 @@
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { siteConfig } from "@/config/site";
 import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import StaticPageSection from "@/components/StaticPageSection";
-import EncodedEmailLink from "@/components/EncodedEmailLink";
 import SupportFaq from "@/components/SupportFaq";
 import PeelsFaq from "@/components/PeelsFaq";
 import HeaderBlock from "@/components/HeaderBlock";
@@ -26,13 +26,10 @@ export default function Support() {
         subtitle={
           <>
             {t.rich("subtitle", {
-              email: (chunks) => (
-                <EncodedEmailLink
-                  as="plain"
-                  address={siteConfig.encodedEmail.support}
-                >
+              link: (chunks) => (
+                <Link href={`${siteConfig.links.contact}?address=support`}>
                   {chunks}
-                </EncodedEmailLink>
+                </Link>
               ),
             })}
           </>

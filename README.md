@@ -157,6 +157,8 @@ Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/sup
 
 ## Acknowledgments
 
+Check out our [Colophon](https://www.peels.app/colophon) page for the full list. Here are just a few:
+
 - Built with [Next.js](https://nextjs.org)
 - Authentication and database by [Supabase](https://supabase.com)
 - Maps powered by [MapTiler](https://www.maptiler.com) and [Protomaps](https://protomaps.com)

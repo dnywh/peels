@@ -5,6 +5,27 @@ import { styled } from "@pigment-css/react";
 
 const currentYear = new Date().getFullYear();
 
+export default function LegalFooter() {
+  return (
+    <StyledFooter>
+      <PeelsLogo color="quaternary" />
+      <p>
+        © {currentYear} {siteConfig.name}
+      </p>
+
+      <StyledNav>
+        <Link href={siteConfig.links.about}>About</Link>
+        <Link href={siteConfig.links.support}>Support</Link>
+        <Link href={siteConfig.links.newsletter}>Newsletter</Link>
+        {/* <Link href={siteConfig.links.colophon}>Colophon</Link> */}
+        <Link href={siteConfig.links.terms}>Terms</Link>
+        <Link href={siteConfig.links.privacy}>Privacy</Link>
+        <Link href={siteConfig.links.contact}>Contact</Link>
+      </StyledNav>
+    </StyledFooter>
+  );
+}
+
 const StyledFooter = styled("footer")(({ theme }) => ({
   marginTop: "5rem", // Fallback if prior sibling has no marginBottom defined
   display: "flex",
@@ -22,7 +43,7 @@ const StyledFooter = styled("footer")(({ theme }) => ({
 const StyledNav = styled("nav")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  gap: "0.5rem 0.75rem",
+  gap: "0.75rem 1.25rem",
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
@@ -42,27 +63,6 @@ const StyledNav = styled("nav")(({ theme }) => ({
 
   "@media (min-width: 768px)": {
     gap: "1.25rem",
+    padding: "0 3.5rem",
   },
 }));
-
-function LegalFooter() {
-  return (
-    <StyledFooter>
-      <PeelsLogo color="quaternary" />
-      <p>
-        © {currentYear} {siteConfig.name}
-      </p>
-
-      <StyledNav>
-        <Link href={siteConfig.links.about}>About</Link>
-        <Link href={siteConfig.links.support}>Support</Link>
-        <Link href={siteConfig.links.newsletter}>Newsletter</Link>
-        <Link href={siteConfig.links.colophon}>Colophon</Link>
-        <Link href={siteConfig.links.terms}>Terms</Link>
-        <Link href={siteConfig.links.privacy}>Privacy</Link>
-      </StyledNav>
-    </StyledFooter>
-  );
-}
-
-export default LegalFooter;

@@ -1,14 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
 
 function DecodedSpan({ children }) {
-  const [decodedEmail, setDecodedEmail] = useState("");
-
-  useEffect(() => {
-    const decoded = atob(children);
-    setDecodedEmail(decoded);
-  }, []);
-
+  const decodedEmail = atob(children);
   return <span>{decodedEmail}</span>;
 }
 
