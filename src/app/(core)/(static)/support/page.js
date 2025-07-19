@@ -27,7 +27,10 @@ export default function Support() {
           <>
             {t.rich("subtitle", {
               email: (chunks) => (
-                <EncodedEmailLink as="plain" address={siteConfig.email.support}>
+                <EncodedEmailLink
+                  as="plain"
+                  address={siteConfig.encodedEmail.support}
+                >
                   {chunks}
                 </EncodedEmailLink>
               ),

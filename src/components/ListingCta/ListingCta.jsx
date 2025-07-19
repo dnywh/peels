@@ -64,7 +64,7 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
           </p>
           <p>
             Are you the owner?{" "}
-            <EncodedEmailLink address={siteConfig.email.support}>
+            <EncodedEmailLink address={siteConfig.encodedEmail.support}>
               Reach out
             </EncodedEmailLink>{" "}
             to claim this listing or to request changes.

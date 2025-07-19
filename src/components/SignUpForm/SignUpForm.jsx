@@ -107,7 +107,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
               <>
                 {error?.endsWith(".") ? error : `${error}.`} If you think this
                 might be wrong, please{" "}
-                <EncodedEmailLink address={siteConfig.email.support}>
+                <EncodedEmailLink address={siteConfig.encodedEmail.support}>
                   email us
                 </EncodedEmailLink>
                 .
