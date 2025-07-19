@@ -1,35 +1,28 @@
 // Utils to help format dates in chat threads/messages and static pages (legal pages, newsletters)
 
 // const locale = "en-AU"
-const locale = navigator.language // vary formatting according to local customs (TODO: does Next do this as it (pre)renders on the server, thus locking it in to en-US? Perhaps make client-side)
+const locale = navigator.language; // vary formatting according to local customs (TODO: does Next do this as it (pre)renders on the server, thus locking it in to en-US? Perhaps make client-side)
 
 // Static page date utils
 export function formatPublishDate(dateString) {
   // Formal dates, with no awarness of proximity
   // I.e. no 'yesterday' or 'today' like in chat messages
   // E.g. June 3, 2025
-  return new Date(
-    dateString,
-  ).toLocaleDateString(
-    locale,
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
-  );
+  return new Date(dateString).toLocaleDateString(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 // Chat message utils
 // Return just the time
 export function formatTimestamp(dateString) {
-  return new Intl.DateTimeFormat(
-    locale,
-    {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }).format(new Date(dateString));
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(dateString));
 }
 
 // Return a conditional string based on the date:

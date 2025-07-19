@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import IntroHeader from "@/components/IntroHeader";
@@ -19,9 +19,8 @@ export const metadata = {
   },
 };
 
-
 export default function Index() {
-  const t = useTranslations('Index');
+  const t = useTranslations("Index");
 
   return (
     <StyledMain>
@@ -32,39 +31,47 @@ export default function Index() {
 
       <Intro>
         <IntroHeader />
-        <h1>{t('title')}</h1>
-        <p>{t('subtitle')}</p>
+        <h1>{t("title")}</h1>
+        <p>{t("subtitle")}</p>
 
         <HeroButtons />
       </Intro>
 
       <StaticPageSection padding="lg">
         <HeaderBlock>
-          <h2>{t('howItWorks.title')}</h2>
-          <p>{t('howItWorks.subtitle')}</p>
+          <h2>{t("howItWorks.title")}</h2>
+          <p>{t("howItWorks.subtitle")}</p>
         </HeaderBlock>
         <PeelsHowItWorks />
       </StaticPageSection>
 
       <StaticPageSection padding="lg" id="newsletter-section">
         <HeaderBlock>
-          <h2>{t('newsletter.title')}</h2>
-          <p>{t('newsletter.subtitle')}</p>
+          <h2>{t("newsletter.title")}</h2>
+          <p>{t("newsletter.subtitle")}</p>
         </HeaderBlock>
         <NewsletterIssuesList />
         <FooterBlock>
-          <p>{t.rich('newsletter.footer', { page: (chunks) => <Link href="/newsletter">{chunks}</Link> })}</p>
+          <p>
+            {t.rich("newsletter.footer", {
+              page: (chunks) => <Link href="/newsletter">{chunks}</Link>,
+            })}
+          </p>
         </FooterBlock>
       </StaticPageSection>
 
       <StaticPageSection padding="lg" id="faq-section">
         <HeaderBlock>
-          <h2>{t('faq.title')}</h2>
-          <p>{t('faq.subtitle')}</p>
+          <h2>{t("faq.title")}</h2>
+          <p>{t("faq.subtitle")}</p>
         </HeaderBlock>
         <PeelsFaq />
         <FooterBlock>
-          <p>{t.rich('faq.footer', { page: (chunks) => <Link href="/support">{chunks}</Link> })}</p>
+          <p>
+            {t.rich("faq.footer", {
+              page: (chunks) => <Link href="/support">{chunks}</Link>,
+            })}
+          </p>
         </FooterBlock>
       </StaticPageSection>
     </StyledMain>
@@ -121,6 +128,3 @@ const Intro = styled("div")(({ theme }) => ({
     },
   },
 }));
-
-
-

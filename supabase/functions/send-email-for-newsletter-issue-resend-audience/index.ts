@@ -21,8 +21,8 @@ const handler = async (_request: Request): Promise<Response> => {
 
     console.log("Creating broadcast for Resend audience...");
 
-    const { data: broadcast, error: broadcastError } = await resend.broadcasts
-      .create({
+    const { data: broadcast, error: broadcastError } =
+      await resend.broadcasts.create({
         audienceId: newsletterAudienceId,
         from: `Danny from Peels <${newsletterEmailAddress}>`,
         subject: "Our first few months of Peels",
@@ -35,7 +35,7 @@ const handler = async (_request: Request): Promise<Response> => {
             recipientName: "there",
             externalAudience: true,
           }),
-          { plainText: true },
+          { plainText: true }
         ),
         headers: {
           "List-Unsubscribe": "{{{RESEND_UNSUBSCRIBE_URL}}}",
@@ -50,7 +50,7 @@ const handler = async (_request: Request): Promise<Response> => {
     console.log("Broadcast created, sending...");
 
     const { data: sendData, error: sendError } = await resend.broadcasts.send(
-      broadcast.id,
+      broadcast.id
     );
 
     if (sendError) {
@@ -65,7 +65,7 @@ const handler = async (_request: Request): Promise<Response> => {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   } catch (error) {
     console.error("Error:", error);
@@ -77,7 +77,7 @@ const handler = async (_request: Request): Promise<Response> => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };
