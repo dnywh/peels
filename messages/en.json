@@ -114,6 +114,22 @@
   },
   "Contact": {
     "title": "Contact",
-    "subtitle": "Here’s how to reach the Peels team."
+    "subtitle": "Here’s how to reach the Peels team.",
+    "via": {
+      "therot": "Hello, reader of The Rot! Thanks for stopping by. Here’s a direct line to Danny.",
+      "general": "Hello there! Here are some email addresses you can contact us at."
+    },
+    "contactLabel": "If you want to",
+    "contactOptions": {
+      "general": "Make a general enquiry",
+      "support": "Get help with something",
+      "dw": "Talk to Danny",
+      "newsletter": "Talk about the newsletter"
+    },
+    "emailLabel": "You’re best off emailing",
+    "copyButton": {
+      "copied": "Copied!",
+      "copyAddress": "Copy address"
+    }
   }
 }

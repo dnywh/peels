@@ -5,18 +5,17 @@ import { siteConfig } from "@/config/site";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
 import DecodedSpan from "@/components/DecodedSpan";
 import Button from "@/components/Button";
-import HeaderBlock from "@/components/HeaderBlock";
 import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
-import Input from "@/components/Input";
 import Select from "@/components/Select";
-import InputHint from "@/components/InputHint";
 import PostageStamp from "@/components/PostageStamp";
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 export default function EmailSelector() {
   const searchParams = useSearchParams();
+  const t = useTranslations("Contact");
   // Via search param possible values
   // therot
   const via = searchParams.get("via");
@@ -65,31 +64,25 @@ export default function EmailSelector() {
     <FormSection>
       <PostageStamp />
       <SubSectionTop>
-        {via && (
-          <p>
-            {via === "therot"
-              ? "Hello, reader of The Rot! Thanks for stopping by. Here’s a direct line to Danny."
-              : "Hello there! Here are some email addresses you can contact us at."}
-          </p>
-        )}
+        {via && <p>{via === "therot" ? t("via.therot") : t("via.general")}</p>}
         <Field>
-          <Label htmlFor="contact">If you want to</Label>
+          <Label htmlFor="contact">{t("contactLabel")}</Label>
           <Select
             id="contact"
             value={selectedEmailType}
             onChange={(event) => setSelectedEmailType(event.target.value)}
             required={true}
           >
-            <option value="general">Make a general enquiry</option>
-            <option value="support">Get help with something</option>
-            <option value="dw">Talk to Danny</option>
-            <option value="newsletter">Talk about the newsletter</option>
+            <option value="general">{t("contactOptions.general")}</option>
+            <option value="support">{t("contactOptions.support")}</option>
+            <option value="dw">{t("contactOptions.dw")}</option>
+            <option value="newsletter">{t("contactOptions.newsletter")}</option>
           </Select>
         </Field>
       </SubSectionTop>
       <SubSectionBottom>
         <Field>
-          <Label>You’re best off emailing</Label>
+          <Label>{t("emailLabel")}</Label>
           <EncodedEmailLink
             address={siteConfig.encodedEmail[selectedEmailType]}
           >
@@ -99,7 +92,7 @@ export default function EmailSelector() {
           </EncodedEmailLink>
         </Field>
         <Button onClick={handleCopy}>
-          {isCopied ? "Copied!" : "Copy address"}
+          {isCopied ? t("copyButton.copied") : t("copyButton.copyAddress")}
         </Button>
       </SubSectionBottom>
     </FormSection>
