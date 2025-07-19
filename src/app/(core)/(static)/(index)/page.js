@@ -19,7 +19,6 @@ export const metadata = {
   },
 };
 
-
 export default function Index() {
   const t = useTranslations('Index');
 
@@ -34,7 +33,6 @@ export default function Index() {
         <IntroHeader />
         <h1>{t('title')}</h1>
         <p>{t('subtitle')}</p>
-
         <HeroButtons />
       </Intro>
 
