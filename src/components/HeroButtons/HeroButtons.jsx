@@ -27,7 +27,7 @@ export default function HeroButtons() {
         {t("browseMap")}
       </Button>
       {user ? (
-        <Button href="/profile/listing" variant="secondary" size="massive">
+        <Button href="/profile/listings/new" variant="secondary" size="massive">
           {t("addListing")}
         </Button>
       ) : (
