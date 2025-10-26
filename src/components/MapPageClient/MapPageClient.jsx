@@ -703,8 +703,7 @@ export default function MapPageClient({
                   </StyledHeaderText>
                 </StyledDrawerHeaderInner>
 
-                {!hasTouch && !isDesktop ? (
-                  // TODO: also show this control on hasTouch if the user has accessibility mode enabled (is that a thing?)
+                {!isDesktop ? (
                   <ButtonSet>
                     <StyledIconButtonStationary
                       icon={snap === snapPoints[0] ? "maximize" : "minimize"}
