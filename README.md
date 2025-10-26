@@ -23,7 +23,7 @@ npm run dev
 # Go to http://localhost:3000
 ```
 
-> **Note**: This project currently uses `--webpack` flag for builds due to compatibility with Pigment CSS. Once [Pigment CSS adds Turbopack support](https://github.com/mui/pigment-css/issues), we’ll switch back to Turbopack (Next.js 16’s default bundler).
+> **Note**: This project currently uses `--webpack` flag for the `dev` and `build` scripts due to compatibility with Pigment CSS. Once [Pigment CSS adds Turbopack support](https://github.com/mui/pigment-css/issues), we’ll switch back to Turbopack (Next.js 16’s default bundler).
 
 > **Note**: You’ll need some API keys for full functionality. See [Required Services](#required-services) below.
 
