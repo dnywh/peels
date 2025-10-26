@@ -2,8 +2,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -16,8 +16,7 @@
     "@maptiler/geocoding-control": "^2.0.1",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
-    "@next/mdx": "^15.1.5",
-    "@pigment-css/react": "^0.0.29",
+    "@next/mdx": "16.0.0",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-visually-hidden": "^1.1.1",
     "@supabase/ssr": "latest",
@@ -32,24 +31,25 @@
     "lucide-react": "^0.456.0",
     "mapbox-gl": "^3.9.0",
     "maplibre-gl": "^4.7.1",
-    "next": "^15.1.2",
+    "next": "16.0.0",
     "next-intl": "^4.1.0",
     "photoswipe": "^5.4.4",
     "pmtiles": "^4.1.0",
     "prettier": "^3.3.3",
     "protomaps-themes-base": "^4.3.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-dropzone": "^14.3.5",
     "react-map-gl": "^7.1.8",
     "react-photoswipe-gallery": "^3.0.2",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@pigment-css/nextjs-plugin": "^0.0.29",
+    "@pigment-css/nextjs-plugin": "^0.0.30",
+    "@pigment-css/react": "^0.0.30",
     "@types/node": "22.9.0",
-    "@types/react": "19.0.0",
-    "@types/react-dom": "19.0.0",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwind-merge": "^2.5.2",
@@ -59,6 +59,8 @@
   "overrides": {
     "react": "$react",
     "react-dom": "$react-dom",
-    "whatwg-url": "13.0.0"
+    "whatwg-url": "13.0.0",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2"
   }
 }
