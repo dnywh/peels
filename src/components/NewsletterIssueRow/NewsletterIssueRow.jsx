@@ -109,7 +109,7 @@ const Text = styled("div")(({ theme }) => ({
       props: { featured: true },
       style: {
         "& h3": {
-          fontSize: "2rem",
+          fontSize: "1.75rem",
         },
       },
     },
