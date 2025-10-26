@@ -22,9 +22,6 @@ export function useDeviceContext() {
         ...prev,
         isDesktop: e.matches,
       }));
-
-      console.log("Device context: isDesktop", e.matches);
-      console.log("Device context: hasTouch", hasTouch);
     }
 
     // Set initial states
