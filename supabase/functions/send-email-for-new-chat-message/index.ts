@@ -61,21 +61,27 @@ const handler = async (_request: Request): Promise<Response> => {
     const listingAreaName = messageData.thread.listing_area_name;
     console.log("Listing area name:", listingAreaName);
 
+    const ownerHasMultipleNonResidentialListings =
+      messageData.thread.owner_has_multiple_non_residential_listings;
+    console.log(
+      "Owner has multiple non-residential listings:",
+      ownerHasMultipleNonResidentialListings,
+    );
+
     // Determine recipient_id (the user who isn't the sender)
-    const recipientId =
-      messageData.thread.initiator_id === record.sender_id
-        ? messageData.thread.owner_id
-        : messageData.thread.initiator_id;
+    const recipientId = messageData.thread.initiator_id === record.sender_id
+      ? messageData.thread.owner_id
+      : messageData.thread.initiator_id;
 
     // Determine recipient's role in the chat (listing owner (host) or the thread initiator (donor)?)
     // This ternary seems opposite to what's logical, but it is correct somehow
-    const recipientRole =
-      messageData.thread.owner_id === record.sender_id ? "initiator" : "owner";
+    const recipientRole = messageData.thread.owner_id === record.sender_id
+      ? "initiator"
+      : "owner";
 
-    const recipientName =
-      messageData.thread.owner_id === record.sender_id
-        ? messageData.thread.initiator_first_name
-        : messageData.thread.owner_first_name;
+    const recipientName = messageData.thread.owner_id === record.sender_id
+      ? messageData.thread.initiator_first_name
+      : messageData.thread.owner_first_name;
 
     // Determine which avatar(s) to show to the recipient
     let avatarMajorUrl: string | null = null;
@@ -98,7 +104,7 @@ const handler = async (_request: Request): Promise<Response> => {
         avatarMinorUrl = null; // No secondary avatar needed
         console.log(
           "Recipient is initiator (residential). Showing sender avatar:",
-          senderAvatar
+          senderAvatar,
         );
       } else {
         // For non-residential listings, show the listing's avatar as primary
@@ -110,7 +116,7 @@ const handler = async (_request: Request): Promise<Response> => {
           "Recipient is initiator (non-residential). Showing listing avatar:",
           listingAvatar,
           "and sender avatar:",
-          senderAvatar
+          senderAvatar,
         );
       }
     }
@@ -122,8 +128,8 @@ const handler = async (_request: Request): Promise<Response> => {
 
     // Do auth admin query to get recipient email (keeping this pattern for security)
     // TODO: Minify this query to just ask for the email address
-    const { data: recipientData, error: recipientError } =
-      await supabase.auth.admin.getUserById(recipientId);
+    const { data: recipientData, error: recipientError } = await supabase.auth
+      .admin.getUserById(recipientId);
     console.log("Recipient data:", recipientData);
     if (recipientError) console.log("Recipient error:", recipientError);
 
@@ -145,9 +151,10 @@ const handler = async (_request: Request): Promise<Response> => {
         recipientRole,
         listingName,
         listingType,
-        avatarMajorUrl,
-        avatarMajorBucket,
-        avatarMinorUrl,
+        ownerHasMultipleNonResidentialListings,
+        avatarMajorUrl: avatarMajorUrl || undefined,
+        avatarMajorBucket: avatarMajorBucket || undefined,
+        avatarMinorUrl: avatarMinorUrl || undefined,
       }),
       // Plain text version
       // Can be removed once this PR is merged
@@ -163,11 +170,12 @@ const handler = async (_request: Request): Promise<Response> => {
           recipientRole,
           listingName,
           listingType,
-          avatarMajorUrl,
-          avatarMajorBucket,
-          avatarMinorUrl,
+          ownerHasMultipleNonResidentialListings,
+          avatarMajorUrl: avatarMajorUrl || undefined,
+          avatarMajorBucket: avatarMajorBucket || undefined,
+          avatarMinorUrl: avatarMinorUrl || undefined,
         }),
-        { plainText: true }
+        { plainText: true },
       ),
     });
 

@@ -20,6 +20,7 @@ interface NewChatMessageEmailProps {
   avatarMinorUrl?: string;
   listingName?: string;
   listingType?: string;
+  ownerHasMultipleNonResidentialListings?: boolean;
 }
 
 export const NewChatMessageEmail = ({
@@ -35,6 +36,7 @@ export const NewChatMessageEmail = ({
   avatarMinorUrl,
   listingName,
   listingType,
+  ownerHasMultipleNonResidentialListings,
 }: NewChatMessageEmailProps) => {
   const siteUrl = "https://www.peels.app";
   return (
@@ -80,8 +82,11 @@ export const NewChatMessageEmail = ({
       </Row>
 
       <EmailParagraph>
-        Hi {recipientName}, you’ve received a new message from {senderName}.
-        Check it out on Peels:
+        Hi {recipientName}, you’ve received a new message from {senderName}
+        {ownerHasMultipleNonResidentialListings && listingName
+          ? ` about your ${listingName} location`
+          : ""}
+        . Check it out on Peels:
       </EmailParagraph>
 
       <EmailButton href={`${siteUrl}/chats/${threadId}`}>
