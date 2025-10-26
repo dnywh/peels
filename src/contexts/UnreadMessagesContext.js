@@ -32,7 +32,6 @@ export function UnreadMessagesProvider({ children }) {
         }
 
         const count = unreadMessages?.length || 0;
-        console.log("Initial unread messages count:", count);
         setUnreadCount(count);
       } catch (error) {
         console.error("Error in checkUnreadMessages:", error);

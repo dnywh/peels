@@ -23,7 +23,9 @@ npm run dev
 # Go to http://localhost:3000
 ```
 
-> **Note**: You'll need some API keys for full functionality. See [Required Services](#required-services) below.
+> **Note**: This project currently uses `--webpack` flag for the `dev` and `build` scripts due to compatibility with Pigment CSS. Once [Pigment CSS adds Turbopack support](https://github.com/mui/pigment-css/issues), we’ll switch back to Turbopack (Next.js 16’s default bundler).
+
+> **Note**: You’ll need some API keys for full functionality. See [Required Services](#required-services) below.
 
 ## Prerequisites
 
@@ -88,7 +90,6 @@ Environmental variables can also be optionally added to [Supabase edge functions
    ```
 
 2. Populate environment variables:
-
    - Copy `.env.example` to `.env.local`
    - Request development credentials via our [discussions board](https://github.com/dnywh/peels/discussions)
 
@@ -143,7 +144,6 @@ Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/sup
    ```
 
 2. Set up your environment:
-
    - Follow the services setup in [Prerequisites](#prerequisites)
    - Copy `.env.example` to `.env.local`
    - Add your API keys to `.env.local`

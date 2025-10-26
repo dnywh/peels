@@ -305,10 +305,8 @@ export default function MapPageClient({
 
     // Manage drawer-fully-open class based on both snap AND URL state
     if (snap === snapPoints[1] && listingSlug) {
-      console.log("Drawer is open, adding class to HTML");
       document.documentElement.classList.add("drawer-fully-open");
     } else {
-      console.log("Drawer is closed or no listing, removing class from HTML");
       document.documentElement.classList.remove("drawer-fully-open");
     }
 
@@ -532,7 +530,6 @@ export default function MapPageClient({
       const observer = new MutationObserver(() => {
         const drawerContent = drawerContentRef.current;
         if (drawerContent) {
-          console.log("Adding desktop scroll listener");
           drawerContent.addEventListener("scroll", handleScroll);
           observer.disconnect(); // Stop observing once the listener is added
         }
@@ -671,7 +668,6 @@ export default function MapPageClient({
               data-vaul-no-drag={isDesktop ? true : undefined}
               data-testid="content" // Not sure if this is needed
               // Desktop drawer offset
-              // style={{ "--initial-transform": "calc(100% - 420px)" }}
               style={{
                 overflowY: snap === 1 || isDesktop ? "auto" : "hidden",
               }}
@@ -703,8 +699,7 @@ export default function MapPageClient({
                   </StyledHeaderText>
                 </StyledDrawerHeaderInner>
 
-                {!hasTouch && !isDesktop ? (
-                  // TODO: also show this control on hasTouch if the user has accessibility mode enabled (is that a thing?)
+                {!isDesktop ? (
                   <ButtonSet>
                     <StyledIconButtonStationary
                       icon={snap === snapPoints[0] ? "maximize" : "minimize"}
@@ -733,18 +728,8 @@ export default function MapPageClient({
                 )}
               </StyledDrawerHeader>
 
-              {/* Begin drawer main content */}
-
               {/* Page content */}
-              <StyledDrawerInner
-
-              // data-vaul-no-drag
-              // style={{
-              //   overflowY: snap === snapPoints[1] || isDesktop ? "auto" : "hidden",
-              //   overscrollBehavior:
-              //     snap === snapPoints[1] && !isDesktop ? "auto" : "auto",
-              // }}
-              >
+              <StyledDrawerInner>
                 {selectedListing?.error ? (
                   <NoListingFound>
                     <header>
