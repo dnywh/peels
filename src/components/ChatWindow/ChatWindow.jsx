@@ -361,7 +361,10 @@ const ChatWindow = memo(function ChatWindow({
                       <p>
                         {isDemo || message.sender_id === user?.id
                           ? `You reached out to ${otherPersonName}`
-                          : `${otherPersonName} reached out to you`}
+                          : listing?.owner_has_multiple_non_residential_listings &&
+                              listing?.name
+                            ? `${otherPersonName} reached out to you about ${listing.name}`
+                            : `${otherPersonName} reached out to you`}
                       </p>
                     )}
                   </DayHeader>
