@@ -117,27 +117,6 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         </CheckboxRow>
       </CheckboxCluster>
 
-      {(error || hasFieldErrors) && (
-        <FormMessage
-          message={{
-            error: error ? (
-              <>
-                {error?.endsWith(".") ? error : `${error}.`} If you think this
-                might be wrong, please{" "}
-                <EncodedEmailLink address={siteConfig.encodedEmail.support}>
-                  email us
-                </EncodedEmailLink>
-                .
-              </>
-            ) : hasFieldErrors ? (
-              "Please fix the above error and then try again."
-            ) : (
-              "Hmm, something went wrong. Please try again."
-            ),
-          }}
-        />
-      )}
-
       {isTurnstileEnabled() && (
         <Field>
           <Turnstile
@@ -166,6 +145,28 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           )}
         </Field>
       )}
+
+      {(error || hasFieldErrors) && (
+        <FormMessage
+          message={{
+            error: error ? (
+              <>
+                {error?.endsWith(".") ? error : `${error}.`} If you think this
+                might be wrong, please{" "}
+                <EncodedEmailLink address={siteConfig.encodedEmail.support}>
+                  email us
+                </EncodedEmailLink>
+                .
+              </>
+            ) : hasFieldErrors ? (
+              "Please fix the above error and then try again."
+            ) : (
+              "Hmm, something went wrong. Please try again."
+            ),
+          }}
+        />
+      )}
+
       <Button
         type="submit"
         variant="primary"
