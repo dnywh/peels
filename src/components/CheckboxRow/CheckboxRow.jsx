@@ -1,10 +1,12 @@
 import { useId } from "react";
-// Using Headless UI label for unset styling
-import { Label as HeadlessLabel } from "@headlessui/react";
-import Field from "@/components/Field";
+// Using Headless UI label and field for unset styling
+import {
+  Field as HeadlessField,
+  Label as HeadlessLabel,
+} from "@headlessui/react";
 import { styled } from "@pigment-css/react";
 
-const StyledField = styled(Field)(({ theme }) => ({
+const StyledField = styled(HeadlessField)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
