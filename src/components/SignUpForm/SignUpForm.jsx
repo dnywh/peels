@@ -1,27 +1,31 @@
 "use client";
-import { useState } from "react";
-import { siteConfig } from "@/config/site";
 import { signUpAction } from "@/app/actions";
-import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
-import { getStoredAttributionParams } from "@/utils/attributionUtils";
-import Form from "@/components/Form";
-import Field from "@/components/Field";
-import Input from "@/components/Input";
-import Label from "@/components/Label";
-import InputHint from "@/components/InputHint";
 import Button from "@/components/Button";
 import CheckboxCluster from "@/components/CheckboxCluster";
 import CheckboxRow from "@/components/CheckboxRow";
-import LegalAgreement from "@/components/LegalAgreement";
-import FormMessage from "@/components/FormMessage";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
+import Field from "@/components/Field";
+import Form from "@/components/Form";
+import FormMessage from "@/components/FormMessage";
+import Input from "@/components/Input";
+import InputHint from "@/components/InputHint";
+import Label from "@/components/Label";
+import LegalAgreement from "@/components/LegalAgreement";
+import { siteConfig } from "@/config/site";
+import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
+import { getStoredAttributionParams } from "@/utils/attributionUtils";
+import { isTurnstileEnabled } from "@/utils/utils";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { useState } from "react";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState(null);
+  const [captchaToken, setCaptchaToken] = useState();
+  const [captchaError, setCaptchaError] = useState(null);
 
   // Helper to determine if there are any field-level errors
-  const hasFieldErrors = Boolean(firstNameError);
+  const hasFieldErrors = Boolean(firstNameError || captchaError);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -31,6 +35,10 @@ export default function SignUpForm({ defaultValues = {}, error }) {
 
     try {
       const formData = new FormData(event.currentTarget);
+      // Add captcha token to form data if available
+      if (captchaToken) {
+        formData.append("captcha_token", captchaToken);
+      }
 
       // Add stored UTM parameters to form data
       const utmParams = getStoredAttributionParams();
@@ -40,6 +48,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
 
       // Reset validation errors
       setFirstNameError(null);
+      setCaptchaError(null);
 
       // Client-side validation
       const validation = validateName(formData.get("first_name"));
@@ -49,6 +58,14 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         console.log("Validation failed, resetting submit state");
         return;
       }
+
+      // Validate CAPTCHA token is present (only if Turnstile is enabled)
+      if (isTurnstileEnabled() && !captchaToken) {
+        setCaptchaError("Please complete the verification challenge.");
+        setIsSubmitting(false);
+        return;
+      }
+
       await signUpAction(formData);
     } catch (error) {
       console.error("Sign up error:", error);
@@ -120,11 +137,41 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           }}
         />
       )}
+
+      {isTurnstileEnabled() && (
+        <div style={{ borderRadius: "1rem", overflow: "hidden" }}>
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
+            options={{
+              theme: "light",
+              size: "flexible",
+            }}
+            onSuccess={(token) => {
+              setCaptchaToken(token);
+              setCaptchaError(null);
+            }}
+            onError={() => {
+              setCaptchaToken(null);
+              setCaptchaError("Verification failed. Please try again.");
+            }}
+            onExpire={() => {
+              setCaptchaToken(null);
+              setCaptchaError(
+                "Verification expired. Please complete it again."
+              );
+            }}
+          />
+          {captchaError && (
+            <InputHint variant="error">{captchaError}</InputHint>
+          )}
+        </div>
+      )}
       <Button
         type="submit"
         variant="primary"
         loading={isSubmitting}
         loadingText="Signing up..."
+        disabled={(isTurnstileEnabled() && !captchaToken) || isSubmitting}
       >
         Sign up
       </Button>

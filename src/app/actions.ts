@@ -1,12 +1,12 @@
 "use server";
 
-import { encodedRedirect } from "@/utils/utils";
+import { validateName } from "@/lib/formValidation";
 import { createClient } from "@/utils/supabase/server";
+import { getBaseUrl } from "@/utils/url";
+import { encodedRedirect, isTurnstileEnabled } from "@/utils/utils";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getBaseUrl } from "@/utils/url";
-import { validateName } from "@/lib/formValidation";
-import { revalidatePath } from "next/cache";
 
 export const signUpAction = async (formData: FormData, request: Request) => {
   const email = formData.get("email")?.toString();
@@ -51,10 +51,21 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     redirectUrl.searchParams.append(key, value);
   });
 
+  const captchaToken = formData.get("captcha_token")?.toString();
+  const turnstileEnabled = isTurnstileEnabled();
+
   if (!email || !password || !first_name) {
     redirectUrl.searchParams.append(
       "error",
       "A first name, email, and password are required."
+    );
+    return redirect(redirectUrl.toString());
+  }
+
+  if (turnstileEnabled && !captchaToken) {
+    redirectUrl.searchParams.append(
+      "error",
+      "Please complete the verification challenge."
     );
     return redirect(redirectUrl.toString());
   }
@@ -91,6 +102,7 @@ export const signUpAction = async (formData: FormData, request: Request) => {
     email,
     password,
     options: {
+      ...(turnstileEnabled && captchaToken && { captchaToken }),
       emailRedirectTo: `${origin || getBaseUrl()}/auth/callback?type=signup`,
       data: {
         first_name,
