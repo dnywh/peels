@@ -95,6 +95,7 @@ function ListingPhotoGallery({ presentation, photos }) {
             width={1024}
             height={768}
             content={
+              // Approach explained in https://github.com/dimsemenov/PhotoSwipe/issues/2105#issuecomment-2614198664
               <ListingPhotoRemoteImageEnlarged
                 bucket="listing_photos"
                 filename={photo}

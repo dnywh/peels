@@ -3,6 +3,7 @@ import { styled } from "@pigment-css/react";
 const StyledCheckboxCluster = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
+  alignItems: "stretch",
   padding: "0 1rem",
 
   border: `1px solid ${theme.colors.border.stark}`,

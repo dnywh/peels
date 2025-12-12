@@ -14,3 +14,15 @@ export function encodedRedirect(
 ) {
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
 }
+
+/**
+ * Checks if Turnstile CAPTCHA is enabled.
+ * Requires both NEXT_PUBLIC_TURNSTILE_SITEKEY and NEXT_PUBLIC_TURNSTILE_ENABLED to be set.
+ * @returns {boolean} True if Turnstile is enabled, false otherwise.
+ */
+export function isTurnstileEnabled(): boolean {
+  return (
+    !!process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY &&
+    process.env.NEXT_PUBLIC_TURNSTILE_ENABLED === "true"
+  );
+}
