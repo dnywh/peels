@@ -139,7 +139,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
       )}
 
       {isTurnstileEnabled() && (
-        <div style={{ borderRadius: "1rem", overflow: "hidden" }}>
+        <Field>
           <Turnstile
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
             options={{
@@ -164,7 +164,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
           {captchaError && (
             <InputHint variant="error">{captchaError}</InputHint>
           )}
-        </div>
+        </Field>
       )}
       <Button
         type="submit"
