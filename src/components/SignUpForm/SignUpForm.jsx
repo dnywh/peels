@@ -16,28 +16,93 @@ import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile } from "@marsidev/react-turnstile";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState(null);
   const [captchaToken, setCaptchaToken] = useState();
   const [captchaError, setCaptchaError] = useState(null);
+  const [isWaitingForToken, setIsWaitingForToken] = useState(false);
+  const turnstileRef = useRef(null);
+  const tokenResolverRef = useRef(null);
+  const tokenRejecterRef = useRef(null);
 
   // Helper to determine if there are any field-level errors
   const hasFieldErrors = Boolean(firstNameError || captchaError);
 
+  // Promise-based token wait mechanism with timeout
+  const waitForToken = (timeout = 10000) => {
+    return new Promise((resolve, reject) => {
+      // If token already exists, resolve immediately
+      if (captchaToken) {
+        resolve(captchaToken);
+        return;
+      }
+
+      // Store resolvers for onSuccess/onError callbacks
+      tokenResolverRef.current = resolve;
+      tokenRejecterRef.current = reject;
+
+      // Timeout after specified duration
+      setTimeout(() => {
+        if (tokenRejecterRef.current) {
+          tokenRejecterRef.current(new Error("Token generation timeout"));
+          tokenResolverRef.current = null;
+          tokenRejecterRef.current = null;
+        }
+      }, timeout);
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || isWaitingForToken) return;
 
-    setIsSubmitting(true);
+    // Reset validation errors
+    setFirstNameError(null);
+    setCaptchaError(null);
+
+    // Client-side validation
+    const formData = new FormData(event.currentTarget);
+    const validation = validateName(formData.get("first_name"));
+    if (!validation.isValid) {
+      setFirstNameError(validation.error);
+      return;
+    }
+
+    // Handle Turnstile token generation if enabled
+    let tokenToUse = captchaToken;
+    if (isTurnstileEnabled() && !captchaToken) {
+      setIsWaitingForToken(true);
+      try {
+        // Execute Turnstile verification
+        if (turnstileRef.current) {
+          turnstileRef.current.execute();
+        }
+
+        // Wait for token with timeout
+        tokenToUse = await waitForToken(10000);
+
+        // Token obtained, proceed with submission
+        setIsWaitingForToken(false);
+        setIsSubmitting(true);
+      } catch (error) {
+        setIsWaitingForToken(false);
+        setCaptchaError(
+          error.message ||
+            "Security verification is taking longer than expected. Please try again."
+        );
+        return;
+      }
+    } else {
+      setIsSubmitting(true);
+    }
 
     try {
-      const formData = new FormData(event.currentTarget);
       // Add captcha token to form data if available
-      if (captchaToken) {
-        formData.append("captcha_token", captchaToken);
+      if (tokenToUse) {
+        formData.append("captcha_token", tokenToUse);
       }
 
       // Add stored UTM parameters to form data
@@ -45,26 +110,6 @@ export default function SignUpForm({ defaultValues = {}, error }) {
       Object.entries(utmParams).forEach(([key, value]) => {
         if (value) formData.append(key, value);
       });
-
-      // Reset validation errors
-      setFirstNameError(null);
-      setCaptchaError(null);
-
-      // Client-side validation
-      const validation = validateName(formData.get("first_name"));
-      if (!validation.isValid) {
-        setFirstNameError(validation.error);
-        setIsSubmitting(false);
-        console.log("Validation failed, resetting submit state");
-        return;
-      }
-
-      // Validate CAPTCHA token is present (only if Turnstile is enabled)
-      if (isTurnstileEnabled() && !captchaToken) {
-        setCaptchaError("Please complete the verification challenge.");
-        setIsSubmitting(false);
-        return;
-      }
 
       await signUpAction(formData);
     } catch (error) {
@@ -120,24 +165,54 @@ export default function SignUpForm({ defaultValues = {}, error }) {
       {isTurnstileEnabled() && (
         <Field>
           <Turnstile
+            ref={turnstileRef}
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
-            options={{
-              theme: "light",
-              size: "flexible",
-            }}
             onSuccess={(token) => {
               setCaptchaToken(token);
               setCaptchaError(null);
+              setIsWaitingForToken(false);
+              // Resolve the waiting promise if it exists
+              if (tokenResolverRef.current) {
+                tokenResolverRef.current(token);
+                tokenResolverRef.current = null;
+                tokenRejecterRef.current = null;
+              }
             }}
-            onError={() => {
+            onError={(error) => {
               setCaptchaToken(null);
-              setCaptchaError("Verification failed. Please try again.");
+              setIsWaitingForToken(false);
+
+              // Check if it's a browser compatibility issue
+              const isSafari = /^((?!chrome|android).)*safari/i.test(
+                navigator.userAgent
+              );
+              const errorMessage =
+                "Security verification failed. Please try again or try a different browser.";
+
+              setCaptchaError(errorMessage);
+
+              // Reject the waiting promise if it exists
+              if (tokenRejecterRef.current) {
+                tokenRejecterRef.current(new Error(errorMessage));
+                tokenResolverRef.current = null;
+                tokenRejecterRef.current = null;
+              }
             }}
             onExpire={() => {
               setCaptchaToken(null);
+              setIsWaitingForToken(false);
               setCaptchaError(
                 "Verification expired. Please complete it again."
               );
+
+              // Reject the waiting promise if it exists
+              if (tokenRejecterRef.current) {
+                tokenRejecterRef.current(
+                  new Error("Verification expired. Please complete it again.")
+                );
+                tokenResolverRef.current = null;
+                tokenRejecterRef.current = null;
+              }
             }}
           />
           {captchaError && (
@@ -170,9 +245,9 @@ export default function SignUpForm({ defaultValues = {}, error }) {
       <Button
         type="submit"
         variant="primary"
-        loading={isSubmitting}
-        loadingText="Signing up..."
-        disabled={(isTurnstileEnabled() && !captchaToken) || isSubmitting}
+        loading={isSubmitting || isWaitingForToken}
+        loadingText={isWaitingForToken ? "Verifying..." : "Signing up..."}
+        disabled={isSubmitting || isWaitingForToken}
       >
         Sign up
       </Button>
