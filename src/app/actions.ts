@@ -12,7 +12,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export const signUpAction = async (formData: FormData, request: Request) => {
+export const signUpAction = async (formData: FormData, request?: Request) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const firstNameValidation = validateName(formData.get("first_name")); // Trim first name
