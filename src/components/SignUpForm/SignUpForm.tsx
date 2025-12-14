@@ -108,13 +108,13 @@ export default function SignUpForm({
   );
 
   const handleTurnstileError = useCallback(
-    (error?: { message?: string }) => {
+    (error: string) => {
       setCaptchaToken(undefined);
       setIsWaitingForToken(false);
 
-      const errorMessage = `Security verification failed${
-        error?.message ? `: ${error.message}` : "."
-      } Please try again or try a different browser.`;
+      console.error("Turnstile error:", error);
+      const errorMessage =
+        "Security verification failed. Please try again or try a different browser.";
 
       setCaptchaError(errorMessage);
       rejectTokenPromise(errorMessage);
@@ -141,7 +141,7 @@ export default function SignUpForm({
     const formData = new FormData(event.currentTarget);
     const validation = validateName(formData.get("first_name")?.toString());
     if (!validation.isValid) {
-      setFirstNameError(validation.error);
+      setFirstNameError(validation.error ?? null);
       return;
     }
 
@@ -179,7 +179,7 @@ export default function SignUpForm({
       // Add stored UTM parameters to form data
       const utmParams = getStoredAttributionParams();
       Object.entries(utmParams).forEach(([key, value]) => {
-        if (value) formData.append(key, value);
+        if (value && typeof value === "string") formData.append(key, value);
       });
 
       await signUpAction(formData);
@@ -205,6 +205,7 @@ export default function SignUpForm({
           name="first_name"
           {...FIELD_CONFIGS.firstName}
           defaultValue={defaultValues.first_name}
+          // @ts-expect-error: Input accepts any truthy value at runtime for error, but type is inferred as null | undefined
           error={firstNameError}
         />
         {firstNameError && (

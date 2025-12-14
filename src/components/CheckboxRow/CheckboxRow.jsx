@@ -83,8 +83,18 @@ const NativeCheckbox = styled("input")(({ theme }) => ({
   },
 }));
 
+/**
+ * @param {object} props
+ * @param {string} [props.id] - Optional. If not provided, a unique ID will be generated.
+ * @param {string} props.name
+ * @param {boolean} [props.defaultChecked]
+ * @param {boolean} [props.required]
+ * @param {React.ReactNode} props.children
+ * @param {boolean} [props.passiveLabel]
+ * @param {boolean} [props.disabled]
+ */
 function CheckboxRow({
-  id,
+  id = undefined,
   name,
   defaultChecked = false,
   required = false,

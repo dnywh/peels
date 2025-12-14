@@ -77,7 +77,9 @@ export default async function SignUp(props: {
         defaultValues={{
           first_name: searchParams.first_name,
           email: searchParams.email,
-          newsletter_preference: searchParams.newsletter_preference,
+          newsletter_preference: searchParams.newsletter_preference
+            ? searchParams.newsletter_preference === "true"
+            : undefined,
         }}
         error={searchParams.error}
       />

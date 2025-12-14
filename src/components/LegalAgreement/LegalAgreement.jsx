@@ -3,7 +3,13 @@ import { siteConfig } from "@/config/site";
 import CheckboxRow from "@/components/CheckboxRow";
 import StrongLink from "@/components/StrongLink";
 
-function LegalAgreement({ defaultChecked, required, disabled }) {
+/**
+ * @param {object} props
+ * @param {boolean} [props.defaultChecked]
+ * @param {boolean} props.required
+ * @param {boolean} [props.disabled]
+ */
+function LegalAgreement({ defaultChecked, required, disabled = false }) {
   return (
     <CheckboxRow
       defaultChecked={defaultChecked}

@@ -21,8 +21,8 @@ const StyledFormMessage = styled("aside")<{
 }));
 
 export type Message = {
-  error?: string;
-  success?: string;
+  error?: string | React.ReactNode;
+  success?: string | React.ReactNode;
 };
 
 export default function FormMessage({ message }: { message: Message }) {

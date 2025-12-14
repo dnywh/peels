@@ -166,10 +166,22 @@ const buttonStyles = ({ theme }) => ({
 const StyledButton = styled(UnstyledButton)(buttonStyles);
 const StyledLink = styled(Link)(buttonStyles);
 
+/**
+ * @param {object} props
+ * @param {string} [props.variant]
+ * @param {boolean} [props.disabled]
+ * @param {string} [props.href] - If provided, renders as Link. Otherwise renders as Button.
+ * @param {React.ReactNode} props.children
+ * @param {number} [props.tabIndex]
+ * @param {boolean} [props.loading]
+ * @param {string} [props.loadingText]
+ * @param {string} [props.type]
+ * @param {string} [props.size]
+ */
 export default function Button({
   variant = "secondary",
   disabled = false,
-  href,
+  href = undefined,
   children,
   tabIndex = 0,
   loading = false,
