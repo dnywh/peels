@@ -16,7 +16,7 @@ import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile } from "@marsidev/react-turnstile";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function SignUpForm({ defaultValues = {}, error }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,12 +24,18 @@ export default function SignUpForm({ defaultValues = {}, error }) {
   const [captchaToken, setCaptchaToken] = useState();
   const [captchaError, setCaptchaError] = useState(null);
   const [isWaitingForToken, setIsWaitingForToken] = useState(false);
+  const [showTurnstileField, setShowTurnstileField] = useState(false);
   const turnstileRef = useRef(null);
   const tokenResolverRef = useRef(null);
   const tokenRejecterRef = useRef(null);
 
   // Helper to determine if there are any field-level errors
   const hasFieldErrors = Boolean(firstNameError || captchaError);
+
+  // Show field wrapper when waiting for token (challenge might appear) or when there's an error
+  useEffect(() => {
+    setShowTurnstileField(isWaitingForToken || !!captchaError);
+  }, [isWaitingForToken, captchaError]);
 
   // Promise-based token wait mechanism with timeout
   const waitForToken = (timeout = 10000) => {
@@ -162,11 +168,67 @@ export default function SignUpForm({ defaultValues = {}, error }) {
         </CheckboxRow>
       </CheckboxCluster>
 
-      {isTurnstileEnabled() && (
-        <Field>
+      {isTurnstileEnabled() &&
+        (showTurnstileField ? (
+          <Field>
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
+              onSuccess={(token) => {
+                setCaptchaToken(token);
+                setCaptchaError(null);
+                setIsWaitingForToken(false);
+                // Resolve the waiting promise if it exists
+                if (tokenResolverRef.current) {
+                  tokenResolverRef.current(token);
+                  tokenResolverRef.current = null;
+                  tokenRejecterRef.current = null;
+                }
+              }}
+              onError={(error) => {
+                setCaptchaToken(null);
+                setIsWaitingForToken(false);
+
+                const errorMessage = `Security verification failed${error.message ? `: ${error.message}` : "."} Please try again or try a different browser.`;
+
+                setCaptchaError(errorMessage);
+
+                // Reject the waiting promise if it exists
+                if (tokenRejecterRef.current) {
+                  tokenRejecterRef.current(new Error(errorMessage));
+                  tokenResolverRef.current = null;
+                  tokenRejecterRef.current = null;
+                }
+              }}
+              onExpire={() => {
+                setCaptchaToken(null);
+                setIsWaitingForToken(false);
+                setCaptchaError(
+                  "Verification expired. Please complete it again."
+                );
+
+                // Reject the waiting promise if it exists
+                if (tokenRejecterRef.current) {
+                  tokenRejecterRef.current(
+                    new Error("Verification expired. Please complete it again.")
+                  );
+                  tokenResolverRef.current = null;
+                  tokenRejecterRef.current = null;
+                }
+              }}
+            />
+            {captchaError && (
+              <InputHint variant="error">{captchaError}</InputHint>
+            )}
+          </Field>
+        ) : (
           <Turnstile
             ref={turnstileRef}
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
+            options={{
+              size: "invisible",
+            }}
+            style={{ display: "none" }}
             onSuccess={(token) => {
               setCaptchaToken(token);
               setCaptchaError(null);
@@ -182,12 +244,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
               setCaptchaToken(null);
               setIsWaitingForToken(false);
 
-              // Check if it's a browser compatibility issue
-              const isSafari = /^((?!chrome|android).)*safari/i.test(
-                navigator.userAgent
-              );
-              const errorMessage =
-                "Security verification failed. Please try again or try a different browser.";
+              const errorMessage = `Security verification failed${error.message ? `: ${error.message}` : "."} Please try again or try a different browser.`;
 
               setCaptchaError(errorMessage);
 
@@ -215,11 +272,7 @@ export default function SignUpForm({ defaultValues = {}, error }) {
               }
             }}
           />
-          {captchaError && (
-            <InputHint variant="error">{captchaError}</InputHint>
-          )}
-        </Field>
-      )}
+        ))}
 
       {(error || hasFieldErrors) && (
         <FormMessage
