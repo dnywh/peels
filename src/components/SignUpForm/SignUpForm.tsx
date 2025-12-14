@@ -112,9 +112,7 @@ export default function SignUpForm({
       setCaptchaToken(undefined);
       setIsWaitingForToken(false);
 
-      console.error("Turnstile error:", error);
-      const errorMessage =
-        "Security verification failed. Please try again or try a different browser.";
+      const errorMessage = `Security verification failed with error #${error}. Please try again or use a different browser.`;
 
       setCaptchaError(errorMessage);
       rejectTokenPromise(errorMessage);
