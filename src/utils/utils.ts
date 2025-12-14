@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 export function encodedRedirect(
   type: "error" | "success",
   path: string,
-  message: string,
+  message: string
 ) {
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
 }
@@ -33,7 +33,7 @@ export function isTurnstileEnabled(): boolean {
  * @returns {Promise<{success: boolean, error?: string}>} Validation result.
  */
 export async function validateTurnstileToken(
-  token: string,
+  token: string
 ): Promise<{ success: boolean; error?: string }> {
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
@@ -55,7 +55,7 @@ export async function validateTurnstileToken(
       {
         method: "POST",
         body: formData,
-      },
+      }
     );
 
     const result = await response.json();
