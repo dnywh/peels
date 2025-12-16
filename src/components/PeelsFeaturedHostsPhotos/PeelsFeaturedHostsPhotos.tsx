@@ -5,11 +5,25 @@ import { createClient } from "@/utils/supabase/client";
 import PhotoThumbnail from "@/components/PhotoThumbnail";
 import { styled } from "@pigment-css/react";
 
-const featuredListingsForPhotos = [
+interface FeaturedListingConfig {
+  slug: string;
+  photos: number[];
+}
+
+interface ListingPublicData {
+  slug: string;
+  name: string;
+  photos: string[];
+  type: string;
+}
+
+interface ListingWithPhotoIndex extends ListingPublicData {
+  photoIndex: number;
+}
+
+const featuredListingsForPhotos: FeaturedListingConfig[] = [
   { slug: "oLbJwGqRQrzo", photos: [0] },
   { slug: "KX5eqmXGadu2", photos: [0] },
-  // { slug: "4y9eRikD5Dku", photos: [0, 1] },
-  // { slug: "o2TTKU3vmBP9", photos: [0] },
   { slug: "NPISVZDjJYsl", photos: [0] },
   { slug: "HOaEy5gxgrvc", photos: [0] },
   { slug: "itKrzEbLPDPf", photos: [0, 2] },
@@ -19,10 +33,11 @@ const featuredListingsForPhotos = [
   { slug: "MG92x2GOAeXj", photos: [0] },
   { slug: "zUJ2ukqP4VbS", photos: [4] },
   { slug: "RbAsf8OqLrPf", photos: [0] },
-  { slug: "oFvkhgiPvzGJ", photos: [0] },
+  { slug: "oFvkhgiPvzGJ", photos: [3] },
   { slug: "vmobuio1RAD5", photos: [0] },
-  { slug: "MJXTt4x5n9ag", photos: [0, 2] },
-  { slug: "rK1zNtjl2orh", photos: [0, 2] },
+  { slug: "MJXTt4x5n9ag", photos: [0] },
+  { slug: "rK1zNtjl2orh", photos: [0] },
+  { slug: "GmtjmYnNeQu5", photos: [2] },
 ];
 
 const MAX_PHOTOS_TO_SHOW = 3;
@@ -62,7 +77,9 @@ const PhotoRow = styled("ul")(({ theme }) => ({
 }));
 
 function PeelsFeaturedHostsPhotos() {
-  const [featuredListings, setFeaturedListings] = useState([]);
+  const [featuredListings, setFeaturedListings] = useState<
+    ListingWithPhotoIndex[]
+  >([]);
   const supabase = createClient();
 
   useEffect(() => {
@@ -86,13 +103,14 @@ function PeelsFeaturedHostsPhotos() {
 
       // Filter out any listings where the photo index we've chosen no longer exists
       // Also select a random photo index
-      const validListingsWithPhotos = data
+      const validListingsWithPhotos = (data as ListingPublicData[])
         .map((listing) => {
           const config = featuredListingsForPhotos.find(
             (item) => item.slug === listing.slug
           );
           // Skip if photos array is invalid or configured index doesn't exist
           if (
+            !config ||
             !listing.photos ||
             !Array.isArray(listing.photos) ||
             listing.photos.length <= Math.max(...config.photos)
@@ -104,7 +122,9 @@ function PeelsFeaturedHostsPhotos() {
             config.photos[Math.floor(Math.random() * config.photos.length)];
           return { ...listing, photoIndex: randomPhotoIndex };
         })
-        .filter(Boolean); // Remove null entries
+        .filter(
+          (listing): listing is ListingWithPhotoIndex => listing !== null
+        );
 
       // Then shuffle and take the first MAX_PHOTOS_TO_SHOW
       const shuffledData = [...validListingsWithPhotos].sort(
