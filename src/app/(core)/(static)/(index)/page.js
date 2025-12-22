@@ -49,7 +49,7 @@ export default function Index() {
           <h2>{t("newsletter.title")}</h2>
           <p>{t("newsletter.subtitle")}</p>
         </HeaderBlock>
-        <NewsletterIssuesList />
+        <NewsletterIssuesList showPastIssues={false} />
         <FooterBlock>
           <p>
             {t.rich("newsletter.footer", {

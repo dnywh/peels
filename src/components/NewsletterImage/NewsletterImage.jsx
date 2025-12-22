@@ -48,7 +48,7 @@ const StyledRemoteImage = styled(RemoteImage)(({ theme }) => ({
       // Turning a boolean into string helps with Pigment CSS transient prop issue.
       // This issue occurs becaues the prop is otherwise passed on to the next component (RemoteImage in this case)
       // See:https://github.com/mui/material-ui/issues/25925
-      props: { border: "true" }, // For use everywhere except in NewsletterIssueRow
+      props: { border: "true" }, // For use everywhere except in NewsletterIssueTile
       style: {
         border: `1px solid ${theme.colors.border.base}`,
       },

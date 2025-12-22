@@ -53,7 +53,10 @@ const Aside = styled("aside")(({ theme }) => ({
   },
 
   "& h3": {
-    color: theme.colors.text.ui.tertiary,
-    fontWeight: 300,
+    color: theme.colors.text.ui.quinary,
+    textTransform: "uppercase",
+    fontWeight: 500,
+    letterSpacing: "0.0875em",
+    fontSize: "0.675rem",
   },
 }));

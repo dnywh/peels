@@ -1,0 +1,99 @@
+import { siteConfig } from "@/config/site";
+import Link from "next/link";
+import StrongLink from "@/components/StrongLink";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
+import RemoteImage from "@/components/RemoteImage";
+
+import NewsletterTitle from "@/components/NewsletterTitle";
+import NewsletterAside from "@/components/NewsletterAside";
+import NewsletterImageGridContainer from "@/components/NewsletterImageGridContainer";
+import NewsletterImage from "@/components/NewsletterImage";
+import { styled } from "@pigment-css/react";
+
+export const metadata = {
+  title: "Beginning to Look a Lot Like Compost",
+  description:
+    "We’ve made it to the end of 2025, and Peels is about to turn one. Here’s a brief update.",
+  authors: ["Danny White"],
+};
+
+export const customMetadata = {
+  issueNumber: 2,
+  verboseTitle: "It’s beginning to look a lot like compost",
+  ogImage: "kaicycle.jpg",
+  previewImages: ["power-neighbourhood-house.jpg", "kaicycle.jpg"],
+  publishDate: "2025-12-23T09:00:00+10:00",
+};
+
+Hi there,
+
+It’s the end of the year, and <StrongLink href={siteConfig.url}>Peels</StrongLink> is about to turn one. For those who were here from the start: thanks for making Peels what it is. For the newcomers: welcome!
+
+Since the start of the year, 25+ local and state governments, industry bodies, and non-profits have pointed people to Peels, with plenty more mentions elsewhere. Here are some recents:
+
+- <StrongLink href="https://podcasts.apple.com/au/podcast/how-to-save-our-planet/id1648409844?i=1000732698117" target="_blank">How to Save Our Planet</StrongLink> included Peels in its composting episode.
+- <StrongLink href="https://responsiblecafes.org/peels-replaces-sharewaste/" target="_blank">Responsible Cafes</StrongLink> featured Peels in a community composting guide.
+- <StrongLink href="https://therot.substack.com/p/meet-danny-and-his-compost-app-peels" target="_blank">The Rot</StrongLink> interviewed me about how Peels started.
+
+You can see the full list in our <StrongLink href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`}>promo kit</StrongLink>.
+
+<NewsletterAside />
+
+---
+
+## Host spotlight
+
+To help close out the year, here are a few newer hosts we’ve loved seeing join Peels, each doing community composting a little differently.
+
+<StrongLink href={`${siteConfig.url}/map?listing=5vn8TsMrh3oC`} target="_blank">Kaicycle</StrongLink> joined Peels in mid-October and operates three compost drop-off sites in Wellington, New Zealand. Community-led composting plays an important role in New Zealand, where national kerbside composting faces <Link href="https://www.compostconnect.org/new-zealands-waste-policy-evolution/#:~:text=Mandatory%20kerbside%20composting%20for%20all%20urban%20areas" target="_blank">rollout challenges</Link>. 
+
+<NewsletterImage
+  bucket="static/newsletter/2"
+  filename="kaicycle.jpg"
+  alt="A group of Kaicycle volunteers sitting in a trailer, smiling for the camera"
+  width={1200 / 2}
+  height={800 / 2}
+  caption={<>Some of the <Link href="https://kaicycle.org.nz/for-residents" target="_blank">Kaicycle</Link> crew in Wellington, New Zealand.</>}
+/>
+
+Across the Pacific, we have <StrongLink href={`${siteConfig.url}/listings/ukUWLKVa0qar`} target="_blank">Esperanza’s Sanctuary</StrongLink>, a farm and community resource hub just outside of Palm Springs, California. Pick up an empty bucket, return it when it’s full, and they’ll show you how to compost.
+
+<NewsletterImage
+  bucket="static/newsletter/2"
+  filename="esperanzas-sanctuary.jpg"
+  alt="A group of volunteers posing with shovels in front of compost piles"
+  width={1200 / 2}
+  height={590 / 2}
+  caption={<>Working on compost piles at <Link href="https://esperanzassanctuary.com/about" target="_blank">Esperanza’s Sanctuary</Link> in Coachella Valley, California.</>}
+/>
+
+Bringing things back down to the southern hemisphere, we have <StrongLink href={`${siteConfig.url}/listings/vmobuio1RAD5`} target="_blank">Power Neighbourhood House</StrongLink> in Melbourne, Australia. Their work centres on community inclusion, with composting and gardening playing a big role.
+
+<NewsletterImage
+  bucket="static/newsletter/2"
+  filename="power-neighbourhood-house.jpg"
+  alt="A group of volunteers gathered around a garden bed"
+  width={1200 / 2}
+  height={800 / 2}
+  caption={<>Volunteers at <Link href="https://www.powernh.org.au" target="_blank">Power Neighbourhood House</Link> in Ashwood, Melbourne, Australia.</>}
+/>
+
+Are you a host too? <EncodedEmailLink address={siteConfig.encodedEmail.dw}>Let me know</EncodedEmailLink> if you’d like to be featured.
+
+---
+
+## Get involved
+
+Many would-be compost donors and hosts simply haven’t heard about Peels. <EncodedEmailLink address={siteConfig.encodedEmail.dw}>Reach out</EncodedEmailLink> if you or someone you know can **help spread the word locally**.
+
+If you know someone who hasn’t made a listing yet, **encourage them to create one**. If they’re a would-be donor, **encourage them to reach out and organise a drop-off**. This helps nearby hosts feel confident creating a listing, and it helps us make the case for more local government promotion.
+
+Technical contributions are also welcome. If you can help with bugs (the software kind) or language translation, check out the <StrongLink href={`${siteConfig.repoUrl}/discussions`} target="_blank">discussions</StrongLink> and open <StrongLink href={`${siteConfig.repoUrl}/issues`} target="_blank">issues</StrongLink>.
+
+---
+
+Got ideas or feedback? <EncodedEmailLink address={siteConfig.encodedEmail.dw}>Drop me a line</EncodedEmailLink>.
+
+Happy holidays,  
+Danny from Peels
+

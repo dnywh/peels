@@ -1,10 +1,19 @@
 import { getAllNewsletterIssues } from "@/lib/content/handlers/newsletter";
-import NewsletterIssueRow from "@/components/NewsletterIssueRow";
+import NewsletterIssueTile from "@/components/NewsletterIssueTile";
 import StyledList from "@/components/StyledList";
 import PastIssuesList from "@/components/PastIssuesList";
+import EmptyIssueSlot from "@/components/EmptyIssueSlot";
 
-export default async function NewsletterIssuesList() {
+export default async function NewsletterIssuesList({
+  showPastIssues = true,
+}: {
+  showPastIssues?: boolean;
+}) {
   const newsletterIssues = await getAllNewsletterIssues();
+
+  // Only show an empty issue slot if the number of issues is even
+  // ...meaning the list of *past issues* is odd, and needs a spare tile
+  const needsEmptyIssueSlot = newsletterIssues.length % 2 === 0;
 
   // Importing StyledList as a separate, barebones, slightly-styled component to avoid Pigment CSS + Next.js server component boundary issues
   return (
@@ -12,7 +21,7 @@ export default async function NewsletterIssuesList() {
       <StyledList>
         <section>
           <h2>Latest issue</h2>
-          <NewsletterIssueRow
+          <NewsletterIssueTile
             featured={true}
             slug={newsletterIssues[0].slug}
             title={
@@ -25,13 +34,14 @@ export default async function NewsletterIssuesList() {
           />
         </section>
 
-        {newsletterIssues.length > 1 && (
+        {newsletterIssues.length > 1 && showPastIssues && (
           <section>
             <h2>Past issues</h2>
             <PastIssuesList>
-              {newsletterIssues.map(
-                (
-                  {
+              {newsletterIssues
+                .filter((_, index) => index > 0)
+                .map(
+                  ({
                     slug,
                     metadata: { title },
                     customMetadata: {
@@ -40,11 +50,8 @@ export default async function NewsletterIssuesList() {
                       previewImages,
                     },
                     formattedDate,
-                  },
-                  index
-                ) =>
-                  index > 0 && (
-                    <NewsletterIssueRow
+                  }) => (
+                    <NewsletterIssueTile
                       key={slug}
                       featured={false}
                       slug={slug}
@@ -54,7 +61,8 @@ export default async function NewsletterIssuesList() {
                       previewImages={previewImages}
                     />
                   )
-              )}
+                )}
+              {needsEmptyIssueSlot && <EmptyIssueSlot key="empty-slot" />}
             </PastIssuesList>
           </section>
         )}
