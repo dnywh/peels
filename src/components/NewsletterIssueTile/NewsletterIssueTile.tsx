@@ -26,7 +26,7 @@ export default function NewsletterIssueTile({
   return (
     <ListItem key={slug}>
       <LinkedRow
-        featured={featured.toString()} // Required because Link component forwards all props to the underlying DOM element
+        featured={featured ? "true" : "false"} // Required because Link component forwards all props to the underlying DOM element
         prefetch={false}
         href={`/newsletter/${slug}`}
       >
@@ -48,6 +48,7 @@ export default function NewsletterIssueTile({
                 height={imageHeight}
                 border={false}
                 margin={false}
+                caption={undefined}
               />
             ))}
           </Images>
@@ -64,7 +65,9 @@ const ListItem = styled("li")(({ theme }) => ({
   overflow: "clip",
 }));
 
-const LinkedRow = styled(Link)(({ theme }) => ({
+const LinkedRow = styled(Link)<{
+  featured?: "true" | "false";
+}>(({ theme }) => ({
   color: "inherit",
   padding: "2rem",
   display: "flex",
@@ -93,7 +96,9 @@ const LinkedRow = styled(Link)(({ theme }) => ({
   },
 }));
 
-const Text = styled("div")(({ theme }) => ({
+const Text = styled("div")<{
+  featured?: boolean;
+}>(({ theme }) => ({
   // TODO: The children of this div aren't wrapping properly
   display: "flex",
   flexDirection: "column",
@@ -180,4 +185,3 @@ const Images = styled("div")(({ theme }) => ({
     },
   },
 }));
-
