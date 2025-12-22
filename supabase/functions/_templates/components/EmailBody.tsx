@@ -101,12 +101,12 @@ const html = {
 
 const body = {
   backgroundColor: assignments.colors.background.sunk, // For Gmail
-  padding: "40px 12px 24px",
+  padding: "40px 6px 24px",
   borderRadius: "8px",
 };
 
 const container = {
-  maxWidth: "472px",
+  maxWidth: "560px",
 };
 
 const introSection = {

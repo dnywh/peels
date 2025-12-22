@@ -17,9 +17,10 @@ interface NewsletterIssueOneEmailProps {
 
 const dwEmailAddress = Deno.env.get("DW_EMAIL_ADDRESS");
 const staticAssetUrl = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/static`;
+const issueSlug = "celebrating-the-first-few-months";
 
 // An email template for newsletter issues, both to opted-in users and broadcast audiences
-// Make a new copy for each new newsletter issue so contents aren't overriden (and can be borrowed for future issues)
+// Make a new copy for each new newsletter issue so contents aren't overridden (and can be borrowed for future issues)
 export const NewsletterIssueOneEmail = ({
   recipientName = "there",
   externalAudience,
@@ -30,7 +31,7 @@ export const NewsletterIssueOneEmail = ({
   return (
     <EmailBody
       previewText={`It’s been a big first few months of Peels. Here’s an update on what happened and what we’re working towards.`}
-      headingText={`Celebrating the First Few Months of Peels`}
+      headingText={`Celebrating the first few months of Peels`}
       footerText={
         <>
           {externalAudience ? (
@@ -41,14 +42,12 @@ export const NewsletterIssueOneEmail = ({
             </>
           ) : (
             <>
-              You're receiving this email because you have an account on Peels
+              You’re receiving this email because you have an account on Peels
               and opted-in to our occasional newsletter. You can unsubscribe{" "}
               <EmailLink href={`${siteUrl}/profile`}>here</EmailLink>.
             </>
           )}{" "}
-          <EmailLink
-            href={`${siteUrl}/newsletter/celebrating-the-first-few-months`}
-          >
+          <EmailLink href={`${siteUrl}/newsletter/${issueSlug}`}>
             View or share this issue online
           </EmailLink>
           .

@@ -1,0 +1,6 @@
+---
+globs: .tsx,.jsx
+alwaysApply: false
+---
+
+Prefer TypeScript over JavaScript when creating components and so forth.

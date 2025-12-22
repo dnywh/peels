@@ -202,6 +202,7 @@ export const assignments = {
         secondary: colors.rock[800],
         tertiary: colors.rock[700],
         quaternary: colors.rock[600],
+        quinary: colors.rock[400],
         emptyState: colors.rock[300],
         error: colors.ochre[600],
       },

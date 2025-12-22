@@ -6,14 +6,23 @@ import { styled } from "@pigment-css/react";
 const imageWidth = 192;
 const imageHeight = imageWidth * 0.667;
 
-function NewsletterIssueRow({
+interface NewsletterIssueTileProps {
+  featured?: boolean;
+  slug: string;
+  title: string;
+  issueNumber: number;
+  date: string;
+  previewImages?: string[];
+}
+
+export default function NewsletterIssueTile({
   featured = false,
   slug,
   title,
   issueNumber,
   date,
   previewImages,
-}) {
+}: NewsletterIssueTileProps) {
   return (
     <ListItem key={slug}>
       <LinkedRow
@@ -47,8 +56,6 @@ function NewsletterIssueRow({
     </ListItem>
   );
 }
-
-export default NewsletterIssueRow;
 
 const ListItem = styled("li")(({ theme }) => ({
   backgroundColor: theme.colors.background.top,
@@ -173,3 +180,4 @@ const Images = styled("div")(({ theme }) => ({
     },
   },
 }));
+

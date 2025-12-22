@@ -1,6 +1,5 @@
 import { siteConfig } from "@/config/site";
 import StaticPageHeader from "@/components/StaticPageHeader";
-import NewsletterIssueRow from "@/components/NewsletterIssueRow";
 import NewsletterIssuesList from "@/components/NewsletterIssuesList";
 import NewsletterCallout from "@/components/NewsletterCallout";
 import StaticPageSection from "@/components/StaticPageSection";

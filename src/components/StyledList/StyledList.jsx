@@ -38,14 +38,7 @@ const UnorderedList = styled("ul")(({ theme }) => ({
       fontWeight: 500,
       textTransform: "uppercase",
       letterSpacing: "0.0875em",
-      marginLeft: "2rem", // Match padding (left) on NewsletterIssueRow text
-
-      // textAlign: "center",
-
-      // "@media (min-width: 768px)": {
-      //   textAlign: "left",
-      //   marginLeft: "2rem", // Match padding (left) on NewsletterIssueRow text
-      // },
+      marginLeft: "2rem", // Match padding (left) on NewsletterIssueTile text
     },
   },
 }));

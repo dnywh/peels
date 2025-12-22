@@ -9,6 +9,7 @@ export interface EmailAsideProps {
   children: ReactNode;
 }
 
+// Sibling to NewsletterAside, used in newsletter issues
 const EmailAside: React.FC<EmailAsideProps> = ({ title, children }) => (
   <Section style={asideSection}>
     <Text style={asideHeader}>{title}</Text>
@@ -27,5 +28,8 @@ const asideSection = {
 const asideHeader = {
   margin: 0,
   fontSize: 13,
-  color: assignments.colors.text.tertiary,
+  color: assignments.colors.text.ui.quinary,
+  textTransform: "uppercase",
+  fontWeight: 500,
+  letterSpacing: "0.0875em",
 };
