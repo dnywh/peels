@@ -16,7 +16,7 @@ import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SignUpFormProps {
   defaultValues?: {
@@ -58,12 +58,6 @@ export default function SignUpForm({
   const waitForToken = useCallback(
     (timeout = TOKEN_TIMEOUT): Promise<string> => {
       return new Promise((resolve, reject) => {
-        // If token already exists, resolve immediately
-        if (captchaToken) {
-          resolve(captchaToken);
-          return;
-        }
-
         // Store resolvers for onSuccess/onError callbacks
         tokenResolverRef.current = resolve;
         tokenRejecterRef.current = reject;
@@ -78,7 +72,7 @@ export default function SignUpForm({
         }, timeout);
       });
     },
-    [captchaToken]
+    []
   );
 
   const resolveTokenPromise = useCallback((token: string) => {
@@ -144,8 +138,13 @@ export default function SignUpForm({
     }
 
     // Handle Turnstile token generation if enabled
-    let tokenToUse = captchaToken;
-    if (isTurnstileEnabled() && !captchaToken) {
+    // Always get a fresh token as they are single-use and never reused
+    let tokenToUse: string | undefined;
+    if (isTurnstileEnabled()) {
+      // Reset any existing token to ensure we get a fresh one
+      setCaptchaToken(undefined);
+      turnstileRef.current?.reset();
+
       setIsWaitingForToken(true);
       try {
         // Execute Turnstile verification
