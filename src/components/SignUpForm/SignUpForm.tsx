@@ -38,7 +38,7 @@ export default function SignUpForm({
 }: SignUpFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
+
   const [captchaError, setCaptchaError] = useState<string | null>(null);
   const [isWaitingForToken, setIsWaitingForToken] = useState(false);
   const [showTurnstileField, setShowTurnstileField] = useState(false);
@@ -93,7 +93,6 @@ export default function SignUpForm({
 
   const handleTurnstileSuccess = useCallback(
     (token: string) => {
-      setCaptchaToken(token);
       setCaptchaError(null);
       setIsWaitingForToken(false);
       resolveTokenPromise(token);
@@ -103,7 +102,6 @@ export default function SignUpForm({
 
   const handleTurnstileError = useCallback(
     (error: string) => {
-      setCaptchaToken(undefined);
       setIsWaitingForToken(false);
 
       const errorMessage = `Security verification failed with error #${error}. Please try again or use a different browser.`;
@@ -115,7 +113,6 @@ export default function SignUpForm({
   );
 
   const handleTurnstileExpire = useCallback(() => {
-    setCaptchaToken(undefined);
     setIsWaitingForToken(false);
     setCaptchaError(EXPIRED_MESSAGE);
     rejectTokenPromise(EXPIRED_MESSAGE);
@@ -142,7 +139,7 @@ export default function SignUpForm({
     let tokenToUse: string | undefined;
     if (isTurnstileEnabled()) {
       // Reset any existing token to ensure we get a fresh one
-      setCaptchaToken(undefined);
+
       turnstileRef.current?.reset();
 
       setIsWaitingForToken(true);
@@ -239,22 +236,17 @@ export default function SignUpForm({
         </CheckboxRow>
       </CheckboxCluster>
 
-      {isTurnstileEnabled() &&
-        // Render conditionally based on showTurnstileField state so we can completely hide the element when not needed
-        (showTurnstileField ? (
-          <Field>
-            <Turnstile {...turnstileProps} />
-            {captchaError && (
-              <InputHint variant="error">{captchaError}</InputHint>
-            )}
-          </Field>
-        ) : (
+      {isTurnstileEnabled() && (
+        <Field style={showTurnstileField ? undefined : { display: "none" }}>
           <Turnstile
             {...turnstileProps}
-            options={{ size: "invisible" }}
-            style={{ display: "none" }}
+            options={{ size: "invisible", execution: "execute" }}
           />
-        ))}
+          {captchaError && (
+            <InputHint variant="error">{captchaError}</InputHint>
+          )}
+        </Field>
+      )}
 
       {(error || hasFieldErrors) && (
         <FormMessage
