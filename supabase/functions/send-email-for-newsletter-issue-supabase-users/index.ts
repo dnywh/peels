@@ -28,7 +28,9 @@ const handler = async (_request: Request): Promise<Response> => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (
-      !supabaseUrl || !supabaseServiceKey || !RESEND_API_KEY ||
+      !supabaseUrl ||
+      !supabaseServiceKey ||
+      !RESEND_API_KEY ||
       !newsletterEmailAddress
     ) {
       throw new Error("Missing required environment variables");
@@ -57,13 +59,13 @@ const handler = async (_request: Request): Promise<Response> => {
     for (const profile of profiles) {
       try {
         // Get user email from auth
-        const { data: userData, error: userError } = await supabase.auth.admin
-          .getUserById(profile.id);
+        const { data: userData, error: userError } =
+          await supabase.auth.admin.getUserById(profile.id);
 
         if (userError) {
           console.error(
             `Failed to fetch user data for ${profile.id}:`,
-            userError,
+            userError
           );
           results.push({
             userId: profile.id,
@@ -93,7 +95,7 @@ const handler = async (_request: Request): Promise<Response> => {
         const recipientEmail = TEST_MODE ? TEST_EMAIL : userEmail;
         if (TEST_MODE) {
           console.log(
-            `TEST MODE: Would email ${userEmail}, but sending to ${TEST_EMAIL} instead`,
+            `TEST MODE: Would email ${userEmail}, but sending to ${TEST_EMAIL} instead`
           );
         }
 
@@ -112,7 +114,7 @@ const handler = async (_request: Request): Promise<Response> => {
             }),
             {
               plainText: true,
-            },
+            }
           ),
           headers: {
             "List-Unsubscribe": "<https://www.peels.app/profile>",
@@ -141,7 +143,7 @@ const handler = async (_request: Request): Promise<Response> => {
           if (updateError) {
             console.error(
               `Failed to update flag for ${profile.id}:`,
-              updateError,
+              updateError
             );
             results.push({
               userId: profile.id,
@@ -152,9 +154,7 @@ const handler = async (_request: Request): Promise<Response> => {
             continue;
           }
         } else {
-          console.log(
-            `TEST MODE: Skipping database update for ${profile.id}`,
-          );
+          console.log(`TEST MODE: Skipping database update for ${profile.id}`);
         }
 
         results.push({
@@ -186,7 +186,7 @@ const handler = async (_request: Request): Promise<Response> => {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   } catch (error) {
     console.error("Error:", error);
@@ -197,7 +197,7 @@ const handler = async (_request: Request): Promise<Response> => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };

@@ -14,4 +14,3 @@ export default EmailListItem;
 const listItemStyle = {
   marginBottom: "8px",
 };
-

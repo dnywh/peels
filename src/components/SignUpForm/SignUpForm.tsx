@@ -16,7 +16,7 @@ import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SignUpFormProps {
   defaultValues?: {
@@ -38,7 +38,7 @@ export default function SignUpForm({
 }: SignUpFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
+
   const [captchaError, setCaptchaError] = useState<string | null>(null);
   const [isWaitingForToken, setIsWaitingForToken] = useState(false);
   const [showTurnstileField, setShowTurnstileField] = useState(false);
@@ -49,21 +49,15 @@ export default function SignUpForm({
 
   const hasFieldErrors = Boolean(firstNameError || captchaError);
 
-  // Show field wrapper when waiting for token (challenge might appear) or when there's an error
+  // Only show field wrapper when there's an error (invisible mode handles normal flow)
   useEffect(() => {
-    setShowTurnstileField(isWaitingForToken || !!captchaError);
-  }, [isWaitingForToken, captchaError]);
+    setShowTurnstileField(!!captchaError);
+  }, [captchaError]);
 
   // Promise-based token wait mechanism with timeout
   const waitForToken = useCallback(
     (timeout = TOKEN_TIMEOUT): Promise<string> => {
       return new Promise((resolve, reject) => {
-        // If token already exists, resolve immediately
-        if (captchaToken) {
-          resolve(captchaToken);
-          return;
-        }
-
         // Store resolvers for onSuccess/onError callbacks
         tokenResolverRef.current = resolve;
         tokenRejecterRef.current = reject;
@@ -78,7 +72,7 @@ export default function SignUpForm({
         }, timeout);
       });
     },
-    [captchaToken]
+    []
   );
 
   const resolveTokenPromise = useCallback((token: string) => {
@@ -99,7 +93,6 @@ export default function SignUpForm({
 
   const handleTurnstileSuccess = useCallback(
     (token: string) => {
-      setCaptchaToken(token);
       setCaptchaError(null);
       setIsWaitingForToken(false);
       resolveTokenPromise(token);
@@ -109,7 +102,6 @@ export default function SignUpForm({
 
   const handleTurnstileError = useCallback(
     (error: string) => {
-      setCaptchaToken(undefined);
       setIsWaitingForToken(false);
 
       const errorMessage = `Security verification failed with error #${error}. Please try again or use a different browser.`;
@@ -121,7 +113,6 @@ export default function SignUpForm({
   );
 
   const handleTurnstileExpire = useCallback(() => {
-    setCaptchaToken(undefined);
     setIsWaitingForToken(false);
     setCaptchaError(EXPIRED_MESSAGE);
     rejectTokenPromise(EXPIRED_MESSAGE);
@@ -144,8 +135,13 @@ export default function SignUpForm({
     }
 
     // Handle Turnstile token generation if enabled
-    let tokenToUse = captchaToken;
-    if (isTurnstileEnabled() && !captchaToken) {
+    // Always get a fresh token as they are single-use and never reused
+    let tokenToUse: string | undefined;
+    if (isTurnstileEnabled()) {
+      // Reset any existing token to ensure we get a fresh one
+
+      turnstileRef.current?.reset();
+
       setIsWaitingForToken(true);
       try {
         // Execute Turnstile verification
@@ -241,10 +237,9 @@ export default function SignUpForm({
       </CheckboxCluster>
 
       {isTurnstileEnabled() &&
-        // Render conditionally based on showTurnstileField state so we can completely hide the element when not needed
         (showTurnstileField ? (
           <Field>
-            <Turnstile {...turnstileProps} />
+            <Turnstile {...turnstileProps} options={{ execution: "execute" }} />
             {captchaError && (
               <InputHint variant="error">{captchaError}</InputHint>
             )}
@@ -252,7 +247,7 @@ export default function SignUpForm({
         ) : (
           <Turnstile
             {...turnstileProps}
-            options={{ size: "invisible" }}
+            options={{ size: "invisible", execution: "execute" }}
             style={{ display: "none" }}
           />
         ))}
