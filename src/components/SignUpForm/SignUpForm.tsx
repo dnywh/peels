@@ -49,10 +49,10 @@ export default function SignUpForm({
 
   const hasFieldErrors = Boolean(firstNameError || captchaError);
 
-  // Show field wrapper when waiting for token (challenge might appear) or when there's an error
+  // Only show field wrapper when there's an error (invisible mode handles normal flow)
   useEffect(() => {
-    setShowTurnstileField(isWaitingForToken || !!captchaError);
-  }, [isWaitingForToken, captchaError]);
+    setShowTurnstileField(!!captchaError);
+  }, [captchaError]);
 
   // Promise-based token wait mechanism with timeout
   const waitForToken = useCallback(
@@ -236,17 +236,21 @@ export default function SignUpForm({
         </CheckboxRow>
       </CheckboxCluster>
 
-      {isTurnstileEnabled() && (
-        <Field style={showTurnstileField ? undefined : { display: "none" }}>
+      {isTurnstileEnabled() &&
+        (showTurnstileField ? (
+          <Field>
+            <Turnstile {...turnstileProps} options={{ execution: "execute" }} />
+            {captchaError && (
+              <InputHint variant="error">{captchaError}</InputHint>
+            )}
+          </Field>
+        ) : (
           <Turnstile
             {...turnstileProps}
             options={{ size: "invisible", execution: "execute" }}
+            style={{ display: "none" }}
           />
-          {captchaError && (
-            <InputHint variant="error">{captchaError}</InputHint>
-          )}
-        </Field>
-      )}
+        ))}
 
       {(error || hasFieldErrors) && (
         <FormMessage
