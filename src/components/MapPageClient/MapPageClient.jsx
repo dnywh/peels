@@ -384,18 +384,23 @@ export default function MapPageClient({
       return;
     }
 
-    const { data, error } = await supabase
-      .from(user ? "listings_private_data" : "listings_public_data")
-      .select()
-      .eq("slug", slug)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from(user ? "listings_private_data" : "listings_public_data")
+        .select()
+        .eq("slug", slug)
+        .single();
 
-    if (error) {
+      if (error) {
+        setSelectedListing({ error: true, message: "Listing not found" });
+        return;
+      }
+
+      setSelectedListing(data);
+    } catch (err) {
+      console.warn("loadListingBySlug failed:", err);
       setSelectedListing({ error: true, message: "Listing not found" });
-      return;
     }
-
-    setSelectedListing(data);
   };
 
   const debouncedBoundsChange = useCallback(
@@ -443,34 +448,38 @@ export default function MapPageClient({
       return;
     }
 
-    // Use the same view as initial load slug
-    const { data, error } = await supabase
-      .from(user ? "listings_private_data" : "listings_public_data")
-      .select()
-      .eq("id", listingId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from(user ? "listings_private_data" : "listings_public_data")
+        .select()
+        .eq("id", listingId)
+        .single();
 
-    if (error) {
+      if (error) {
+        setSelectedListing({ error: true, message: "Listing not found" });
+        setIsDrawerOpen(true);
+        setSnap(snapPoints[0]);
+        return;
+      }
+
+      // Close the chat drawer if it's open
+      setIsChatDrawerOpen(false);
+      setSelectedListing(data);
+      setIsDrawerOpen(true);
+      setSnap(snapPoints[0]);
+      setIsDrawerHeaderShown(false);
+
+      if (drawerContentRef.current) {
+        drawerContentRef.current.scrollTop = 0;
+      }
+
+      router.push(`/map?listing=${data.slug}`, { scroll: false });
+    } catch (err) {
+      console.warn("handleMarkerClick failed:", err);
       setSelectedListing({ error: true, message: "Listing not found" });
-      return;
+      setIsDrawerOpen(true);
+      setSnap(snapPoints[0]);
     }
-
-    // Close the chat drawer if it's open
-    setIsChatDrawerOpen(false);
-    // Prepare the listing drawer for the new listing
-    setSelectedListing(data);
-    // Open the listing drawer
-    setIsDrawerOpen(true); // Open drawer when marker is clicked
-    setSnap(snapPoints[0]); // Reset snap point
-    setIsDrawerHeaderShown(false); // Reset header shown state
-
-    // Scroll to the top of the drawer content in case the scrollTop is not 0
-    if (drawerContentRef.current) {
-      drawerContentRef.current.scrollTop = 0; // Reset scroll position
-      console.log("Scrolled to top of drawer content");
-    }
-
-    router.push(`/map?listing=${data.slug}`, { scroll: false });
   };
 
   const handleMapClick = () => {

@@ -21,7 +21,8 @@ export default async function ProfilePage({ searchParams }) {
   } = await supabase.auth.getUser();
 
   const { data: listings } = await supabase
-    // We can access the "listings" table here directly as we have a policy set allowing owners access to their full listings
+    // We can access the "listings" table here directly as we have a policy set allowing authenticated owners access to their full listings
+    // TODO: but should we? Can we get everything we need from the private_data view?
     .from("listings")
     .select()
     .eq("owner_id", user.id)
