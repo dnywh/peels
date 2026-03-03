@@ -17,6 +17,7 @@ import "@pigment-css/react/styles.css";
 
 import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
 import AttributionCapture from "@/components/AttributionCapture";
+import AuthHashCompletion from "@/components/AuthHashCompletion";
 
 declare module "@pigment-css/react/theme" {
   interface ThemeTokens {
@@ -213,6 +214,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <Body>
+        <AuthHashCompletion />
         <AttributionCapture />
         <NextIntlClientProvider>
           <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
