@@ -8,8 +8,7 @@ export const SUPABASE_EMAIL_AUTH_TYPES = new Set([
 ] as const);
 
 export type SupabaseEmailAuthType =
-  (typeof SUPABASE_EMAIL_AUTH_TYPES extends Set<infer T> ? T : never) &
-    string;
+  (typeof SUPABASE_EMAIL_AUTH_TYPES extends Set<infer T> ? T : never) & string;
 
 export const isSupportedEmailAuthType = (
   type: string | null | undefined

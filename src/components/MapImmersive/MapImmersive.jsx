@@ -306,27 +306,27 @@ export default function MapImmersive({
             {listings
               .filter((listing) => hasValidCoordinates(listing))
               .map((listing) => (
-              <DrawerTrigger key={listing.id}>
-                <Marker
-                  longitude={listing.longitude}
-                  latitude={listing.latitude}
-                  anchor="center"
-                  onClick={(event) => {
-                    event.originalEvent.stopPropagation();
-                    setSelectedPinId(listing.id); // Update pin visuals immediately
-                    onMarkerClick(listing.id); // Handle the rest of the selection logic
-                  }}
-                  style={{
-                    zIndex: selectedPinId === listing.id ? 1 : 0,
-                  }}
-                >
-                  <MapPin
-                    selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
-                    type={listing.type}
-                  />
-                </Marker>
-              </DrawerTrigger>
-            ))}
+                <DrawerTrigger key={listing.id}>
+                  <Marker
+                    longitude={listing.longitude}
+                    latitude={listing.latitude}
+                    anchor="center"
+                    onClick={(event) => {
+                      event.originalEvent.stopPropagation();
+                      setSelectedPinId(listing.id); // Update pin visuals immediately
+                      onMarkerClick(listing.id); // Handle the rest of the selection logic
+                    }}
+                    style={{
+                      zIndex: selectedPinId === listing.id ? 1 : 0,
+                    }}
+                  >
+                    <MapPin
+                      selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
+                      type={listing.type}
+                    />
+                  </Marker>
+                </DrawerTrigger>
+              ))}
           </Map>
 
           <MapSearch
