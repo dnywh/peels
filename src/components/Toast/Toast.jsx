@@ -61,6 +61,10 @@ function Toast({ variant: propVariant, children: propChildren }) {
   // Handle URL-based toasts
   const code = searchParams?.get("code");
   const error = searchParams?.get("error");
+  const type = searchParams?.get("type");
+  const shouldShowLegacyEmailUpdatedToast = Boolean(
+    code && type === "email_change"
+  );
 
   const variant = propVariant || (error ? "error" : "success");
   const children =
@@ -70,7 +74,8 @@ function Toast({ variant: propVariant, children: propChildren }) {
       : "Your email has been successfully updated");
 
   // Only show if we have props OR relevant URL params
-  if (!propChildren && !code && !error) return null;
+  if (!propChildren && !error && !shouldShowLegacyEmailUpdatedToast)
+    return null;
 
   return (
     <StyledToast variant={variant} isOpen={isOpen}>

@@ -26,6 +26,26 @@ const redirectToSignIn = (nextPath: string) => {
 
 export default function AuthHashCompletion() {
   useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const preferredNextPath =
+      queryParams.get("next") ?? queryParams.get("redirect_to");
+    const requestedType = queryParams.get("type");
+    const defaultNextPath = getDefaultNextPathByType(requestedType);
+    const nextPath = normalizeNextPath(preferredNextPath, defaultNextPath);
+
+    const authCode = queryParams.get("code");
+    if (authCode) {
+      debugAuth("detected-pkce-code", {
+        nextPath,
+        path: window.location.pathname,
+      });
+      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      callbackUrl.searchParams.set("code", authCode);
+      callbackUrl.searchParams.set("next", nextPath);
+      window.location.assign(callbackUrl.toString());
+      return;
+    }
+
     const hash = window.location.hash;
     if (!hash.startsWith("#")) {
       return;
@@ -36,6 +56,24 @@ export default function AuthHashCompletion() {
     const refreshToken = hashParams.get("refresh_token");
     const type = hashParams.get("type");
     const tokenType = hashParams.get("token_type");
+    const hashError = hashParams.get("error");
+    const hashErrorDescription = hashParams.get("error_description");
+
+    if (hashError || hashErrorDescription) {
+      debugAuth("hash-auth-error", {
+        code: hashError ?? null,
+        reason: hashErrorDescription ?? null,
+        nextPath,
+      });
+      // Remove auth hash before redirecting away.
+      window.history.replaceState(
+        window.history.state,
+        "",
+        `${window.location.pathname}${window.location.search}`
+      );
+      redirectToSignIn(nextPath);
+      return;
+    }
 
     if (
       !accessToken ||
@@ -48,11 +86,10 @@ export default function AuthHashCompletion() {
       return;
     }
 
-    const defaultNextPath = getDefaultNextPathByType(type);
-    const queryParams = new URLSearchParams(window.location.search);
-    const preferredNextPath =
-      queryParams.get("next") ?? queryParams.get("redirect_to");
-    const nextPath = normalizeNextPath(preferredNextPath, defaultNextPath);
+    const typedNextPath = normalizeNextPath(
+      preferredNextPath,
+      getDefaultNextPathByType(type)
+    );
 
     // Remove sensitive hash tokens from the address bar as soon as possible.
     window.history.replaceState(
@@ -63,7 +100,7 @@ export default function AuthHashCompletion() {
 
     debugAuth("detected-hash-auth", {
       type,
-      nextPath,
+      nextPath: typedNextPath,
       path: window.location.pathname,
     });
 
@@ -79,7 +116,7 @@ export default function AuthHashCompletion() {
             access_token: accessToken,
             refresh_token: refreshToken,
             type,
-            next: nextPath,
+            next: typedNextPath,
           }),
         });
 
@@ -94,13 +131,13 @@ export default function AuthHashCompletion() {
             status: response.status,
             reason: data?.error ?? "unknown",
             type,
-            nextPath,
+            nextPath: typedNextPath,
           });
-          redirectToSignIn(nextPath);
+          redirectToSignIn(typedNextPath);
           return;
         }
 
-        const resolvedNextPath = normalizeNextPath(data.next, nextPath);
+        const resolvedNextPath = normalizeNextPath(data.next, typedNextPath);
         debugAuth("session-finalized", {
           type,
           nextPath: resolvedNextPath,
@@ -109,10 +146,10 @@ export default function AuthHashCompletion() {
       } catch (error) {
         debugAuth("session-finalization-error", {
           type,
-          nextPath,
+          nextPath: typedNextPath,
           reason: error instanceof Error ? error.message : "unknown",
         });
-        redirectToSignIn(nextPath);
+        redirectToSignIn(typedNextPath);
       }
     };
 
