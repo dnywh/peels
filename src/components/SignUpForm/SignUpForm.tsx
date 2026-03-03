@@ -30,7 +30,7 @@ interface SignUpFormProps {
 const TOKEN_TIMEOUT = 10000;
 const EXPIRED_MESSAGE = "Verification expired. Please complete it again.";
 const TIMEOUT_MESSAGE =
-  "Security verification is taking longer than expected. Please try again.";
+  "Security check didn’t complete. Try disabling ad blockers and then try again. If it still fails, try a different browser or network.";
 
 export default function SignUpForm({
   defaultValues = {},
@@ -65,7 +65,7 @@ export default function SignUpForm({
         // Timeout after specified duration
         setTimeout(() => {
           if (tokenRejecterRef.current) {
-            tokenRejecterRef.current(new Error("Token generation timeout"));
+            tokenRejecterRef.current(new Error(TIMEOUT_MESSAGE));
             tokenResolverRef.current = null;
             tokenRejecterRef.current = null;
           }

@@ -53,6 +53,17 @@ const DEFAULT_COORDINATES = {
   zoom: 9,
 };
 
+function hasValidCoordinates(listing) {
+  return (
+    listing &&
+    !listing.error &&
+    typeof listing.latitude === "number" &&
+    typeof listing.longitude === "number" &&
+    Number.isFinite(listing.latitude) &&
+    Number.isFinite(listing.longitude)
+  );
+}
+
 export default function MapImmersive({
   mapRef,
   searchInputRef,
@@ -98,8 +109,8 @@ export default function MapImmersive({
   const handleMapLoad = useCallback(() => {
     console.log("Map loaded");
 
-    // If there's a selected listing, center on it instead of using IP location
-    if (selectedListing?.latitude && selectedListing?.longitude) {
+    // If there's a selected listing with valid coords, center on it instead of using IP location
+    if (hasValidCoordinates(selectedListing)) {
       mapRef.current?.flyTo({
         center: [selectedListing.longitude, selectedListing.latitude],
         zoom: 12,
@@ -120,8 +131,8 @@ export default function MapImmersive({
     const bounds = map.getBounds();
     onBoundsChange(bounds);
 
-    // Check if selected listing is in view
-    if (selectedListing) {
+    // Check if selected listing is in view (only when it has valid coords)
+    if (hasValidCoordinates(selectedListing)) {
       const isInView = bounds.contains([
         selectedListing.longitude,
         selectedListing.latitude,
@@ -131,11 +142,10 @@ export default function MapImmersive({
   }, [onBoundsChange, selectedListing]);
 
   const handleFlyToListing = useCallback(() => {
-    if (!selectedListing || !mapRef.current) return;
+    if (!hasValidCoordinates(selectedListing) || !mapRef.current) return;
 
     mapRef.current.flyTo({
       center: [selectedListing.longitude, selectedListing.latitude],
-      // zoom: 12,
       duration: 1500,
     });
   }, [selectedListing]);
@@ -148,8 +158,8 @@ export default function MapImmersive({
     if (isFirstLoad.current) {
       isFirstLoad.current = false;
 
-      // If there's a selected listing in URL, center on it
-      if (selectedListing?.latitude && selectedListing?.longitude) {
+      // If there's a selected listing in URL with valid coords, center on it
+      if (hasValidCoordinates(selectedListing)) {
         mapRef.current?.flyTo({
           center: [selectedListing.longitude, selectedListing.latitude],
           zoom: 12,
@@ -182,11 +192,10 @@ export default function MapImmersive({
 
   // Update lastKnownPosition when we have a valid position
   useEffect(() => {
-    if (selectedListing) {
+    if (hasValidCoordinates(selectedListing)) {
       setLastKnownPosition({
         latitude: selectedListing.latitude,
         longitude: selectedListing.longitude,
-        // zoom: 12,
       });
     } else if (initialCoordinates && !lastKnownPosition) {
       setLastKnownPosition(initialCoordinates);
@@ -195,7 +204,7 @@ export default function MapImmersive({
 
   // Check if listing is in view whenever the map moves or selectedListing changes
   useEffect(() => {
-    if (!mapRef.current || !selectedListing) {
+    if (!mapRef.current || !hasValidCoordinates(selectedListing)) {
       setIsListingInView(true);
       return;
     }
@@ -259,12 +268,16 @@ export default function MapImmersive({
             renderWorldCopies={true}
             initialViewState={{
               longitude:
-                selectedListing?.longitude ||
-                initialCoordinates?.longitude ||
+                (hasValidCoordinates(selectedListing)
+                  ? selectedListing.longitude
+                  : null) ??
+                initialCoordinates?.longitude ??
                 DEFAULT_COORDINATES.longitude,
               latitude:
-                selectedListing?.latitude ||
-                initialCoordinates?.latitude ||
+                (hasValidCoordinates(selectedListing)
+                  ? selectedListing.latitude
+                  : null) ??
+                initialCoordinates?.latitude ??
                 DEFAULT_COORDINATES.latitude,
               zoom: selectedListing
                 ? 8
@@ -290,28 +303,30 @@ export default function MapImmersive({
               }
             />
 
-            {listings.map((listing) => (
-              <DrawerTrigger key={listing.id}>
-                <Marker
-                  longitude={listing.longitude}
-                  latitude={listing.latitude}
-                  anchor="center"
-                  onClick={(event) => {
-                    event.originalEvent.stopPropagation();
-                    setSelectedPinId(listing.id); // Update pin visuals immediately
-                    onMarkerClick(listing.id); // Handle the rest of the selection logic
-                  }}
-                  style={{
-                    zIndex: selectedPinId === listing.id ? 1 : 0,
-                  }}
-                >
-                  <MapPin
-                    selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
-                    type={listing.type}
-                  />
-                </Marker>
-              </DrawerTrigger>
-            ))}
+            {listings
+              .filter((listing) => hasValidCoordinates(listing))
+              .map((listing) => (
+                <DrawerTrigger key={listing.id}>
+                  <Marker
+                    longitude={listing.longitude}
+                    latitude={listing.latitude}
+                    anchor="center"
+                    onClick={(event) => {
+                      event.originalEvent.stopPropagation();
+                      setSelectedPinId(listing.id); // Update pin visuals immediately
+                      onMarkerClick(listing.id); // Handle the rest of the selection logic
+                    }}
+                    style={{
+                      zIndex: selectedPinId === listing.id ? 1 : 0,
+                    }}
+                  >
+                    <MapPin
+                      selected={selectedPinId === listing.id} // Use selectedPinId instead of selectedListing
+                      type={listing.type}
+                    />
+                  </Marker>
+                </DrawerTrigger>
+              ))}
           </Map>
 
           <MapSearch

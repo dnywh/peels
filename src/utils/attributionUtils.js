@@ -2,6 +2,27 @@
 
 const UTM_STORAGE_KEY = "attribution_params";
 const INITIAL_REFERRER_KEY = "initial_referrer";
+const isAttributionDebugEnabled =
+  process.env.NEXT_PUBLIC_ATTRIBUTION_DEBUG === "true";
+
+const getSafeCurrentUrl = () => {
+  try {
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.hash) {
+      const hashParams = new URLSearchParams(currentUrl.hash.slice(1));
+      if (
+        hashParams.get("access_token") ||
+        hashParams.get("refresh_token") ||
+        hashParams.get("token")
+      ) {
+        currentUrl.hash = "#[redacted]";
+      }
+    }
+    return currentUrl.toString();
+  } catch (_error) {
+    return window.location.origin + window.location.pathname;
+  }
+};
 
 export function captureAttributionParams() {
   // Only run in browser
@@ -15,12 +36,13 @@ export function captureAttributionParams() {
     utm_campaign: params.get("utm_campaign"),
   };
 
-  // Debug info
-  console.log("Attribution Debug:", {
-    currentUrl: window.location.href,
-    referrer: document.referrer,
-    hasUtmParams: Object.values(utmParams).some((value) => value),
-  });
+  if (isAttributionDebugEnabled) {
+    console.log("Attribution Debug:", {
+      currentUrl: getSafeCurrentUrl(),
+      referrer: document.referrer,
+      hasUtmParams: Object.values(utmParams).some((value) => value),
+    });
+  }
 
   // Capture initial referrer if we don't have one yet
   const hasStoredReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
@@ -29,14 +51,18 @@ export function captureAttributionParams() {
     document.referrer &&
     !document.referrer.includes(window.location.host)
   ) {
-    console.log("Storing referrer:", document.referrer);
+    if (isAttributionDebugEnabled) {
+      console.log("Storing referrer:", document.referrer);
+    }
     localStorage.setItem(INITIAL_REFERRER_KEY, document.referrer);
   }
 
   // Only store UTM params if we have at least one AND we don't have any stored yet
   const hasStoredUtm = localStorage.getItem(UTM_STORAGE_KEY);
   if (!hasStoredUtm && Object.values(utmParams).some((value) => value)) {
-    console.log("Storing UTM params:", utmParams);
+    if (isAttributionDebugEnabled) {
+      console.log("Storing UTM params:", utmParams);
+    }
     localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utmParams));
   }
 }

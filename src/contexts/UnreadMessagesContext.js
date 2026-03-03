@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 
 const UnreadMessagesContext = createContext();
+const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
 
 export function UnreadMessagesProvider({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -67,13 +68,17 @@ export function UnreadMessagesProvider({ children }) {
 
   // Simplified auth listener for debugging
   useEffect(() => {
-    console.log("🔐 Setting up auth listener");
+    if (isAuthDebugEnabled) {
+      console.log("🔐 Setting up auth listener");
+    }
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("🔐 Auth event:", event);
-      console.log("🔐 Session:", session ? "exists" : "none");
+      if (isAuthDebugEnabled) {
+        console.log("🔐 Auth event:", event);
+        console.log("🔐 Session:", session ? "exists" : "none");
+      }
     });
 
     return () => {
