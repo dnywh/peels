@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import {
+  appendSuccessParam,
   getDefaultNextPathByType,
   isSupportedEmailAuthType,
   normalizeNextPath,
@@ -77,8 +78,13 @@ export async function POST(request: Request) {
       );
     }
 
-    debugAuth("set-session-success", { type, nextPath });
-    return NextResponse.json({ ok: true, next: nextPath });
+    const resolvedNextPath =
+      type === "email_change"
+        ? appendSuccessParam(nextPath, "email_change")
+        : nextPath;
+
+    debugAuth("set-session-success", { type, nextPath: resolvedNextPath });
+    return NextResponse.json({ ok: true, next: resolvedNextPath });
   } catch (error) {
     debugAuth("set-session-error", {
       type,

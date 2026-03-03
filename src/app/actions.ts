@@ -120,7 +120,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     options: {
       // Note: We validate Turnstile server-side above, so we don't pass captchaToken to Supabase
       // This allows us to have granular control (only on sign-up, not sign-in/password reset)
-      emailRedirectTo: `${origin || getBaseUrl()}/?next=/profile`,
+      emailRedirectTo: `${origin || getBaseUrl()}/auth/complete?next=/profile`,
       data: {
         first_name,
         is_newsletter_subscribed: newsletterPreference,
@@ -195,7 +195,9 @@ export const forgotPasswordAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin || getBaseUrl()}/?next=/profile/reset-password`,
+    redirectTo: `${
+      origin || getBaseUrl()
+    }/auth/complete?next=/profile/reset-password`,
   });
 
   if (error) {
@@ -303,7 +305,9 @@ export const updateNewsletterPreferenceAction = async (formData: FormData) => {
 //   }
 
 //   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-//     redirectTo: `${origin || getBaseUrl()}/?next=/profile/reset-password`,
+//     redirectTo: `${
+//       origin || getBaseUrl()
+//     }/auth/complete?next=/profile/reset-password`,
 //   });
 
 //   if (error) {

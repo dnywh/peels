@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { normalizeNextPath } from "@/utils/authRedirects";
+import { appendSuccessParam, normalizeNextPath } from "@/utils/authRedirects";
 import { NextResponse } from "next/server";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
@@ -19,6 +19,7 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code");
   const origin = requestUrl.origin;
   const authErrorDescription = requestUrl.searchParams.get("error_description");
+  const authType = requestUrl.searchParams.get("type");
   const requestedNextPath =
     requestUrl.searchParams.get("next") ??
     requestUrl.searchParams.get("redirect_to");
@@ -39,8 +40,16 @@ export async function GET(request: Request) {
       return NextResponse.redirect(signInUrl);
     }
 
-    debugAuth("code-exchange-success", { nextPath });
-    return NextResponse.redirect(new URL(nextPath, origin));
+    const resolvedNextPath =
+      authType === "email_change"
+        ? appendSuccessParam(nextPath, "email_change")
+        : nextPath;
+
+    debugAuth("code-exchange-success", {
+      nextPath: resolvedNextPath,
+      type: authType ?? null,
+    });
+    return NextResponse.redirect(new URL(resolvedNextPath, origin));
   }
 
   if (authErrorDescription) {
@@ -54,8 +63,11 @@ export async function GET(request: Request) {
     return NextResponse.redirect(signInUrl);
   }
 
-  debugAuth("missing-code-redirect-home", { nextPath });
-  const homeUrl = new URL("/", origin);
-  homeUrl.searchParams.set("next", nextPath);
-  return NextResponse.redirect(homeUrl);
+  debugAuth("missing-code-redirect-complete", { nextPath });
+  const completeUrl = new URL("/auth/complete", origin);
+  completeUrl.searchParams.set("next", nextPath);
+  if (authType) {
+    completeUrl.searchParams.set("type", authType);
+  }
+  return NextResponse.redirect(completeUrl);
 }

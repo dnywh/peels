@@ -27,13 +27,52 @@ const redirectToSignIn = (nextPath: string) => {
 export default function AuthHashCompletion() {
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
+    const hash = window.location.hash;
+    const hashParams = hash.startsWith("#")
+      ? new URLSearchParams(hash.slice(1))
+      : new URLSearchParams();
+
+    const hashType = hashParams.get("type");
     const preferredNextPath =
       queryParams.get("next") ?? queryParams.get("redirect_to");
-    const requestedType = queryParams.get("type");
+    const requestedType = queryParams.get("type") ?? hashType;
     const defaultNextPath = getDefaultNextPathByType(requestedType);
     const nextPath = normalizeNextPath(preferredNextPath, defaultNextPath);
 
     const authCode = queryParams.get("code");
+    const hasAuthHashPayload =
+      hash.startsWith("#") &&
+      (hashParams.get("access_token") ||
+        hashParams.get("refresh_token") ||
+        hashParams.get("error") ||
+        hashParams.get("error_description"));
+
+    // Dashboard-generated links often land at `/` first. Move immediately to a
+    // lightweight completion page to avoid rendering homepage content before
+    // auth finalization redirects.
+    if (
+      window.location.pathname === "/" &&
+      (authCode || Boolean(hasAuthHashPayload))
+    ) {
+      const completeUrl = new URL("/auth/complete", window.location.origin);
+      const completeParams = new URLSearchParams(window.location.search);
+      if (!completeParams.get("next")) {
+        completeParams.set("next", nextPath);
+      }
+      if (!completeParams.get("type") && requestedType) {
+        completeParams.set("type", requestedType);
+      }
+      completeUrl.search = completeParams.toString();
+      completeUrl.hash = window.location.hash;
+
+      debugAuth("reroute-to-complete-page", {
+        nextPath,
+        path: window.location.pathname,
+      });
+      window.location.replace(completeUrl.toString());
+      return;
+    }
+
     if (authCode) {
       debugAuth("detected-pkce-code", {
         nextPath,
@@ -42,16 +81,17 @@ export default function AuthHashCompletion() {
       const callbackUrl = new URL("/auth/callback", window.location.origin);
       callbackUrl.searchParams.set("code", authCode);
       callbackUrl.searchParams.set("next", nextPath);
+      if (requestedType) {
+        callbackUrl.searchParams.set("type", requestedType);
+      }
       window.location.assign(callbackUrl.toString());
       return;
     }
 
-    const hash = window.location.hash;
     if (!hash.startsWith("#")) {
       return;
     }
 
-    const hashParams = new URLSearchParams(hash.slice(1));
     const accessToken = hashParams.get("access_token");
     const refreshToken = hashParams.get("refresh_token");
     const type = hashParams.get("type");

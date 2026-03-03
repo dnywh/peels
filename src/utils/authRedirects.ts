@@ -47,3 +47,10 @@ export const normalizeNextPath = (
     return fallbackPath;
   }
 };
+
+export const appendSuccessParam = (path: string, successValue: string) => {
+  const normalizedPath = normalizeNextPath(path, "/profile");
+  const url = new URL(normalizedPath, "https://www.peels.app");
+  url.searchParams.set("success", successValue);
+  return `${url.pathname}${url.search}${url.hash}`;
+};
