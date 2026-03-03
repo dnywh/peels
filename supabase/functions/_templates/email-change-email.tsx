@@ -1,6 +1,7 @@
 import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
+import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
 import * as React from "npm:react";
 
 interface EmailChangeEmailProps {
@@ -23,6 +24,12 @@ export const EmailChangeEmail = ({
   redirect_to,
   token_hash,
 }: EmailChangeEmailProps) => {
+  const confirmUrl = buildAuthConfirmUrl({
+    emailActionType: email_action_type,
+    redirectTo: redirect_to,
+    tokenHash: token_hash,
+  });
+
   return (
     <EmailBody
       previewText="Here’s a link to change the email address you use on Peels."
@@ -33,9 +40,7 @@ export const EmailChangeEmail = ({
         Follow this link to confirm your new email on Peels:
       </EmailParagraph>
 
-      <EmailButton
-        href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
-      >
+      <EmailButton href={confirmUrl}>
         Change email address
       </EmailButton>
 

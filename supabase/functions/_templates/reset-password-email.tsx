@@ -1,6 +1,7 @@
 import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
+import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
 import * as React from "npm:react";
 
 interface ResetPasswordEmailProps {
@@ -25,6 +26,12 @@ export const ResetPasswordEmail = ({
   redirect_to,
   token_hash,
 }: ResetPasswordEmailProps) => {
+  const confirmUrl = buildAuthConfirmUrl({
+    emailActionType: email_action_type,
+    redirectTo: redirect_to,
+    tokenHash: token_hash,
+  });
+
   return (
     <EmailBody
       previewText="Sorry to hear you’re having trouble signing in to Peels. Here’s a link to reset your password."
@@ -36,9 +43,7 @@ export const ResetPasswordEmail = ({
         link to reset your password:
       </EmailParagraph>
 
-      <EmailButton
-        href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
-      >
+      <EmailButton href={confirmUrl}>
         Reset password
       </EmailButton>
 

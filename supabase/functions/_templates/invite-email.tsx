@@ -2,6 +2,7 @@ import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
 import EmailLink from "./components/EmailLink.tsx";
+import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
 import * as React from "npm:react";
 
 interface InviteEmailProps {
@@ -27,6 +28,12 @@ export const InviteEmail = ({
   token_hash,
 }: InviteEmailProps) => {
   const siteUrl = "https://www.peels.app";
+  const confirmUrl = buildAuthConfirmUrl({
+    emailActionType: email_action_type,
+    redirectTo: redirect_to,
+    tokenHash: token_hash,
+  });
+
   return (
     <EmailBody
       previewText="Lucky you! You’re invited to try out Peels."
@@ -38,9 +45,7 @@ export const InviteEmail = ({
         to try it out. Follow this link to accept the invite:
       </EmailParagraph>
 
-      <EmailButton
-        href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
-      >
+      <EmailButton href={confirmUrl}>
         Accept invite
       </EmailButton>
 

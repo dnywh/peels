@@ -1,6 +1,7 @@
 import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
+import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
 import * as React from "npm:react";
 
 interface SignUpEmailProps {
@@ -27,6 +28,13 @@ export const SignUpEmail = ({
   redirect_to,
   token_hash,
 }: SignUpEmailProps) => {
+  const confirmUrl = buildAuthConfirmUrl({
+    email,
+    emailActionType: email_action_type,
+    redirectTo: redirect_to,
+    tokenHash: token_hash,
+  });
+
   return (
     <EmailBody
       previewText={`Let's get you composting, ${firstName}! Here’s a link to verify your Peels account.`}
@@ -39,8 +47,7 @@ export const SignUpEmail = ({
       </EmailParagraph>
 
       <EmailButton
-        // Append `&email=user@email.com` to standard {{ .ConfirmationURL }}
-        href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}&email=${email}`}
+        href={confirmUrl}
       >
         Verify your Peels account
       </EmailButton>

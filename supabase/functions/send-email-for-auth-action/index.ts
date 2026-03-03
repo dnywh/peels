@@ -1,8 +1,6 @@
 // Custom Auth Emails with React Email and Resend
 // https://supabase.com/docs/guides/functions/examples/auth-send-email-hook-react-email-resend
-// https://www.youtube.com/watch?v=tlA7BomSCgU
 
-// import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import React from "npm:react@18.3.1";
 import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 import { Resend } from "npm:resend";
@@ -13,288 +11,450 @@ import { MagicLinkEmail } from "../_templates/magic-link-email.tsx";
 import { InviteEmail } from "../_templates/invite-email.tsx";
 import { ReauthenticationEmail } from "../_templates/reauthentication-email.tsx";
 import { renderAsync } from "npm:@react-email/components@0.0.22";
-// Temporarily required, see below PR comment
-// import { render } from "npm:@react-email/render";
 
-// Look up required env variables and API keys from Supabase secrets
-const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
-const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
-const hookSecret = Deno.env.get("SEND_EMAIL_HOOK_SECRET") as string;
+declare const EdgeRuntime: {
+  waitUntil: (promise: Promise<unknown>) => void;
+};
+
+type EmailActionType =
+  | "signup"
+  | "invite"
+  | "magiclink"
+  | "recovery"
+  | "email_change"
+  | "email"
+  | "reauthentication";
+
+type HookPayload = {
+  user: {
+    email: string;
+    new_email?: string;
+    user_metadata?: {
+      first_name?: string;
+    };
+  };
+  email_data: {
+    token?: string;
+    token_hash?: string;
+    redirect_to?: string;
+    email_action_type: string;
+  };
+};
+
+type PreparedEmail = {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  emailActionType: EmailActionType;
+};
+
+const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS") ?? "";
+const resendApiKey = Deno.env.get("RESEND_API_KEY") ?? "";
+const hookSecret = Deno.env.get("SEND_EMAIL_HOOK_SECRET") ?? "";
+const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+const resend = new Resend(resendApiKey);
+
+const allowedActionTypes = new Set<EmailActionType>([
+  "signup",
+  "invite",
+  "magiclink",
+  "recovery",
+  "email_change",
+  "email",
+  "reauthentication",
+]);
+
+const json = (status: number, body: Record<string, unknown>) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+
+const isNonEmptyString = (value: unknown): value is string =>
+  typeof value === "string" && value.trim().length > 0;
+
+const toErrorShape = (error: unknown) => {
+  if (error && typeof error === "object") {
+    const maybeError = error as { code?: unknown; message?: unknown; name?: unknown };
+    return {
+      error_code: isNonEmptyString(maybeError.code) ? maybeError.code : "unknown_error",
+      error_name: isNonEmptyString(maybeError.name) ? maybeError.name : "Error",
+      error_message: isNonEmptyString(maybeError.message)
+        ? maybeError.message
+        : "Unknown error",
+    };
+  }
+
+  return {
+    error_code: "unknown_error",
+    error_name: "Error",
+    error_message: "Unknown error",
+  };
+};
+
+const getRecipientDomain = (email: string) => {
+  const parts = email.split("@");
+  return parts.length === 2 ? parts[1] : "unknown";
+};
+
+const logEvent = (
+  event: string,
+  details: Record<string, unknown>
+) => {
+  console.log(
+    JSON.stringify({
+      event,
+      ...details,
+    })
+  );
+};
+
+const parseAndVerify = (payload: string, headers: Headers, wh: Webhook) => {
+  const parsed = wh.verify(payload, Object.fromEntries(headers)) as HookPayload;
+  const actionType = parsed.email_data?.email_action_type;
+
+  if (!isNonEmptyString(actionType) || !allowedActionTypes.has(actionType as EmailActionType)) {
+    throw new Error(`Unsupported email_action_type: ${String(actionType)}`);
+  }
+
+  if (!isNonEmptyString(parsed.user?.email)) {
+    throw new Error("Invalid payload: missing user.email");
+  }
+
+  return {
+    payload: parsed,
+    emailActionType: actionType as EmailActionType,
+  };
+};
+
+const prepareEmail = async (
+  hookPayload: HookPayload,
+  emailActionType: EmailActionType
+): Promise<PreparedEmail> => {
+  const token = hookPayload.email_data?.token ?? "";
+  const tokenHash = hookPayload.email_data?.token_hash ?? "";
+  const redirectTo = hookPayload.email_data?.redirect_to ?? "";
+  const userEmail = hookPayload.user.email;
+  const userNewEmail = hookPayload.user.new_email ?? "";
+  const firstName = hookPayload.user.user_metadata?.first_name ?? "there";
+
+  if (
+    ["signup", "invite", "magiclink", "recovery", "email_change"].includes(
+      emailActionType
+    ) &&
+    !isNonEmptyString(tokenHash)
+  ) {
+    throw new Error(`Invalid payload: missing token_hash for ${emailActionType}`);
+  }
+
+  if (
+    ["email", "reauthentication"].includes(emailActionType) &&
+    !isNonEmptyString(token)
+  ) {
+    throw new Error(`Invalid payload: missing token for ${emailActionType}`);
+  }
+
+  if (emailActionType === "recovery") {
+    return {
+      to: userEmail,
+      subject: "Reset your password on Peels",
+      html: await renderAsync(
+        React.createElement(ResetPasswordEmail, {
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        })
+      ),
+      text: await renderAsync(
+        React.createElement(ResetPasswordEmail, {
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        }),
+        { plainText: true }
+      ),
+      emailActionType,
+    };
+  }
+
+  if (emailActionType === "signup") {
+    return {
+      to: userEmail,
+      subject: "Verify your Peels account",
+      html: await renderAsync(
+        React.createElement(SignUpEmail, {
+          email: userEmail,
+          firstName,
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        })
+      ),
+      text: await renderAsync(
+        React.createElement(SignUpEmail, {
+          email: userEmail,
+          firstName,
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        }),
+        { plainText: true }
+      ),
+      emailActionType,
+    };
+  }
+
+  if (emailActionType === "email_change") {
+    if (!isNonEmptyString(userNewEmail)) {
+      throw new Error("Invalid payload: missing user.new_email for email_change");
+    }
+
+    return {
+      to: userNewEmail,
+      subject: "Confirm your email change on Peels",
+      html: await renderAsync(
+        React.createElement(EmailChangeEmail, {
+          email: userEmail,
+          newEmail: userNewEmail,
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        })
+      ),
+      text: await renderAsync(
+        React.createElement(EmailChangeEmail, {
+          email: userEmail,
+          newEmail: userNewEmail,
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        }),
+        { plainText: true }
+      ),
+      emailActionType,
+    };
+  }
+
+  if (emailActionType === "magiclink") {
+    return {
+      to: userEmail,
+      subject: "Your magic link for Peels",
+      html: await renderAsync(
+        React.createElement(MagicLinkEmail, {
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        })
+      ),
+      text: await renderAsync(
+        React.createElement(MagicLinkEmail, {
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        }),
+        { plainText: true }
+      ),
+      emailActionType,
+    };
+  }
+
+  if (emailActionType === "invite") {
+    return {
+      to: userEmail,
+      subject: "You’ve been invited to Peels",
+      html: await renderAsync(
+        React.createElement(InviteEmail, {
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        })
+      ),
+      text: await renderAsync(
+        React.createElement(InviteEmail, {
+          supabase_url: supabaseUrl,
+          token_hash: tokenHash,
+          redirect_to: redirectTo,
+          email_action_type: emailActionType,
+        }),
+        { plainText: true }
+      ),
+      emailActionType,
+    };
+  }
+
+  if (emailActionType === "reauthentication") {
+    return {
+      to: userEmail,
+      subject: "Confirm reauthentication on Peels",
+      html: await renderAsync(
+        React.createElement(ReauthenticationEmail, {
+          token,
+        })
+      ),
+      text: await renderAsync(
+        React.createElement(ReauthenticationEmail, {
+          token,
+        }),
+        { plainText: true }
+      ),
+      emailActionType,
+    };
+  }
+
+  // "email" type is treated as generic email OTP verification.
+  return {
+    to: userEmail,
+    subject: "Your verification code for Peels",
+    html: await renderAsync(
+      React.createElement(ReauthenticationEmail, {
+        token,
+      })
+    ),
+    text: await renderAsync(
+      React.createElement(ReauthenticationEmail, {
+        token,
+      }),
+      { plainText: true }
+    ),
+    emailActionType,
+  };
+};
+
+addEventListener("unhandledrejection", (event) => {
+  logEvent("auth_email_bg_unhandledrejection", {
+    reason:
+      event.reason instanceof Error
+        ? event.reason.message
+        : String(event.reason ?? "unknown"),
+  });
+  event.preventDefault();
+});
+
+addEventListener("beforeunload", (event) => {
+  logEvent("auth_email_bg_beforeunload", {
+    reason: event.detail?.reason ?? "unknown",
+  });
+});
 
 Deno.serve(async (req) => {
+  const hookRequestId = crypto.randomUUID();
+  const startedAt = Date.now();
+
+  logEvent("auth_email_hook_received", {
+    hook_request_id: hookRequestId,
+    method: req.method,
+    path: new URL(req.url).pathname,
+  });
+
   if (req.method !== "POST") {
-    return new Response("not allowed", { status: 400 });
+    return json(400, { error: { message: "not allowed" } });
   }
 
-  const payload = await req.text();
-  const headers = Object.fromEntries(req.headers);
-  const wh = new Webhook(hookSecret);
+  if (!isNonEmptyString(hookSecret) || !isNonEmptyString(resendApiKey) || !isNonEmptyString(generalEmailAddress)) {
+    logEvent("auth_email_hook_config_error", {
+      hook_request_id: hookRequestId,
+      has_hook_secret: isNonEmptyString(hookSecret),
+      has_resend_api_key: isNonEmptyString(resendApiKey),
+      has_general_email_address: isNonEmptyString(generalEmailAddress),
+    });
 
-  const timingStart = Date.now(); // Begin timer for timeout debugging
+    return json(500, {
+      error: {
+        message: "email hook configuration missing",
+      },
+    });
+  }
 
   try {
-    const {
-      user,
-      email_data: { token, token_hash, redirect_to, email_action_type },
-    } = wh.verify(payload, headers) as {
-      user: {
-        email: string;
-        new_email: string;
-        user_metadata: {
-          first_name: string; // Only reliable upon signup, as user can later outdate this value (via editing their name on profiles table)
-          // lang: string;
-        };
-      };
-      email_data: {
-        token: string;
-        token_hash: string;
-        redirect_to: string;
-        email_action_type: string;
-        site_url: string;
-        token_new: string;
-        token_hash_new: string;
-        // Tests
-      };
+    const payload = await req.text();
+    const wh = new Webhook(hookSecret);
+
+    const { payload: hookPayload, emailActionType } = parseAndVerify(
+      payload,
+      req.headers,
+      wh
+    );
+
+    logEvent("auth_email_hook_verified", {
+      hook_request_id: hookRequestId,
+      email_action_type: emailActionType,
+      duration_ms: Date.now() - startedAt,
+    });
+
+    const sendEmailInBackground = async () => {
+      const sendStartedAt = Date.now();
+
+      try {
+        const preparedEmail = await prepareEmail(hookPayload, emailActionType);
+        const recipientDomain = getRecipientDomain(preparedEmail.to);
+
+        logEvent("auth_email_bg_send_started", {
+          hook_request_id: hookRequestId,
+          email_action_type: emailActionType,
+          recipient_domain: recipientDomain,
+        });
+
+        const { error } = await resend.emails.send({
+          from: `Peels <${generalEmailAddress}>`,
+          to: [preparedEmail.to],
+          subject: preparedEmail.subject,
+          html: preparedEmail.html,
+          text: preparedEmail.text,
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        logEvent("auth_email_bg_send_succeeded", {
+          hook_request_id: hookRequestId,
+          email_action_type: emailActionType,
+          recipient_domain: recipientDomain,
+          send_duration_ms: Date.now() - sendStartedAt,
+        });
+      } catch (error: unknown) {
+        const parsedError = toErrorShape(error);
+        const recipientDomain = isNonEmptyString(hookPayload.user?.email)
+          ? getRecipientDomain(hookPayload.user.email)
+          : "unknown";
+
+        logEvent("auth_email_bg_send_failed", {
+          hook_request_id: hookRequestId,
+          email_action_type: emailActionType,
+          recipient_domain: recipientDomain,
+          send_duration_ms: Date.now() - sendStartedAt,
+          ...parsedError,
+        });
+      }
     };
 
-    // Prepare empty variables to be filled based on email_action_type
-    let emailAddress: string;
-    let subject: string;
-    let html: string;
-    let text: string;
+    EdgeRuntime.waitUntil(sendEmailInBackground());
 
-    console.log({ email_action_type });
-    // All email action types must be included here, as this hook completely replaces the default auth emails on Supabase
-    // "enum": ["signup", "invite", "magiclink", "recovery", "email_change", "email"]
-    // https://github.com/supabase/auth/blob/master/internal/mailer/template.go#L56-L66
-    // https://github.com/supabase/supabase/blob/master/apps/docs/content/guides/auth/auth-hooks/send-email-hook.mdx
+    return json(200, {});
+  } catch (error: unknown) {
+    const parsedError = toErrorShape(error);
 
-    // Prepare React Email template based on email_action_type
-    if (email_action_type === "recovery") {
-      // AKA 'reset password' or 'forgot password'
-      // Sent to (signed out) visitors who go through the 'forgot password' flow
-      // Only triggers an email if the visitor enters an email address that matches that of a Peels account
-      emailAddress = user.email;
-      subject = "Reset your password on Peels";
-      html = await renderAsync(
-        React.createElement(ResetPasswordEmail, {
-          // lang: user["user_metadata"].lang,
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          // token,
-          token_hash,
-          redirect_to,
-          email_action_type,
-        })
-      );
-      text = await renderAsync(
-        React.createElement(ResetPasswordEmail, {
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          token_hash,
-          redirect_to,
-          email_action_type,
-        }),
-        { plainText: true }
-      );
-    } else if (email_action_type === "signup") {
-      // Sent to new users after sign up, before they can do anything else
-      // They have one hour to verify their account
-      emailAddress = user.email;
-      subject = "Verify your Peels account";
-
-      // Timeout debugging
-      console.log("[signup] Start renderAsync", timingStart);
-
-      html = await renderAsync(
-        React.createElement(SignUpEmail, {
-          email: user.email,
-          firstName: user["user_metadata"].first_name, // Replaced .username. Only reliable for signup purposes, see above
-          // lang: user["user_metadata"].lang,
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          // token,
-          token_hash,
-          redirect_to,
-          email_action_type,
-        })
-      );
-      // Timeout debugging
-      console.log(
-        "[signup] After renderAsync HTML",
-        Date.now() - timingStart,
-        "ms"
-      );
-
-      text = await renderAsync(
-        React.createElement(SignUpEmail, {
-          email: user.email,
-          firstName: user["user_metadata"].first_name,
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          token_hash,
-          redirect_to,
-          email_action_type,
-        }),
-        { plainText: true }
-      );
-      // Timeout debugging
-      console.log(
-        "[signup] After renderAsync TEXT",
-        Date.now() - timingStart,
-        "ms"
-      );
-
-      // Timeout debugging
-      const resendStart = Date.now();
-      console.log(
-        "[signup] Before Resend send",
-        resendStart - timingStart,
-        "ms since start"
-      );
-    } else if (email_action_type === "email_change") {
-      // Sent to existing users who change their email address
-      // When these (signed in) submit a new email address, this email is sent to the *new* address only
-      // They must confirm this new email address via a link in that email (again, sent only to the new address)
-      emailAddress = user.new_email; // Since we want to send to the *new* email address
-      subject = "Confirm your email change on Peels";
-      html = await renderAsync(
-        React.createElement(EmailChangeEmail, {
-          email: user.email, // Existing email
-          newEmail: user.new_email, // New email
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          token_hash,
-          redirect_to,
-          email_action_type,
-        })
-      );
-      text = await renderAsync(
-        React.createElement(EmailChangeEmail, {
-          email: user.email,
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          token_hash,
-          redirect_to,
-          email_action_type,
-        }),
-        { plainText: true }
-      );
-    } else if (email_action_type === "magiclink") {
-      // Passwordless login via email for the user
-      // Sent manually via Supabase dashboard
-      emailAddress = user.email;
-      subject = "Your magic link for Peels";
-      html = await renderAsync(
-        React.createElement(MagicLinkEmail, {
-          // lang: user["user_metadata"].lang,
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          // token,
-          token_hash,
-          redirect_to,
-          email_action_type,
-        })
-      );
-      text = await renderAsync(
-        React.createElement(MagicLinkEmail, {
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          token_hash,
-          redirect_to,
-          email_action_type,
-        }),
-        { plainText: true }
-      );
-    } else if (email_action_type === "invite") {
-      // Invite a new user
-      // Sent manually via Supabase dashboard
-      emailAddress = user.email;
-      subject = "You’ve been invited to Peels";
-      html = await renderAsync(
-        React.createElement(InviteEmail, {
-          // lang: user["user_metadata"].lang,
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          // token,
-          token_hash,
-          redirect_to,
-          email_action_type,
-        })
-      );
-      text = await renderAsync(
-        React.createElement(InviteEmail, {
-          supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-          token_hash,
-          redirect_to,
-          email_action_type,
-        }),
-        { plainText: true }
-      );
-    } else if (email_action_type === "reauthentication") {
-      // OTP code
-      // Sent manually via Supabase dashboard
-      emailAddress = user.email;
-      subject = "Confirm reauthentication on Peels";
-      html = await renderAsync(
-        React.createElement(ReauthenticationEmail, {
-          token,
-        })
-      );
-      text = await renderAsync(
-        React.createElement(ReauthenticationEmail, {
-          token,
-        }),
-        { plainText: true }
-      );
-    } else {
-      // This error likely reached if an email_action_type has not been defined above
-      // Every single one must be defined, as Supabase does not fall back to default auth emails
-      // Still TODO: (email_action_type === "email") and/or (email_action_type === "email_change_new")
-      // Poor/lack of documentation makes me unsure which of those to add, or if they are the same
-      // My guess: "email_change_new" is the currently-disabled requirement to have the *old* email addresses confirmed (in addition to confirming only via the new one in "email_change")
-      // My guess: "email" is EmailOTPVerification, perhaps used when 2FA is enabled, as an additional OTP step to signing in
-      throw new Error(
-        `Email action type "${email_action_type}" has not yet been implemented`
-      );
-    }
-
-    // Send the email
-    const resendSendStart = Date.now();
-    // Timeout debugging
-    console.log(
-      "[global] Before resend.emails.send",
-      resendSendStart - timingStart,
-      "ms since function start"
-    );
-    const { error } = await resend.emails.send({
-      from: `Peels <${generalEmailAddress}>`,
-      to: [emailAddress],
-      subject,
-      html,
-      text,
+    logEvent("auth_email_hook_failed", {
+      hook_request_id: hookRequestId,
+      duration_ms: Date.now() - startedAt,
+      ...parsedError,
     });
-    const resendSendEnd = Date.now();
-    // Timeout debugging
-    console.log(
-      "[global] After resend.emails.send",
-      resendSendEnd - resendSendStart,
-      "ms for Resend send"
-    );
-    if (error) {
-      throw error;
-    }
-  } catch (error) {
-    console.log(error);
-    return new Response(
-      JSON.stringify({
-        error: {
-          http_code: error.code,
-          message: error.message,
-        },
-      }),
-      {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
 
-  const responseHeaders = new Headers();
-  responseHeaders.set("Content-Type", "application/json");
-  return new Response(JSON.stringify({}), {
-    status: 200,
-    headers: responseHeaders,
-  });
+    return json(401, {
+      error: {
+        http_code: parsedError.error_code,
+        message: parsedError.error_message,
+      },
+    });
+  }
 });
