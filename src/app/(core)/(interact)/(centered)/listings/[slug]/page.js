@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { generateListingMetadata } from "@/utils/listingUtils";
 import ListingRead from "@/components/ListingRead";
 import { styled } from "@pigment-css/react";
+import { cache } from "react";
 
 const StyledMain = styled("main")(({ theme }) => ({
   flex: 1, // Should be shared with layout used by Profile and Listings pages
@@ -29,7 +30,7 @@ const StyledMain = styled("main")(({ theme }) => ({
   },
 }));
 
-async function getListingData(slug) {
+const getListingData = cache(async (slug) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -40,7 +41,7 @@ async function getListingData(slug) {
     .match({ slug })
     .single();
   return { user, listing };
-}
+});
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

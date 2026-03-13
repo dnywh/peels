@@ -34,7 +34,6 @@ const ChatBubble = styled("p")(({ theme }) => ({
         marginLeft: "30%",
         backgroundColor: theme.colors.message.sent.background,
         color: theme.colors.message.sent.text,
-        textAlign: "right",
         textShadow: `0 0.35px 1px rgba(0, 0, 0, .1)`, // To increase contrast of text
       },
     },
@@ -45,7 +44,6 @@ const ChatBubble = styled("p")(({ theme }) => ({
         marginRight: "30%",
         backgroundColor: theme.colors.message.received.background,
         color: theme.colors.message.received.text,
-        textAlign: "left",
       },
     },
   ],

@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Button from "@/components/Button";
 import { styled } from "@pigment-css/react";
 import { useSearchParams } from "next/navigation";
 
@@ -55,26 +53,28 @@ const StyledToast = styled("div")(({ theme }) => ({
 }));
 
 function Toast({ variant: propVariant, children: propChildren }) {
-  const [isOpen, setIsOpen] = useState(true);
   const searchParams = useSearchParams();
 
   // Handle URL-based toasts
   const error = searchParams?.get("error");
+  const message = searchParams?.get("message");
   const success = searchParams?.get("success");
-  const shouldShowEmailUpdatedToast = success === "email_change";
+  const successMessage =
+    message ||
+    (success === "email_change"
+      ? "Your email has been successfully updated"
+      : success && success !== "true"
+        ? success
+        : null);
 
   const variant = propVariant || (error ? "error" : "success");
-  const children =
-    propChildren ||
-    (error
-      ? "Something's not right. Mind trying again?"
-      : "Your email has been successfully updated");
+  const children = propChildren || error || successMessage;
 
   // Only show if we have props OR relevant URL params
-  if (!propChildren && !error && !shouldShowEmailUpdatedToast) return null;
+  if (!children) return null;
 
   return (
-    <StyledToast variant={variant} isOpen={isOpen}>
+    <StyledToast variant={variant}>
       <p>{children}</p>
       {/* <Button
         variant="secondary"

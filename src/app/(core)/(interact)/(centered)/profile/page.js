@@ -5,39 +5,37 @@ import ProfileListings from "@/components/ProfileListings";
 import ProfileActions from "@/components/ProfileActions";
 import LegalFooter from "@/components/LegalFooter";
 import { styled } from "@pigment-css/react";
+import { Suspense } from "react";
+import Toast from "@/components/Toast";
 
 export const metadata = {
   title: "Profile",
 };
 
-// This page could be static instead of dynamic by handling searchParams in a client component instead and using Suspense here. See the homepage and Toast component as an example.
-export default async function ProfilePage({ searchParams }) {
-  const message = (await searchParams)?.message;
-  const error = (await searchParams)?.error;
+// Keep URL-based feedback in a client leaf so server rendering is driven by auth/data only.
+export default async function ProfilePage() {
   const supabase = await createClient();
-  // Get user data and listings in one query
+  // Get the authenticated user first, then fetch profile data in parallel.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: listings } = await supabase
-    // We can access the "listings" table here directly as we have a policy set allowing authenticated owners access to their full listings
-    // TODO: but should we? Can we get everything we need from the private_data view?
-    .from("listings")
-    .select()
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: true });
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select()
-    .eq("id", user.id)
-    .single();
+  const [{ data: listings }, { data: profile }] = await Promise.all([
+    supabase
+      // We can access the "listings" table here directly as we have a policy set allowing authenticated owners access to their full listings
+      // TODO: but should we? Can we get everything we need from the private_data view?
+      .from("listings")
+      .select()
+      .eq("owner_id", user.id)
+      .order("created_at", { ascending: true }),
+    supabase.from("profiles").select().eq("id", user.id).single(),
+  ]);
 
   return (
     <>
-      {message && <p>Message: {message}</p>}
-      {error && <p>Error: {error}</p>}
+      <Suspense>
+        <Toast />
+      </Suspense>
 
       <NakedSection>
         <ProfileHeader profile={profile} user={user} />

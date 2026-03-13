@@ -2,9 +2,10 @@ import { createClient } from "@/utils/supabase/server";
 import { siteConfig } from "@/config/site";
 import { generateListingMetadata } from "@/utils/listingUtils";
 import MapPageClient from "@/components/MapPageClient";
+import { cache } from "react";
 
 // Fetch data only once and use across metadata and page
-async function getInitialData(listingSlug) {
+const getInitialData = cache(async (listingSlug) => {
   const supabase = await createClient();
 
   // Get user first
@@ -25,11 +26,10 @@ async function getInitialData(listingSlug) {
     user,
     listing: listingResponse?.data,
   };
-}
+});
 
 export async function generateMetadata({ searchParams }) {
   const listingSlug = (await searchParams)?.listing;
-  const { user, listing } = await getInitialData(listingSlug);
 
   if (!listingSlug) {
     return {
@@ -39,6 +39,8 @@ export async function generateMetadata({ searchParams }) {
       },
     };
   }
+
+  const { user, listing } = await getInitialData(listingSlug);
 
   // Use shared utility to generate metadata
   return generateListingMetadata(listing, user);

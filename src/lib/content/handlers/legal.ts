@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import type { LegalPageData } from "../types";
 import {
   formatContentData,
@@ -6,7 +7,7 @@ import {
   validateBaseMetadata,
 } from "../utils";
 
-export async function getLegalPageMetadata(
+export const getLegalPageMetadata = cache(async function getLegalPageMetadata(
   slug: string
 ): Promise<LegalPageData> {
   try {
@@ -36,4 +37,4 @@ export async function getLegalPageMetadata(
     console.error(error?.message);
     return notFound();
   }
-}
+});
