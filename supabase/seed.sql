@@ -288,7 +288,18 @@ set
   initiator_id = excluded.initiator_id,
   owner_id = excluded.owner_id;
 
-alter table public.chat_messages disable trigger webhook_new_chat_message;
+do $$
+begin
+  if exists (
+    select 1
+    from pg_trigger
+    where tgname = 'webhook_new_chat_message'
+      and tgrelid = 'public.chat_messages'::regclass
+  ) then
+    execute 'alter table public.chat_messages disable trigger webhook_new_chat_message';
+  end if;
+end
+$$;
 
 insert into public.chat_messages (
   id,
@@ -323,7 +334,18 @@ set
   content = excluded.content,
   read_at = excluded.read_at;
 
-alter table public.chat_messages enable trigger webhook_new_chat_message;
+do $$
+begin
+  if exists (
+    select 1
+    from pg_trigger
+    where tgname = 'webhook_new_chat_message'
+      and tgrelid = 'public.chat_messages'::regclass
+  ) then
+    execute 'alter table public.chat_messages enable trigger webhook_new_chat_message';
+  end if;
+end
+$$;
 
 select
   'seed complete' as status,
