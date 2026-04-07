@@ -1,27 +1,40 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
+const INITIAL_REFERRER_COOKIE = "initial_referrer";
+const INITIAL_REFERRER_MAX_AGE = 60 * 60 * 24 * 90;
+
+function getExternalReferrer(request: NextRequest) {
+  const referrer = request.headers.get("referer");
+
+  if (!referrer) return null;
+
+  try {
+    const referrerUrl = new URL(referrer);
+
+    if (referrerUrl.host === request.nextUrl.host) {
+      return null;
+    }
+
+    return referrer;
+  } catch {
+    return null;
+  }
+}
+
 export async function proxy(request: NextRequest) {
-  // Get the initial referrer from the request headers
-  const referrer = request.headers.get("referer") || "direct";
-  // console.log("Referrer:", referrer); // Logs 'Referrer: null' if missing
-
-  // Get response from session update
   const response = await updateSession(request);
+  const hasInitialReferrerCookie = request.cookies.get(INITIAL_REFERRER_COOKIE);
+  const externalReferrer = getExternalReferrer(request);
 
-  // Log auth header status (temporary testing)
-  // const authHeader = response.headers.get("x-supabase-auth");
-  // console.log("Auth header status:", {
-  //   exists: !!authHeader,
-  //   value: authHeader,
-  //   url: request.url,
-  // });
-
-  // If this is a new session, set the initial referrer in a custom header
-  // This header will be available in server components and API routes
-  if (response.headers.get("x-supabase-auth") === "new") {
-    response.headers.set("x-initial-referrer", referrer);
-    console.log("New session detected, setting initial referrer:", referrer);
+  if (!hasInitialReferrerCookie && externalReferrer && request.method === "GET") {
+    response.cookies.set(INITIAL_REFERRER_COOKIE, externalReferrer, {
+      httpOnly: false,
+      maxAge: INITIAL_REFERRER_MAX_AGE,
+      path: "/",
+      sameSite: "lax",
+      secure: request.nextUrl.protocol === "https:",
+    });
   }
 
   return response;

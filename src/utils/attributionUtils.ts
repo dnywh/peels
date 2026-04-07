@@ -2,10 +2,21 @@
 
 const UTM_STORAGE_KEY = "attribution_params";
 const INITIAL_REFERRER_KEY = "initial_referrer";
+const INITIAL_REFERRER_COOKIE = "initial_referrer";
 const isAttributionDebugEnabled =
   process.env.NEXT_PUBLIC_ATTRIBUTION_DEBUG === "true";
 
-const getSafeCurrentUrl = () => {
+type AttributionParams = {
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+};
+
+export type StoredAttributionParams = Partial<AttributionParams> & {
+  initial_referrer: string | null;
+};
+
+const getSafeCurrentUrl = (): string => {
   try {
     const currentUrl = new URL(window.location.href);
     if (currentUrl.hash) {
@@ -24,40 +35,70 @@ const getSafeCurrentUrl = () => {
   }
 };
 
+const getCookie = (name: string): string | null => {
+  const cookie = document.cookie
+    .split("; ")
+    .find((entry) => entry.startsWith(`${name}=`));
+
+  if (!cookie) return null;
+
+  const value = cookie.split("=").slice(1).join("=");
+
+  return value ? decodeURIComponent(value) : null;
+};
+
+const getExternalDocumentReferrer = (): string | null => {
+  const referrer = document.referrer;
+
+  if (!referrer) return null;
+
+  try {
+    const referrerUrl = new URL(referrer);
+
+    if (referrerUrl.host === window.location.host) {
+      return null;
+    }
+
+    return referrer;
+  } catch {
+    return null;
+  }
+};
+
+const storeInitialReferrer = (referrer: string) => {
+  localStorage.setItem(INITIAL_REFERRER_KEY, referrer);
+};
+
 export function captureAttributionParams() {
-  // Only run in browser
   if (typeof window === "undefined") return;
 
-  // Get UTM params from URL
   const params = new URLSearchParams(window.location.search);
-  const utmParams = {
+  const utmParams: AttributionParams = {
     utm_source: params.get("utm_source"),
     utm_medium: params.get("utm_medium"),
     utm_campaign: params.get("utm_campaign"),
   };
+  const cookieReferrer = getCookie(INITIAL_REFERRER_COOKIE);
 
   if (isAttributionDebugEnabled) {
     console.log("Attribution Debug:", {
       currentUrl: getSafeCurrentUrl(),
       referrer: document.referrer,
+      cookieReferrer,
       hasUtmParams: Object.values(utmParams).some((value) => value),
     });
   }
 
-  // Capture initial referrer if we don't have one yet
   const hasStoredReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
-  if (
-    !hasStoredReferrer &&
-    document.referrer &&
-    !document.referrer.includes(window.location.host)
-  ) {
+  const initialReferrer = cookieReferrer ?? getExternalDocumentReferrer();
+
+  if (!hasStoredReferrer && initialReferrer) {
     if (isAttributionDebugEnabled) {
-      console.log("Storing referrer:", document.referrer);
+      console.log("Storing referrer:", initialReferrer);
     }
-    localStorage.setItem(INITIAL_REFERRER_KEY, document.referrer);
+    storeInitialReferrer(initialReferrer);
   }
 
-  // Only store UTM params if we have at least one AND we don't have any stored yet
   const hasStoredUtm = localStorage.getItem(UTM_STORAGE_KEY);
   if (!hasStoredUtm && Object.values(utmParams).some((value) => value)) {
     if (isAttributionDebugEnabled) {
@@ -67,13 +108,22 @@ export function captureAttributionParams() {
   }
 }
 
-export function getStoredAttributionParams() {
-  // Only run in browser
-  if (typeof window === "undefined") return {};
+export function getStoredAttributionParams(): StoredAttributionParams {
+  if (typeof window === "undefined") {
+    return {
+      initial_referrer: null,
+    };
+  }
 
   try {
     const stored = localStorage.getItem(UTM_STORAGE_KEY);
-    const initialReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
+    const storedInitialReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
+    const cookieReferrer = getCookie(INITIAL_REFERRER_COOKIE);
+    const initialReferrer = storedInitialReferrer ?? cookieReferrer;
+
+    if (!storedInitialReferrer && initialReferrer) {
+      storeInitialReferrer(initialReferrer);
+    }
 
     return {
       ...(stored ? JSON.parse(stored) : {}),
@@ -81,11 +131,12 @@ export function getStoredAttributionParams() {
     };
   } catch (e) {
     console.error("Error reading attribution params:", e);
-    return {};
+    return {
+      initial_referrer: null,
+    };
   }
 }
 
-// Unused in production, as we want to keep first-touch attribution data
 export function clearAttributionParams() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(UTM_STORAGE_KEY);
