@@ -623,7 +623,35 @@ CREATE OR REPLACE TRIGGER "trigger_set_slug" BEFORE INSERT ON "public"."listings
 
 
 
-CREATE OR REPLACE TRIGGER "webhook_new_chat_message" AFTER INSERT ON "public"."chat_messages" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('http://kong:8000/functions/v1/send-email-for-new-chat-message', 'POST', '{"Content-type":"application/json","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"}', '{}', '5000');
+DROP TRIGGER IF EXISTS "webhook_new_chat_message" ON "public"."chat_messages";
+
+DO $$
+BEGIN
+  -- Preview branches created via GitHub integration may not have the
+  -- supabase_functions trigger helper available during migration replay.
+  IF EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'supabase_functions'
+      AND p.proname = 'http_request'
+      AND pg_get_function_identity_arguments(p.oid) = ''
+  ) THEN
+    EXECUTE $trigger$
+      CREATE TRIGGER "webhook_new_chat_message"
+      AFTER INSERT ON "public"."chat_messages"
+      FOR EACH ROW
+      EXECUTE FUNCTION "supabase_functions"."http_request"(
+        'http://kong:8000/functions/v1/send-email-for-new-chat-message',
+        'POST',
+        '{"Content-type":"application/json","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"}',
+        '{}',
+        '5000'
+      )
+    $trigger$;
+  END IF;
+END
+$$;
 
 
 
@@ -915,7 +943,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INS
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO "service_role";
-
 
 
 
