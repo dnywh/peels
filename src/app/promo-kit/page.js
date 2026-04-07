@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
+import { getPromoKitUrl } from "@/utils/storage";
 
 export default function PromoKit() {
-  redirect(
-    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`
-  );
+  redirect(getPromoKitUrl());
 }
