@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
+import { getStoragePublicUrl } from "@/utils/storage";
 
 export async function uploadAvatar(file, bucket, id) {
   const supabase = createClient();
@@ -61,12 +62,11 @@ export async function deleteAvatar(filePath, bucket, id) {
 }
 
 export function getListingPhotoUrl(filename, bucket) {
-  return `https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/${bucket}/${filename}`;
+  return getStoragePublicUrl(bucket, filename) ?? "";
 }
 
 export function getAvatarUrl(filename, bucket) {
-  // Just using hardcoded URLs for now
-  return `https://mfnaqdyunuafbwukbbyr.supabase.co/storage/v1/object/public/${bucket}/${filename}`;
+  return getStoragePublicUrl(bucket, filename) ?? "";
 
   // TODO:
   // Set some privacy controls, expiry and grab the links dynamically:

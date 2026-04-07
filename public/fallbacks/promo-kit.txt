@@ -1,0 +1,5 @@
+The full Peels promo kit lives in the production Supabase static bucket.
+
+This local fallback keeps development and preview environments self-contained.
+If you need the real archive, open the production site or seed the local static
+bucket with a project-safe placeholder.

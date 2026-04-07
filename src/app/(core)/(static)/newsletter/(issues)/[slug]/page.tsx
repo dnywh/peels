@@ -11,6 +11,7 @@ import { getNewsletterIssueMetadata } from "@/lib/content/handlers/newsletter";
 import StaticPageSection from "@/components/StaticPageSection";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
+import { getNewsletterIssueImageUrl } from "@/utils/storage";
 
 type NewsletterIssuePageProps = {
   params: Promise<{ slug: string }>;
@@ -29,7 +30,10 @@ export async function generateMetadata({
         ...metadata.openGraph,
         images: [
           {
-            url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/newsletter/${customMetadata.issueNumber}/${customMetadata.ogImage}`,
+            url: getNewsletterIssueImageUrl(
+              customMetadata.issueNumber,
+              customMetadata.ogImage
+            ),
           },
         ],
         type: "article",

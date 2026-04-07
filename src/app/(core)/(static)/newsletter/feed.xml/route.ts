@@ -2,6 +2,7 @@
 import { Feed } from "feed";
 import { getAllNewsletterIssues } from "@/lib/content/handlers/newsletter";
 import { siteConfig } from "@/config/site";
+import { getNewsletterIssueImageUrl } from "@/utils/storage";
 
 export const dynamic = "force-static"; // Force as prerendered static content on build, not dynamic (otherwise issues don't populate)
 
@@ -20,6 +21,13 @@ export async function GET() {
 
   newsletterIssues.forEach((issue) => {
     const issueLink = `${siteConfig.url}/newsletter/${issue.slug}`;
+    const issueImage = new URL(
+      getNewsletterIssueImageUrl(
+        issue.customMetadata.issueNumber,
+        issue.customMetadata.ogImage
+      ),
+      siteConfig.url
+    ).toString();
     feed.addItem({
       title: issue.metadata.title,
       link: `${siteConfig.url}/newsletter/${issue.slug}`,
@@ -27,7 +35,7 @@ export async function GET() {
       author: issue.metadata.authors.map((author) => ({
         name: author,
       })),
-      image: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/newsletter/${issue.customMetadata.issueNumber}/${issue.customMetadata.ogImage}`,
+      image: issueImage,
       content: `${
         issue.metadata.description ? `<p>${issue.metadata.description}</p>` : ""
       }<p><a href="${issueLink}">Read this full issue on Peels</a></p>`,

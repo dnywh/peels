@@ -31,13 +31,15 @@ npm run dev
 
 ### Core Requirements
 
-| Requirement | Version               |
-| ----------- | --------------------- |
-| Node.js     | 18+ (LTS recommended) |
-| npm/yarn    | Latest stable         |
-| Git         | Latest stable         |
+| Requirement  | Version               |
+| ------------ | --------------------- |
+| Node.js      | 18+ (LTS recommended) |
+| npm/yarn     | Latest stable         |
+| Git          | Latest stable         |
+| Docker       | Latest stable         |
+| Supabase CLI | Latest stable         |
 
-Deno and Docker are also required if you plan to work on Supabase edge functions.
+Deno is also required if you plan to work on Supabase edge functions.
 
 ### Required Services
 
@@ -73,11 +75,22 @@ For minor improvements, feel free to just go ahead and create a pull request. Fo
 
 ### Environment Variables
 
-Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](https://protomaps.com/account) will work just fine for local development. You’ll probably need the shared development keys for Supabase, so please introduce yourself and tell us how you plan to help on the [discussion board](https://github.com/dnywh/peels/discussions). We’ll go from there.
+Personal keys for [MapTiler](https://www.maptiler.com/cloud/) and [Protomaps](https://protomaps.com/account) will work just fine for local development.
 
-> **Note**: We’re exploring ways to make local development work without a shared development key for Supabase, probably by [seeding example data](https://supabase.com/docs/guides/local-development/seeding-your-database) and doing something similar for authentication. We’d love your help with this.
+For local-first Supabase development:
 
-Environmental variables can also be optionally added to [Supabase edge functions](https://github.com/dnywh/peels/blob/main/supabase/functions) for local testing. You’re unlikely to need these though, as each edge function currently requires user information and interaction.
+1. Copy `.env.example` to `.env.local`
+2. Run `npm run supabase:start`
+3. Run `npm run supabase:env`
+4. Make sure `.env.local` contains the local URL `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
+5. Copy the local `ANON_KEY` value into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`
+
+The repo defaults `NEXT_PUBLIC_SUPABASE_URL` to `http://127.0.0.1:54331` so local development does not need to point at the hosted Peels project. If you already had a `.env.local` from hosted development, update that value manually because copying `.env.example` later may not overwrite your existing file.
+Peels intentionally uses the `54331`-`54334` local port range so it can run alongside other Supabase projects that still use the CLI defaults.
+
+If you need to serve [Supabase edge functions](https://github.com/dnywh/peels/blob/main/supabase/functions) locally, copy `supabase/.env.example` to `supabase/.env` and add only the secrets you actually need. Production secrets should remain dashboard-managed for now.
+
+For the fuller operational walkthrough, including GitHub/Vercel dashboard setup and fresh-computer bootstrap, see [docs/supabase-local-first.md](./docs/supabase-local-first.md).
 
 ### Usage
 
@@ -91,13 +104,98 @@ Environmental variables can also be optionally added to [Supabase edge functions
 
 2. Populate environment variables:
    - Copy `.env.example` to `.env.local`
-   - Request development credentials via our [discussions board](https://github.com/dnywh/peels/discussions)
+   - Start local Supabase with `npm run supabase:start`
+   - Run `npm run supabase:env`
+   - Confirm `.env.local` uses `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
+   - Copy the local `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 3. Start development:
 
    ```bash
+   npm run supabase:start
    npm run dev
    ```
+
+### Supabase Local-First Workflow
+
+Use the Supabase CLI as the default path for schema work:
+
+```bash
+# Start the local backend
+npm run supabase:start
+
+# See local connection details
+npm run supabase:env
+
+# Rebuild the local database from migrations + seed
+npm run supabase:reset
+```
+
+For day-to-day development:
+
+1. Make schema or policy changes locally
+2. Capture them in SQL migrations under `supabase/migrations/`
+3. Replay everything with `npm run supabase:reset`
+4. Smoke-test the app with `npm run dev`
+5. Commit code and migration files together
+
+Use local Studio, `psql`, or the hosted Supabase dashboard for browsing rows and running ad hoc queries. Use the CLI for schema lifecycle, not as the main data browser.
+
+### Supabase Buckets and Seed Data
+
+- Bucket configuration lives in `supabase/config.toml`
+- Local reset data lives in `supabase/seed.sql`
+- Local placeholder static assets live in `supabase/storage/static/`
+
+Keep all local and preview data sanitized. Do not export or commit production data.
+
+### One-Time Production Bootstrap for Maintainers
+
+Peels already had schema history in the hosted project before migrations were committed to Git. If you need to re-bootstrap the repo from production, use this order:
+
+```bash
+supabase login
+supabase link --project-ref mfnaqdyunuafbwukbbyr
+supabase migration fetch
+supabase db dump --schema public --file supabase/migrations/20251026060000_baseline_schema.sql
+supabase migration repair 20251026060000 --status applied --linked
+```
+
+The important bit is that the baseline migration must exist in Git before the first fetched remote migration, and the hosted project must be marked as already having that baseline. That keeps local resets reproducible without asking production to replay the whole schema.
+
+If you have custom `auth` or `storage` schema objects beyond the defaults, audit and pull those explicitly after the public baseline:
+
+```bash
+supabase db pull auth_schema --schema auth
+supabase db pull storage_schema --schema storage
+```
+
+Do not use the Supabase dashboard for routine schema changes once a migration exists in Git. If an emergency dashboard hotfix is unavoidable, pull it back into the repo immediately before making the next change.
+
+### Supabase Branching
+
+One-time manual setup in Supabase/GitHub should be:
+
+1. Enable the Supabase GitHub integration for this repo
+2. Set the scope to `supabase/**`
+3. Turn on `Automatic branching`
+4. Turn on `Supabase changes only`
+5. Keep `main` as the production branch
+6. Require the `Supabase Preview` check before merge
+
+The repo also includes a GitHub Actions workflow that replays the local Supabase setup on PRs touching `supabase/**`.
+
+If Peels preview deployments run on Vercel, make sure the preview environment uses the branch-specific `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` values that Supabase provides for each preview branch instead of production credentials.
+
+### Outside-the-Repo Setup
+
+Some setup still lives in web dashboards because Git cannot store everything:
+
+1. In the Supabase dashboard, connect the GitHub repo and turn on preview branches for changes under `supabase/**`
+2. In GitHub branch protection, require the `Supabase Preview` check before merge
+3. In Vercel project settings, set preview environment variables to the Supabase branch credentials instead of the production project credentials
+
+In plain English: the repo now tells Supabase and the app how to behave, but Supabase, GitHub, and Vercel still each need one “please use preview mode for PRs” switch turned on in their own settings pages.
 
 You might need to clear out and restart your Next.js development server in the case that you add environment variables after the above steps. Here’s how to do that:
 
@@ -151,7 +249,8 @@ Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/sup
 3. Initialize and run:
 
    ```bash
-   npx supabase db push
+   npm run supabase:start
+   npm run supabase:reset
    npm run dev
    ```
 

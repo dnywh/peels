@@ -1,10 +1,8 @@
-import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
-import { cookies, headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { getBaseUrl } from "@/utils/url";
 import { siteConfig } from "@/config/site";
+import { getStaticFontUrl, usesHostedStaticAssets } from "@/utils/storage";
 
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
@@ -32,14 +30,21 @@ declare module "@pigment-css/react/theme" {
   }
 }
 
-const staticAssetUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static`;
-
-// Global styles:
-globalCss`
-// National 2 font
+const shouldLoadHostedFonts = usesHostedStaticAssets();
+const regularFontUrl = shouldLoadHostedFonts
+  ? getStaticFontUrl("national-2-regular-subset.woff2")
+  : null;
+const mediumFontUrl = shouldLoadHostedFonts
+  ? getStaticFontUrl("national-2-medium-subset.woff2")
+  : null;
+const boldFontUrl = shouldLoadHostedFonts
+  ? getStaticFontUrl("national-2-bold-subset.woff2")
+  : null;
+const hostedFontFaces = shouldLoadHostedFonts
+  ? `
   @font-face {
     font-family: 'National 2';
-    src: url(${staticAssetUrl}/fonts/national-2-regular-subset.woff2) format('woff2');
+    src: url(${regularFontUrl}) format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -47,7 +52,7 @@ globalCss`
 
   @font-face {
     font-family: 'National 2';
-    src: url(${staticAssetUrl}/fonts/national-2-medium-subset.woff2) format('woff2');
+    src: url(${mediumFontUrl}) format('woff2');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -55,11 +60,17 @@ globalCss`
 
   @font-face {
     font-family: 'National 2';
-    src: url(${staticAssetUrl}/fonts/national-2-bold-subset.woff2) format('woff2');
+    src: url(${boldFontUrl}) format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
   }
+`
+  : "";
+
+// Global styles:
+globalCss`
+${hostedFontFaces}
 
     // Apply the font family to all elements
   * {

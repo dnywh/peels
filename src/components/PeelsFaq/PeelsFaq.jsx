@@ -4,6 +4,7 @@ import FaqContainer from "@/components/FaqContainer";
 import FaqDetails from "@/components/FaqDetails";
 import StrongLink from "@/components/StrongLink";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
+import { getPromoKitUrl } from "@/utils/storage";
 
 // General FAQ for 'about Peels'
 function PeelsFaq() {
@@ -73,11 +74,7 @@ function PeelsFaq() {
         {t.rich("promotion.answer", {
           p: (chunks) => <p>{chunks}</p>,
           promoKit: (chunks) => (
-            <StrongLink
-              href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/static/promo-kit.zip`}
-            >
-              {chunks}
-            </StrongLink>
+            <StrongLink href={getPromoKitUrl()}>{chunks}</StrongLink>
           ),
           email: (chunks) => (
             <EncodedEmailLink address={siteConfig.encodedEmail.support}>

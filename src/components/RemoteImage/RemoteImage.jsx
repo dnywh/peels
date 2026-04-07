@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getStoragePublicUrl } from "@/utils/storage";
 
 //TODO: Use safer getPublicUrl method from Supabase
 // But this adds complication and all storage URLs are already public
@@ -57,9 +58,24 @@ export default function RemoteImage({
   }
 
   // Handle Supabase storage images
+  const storageUrl = getStoragePublicUrl(bucket, filename);
+
+  if (!storageUrl) {
+    return (
+      <Image
+        src={`/avatars/default/${defaultImage}`}
+        alt={alt}
+        style={style}
+        width={width}
+        height={height}
+        {...props}
+      />
+    );
+  }
+
   return (
     <Image
-      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${filename}`}
+      src={storageUrl}
       alt={alt}
       style={style}
       width={width}

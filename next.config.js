@@ -2,6 +2,61 @@ import createNextIntlPlugin from "next-intl/plugin";
 import { withPigment, extendTheme } from "@pigment-css/nextjs-plugin";
 import createMDX from "@next/mdx";
 
+const storageRemotePatterns = [
+  {
+    protocol: "https",
+    hostname: "mfnaqdyunuafbwukbbyr.supabase.co",
+    port: "",
+    pathname: "/storage/v1/object/public/**",
+    search: "",
+  },
+  {
+    protocol: "http",
+    hostname: "127.0.0.1",
+    port: "54331",
+    pathname: "/storage/v1/object/public/**",
+    search: "",
+  },
+  {
+    protocol: "http",
+    hostname: "localhost",
+    port: "54331",
+    pathname: "/storage/v1/object/public/**",
+    search: "",
+  },
+];
+
+if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  try {
+    const { protocol, hostname, port } = new URL(
+      process.env.NEXT_PUBLIC_SUPABASE_URL
+    );
+
+    storageRemotePatterns.unshift({
+      protocol: protocol.replace(":", ""),
+      hostname,
+      port,
+      pathname: "/storage/v1/object/public/**",
+      search: "",
+    });
+  } catch {
+    // Ignore invalid URLs in local env setup and fall back to defaults above.
+  }
+}
+
+const uniqueStorageRemotePatterns = storageRemotePatterns.filter(
+  (pattern, index, allPatterns) =>
+    index ===
+    allPatterns.findIndex(
+      (candidate) =>
+        candidate.protocol === pattern.protocol &&
+        candidate.hostname === pattern.hostname &&
+        candidate.port === pattern.port &&
+        candidate.pathname === pattern.pathname &&
+        candidate.search === pattern.search
+    )
+);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
@@ -15,15 +70,7 @@ const nextConfig = {
     // Can be safetly increased as all user-generated imagery use uniques slugs
     minimumCacheTTL: 2678400, // 31 days (default value is `60`, i.e. one minute)
     // Define where remote images can be pulled from
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "mfnaqdyunuafbwukbbyr.supabase.co",
-        port: "",
-        pathname: "/storage/v1/object/public/**",
-        search: "",
-      },
-    ],
+    remotePatterns: uniqueStorageRemotePatterns,
   },
   async headers() {
     return [

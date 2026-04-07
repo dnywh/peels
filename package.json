@@ -5,6 +5,12 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:env": "supabase status -o env",
+    "supabase:reset": "supabase db reset",
+    "supabase:diff": "supabase db diff",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
