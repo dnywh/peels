@@ -147,34 +147,6 @@ $$;
 ALTER FUNCTION "public"."count_verified_users_with_listings"() OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."delete_storage_object"("bucket" "text", "object" "text") RETURNS "record"
-    LANGUAGE "plpgsql" SECURITY DEFINER
-    AS $$
-DECLARE
-  -- Local bootstrap should call the local Supabase gateway, not production.
-  project_url text := 'http://kong:8000';
-  service_role_key text := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
-  url text := project_url || '/storage/v1/object/' || bucket || '/' || object;
-  response record;  -- Use a record to capture the response
-BEGIN
-  SELECT
-      result.status::int, result.content::text
-  INTO response
-  FROM extensions.http((
-    'DELETE',
-    url,
-    ARRAY[extensions.http_header('authorization', 'Bearer ' || service_role_key)],
-    NULL,
-    NULL)::extensions.http_request) AS result;
-
-  RETURN (response.status, response.content);  -- Return the status and content as a record
-END;
-$$;
-
-
-ALTER FUNCTION "public"."delete_storage_object"("bucket" "text", "object" "text") OWNER TO "postgres";
-
-
 CREATE OR REPLACE FUNCTION "public"."generate_unique_slug"() RETURNS "text"
     LANGUAGE "plpgsql"
     AS $$
@@ -811,12 +783,6 @@ GRANT ALL ON FUNCTION "public"."count_verified_users_with_listings"() TO "servic
 
 
 
-GRANT ALL ON FUNCTION "public"."delete_storage_object"("bucket" "text", "object" "text") TO "anon";
-GRANT ALL ON FUNCTION "public"."delete_storage_object"("bucket" "text", "object" "text") TO "authenticated";
-GRANT ALL ON FUNCTION "public"."delete_storage_object"("bucket" "text", "object" "text") TO "service_role";
-
-
-
 GRANT ALL ON FUNCTION "public"."generate_unique_slug"() TO "anon";
 GRANT ALL ON FUNCTION "public"."generate_unique_slug"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."generate_unique_slug"() TO "service_role";
@@ -943,5 +909,4 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INS
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO "service_role";
-
 

@@ -34,6 +34,7 @@ What this does:
 - A PR branch that changes `supabase/**` gets its own Supabase preview branch.
 - That preview branch runs migrations and bucket config from Git.
 - Seed data comes from `supabase/seed.sql`, not from production data.
+- Local bucket objects come from `supabase/storage/`, not from production storage.
 
 ### 2. Require the Supabase PR Check in GitHub
 
@@ -78,6 +79,7 @@ npm install
 cp .env.example .env.local
 npm run supabase:start
 npm run supabase:reset
+npm run supabase:seed-buckets
 npm run supabase:env
 ```
 
@@ -117,9 +119,12 @@ The seed also creates:
 - 3 public listings
 - 1 chat thread
 - 2 chat messages
+- seeded profile avatars and listing photos in local Supabase Storage
 - a sample static bucket object at `static/promo-kit.zip`
 
 The demo data is synthetic and safe to keep in Git.
+
+When `NEXT_PUBLIC_SUPABASE_URL` points at `http://127.0.0.1:54331`, avatar and listing-photo uploads also go to the local Supabase buckets rather than production.
 
 ## Fresh Computer Setup
 
@@ -158,9 +163,10 @@ npm run dev
 2. Make schema changes locally.
 3. Add or edit SQL migrations under `supabase/migrations/`.
 4. Rebuild from scratch with `npm run supabase:reset`.
-5. Run `npm run dev`.
-6. Test the flow locally.
-7. Commit app and migration changes together.
+5. Re-upload only local bucket media with `npm run supabase:seed-buckets` when you do not need a full DB reset.
+6. Run `npm run dev`.
+7. Test the flow locally.
+8. Commit app and migration changes together.
 
 Use local Studio, `psql`, or the hosted dashboard for browsing rows. Use the CLI for schema lifecycle.
 

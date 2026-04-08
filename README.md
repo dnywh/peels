@@ -145,7 +145,10 @@ Use local Studio, `psql`, or the hosted Supabase dashboard for browsing rows and
 
 - Bucket configuration lives in `supabase/config.toml`
 - Local reset data lives in `supabase/seed.sql`
-- Local placeholder static assets live in `supabase/storage/static/`
+- Local bucket objects live in `supabase/storage/`
+- Local bucket policies are backfilled via SQL migrations so local uploads behave like the hosted project
+- `npm run supabase:reset` rebuilds the database and re-uploads seeded local media
+- `npm run supabase:seed-buckets` re-uploads local bucket media without resetting the database
 
 Keep all local and preview data sanitized. Do not export or commit production data.
 
