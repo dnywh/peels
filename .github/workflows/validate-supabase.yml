@@ -2,29 +2,45 @@ name: Validate Supabase
 
 on:
   pull_request:
-    paths:
-      - "supabase/**"
   push:
     branches:
       - main
-    paths:
-      - "supabase/**"
 
 jobs:
   replay:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect Supabase changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            supabase:
+              - "supabase/**"
+
+      - name: Skip replay when Supabase files are unchanged
+        if: steps.changes.outputs.supabase != 'true'
+        run: echo "No Supabase changes detected; skipping replay."
 
       - name: Set up Supabase CLI
+        if: steps.changes.outputs.supabase == 'true'
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
       - name: Start local Supabase stack
+        if: steps.changes.outputs.supabase == 'true'
         run: supabase start
 
       - name: Replay migrations and seed data
+        if: steps.changes.outputs.supabase == 'true'
         run: supabase db reset
