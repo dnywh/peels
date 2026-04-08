@@ -1,8 +1,9 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 const INITIAL_REFERRER_COOKIE = "initial_referrer";
 const INITIAL_REFERRER_MAX_AGE = 60 * 60 * 24 * 90;
+const INITIAL_REFERRER_MAX_LENGTH = 512;
 
 function getExternalReferrer(request: NextRequest) {
   const referrer = request.headers.get("referer");
@@ -16,7 +17,10 @@ function getExternalReferrer(request: NextRequest) {
       return null;
     }
 
-    return referrer;
+    referrerUrl.search = "";
+    referrerUrl.hash = "";
+
+    return referrerUrl.toString().slice(0, INITIAL_REFERRER_MAX_LENGTH);
   } catch {
     return null;
   }
@@ -28,13 +32,17 @@ export async function proxy(request: NextRequest) {
   const externalReferrer = getExternalReferrer(request);
 
   if (!hasInitialReferrerCookie && externalReferrer && request.method === "GET") {
-    response.cookies.set(INITIAL_REFERRER_COOKIE, externalReferrer, {
+    response.cookies.set(
+      INITIAL_REFERRER_COOKIE,
+      encodeURIComponent(externalReferrer),
+      {
       httpOnly: false,
       maxAge: INITIAL_REFERRER_MAX_AGE,
       path: "/",
       sameSite: "lax",
       secure: request.nextUrl.protocol === "https:",
-    });
+      }
+    );
   }
 
   return response;
