@@ -10,7 +10,7 @@
     "supabase:status": "supabase status",
     "supabase:env": "supabase status -o env",
     "supabase:reset": "supabase db reset",
-    "supabase:seed-buckets": "supabase seed buckets --yes",
+    "seed:local-media": "node scripts/seed-local-media.mjs",
     "supabase:diff": "supabase db diff",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

@@ -34,7 +34,7 @@ What this does:
 - A PR branch that changes `supabase/**` gets its own Supabase preview branch.
 - That preview branch runs migrations and bucket config from Git.
 - Seed data comes from `supabase/seed.sql`, not from production data.
-- Local bucket objects come from `supabase/storage/`, not from production storage.
+- Demo media is tracked under `supabase/storage/`, but is uploaded only into local Supabase with `npm run seed:local-media`.
 
 ### 2. Require the Supabase PR Check in GitHub
 
@@ -79,7 +79,7 @@ npm install
 cp .env.example .env.local
 npm run supabase:start
 npm run supabase:reset
-npm run supabase:seed-buckets
+npm run seed:local-media
 npm run supabase:env
 ```
 
@@ -124,7 +124,7 @@ The seed also creates:
 
 The demo data is synthetic and safe to keep in Git.
 
-When `NEXT_PUBLIC_SUPABASE_URL` points at `http://127.0.0.1:54331`, avatar and listing-photo uploads also go to the local Supabase buckets rather than production.
+When `NEXT_PUBLIC_SUPABASE_URL` points at `http://127.0.0.1:54331`, avatar and listing-photo uploads also go to the local Supabase buckets rather than production. The repo-tracked demo media is uploaded only by `npm run seed:local-media`, not by hosted Supabase deploys.
 
 ## Fresh Computer Setup
 
@@ -144,11 +144,12 @@ Use this when setting up Peels on a new machine.
 3. Copy `.env.example` to `.env.local`.
 4. Run `npm run supabase:start`.
 5. Run `npm run supabase:reset`.
-6. Run `npm run supabase:env`.
-7. Set `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331` in `.env.local`.
-8. Copy the printed `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`.
-9. Run `npm run dev`.
-10. Sign in with one of the demo accounts above.
+6. Run `npm run seed:local-media`.
+7. Run `npm run supabase:env`.
+8. Set `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331` in `.env.local`.
+9. Copy the printed `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`.
+10. Run `npm run dev`.
+11. Sign in with one of the demo accounts above.
 
 If the app still shows old environment values, clear the build cache and restart:
 
@@ -163,7 +164,7 @@ npm run dev
 2. Make schema changes locally.
 3. Add or edit SQL migrations under `supabase/migrations/`.
 4. Rebuild from scratch with `npm run supabase:reset`.
-5. Re-upload only local bucket media with `npm run supabase:seed-buckets` when you do not need a full DB reset.
+5. Upload local demo media with `npm run seed:local-media` after any reset that needs repo-tracked avatars or listing photos.
 6. Run `npm run dev`.
 7. Test the flow locally.
 8. Commit app and migration changes together.
