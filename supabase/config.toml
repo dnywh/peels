@@ -91,19 +91,16 @@ file_size_limit = "50MiB"
 public = true
 file_size_limit = "10MiB"
 allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
-objects_path = "./storage/avatars"
 
 [storage.buckets.listing_avatars]
 public = true
 file_size_limit = "10MiB"
 allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
-objects_path = "./storage/listing_avatars"
 
 [storage.buckets.listing_photos]
 public = true
 file_size_limit = "50MiB"
 allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
-objects_path = "./storage/listing_photos"
 
 [storage.buckets.static]
 public = true
