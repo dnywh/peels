@@ -99,27 +99,39 @@ function normalizeFileSizeLimit(fileSizeLimit) {
 }
 
 async function ensureBucket(supabase, bucketName, bucketConfig) {
-  const { error } = await supabase.storage.createBucket(bucketName, {
+  const normalizedConfig = {
     public: bucketConfig.public,
     fileSizeLimit: normalizeFileSizeLimit(bucketConfig.fileSizeLimit),
     allowedMimeTypes: bucketConfig.allowedMimeTypes,
-  });
+  };
 
-  if (!error) return;
+  const { data: buckets, error: listError } = await supabase.storage.listBuckets();
 
-  const message = error.message?.toLowerCase() ?? "";
-  const alreadyExists =
-    message.includes("already exists") || message.includes("duplicate");
-
-  if (!alreadyExists) {
-    throw error;
+  if (listError) {
+    throw listError;
   }
 
-  const { error: updateError } = await supabase.storage.updateBucket(bucketName, {
-    public: bucketConfig.public,
-    fileSizeLimit: normalizeFileSizeLimit(bucketConfig.fileSizeLimit),
-    allowedMimeTypes: bucketConfig.allowedMimeTypes,
-  });
+  const existingBucket = buckets?.find(
+    (bucket) => bucket.id === bucketName || bucket.name === bucketName
+  );
+
+  if (!existingBucket) {
+    const { error: createError } = await supabase.storage.createBucket(
+      bucketName,
+      normalizedConfig
+    );
+
+    if (createError) {
+      throw createError;
+    }
+
+    return;
+  }
+
+  const { error: updateError } = await supabase.storage.updateBucket(
+    bucketName,
+    normalizedConfig
+  );
 
   if (updateError) {
     throw updateError;

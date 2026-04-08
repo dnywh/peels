@@ -34,7 +34,7 @@ What this does:
 - A PR branch that changes `supabase/**` gets its own Supabase preview branch.
 - That preview branch runs migrations and bucket config from Git.
 - Seed data comes from `supabase/seed.sql`, not from production data.
-- Local demo bucket objects come from `supabase/storage/`, not from production storage.
+- Demo media is tracked under `supabase/storage/`, but is uploaded only into local Supabase with `npm run seed:local-media`.
 
 ### 2. Require the Supabase PR Check in GitHub
 
