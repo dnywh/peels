@@ -1,8 +1,7 @@
 begin;
 
 -- Tighten Storage mutation policies so authenticated users can only mutate
--- their own uploaded objects. Keep demo-prefixed seed assets editable locally
--- so the seeded dev flows still work after `supabase db reset`.
+-- their own uploaded objects.
 
 drop policy if exists "Allow authenticated changes 1oj01fe_0" on storage.objects;
 create policy "Allow authenticated changes 1oj01fe_0"
@@ -11,10 +10,7 @@ for update
 to authenticated
 using (
   (bucket_id = 'avatars')
-  and (
-    owner = (select auth.uid())
-    or name like 'demo/%'
-  )
+  and owner = (select auth.uid())
 )
 with check (
   (bucket_id = 'avatars')
@@ -38,10 +34,7 @@ for delete
 to authenticated
 using (
   (bucket_id = 'avatars')
-  and (
-    owner = (select auth.uid())
-    or name like 'demo/%'
-  )
+  and owner = (select auth.uid())
 );
 
 drop policy if exists "Allow authenticated list 1oj01fe_0" on storage.objects;
@@ -51,10 +44,7 @@ for select
 to authenticated
 using (
   (bucket_id = 'avatars')
-  and (
-    owner = (select auth.uid())
-    or name like 'demo/%'
-  )
+  and owner = (select auth.uid())
 );
 
 drop policy if exists "Users can delete their own listing avatars" on storage.objects;
@@ -64,10 +54,7 @@ for delete
 to authenticated
 using (
   (bucket_id = 'listing_avatars')
-  and (
-    owner = (select auth.uid())
-    or name like 'demo/%'
-  )
+  and owner = (select auth.uid())
 );
 
 drop policy if exists "Users can delete their own listing photos" on storage.objects;
@@ -77,10 +64,7 @@ for delete
 to authenticated
 using (
   (bucket_id = 'listing_photos')
-  and (
-    owner = (select auth.uid())
-    or name like 'demo/%'
-  )
+  and owner = (select auth.uid())
 );
 
 drop policy if exists "Users can update their own listing avatars" on storage.objects;
@@ -90,10 +74,7 @@ for update
 to authenticated
 using (
   (bucket_id = 'listing_avatars')
-  and (
-    owner = (select auth.uid())
-    or name like 'demo/%'
-  )
+  and owner = (select auth.uid())
 )
 with check (
   (bucket_id = 'listing_avatars')
@@ -107,10 +88,7 @@ for update
 to authenticated
 using (
   (bucket_id = 'listing_photos')
-  and (
-    owner = (select auth.uid())
-    or name like 'demo/%'
-  )
+  and owner = (select auth.uid())
 )
 with check (
   (bucket_id = 'listing_photos')
