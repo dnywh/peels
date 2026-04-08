@@ -57,6 +57,11 @@ const uniqueStorageRemotePatterns = storageRemotePatterns.filter(
     )
 );
 
+const shouldAllowLocalStorageImages =
+  process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("127.0.0.1") ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("localhost") ||
+  false;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
@@ -69,6 +74,7 @@ const nextConfig = {
     // https://nextjs.org/docs/app/api-reference/components/image#caching-behavior
     // Can be safetly increased as all user-generated imagery use uniques slugs
     minimumCacheTTL: 2678400, // 31 days (default value is `60`, i.e. one minute)
+    dangerouslyAllowLocalIP: shouldAllowLocalStorageImages,
     // Define where remote images can be pulled from
     remotePatterns: uniqueStorageRemotePatterns,
   },
