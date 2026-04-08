@@ -27,9 +27,11 @@ export function getListingAvatar(listing, user) {
 
   // For demo listings, return path to public demo folder
   if (listing?.is_demo) {
+    const demoAvatarFilename = listing?.avatar?.split("/").pop();
+
     return {
       isDemo: true, // New flag to indicate demo image
-      path: `/avatars/demo/${listing?.avatar}`,
+      path: `/avatars/demo/${demoAvatarFilename}`,
       alt: `${listing?.name}’s avatar`,
     };
   }
