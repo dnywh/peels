@@ -120,11 +120,10 @@ The seed also creates:
 - 1 chat thread
 - 2 chat messages
 - seeded profile avatars and listing photos in local Supabase Storage
-- a sample static bucket object at `static/promo-kit.zip`
 
 The demo data is synthetic and safe to keep in Git.
 
-When `NEXT_PUBLIC_SUPABASE_URL` points at `http://127.0.0.1:54331`, avatar and listing-photo uploads also go to the local Supabase buckets rather than production. The repo-tracked demo media is uploaded only by `npm run seed:local-media`, not by hosted Supabase deploys.
+When `NEXT_PUBLIC_SUPABASE_URL` points at `http://127.0.0.1:54331`, avatar and listing-photo uploads also go to the local Supabase buckets rather than production. Repo-tracked bucket media is uploaded only by `npm run seed:local-media`, not by hosted Supabase deploys.
 
 ## Fresh Computer Setup
 
