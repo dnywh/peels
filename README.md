@@ -150,7 +150,7 @@ Use local Studio, `psql`, or the hosted Supabase dashboard for browsing rows and
 - `npm run supabase:reset` rebuilds the local database schema and data
 - `npm run seed:local-media` uploads local demo media into local Supabase buckets
 
-The demo media under `supabase/storage/avatars`, `supabase/storage/listing_avatars`, and `supabase/storage/listing_photos` is for local development only. Hosted Supabase branches and production should not sync those objects from Git.
+The demo media under `supabase/storage/` is for local development only. Hosted Supabase branches and production should not sync bucket objects from Git.
 
 Keep all local and preview data sanitized. Do not export or commit production data.
 

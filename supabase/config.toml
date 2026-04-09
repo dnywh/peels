@@ -105,7 +105,6 @@ allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
 [storage.buckets.static]
 public = true
 file_size_limit = "50MiB"
-objects_path = "./storage/static"
 
 [auth]
 enabled = true
