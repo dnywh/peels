@@ -16,7 +16,7 @@ import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface SignUpFormProps {
   defaultValues?: {
@@ -27,10 +27,13 @@ interface SignUpFormProps {
   error?: string;
 }
 
-const TOKEN_TIMEOUT = 10000;
+const BACKGROUND_TOKEN_TIMEOUT = 10000;
+const INTERACTIVE_TOKEN_TIMEOUT = 120000;
 const EXPIRED_MESSAGE = "Verification expired. Please complete it again.";
 const TIMEOUT_MESSAGE =
   "Security check didn’t complete. Try disabling ad blockers and then try again. If it still fails, try a different browser or network.";
+const UNSUPPORTED_MESSAGE =
+  "This browser can’t complete the security check. Please try a different browser or network.";
 
 export default function SignUpForm({
   defaultValues = {},
@@ -41,60 +44,80 @@ export default function SignUpForm({
 
   const [captchaError, setCaptchaError] = useState<string | null>(null);
   const [isWaitingForToken, setIsWaitingForToken] = useState(false);
-  const [showTurnstileField, setShowTurnstileField] = useState(false);
+  const [isTurnstileInteractive, setIsTurnstileInteractive] = useState(false);
 
   const turnstileRef = useRef<TurnstileInstance>(null);
   const tokenResolverRef = useRef<((token: string) => void) | null>(null);
   const tokenRejecterRef = useRef<((error: Error) => void) | null>(null);
+  const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const turnstileEnabled = isTurnstileEnabled();
   const hasFieldErrors = Boolean(firstNameError || captchaError);
 
-  // Only show field wrapper when there's an error (invisible mode handles normal flow)
-  useEffect(() => {
-    setShowTurnstileField(!!captchaError);
-  }, [captchaError]);
+  const clearTokenTimeout = useCallback(() => {
+    if (tokenTimeoutRef.current) {
+      clearTimeout(tokenTimeoutRef.current);
+      tokenTimeoutRef.current = null;
+    }
+  }, []);
+
+  const clearTokenPromise = useCallback(() => {
+    tokenResolverRef.current = null;
+    tokenRejecterRef.current = null;
+    clearTokenTimeout();
+  }, [clearTokenTimeout]);
+
+  const rejectTokenPromise = useCallback(
+    (errorMessage: string) => {
+      if (tokenRejecterRef.current) {
+        tokenRejecterRef.current(new Error(errorMessage));
+      }
+      clearTokenPromise();
+    },
+    [clearTokenPromise]
+  );
+
+  const scheduleTokenTimeout = useCallback(
+    (timeout: number, errorMessage = TIMEOUT_MESSAGE) => {
+      clearTokenTimeout();
+      tokenTimeoutRef.current = setTimeout(() => {
+        rejectTokenPromise(errorMessage);
+      }, timeout);
+    },
+    [clearTokenTimeout, rejectTokenPromise]
+  );
 
   // Promise-based token wait mechanism with timeout
   const waitForToken = useCallback(
-    (timeout = TOKEN_TIMEOUT): Promise<string> => {
+    (timeout = BACKGROUND_TOKEN_TIMEOUT): Promise<string> => {
       return new Promise((resolve, reject) => {
         // Store resolvers for onSuccess/onError callbacks
         tokenResolverRef.current = resolve;
         tokenRejecterRef.current = reject;
 
-        // Timeout after specified duration
-        setTimeout(() => {
-          if (tokenRejecterRef.current) {
-            tokenRejecterRef.current(new Error(TIMEOUT_MESSAGE));
-            tokenResolverRef.current = null;
-            tokenRejecterRef.current = null;
-          }
-        }, timeout);
+        scheduleTokenTimeout(timeout);
       });
     },
-    []
+    [scheduleTokenTimeout]
   );
 
-  const resolveTokenPromise = useCallback((token: string) => {
-    if (tokenResolverRef.current) {
-      tokenResolverRef.current(token);
-      tokenResolverRef.current = null;
-      tokenRejecterRef.current = null;
-    }
-  }, []);
+  const resolveTokenPromise = useCallback(
+    (token: string) => {
+      if (tokenResolverRef.current) {
+        tokenResolverRef.current(token);
+      }
+      clearTokenPromise();
+    },
+    [clearTokenPromise]
+  );
 
-  const rejectTokenPromise = useCallback((errorMessage: string) => {
-    if (tokenRejecterRef.current) {
-      tokenRejecterRef.current(new Error(errorMessage));
-      tokenResolverRef.current = null;
-      tokenRejecterRef.current = null;
-    }
-  }, []);
+  useEffect(() => clearTokenTimeout, [clearTokenTimeout]);
 
   const handleTurnstileSuccess = useCallback(
     (token: string) => {
       setCaptchaError(null);
       setIsWaitingForToken(false);
+      setIsTurnstileInteractive(false);
       resolveTokenPromise(token);
     },
     [resolveTokenPromise]
@@ -103,6 +126,7 @@ export default function SignUpForm({
   const handleTurnstileError = useCallback(
     (error: string) => {
       setIsWaitingForToken(false);
+      setIsTurnstileInteractive(false);
 
       const errorMessage = `Security verification failed with error #${error}. Please try again or use a different browser.`;
 
@@ -114,9 +138,34 @@ export default function SignUpForm({
 
   const handleTurnstileExpire = useCallback(() => {
     setIsWaitingForToken(false);
+    setIsTurnstileInteractive(false);
     setCaptchaError(EXPIRED_MESSAGE);
     rejectTokenPromise(EXPIRED_MESSAGE);
   }, [rejectTokenPromise]);
+
+  const handleTurnstileTimeout = useCallback(() => {
+    setIsWaitingForToken(false);
+    setIsTurnstileInteractive(false);
+    setCaptchaError(TIMEOUT_MESSAGE);
+    rejectTokenPromise(TIMEOUT_MESSAGE);
+  }, [rejectTokenPromise]);
+
+  const handleTurnstileUnsupported = useCallback(() => {
+    setIsWaitingForToken(false);
+    setIsTurnstileInteractive(false);
+    setCaptchaError(UNSUPPORTED_MESSAGE);
+    rejectTokenPromise(UNSUPPORTED_MESSAGE);
+  }, [rejectTokenPromise]);
+
+  const handleTurnstileBeforeInteractive = useCallback(() => {
+    setCaptchaError(null);
+    setIsTurnstileInteractive(true);
+    scheduleTokenTimeout(INTERACTIVE_TOKEN_TIMEOUT);
+  }, [scheduleTokenTimeout]);
+
+  const handleTurnstileAfterInteractive = useCallback(() => {
+    setIsTurnstileInteractive(false);
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -137,18 +186,19 @@ export default function SignUpForm({
     // Handle Turnstile token generation if enabled
     // Always get a fresh token as they are single-use and never reused
     let tokenToUse: string | undefined;
-    if (isTurnstileEnabled()) {
+    if (turnstileEnabled) {
       // Reset any existing token to ensure we get a fresh one
-
       turnstileRef.current?.reset();
 
       setIsWaitingForToken(true);
       try {
-        // Execute Turnstile verification
+        // Start waiting before execution so a fast success callback cannot race us.
+        const tokenPromise = waitForToken(BACKGROUND_TOKEN_TIMEOUT);
+
         turnstileRef.current?.execute();
 
         // Wait for token with timeout
-        tokenToUse = await waitForToken(TOKEN_TIMEOUT);
+        tokenToUse = await tokenPromise;
 
         // Token obtained, proceed with submission
         setIsWaitingForToken(false);
@@ -189,7 +239,30 @@ export default function SignUpForm({
     onSuccess: handleTurnstileSuccess,
     onError: handleTurnstileError,
     onExpire: handleTurnstileExpire,
+    onTimeout: handleTurnstileTimeout,
+    onUnsupported: handleTurnstileUnsupported,
+    onBeforeInteractive: handleTurnstileBeforeInteractive,
+    onAfterInteractive: handleTurnstileAfterInteractive,
+    options: {
+      appearance: "interaction-only",
+      execution: "execute",
+      responseField: false,
+    } as const,
   };
+
+  const turnstileContainerStyle = useMemo(
+    () =>
+      isTurnstileInteractive || captchaError
+        ? undefined
+        : ({
+            position: "absolute",
+            width: 1,
+            height: 1,
+            overflow: "hidden",
+            clipPath: "inset(50%)",
+          } as const),
+    [captchaError, isTurnstileInteractive]
+  );
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -236,21 +309,14 @@ export default function SignUpForm({
         </CheckboxRow>
       </CheckboxCluster>
 
-      {isTurnstileEnabled() &&
-        (showTurnstileField ? (
-          <Field>
-            <Turnstile {...turnstileProps} options={{ execution: "execute" }} />
-            {captchaError && (
-              <InputHint variant="error">{captchaError}</InputHint>
-            )}
-          </Field>
-        ) : (
-          <Turnstile
-            {...turnstileProps}
-            options={{ size: "invisible", execution: "execute" }}
-            style={{ display: "none" }}
-          />
-        ))}
+      {turnstileEnabled && (
+        <Field style={turnstileContainerStyle}>
+          <Turnstile {...turnstileProps} />
+          {captchaError && (
+            <InputHint variant="error">{captchaError}</InputHint>
+          )}
+        </Field>
+      )}
 
       {(error || hasFieldErrors) && (
         <FormMessage
