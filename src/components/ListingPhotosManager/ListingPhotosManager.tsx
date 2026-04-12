@@ -194,7 +194,11 @@ function ListingPhotosManager({
         uploadError?.statusCode === "413" ||
         uploadError?.error?.statusCode === "413"
       ) {
-        alert(overSizedFileAlertPlural);
+        alert(
+          files.length === 1
+            ? overSizedFileAlertSingular
+            : overSizedFileAlertPlural
+        );
       } else if (uploadError?.message?.includes("max_photos")) {
         alert(`You can only upload up to ${MAX_PHOTOS} photos`);
       } else {
@@ -208,6 +212,7 @@ function ListingPhotosManager({
   const handlePhotoDelete = async (photoToDelete: string) => {
     if (isMutatingPhotos) return;
 
+    const deletedPhotoIndex = photosRef.current.indexOf(photoToDelete);
     setDeletingPhoto(photoToDelete);
     try {
       // Immediately remove from react-beautiful-dnd's context
@@ -221,11 +226,22 @@ function ListingPhotosManager({
       console.error("Error deleting photo:", error);
 
       // Restore only the failed deletion, preserving other state changes.
-      updatePhotos((currentPhotos) =>
-        currentPhotos.includes(photoToDelete)
-          ? currentPhotos
-          : [...currentPhotos, photoToDelete]
-      );
+      updatePhotos((currentPhotos) => {
+        if (currentPhotos.includes(photoToDelete)) {
+          return currentPhotos;
+        }
+
+        const restoreIndex =
+          deletedPhotoIndex === -1
+            ? currentPhotos.length
+            : Math.min(deletedPhotoIndex, currentPhotos.length);
+
+        return [
+          ...currentPhotos.slice(0, restoreIndex),
+          photoToDelete,
+          ...currentPhotos.slice(restoreIndex),
+        ];
+      });
       alert("Failed to delete photo. Please try again.");
     } finally {
       setDeletingPhoto(null);
