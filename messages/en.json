@@ -129,6 +129,8 @@
     "emailLabel": "You’re best off emailing",
     "copyButton": {
       "copied": "Copied!",
+      "copying": "Copying...",
+      "copyFailed": "Copy failed",
       "copyAddress": "Copy address"
     }
   }

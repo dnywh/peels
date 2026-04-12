@@ -115,12 +115,12 @@ export default function EmailSelector() {
         <Button
           onClick={handleCopy}
           loading={copyStatus === "copying"}
-          loadingText="Copying..."
+          loadingText={t("copyButton.copying")}
         >
           {copyStatus === "copied"
             ? t("copyButton.copied")
             : copyStatus === "error"
-              ? "Copy failed"
+              ? t("copyButton.copyFailed")
               : t("copyButton.copyAddress")}
         </Button>
       </SubSectionBottom>

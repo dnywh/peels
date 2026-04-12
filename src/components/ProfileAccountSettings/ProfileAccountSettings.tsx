@@ -205,7 +205,7 @@ function ProfileAccountSettings({
     firstName.reset();
   };
 
-  const handleNewslettePreferenceUpdate = async (formData: FormData) => {
+  const handleNewsletterPreferenceUpdate = async (formData: FormData) => {
     const nextNewsletterPreference =
       formData.get("newsletter_preference") === "true";
     console.log("Updating newsletter preference to", nextNewsletterPreference);
@@ -347,7 +347,7 @@ function ProfileAccountSettings({
 
       <ListItem editing={newsletterPreference.isEditing}>
         {newsletterPreference.isEditing ? (
-          <Form nested={true} action={handleNewslettePreferenceUpdate}>
+          <Form nested={true} action={handleNewsletterPreferenceUpdate}>
             <Field>
               <Label>Newsletter</Label>
               <Select

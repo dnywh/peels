@@ -68,6 +68,11 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
   "&[data-focus]": {
     outline: `3px solid ${theme.colors.focus.outline}`,
   },
+  '&[aria-disabled="true"]': {
+    cursor: "default",
+    background: theme.colors.button.disabled.background,
+    color: theme.colors.button.disabled.text,
+  },
 
   variants: [
     {
@@ -122,7 +127,7 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
         "&:not([disabled])": {
           boxShadow: `0px 0px 0px 2px ${theme.colors.button.primary.background}`, // Match visual height of sibling buttons with box-shadow
         },
-        "&:hover&:not([disabled])": {
+        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
           background: `color-mix(in srgb, ${theme.colors.button.primary.background}, ${theme.colors.button.primary.hover.tint} ${theme.colors.button.primary.hover.mix})`,
           boxShadow: `0px 0px 0px 2px color-mix(in srgb, ${theme.colors.button.primary.background}, ${theme.colors.button.primary.hover.tint} ${theme.colors.button.primary.hover.mix})`,
         },
@@ -135,7 +140,7 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
         color: theme.colors.button.secondary.text,
         // borderColor: theme.colors.border.base,
         boxShadow: `0px 0px 0px 2px ${theme.colors.border.base}`,
-        "&:hover&:not([disabled])": {
+        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
           color: `color-mix(in srgb, ${theme.colors.button.secondary.text}, ${theme.colors.button.secondary.hover.tint} ${theme.colors.button.secondary.hover.mix})`,
         },
       },
@@ -147,7 +152,7 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
         color: theme.colors.button.danger.text,
         // borderColor: theme.colors.border.base,
         boxShadow: `0px 0px 0px 2px ${theme.colors.border.base}`,
-        "&:hover&:not([disabled])": {
+        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
           color: `color-mix(in srgb, ${theme.colors.button.danger.text}, ${theme.colors.button.danger.hover.tint} ${theme.colors.button.danger.hover.mix})`,
         },
       },
@@ -159,7 +164,7 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
         border: "none",
         color: theme.colors.button.send.text,
 
-        "&:hover&:not([disabled])": {
+        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
           backgroundColor: `color-mix(in srgb, ${theme.colors.button.send.text}, ${theme.colors.button.send.hover.tint} ${theme.colors.button.send.hover.mix})`,
         },
       },
@@ -172,7 +177,7 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
         background: theme.colors.button.secondary.background,
         color: theme.colors.button.secondary.text,
         border: `1px solid ${theme.colors.border.base}`,
-        "&:hover&:not([disabled])": {
+        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
           backgroundColor: theme.colors.background.sunk,
         },
       },
@@ -212,6 +217,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
       loadingText = "Loading...",
       type = "button",
       size = "normal",
+      onClick,
       ...props
     },
     ref
@@ -220,6 +226,15 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
     const isLoading = loading && !isLink;
     const isDisabled = disabled || isLoading;
     const buttonContent = <span>{isLoading ? loadingText : children}</span>;
+    const handleLinkClick: React.MouseEventHandler<HTMLElement> = (event) => {
+      if (isDisabled) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      onClick?.(event);
+    };
 
     if (href) {
       return (
@@ -231,7 +246,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
           aria-disabled={isDisabled || undefined}
           aria-busy={isLoading || undefined}
           size={size}
-          disabled={isDisabled}
+          onClick={handleLinkClick}
           {...props}
         >
           {buttonContent}
@@ -249,6 +264,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         aria-disabled={isDisabled || undefined}
         aria-busy={isLoading || undefined}
         size={size}
+        onClick={onClick}
         {...props}
       >
         {buttonContent}

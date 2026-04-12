@@ -111,5 +111,27 @@
         "answer": "<p>We only send emails that are necessary to keep Peels working. That includes one or two account-related emails, and emails to notify you whenever a fellow Peels member has sent you message.</p><p>Email notifications are required for listing hosts, as it means a prospective donor has enquired about dropping off scraps (or picking something up). Hosts who longer wish to receive emails can either hide their listing from the map (making it impossible for new donors to reach out) or delete their listing entirely (meaning previous donors can no longer message, either).</p><p>People without listings cannot be messaged (and thus emailed) unless they initiate contact with a host first.</p><p>Anyone can report or block individual Peels members via our messaging system. Blocking someone means they can no longer message or email you.</p>"
       }
     }
+  },
+  "Contact": {
+    "title": "Contacto",
+    "subtitle": "Así puedes contactar con el equipo de Peels.",
+    "via": {
+      "therot": "Hola, lector de The Rot. Gracias por pasar por aquí. Esta es una línea directa con Danny.",
+      "general": "Hola. Aquí tienes algunas direcciones de correo para contactarnos."
+    },
+    "contactLabel": "Si quieres",
+    "contactOptions": {
+      "general": "Hacer una consulta general",
+      "support": "Obtener ayuda con algo",
+      "dw": "Hablar con Danny",
+      "newsletter": "Hablar sobre el boletín"
+    },
+    "emailLabel": "Lo mejor es escribir a",
+    "copyButton": {
+      "copied": "Copiado",
+      "copying": "Copiando...",
+      "copyFailed": "No se pudo copiar",
+      "copyAddress": "Copiar dirección"
+    }
   }
 }

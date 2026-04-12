@@ -114,7 +114,11 @@ const IconButton = forwardRef<
     : ariaLabel || iconLabels[icon];
 
   const handleClick: React.MouseEventHandler<HTMLElement> = (e) => {
-    if (loading || disabled) return;
+    if (loading || disabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
 
     if (onClick) {
       onClick(e);
