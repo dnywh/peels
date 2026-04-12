@@ -46,11 +46,7 @@ export const SignUpEmail = ({
         account:
       </EmailParagraph>
 
-      <EmailButton
-        href={confirmUrl}
-      >
-        Verify your Peels account
-      </EmailButton>
+      <EmailButton href={confirmUrl}>Verify your Peels account</EmailButton>
 
       <EmailParagraph>
         Just hit ‘reply’ if you run into any issues or have questions.

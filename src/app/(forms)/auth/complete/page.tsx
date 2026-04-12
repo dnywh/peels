@@ -9,8 +9,7 @@ export default function AuthCompletePage() {
       </FormHeader>
       <Form as="container">
         <p>
-          We’re securely confirming your link. You’ll be redirected in a
-          moment.
+          We’re securely confirming your link. You’ll be redirected in a moment.
         </p>
       </Form>
     </>

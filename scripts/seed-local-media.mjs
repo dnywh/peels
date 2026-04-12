@@ -79,7 +79,10 @@ function walkFiles(sourceDir, currentDir = sourceDir) {
 
     return {
       absolutePath,
-      objectPath: path.relative(sourceDir, absolutePath).split(path.sep).join("/"),
+      objectPath: path
+        .relative(sourceDir, absolutePath)
+        .split(path.sep)
+        .join("/"),
     };
   });
 }
@@ -105,7 +108,8 @@ async function ensureBucket(supabase, bucketName, bucketConfig) {
     allowedMimeTypes: bucketConfig.allowedMimeTypes,
   };
 
-  const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+  const { data: buckets, error: listError } =
+    await supabase.storage.listBuckets();
 
   if (listError) {
     throw listError;
@@ -147,14 +151,12 @@ async function uploadBucketObjects(supabase, bucketName, bucketConfig) {
     const body = readFileSync(file.absolutePath);
     const contentType = getContentType(file.absolutePath);
 
-    const { error } = await supabase.storage.from(bucketName).upload(
-      file.objectPath,
-      body,
-      {
+    const { error } = await supabase.storage
+      .from(bucketName)
+      .upload(file.objectPath, body, {
         contentType,
         upsert: true,
-      }
-    );
+      });
 
     if (error) {
       throw new Error(
