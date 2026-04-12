@@ -1,8 +1,11 @@
+"use client";
+
 import { signOutAction, deleteAccountAction } from "@/app/actions";
 import { siteConfig } from "@/config/site";
 import Button from "@/components/Button";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
+import { useState } from "react";
 
 import { styled } from "@pigment-css/react";
 
@@ -33,7 +36,25 @@ const ListItemText = styled("div")(({ theme }) => ({
   },
 }));
 
-export default function ProfileActions({ listings }) {
+type ProfileActionsProps = {
+  listings?: unknown[];
+};
+
+export default function ProfileActions({ listings = [] }: ProfileActionsProps) {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    if (isSigningOut) return;
+
+    setIsSigningOut(true);
+    try {
+      await signOutAction();
+    } catch (error) {
+      console.error("Error signing out:", error);
+      setIsSigningOut(false);
+    }
+  };
+
   return (
     <List>
       <ListItem>
@@ -41,7 +62,12 @@ export default function ProfileActions({ listings }) {
           <h4>Sign out</h4>
           <p>Goodbye for now!</p>
         </ListItemText>
-        <Button variant="secondary" onClick={signOutAction}>
+        <Button
+          variant="secondary"
+          onClick={handleSignOut}
+          loading={isSigningOut}
+          loadingText="Signing out..."
+        >
           Sign out
         </Button>
       </ListItem>
@@ -84,6 +110,7 @@ export default function ProfileActions({ listings }) {
               ? `Yes, delete my account and listing${listings.length > 1 ? "s" : ""}`
               : "Yes, delete my account"
           }
+          confirmLoadingText="Deleting..."
           action={deleteAccountAction}
         >
           Are you sure you want to delete your account?{" "}

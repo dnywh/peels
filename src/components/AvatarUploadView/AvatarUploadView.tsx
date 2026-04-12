@@ -30,7 +30,6 @@ const LoadingSpinner = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  color: "white",
   fontSize: "20px",
 
   position: "absolute",
@@ -42,6 +41,20 @@ const LoadingSpinner = styled("div")(({ theme }) => ({
   borderRadius: theme.corners.avatar,
 }));
 
+const AvatarComponent = Avatar as React.ComponentType<any>;
+
+type AvatarUploadViewProps = {
+  avatar?: string;
+  onChange: (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => void | Promise<void>;
+  onDelete: () => void | Promise<void>;
+  getAvatarUrl?: (filename: string) => string;
+  bucket: string;
+  inputHintShown?: boolean;
+  listingType?: string;
+};
+
 function AvatarUploadView({
   avatar,
   onChange,
@@ -50,19 +63,36 @@ function AvatarUploadView({
   bucket,
   inputHintShown = false,
   listingType,
-}) {
+}: AvatarUploadViewProps) {
   // Hidden file input that we'll trigger programmatically
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const isBusy = loading || isDeleting;
 
   const handleFileSelect = () => {
+    if (isBusy) return;
     fileInputRef.current?.click();
   };
 
-  const handleUpload = async (event) => {
+  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
-    await onChange(event);
-    setLoading(false);
+    try {
+      await onChange(event);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (isBusy) return;
+
+    setIsDeleting(true);
+    try {
+      await onDelete();
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -75,11 +105,12 @@ function AvatarUploadView({
           accept="image/*"
           multiple={false}
           onChange={handleUpload}
+          disabled={isBusy}
           style={{ display: "none" }}
         />
 
         <StyledImgContainer>
-          <Avatar
+          <AvatarComponent
             bucket={bucket}
             filename={avatar}
             alt="Your avatar"
@@ -96,6 +127,9 @@ function AvatarUploadView({
             variant="secondary"
             size="small"
             onClick={handleFileSelect}
+            loading={loading}
+            loadingText="Uploading..."
+            disabled={isBusy}
           >
             Add
           </AvatarButton>
@@ -106,6 +140,9 @@ function AvatarUploadView({
               as={AvatarButton}
               variant="secondary"
               size="small"
+              loading={loading || isDeleting}
+              loadingText={loading ? "Uploading..." : "Deleting..."}
+              disabled={isBusy}
             >
               Edit
             </DropdownMenu.Button>
@@ -119,12 +156,20 @@ function AvatarUploadView({
                   onClick={handleFileSelect}
                   variant="secondary"
                   size="small"
+                  disabled={isBusy}
                 >
                   Replace
                 </Button>
               </DropdownMenu.Item>
               <DropdownMenu.Item>
-                <Button onClick={onDelete} variant="danger" size="small">
+                <Button
+                  onClick={handleDelete}
+                  variant="danger"
+                  size="small"
+                  loading={isDeleting}
+                  loadingText="Deleting..."
+                  disabled={isBusy}
+                >
                   Delete
                 </Button>
               </DropdownMenu.Item>

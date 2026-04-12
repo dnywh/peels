@@ -1,8 +1,42 @@
 import { Button as UnstyledButton } from "@headlessui/react";
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
+import { forwardRef, type ElementType, type ReactNode, type Ref } from "react";
 
-const buttonStyles = ({ theme }) => ({
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "danger"
+  | "send"
+  | "subtle";
+export type ButtonSize = "massive" | "large" | "normal" | "small" | "icon";
+export type ButtonWidth = "contained" | "full";
+
+type ButtonStyleProps = {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  width?: ButtonWidth;
+  disabled?: boolean;
+};
+
+export type ButtonProps = ButtonStyleProps &
+  Omit<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    keyof ButtonStyleProps | "children" | "onClick"
+  > &
+  Omit<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    keyof ButtonStyleProps | "children" | "onClick" | "href"
+  > & {
+    as?: ElementType;
+    children?: ReactNode;
+    href?: string;
+    loading?: boolean;
+    loadingText?: string;
+    onClick?: React.MouseEventHandler<HTMLElement>;
+  };
+
+const buttonStyles = ({ theme }: { theme: any }): any => ({
   // Resets
   border: "none",
   appearance: "none",
@@ -163,54 +197,64 @@ const buttonStyles = ({ theme }) => ({
   ],
 });
 
-const StyledButton = styled(UnstyledButton)(buttonStyles);
-const StyledLink = styled(Link)(buttonStyles);
+const StyledButton = styled(UnstyledButton)<ButtonStyleProps>(buttonStyles);
+const StyledLink = styled(Link)<ButtonStyleProps>(buttonStyles);
 
-/**
- * @param {object} props
- * @param {string} [props.variant]
- * @param {boolean} [props.disabled]
- * @param {string} [props.href] - If provided, renders as Link. Otherwise renders as Button.
- * @param {React.ReactNode} props.children
- * @param {number} [props.tabIndex]
- * @param {boolean} [props.loading]
- * @param {string} [props.loadingText]
- * @param {string} [props.type]
- * @param {string} [props.size]
- */
-export default function Button({
-  variant = "secondary",
-  disabled = false,
-  href = undefined,
-  children,
-  tabIndex = 0,
-  loading = false,
-  loadingText = "Loading...",
-  type = "button",
-  size = "normal",
-  ...props
-}) {
-  const isDisabled = disabled || loading;
+const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
+  function Button(
+    {
+      variant = "secondary",
+      disabled = false,
+      href = undefined,
+      children,
+      tabIndex = 0,
+      loading = false,
+      loadingText = "Loading...",
+      type = "button",
+      size = "normal",
+      ...props
+    },
+    ref
+  ) {
+    const isLink = Boolean(href);
+    const isLoading = loading && !isLink;
+    const isDisabled = disabled || isLoading;
+    const buttonContent = <span>{isLoading ? loadingText : children}</span>;
 
-  const sharedProps = {
-    disabled: isDisabled,
-    variant,
-    tabIndex: isDisabled ? -1 : tabIndex,
-    "aria-disabled": isDisabled,
-    size,
-    ...props,
-  };
+    if (href) {
+      return (
+        <StyledLink
+          href={href}
+          ref={ref as Ref<HTMLAnchorElement>}
+          variant={variant}
+          tabIndex={isDisabled ? -1 : tabIndex}
+          aria-disabled={isDisabled || undefined}
+          aria-busy={isLoading || undefined}
+          size={size}
+          disabled={isDisabled}
+          {...props}
+        >
+          {buttonContent}
+        </StyledLink>
+      );
+    }
 
-  const buttonContent = <span>{loading ? loadingText : children}</span>;
+    return (
+      <StyledButton
+        type={type}
+        ref={ref as Ref<HTMLButtonElement>}
+        disabled={isDisabled}
+        variant={variant}
+        tabIndex={isDisabled ? -1 : tabIndex}
+        aria-disabled={isDisabled || undefined}
+        aria-busy={isLoading || undefined}
+        size={size}
+        {...props}
+      >
+        {buttonContent}
+      </StyledButton>
+    );
+  }
+);
 
-  // Render either a button or a link based on the presence of href
-  return href ? (
-    <StyledLink href={href} {...sharedProps}>
-      {buttonContent}
-    </StyledLink>
-  ) : (
-    <StyledButton type={type} {...sharedProps}>
-      {buttonContent}
-    </StyledButton>
-  );
-}
+export default Button;

@@ -13,6 +13,9 @@ import PostageStamp from "@/components/PostageStamp";
 import { styled } from "@pigment-css/react";
 import { useTranslations } from "next-intl";
 
+type EmailType = "support" | "dw" | "general" | "newsletter";
+type CopyStatus = "idle" | "copying" | "copied" | "error";
+
 export default function EmailSelector() {
   const searchParams = useSearchParams();
   const t = useTranslations("Contact");
@@ -24,7 +27,7 @@ export default function EmailSelector() {
   const address = searchParams.get("address");
 
   // Map via parameters to their corresponding addresses
-  const viaToAddressMap = {
+  const viaToAddressMap: Partial<Record<string, EmailType>> = {
     therot: "dw",
     // Add more mappings as needed:
     // podcast: "general",
@@ -32,7 +35,7 @@ export default function EmailSelector() {
   };
 
   // Determine the address: via mapping takes precedence, then address param, then default
-  let finalAddress = "general";
+  let finalAddress: string = "general";
   if (via && viaToAddressMap[via]) {
     finalAddress = viaToAddressMap[via];
   } else if (address) {
@@ -40,24 +43,40 @@ export default function EmailSelector() {
   }
 
   // Validate the final address against valid options
-  const validAddresses = ["support", "dw", "general", "newsletter"];
-  const validatedAddress = validAddresses.includes(finalAddress)
-    ? finalAddress
+  const validAddresses: EmailType[] = [
+    "support",
+    "dw",
+    "general",
+    "newsletter",
+  ];
+  const validatedAddress = validAddresses.includes(finalAddress as EmailType)
+    ? (finalAddress as EmailType)
     : "general";
 
   const [selectedEmailType, setSelectedEmailType] = useState(validatedAddress);
-  const [isCopied, setIsCopied] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
 
   // Reset isCopied when selectedEmailType changes
   useEffect(() => {
-    setIsCopied(false);
+    setCopyStatus("idle");
   }, [selectedEmailType]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(
-      atob(siteConfig.encodedEmail[selectedEmailType])
-    );
-    setIsCopied(true);
+  const handleCopy = async () => {
+    if (copyStatus === "copying") return;
+
+    setCopyStatus("copying");
+    try {
+      await Promise.all([
+        navigator.clipboard.writeText(
+          atob(siteConfig.encodedEmail[selectedEmailType])
+        ),
+        new Promise((resolve) => setTimeout(resolve, 150)),
+      ]);
+      setCopyStatus("copied");
+    } catch (error) {
+      console.error("Error copying email address:", error);
+      setCopyStatus("error");
+    }
   };
 
   return (
@@ -70,7 +89,9 @@ export default function EmailSelector() {
           <Select
             id="contact"
             value={selectedEmailType}
-            onChange={(event) => setSelectedEmailType(event.target.value)}
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+              setSelectedEmailType(event.target.value as EmailType)
+            }
             required={true}
           >
             <option value="general">{t("contactOptions.general")}</option>
@@ -91,8 +112,16 @@ export default function EmailSelector() {
             </DecodedSpan>
           </EncodedEmailLink>
         </Field>
-        <Button onClick={handleCopy}>
-          {isCopied ? t("copyButton.copied") : t("copyButton.copyAddress")}
+        <Button
+          onClick={handleCopy}
+          loading={copyStatus === "copying"}
+          loadingText="Copying..."
+        >
+          {copyStatus === "copied"
+            ? t("copyButton.copied")
+            : copyStatus === "error"
+              ? "Copy failed"
+              : t("copyButton.copyAddress")}
         </Button>
       </SubSectionBottom>
     </FormSection>

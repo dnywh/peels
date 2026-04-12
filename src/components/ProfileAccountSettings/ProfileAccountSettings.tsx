@@ -25,12 +25,11 @@ const List = styled("ul")(({ theme }) => ({
   // gap: `calc(${theme.spacing.unit} * 1)`,
 }));
 
-const ListItem = styled("li")(({ theme }) => ({
+const ListItem = styled("li")<{ editing?: boolean }>(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
 
   borderStyle: "solid",
-  borderWidth: "0px",
   borderColor: "transparent",
   transition: "border-color 25ms linear",
   // Assume middle row by default
@@ -75,11 +74,13 @@ const PasswordPreview = styled("p")(({ theme }) => ({
   userSelect: "none",
 }));
 
+const InputComponent = Input as React.ComponentType<any>;
+
 // New custom hook for managing edit states
 function useEditableField(initialState = false) {
   const [isEditing, setIsEditing] = useState(initialState);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [lastSentAt, setLastSentAt] = useState(0);
 
@@ -104,7 +105,20 @@ function useEditableField(initialState = false) {
   };
 }
 
-function ProfileAccountSettings({ user, profile }) {
+type ProfileAccountSettingsProps = {
+  user: {
+    email: string;
+  };
+  profile: {
+    first_name?: string;
+    is_newsletter_subscribed?: boolean;
+  };
+};
+
+function ProfileAccountSettings({
+  user,
+  profile,
+}: ProfileAccountSettingsProps) {
   // Use our custom hook for each editable field
   const firstName = useEditableField();
   const email = useEditableField();
@@ -134,7 +148,7 @@ function ProfileAccountSettings({ user, profile }) {
   //   }
   // };
 
-  const handleEmailUpdate = async (formData) => {
+  const handleEmailUpdate = async (formData: FormData) => {
     const newEmail = formData.get("email")?.toString();
 
     // Client-side validation for unchanged email
@@ -161,10 +175,10 @@ function ProfileAccountSettings({ user, profile }) {
     }
   };
 
-  const handleFirstNameUpdate = async (formData) => {
+  const handleFirstNameUpdate = async (formData: FormData) => {
     const validation = validateName(formData.get("first_name"));
     if (!validation.isValid) {
-      firstName.setError(validation.error);
+      firstName.setError(validation.error ?? null);
       return;
     }
 
@@ -176,7 +190,7 @@ function ProfileAccountSettings({ user, profile }) {
       if (result?.error) {
         firstName.setError(result.error);
       } else {
-        setTempFirstName(validation.value);
+        setTempFirstName(validation.value ?? "");
         firstName.setIsEditing(false);
       }
     } catch (error) {
@@ -191,12 +205,13 @@ function ProfileAccountSettings({ user, profile }) {
     firstName.reset();
   };
 
-  const handleNewslettePreferenceUpdate = async (formData) => {
+  const handleNewslettePreferenceUpdate = async (formData: FormData) => {
     const nextNewsletterPreference =
       formData.get("newsletter_preference") === "true";
     console.log("Updating newsletter preference to", nextNewsletterPreference);
 
     newsletterPreference.setIsUpdating(true);
+    newsletterPreference.setError(null);
 
     try {
       const result = await updateNewsletterPreferenceAction(formData);
@@ -228,7 +243,7 @@ function ProfileAccountSettings({ user, profile }) {
           <Form nested={true} action={handleFirstNameUpdate}>
             <Field>
               <Label>First name</Label>
-              <Input
+              <InputComponent
                 name="first_name"
                 {...FIELD_CONFIGS.firstName}
                 defaultValue={tempFirstName}
@@ -242,6 +257,7 @@ function ProfileAccountSettings({ user, profile }) {
             <ButtonGroup>
               <SubmitButton
                 disabled={firstName.isUpdating}
+                loading={firstName.isUpdating}
                 pendingText="Updating..."
               >
                 Update
@@ -276,7 +292,7 @@ function ProfileAccountSettings({ user, profile }) {
           <Form nested={true} action={handleEmailUpdate}>
             <Field>
               <Label>Email</Label>
-              <Input
+              <InputComponent
                 name="email"
                 defaultValue={user.email}
                 {...FIELD_CONFIGS.email}
@@ -298,6 +314,7 @@ function ProfileAccountSettings({ user, profile }) {
               {!email.success && (
                 <SubmitButton
                   disabled={email.isUpdating}
+                  loading={email.isUpdating}
                   pendingText="Sending..."
                 >
                   Send the link
@@ -335,8 +352,8 @@ function ProfileAccountSettings({ user, profile }) {
               <Label>Newsletter</Label>
               <Select
                 name="newsletter_preference"
-                value={tempNewsletterPreference}
-                onChange={(event) =>
+                value={String(tempNewsletterPreference)}
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
                   setTempNewsletterPreference(event.target.value === "true")
                 }
                 required={true}
@@ -358,6 +375,7 @@ function ProfileAccountSettings({ user, profile }) {
             <ButtonGroup>
               <SubmitButton
                 disabled={newsletterPreference.isUpdating}
+                loading={newsletterPreference.isUpdating}
                 pendingText="Updating..."
               >
                 Update

@@ -13,6 +13,16 @@ import { formatWeekday } from "@/utils/dateUtils";
 import { styled } from "@pigment-css/react";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 
+type ChatWindowProps = {
+  isDrawer?: boolean;
+  user: any;
+  listing: any;
+  existingThread?: any;
+  isDemo?: boolean;
+};
+
+type ChatMessageRecord = any;
+
 const StyledChatWindow = styled("div")(({ theme }) => ({
   height: "100%",
   flex: 1,
@@ -89,25 +99,31 @@ const ChatWindow = memo(function ChatWindow({
   listing,
   existingThread = null,
   isDemo = false,
-}) {
+}: ChatWindowProps) {
   // const router = useRouter();
   // Move Supabase client creation outside of render
-  const supabase = isDemo ? null : useMemo(() => createClient(), []);
+  const supabase = useMemo(() => (isDemo ? null : createClient()), [isDemo]);
   const { setUnreadCount, markThreadAsRead } = useUnreadMessages();
 
   const [message, setMessage] = useState("");
-  const [threadId, setThreadId] = useState(existingThread?.id || null);
-  const [messages, setMessages] = useState([]);
-  const [messageSendError, setMessageSendError] = useState(null);
+  const [threadId, setThreadId] = useState<string | null>(
+    existingThread?.id || null
+  );
+  const [messages, setMessages] = useState<ChatMessageRecord[]>([]);
+  const [messageSendError, setMessageSendError] = useState<string | null>(null);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
 
-  function handleChatSendError(error) {
+  function handleChatSendError(error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong.";
+
     // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
-    if (error.message.includes("violates row-level security policy")) {
+    if (errorMessage.includes("violates row-level security policy")) {
       setMessageSendError(
         "You’ve sent too many messages. Please try again later."
       );
     } else {
-      setMessageSendError(error.message);
+      setMessageSendError(errorMessage);
     }
   }
 
@@ -123,7 +139,7 @@ const ChatWindow = memo(function ChatWindow({
 
   // Mark messages as read when thread is viewed
   useEffect(() => {
-    if (isDemo || !existingThread?.id || !user) return;
+    if (isDemo || !supabase || !existingThread?.id || !user) return;
 
     const markMessagesAsRead = async () => {
       try {
@@ -162,7 +178,7 @@ const ChatWindow = memo(function ChatWindow({
         }
 
         // Update the messages state
-        setMessages((prevMessages) =>
+        setMessages((prevMessages: ChatMessageRecord[]) =>
           prevMessages.map((msg) =>
             msg.sender_id !== user.id
               ? { ...msg, read_at: new Date().toISOString() }
@@ -171,7 +187,9 @@ const ChatWindow = memo(function ChatWindow({
         );
 
         // Update global unread count AND mark thread as read
-        setUnreadCount((prevCount) => Math.max(0, prevCount - unreadCount));
+        setUnreadCount((prevCount: number) =>
+          Math.max(0, prevCount - unreadCount)
+        );
         markThreadAsRead(existingThread.id);
 
         console.log("Messages marked as read, new unread count:", unreadCount);
@@ -191,7 +209,7 @@ const ChatWindow = memo(function ChatWindow({
   ]);
 
   async function initializeChat() {
-    if (isDemo) return;
+    if (isDemo || !supabase) return null;
 
     try {
       const { data: thread, error } = await supabase
@@ -211,7 +229,7 @@ const ChatWindow = memo(function ChatWindow({
 
       if (thread) {
         setThreadId(thread.id);
-        loadMessages(thread.id);
+        await loadMessages(thread.id);
         return thread;
       }
 
@@ -236,6 +254,8 @@ const ChatWindow = memo(function ChatWindow({
         return;
       }
 
+      if (!newThread?.id) return null;
+
       setThreadId(newThread.id);
       return newThread;
     } catch (error) {
@@ -244,8 +264,8 @@ const ChatWindow = memo(function ChatWindow({
     }
   }
 
-  async function loadMessages(threadId) {
-    if (isDemo) return;
+  async function loadMessages(threadId: string) {
+    if (isDemo || !supabase) return;
 
     const { data: messages, error } = await supabase
       .from("chat_messages_with_senders")
@@ -260,51 +280,56 @@ const ChatWindow = memo(function ChatWindow({
     setMessages(messages || []);
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessageSendError(null);
 
-    if (!message.trim()) return;
+    const messageToSend = message.trim();
+    if (!messageToSend || isSendingMessage) return;
 
+    setIsSendingMessage(true);
     try {
       if (threadId) {
-        await sendMessage(threadId);
+        await sendMessage(threadId, messageToSend);
         return;
       }
 
       const thread = await initializeChat();
-      if (thread) {
-        await sendMessage(thread.id);
+      if (thread?.id) {
+        await sendMessage(thread.id, messageToSend);
       }
     } catch (error) {
       handleChatSendError(error);
       return;
+    } finally {
+      setIsSendingMessage(false);
     }
   }
 
-  async function sendMessage(threadId) {
-    if (isDemo) return;
+  async function sendMessage(threadId: string, content: string) {
+    if (isDemo || !supabase) return;
 
     const { error } = await supabase
       .from("chat_messages")
       .insert({
         thread_id: threadId,
         sender_id: user.id,
-        content: message.trim(),
+        content,
       })
       .select();
 
     if (error) {
       handleChatSendError(error);
+      return;
     }
 
     // Message sent, clear message and reload messages
     setMessage("");
-    loadMessages(threadId);
+    await loadMessages(threadId);
   }
 
   // Optimize the textarea onChange handler
-  const handleMessageChange = (e) => {
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
 
@@ -391,6 +416,7 @@ const ChatWindow = memo(function ChatWindow({
         recipientName={otherPersonName}
         error={messageSendError}
         isDemo={isDemo}
+        isSending={isSendingMessage}
       />
     </StyledChatWindow>
   );

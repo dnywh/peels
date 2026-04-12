@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import SubmitButton from "@/components/SubmitButton";
 
 import { styled } from "@pigment-css/react";
+import { useState, type ReactNode } from "react";
 
 const DialogContent = styled(Dialog.Content)(({ theme }) => ({
   background: "white",
@@ -44,6 +45,19 @@ const DialogOverlay = styled(Dialog.Overlay)({
   zIndex: 3, // Stop map controls, AvatarButton, etc from showing above overlay and dialog
 });
 
+type ButtonToDialogProps = {
+  variant?: "primary" | "secondary" | "danger";
+  size?: "massive" | "large" | "normal" | "small";
+  initialButtonText: ReactNode;
+  dialogTitle: ReactNode;
+  children: ReactNode;
+  confirmButtonText?: ReactNode;
+  confirmLoadingText?: string;
+  cancelButtonText?: ReactNode;
+  action?: React.FormHTMLAttributes<HTMLFormElement>["action"];
+  onSubmit?: React.FormEventHandler<HTMLFormElement>;
+};
+
 function ButtonToDialog({
   variant = "danger",
   size,
@@ -51,11 +65,33 @@ function ButtonToDialog({
   dialogTitle,
   children,
   confirmButtonText,
+  confirmLoadingText,
   cancelButtonText = "No, cancel",
   action,
   onSubmit,
   // ...props // Setting this on Button (for size etc) seems to stop the dialog from opening
-}) {
+}: ButtonToDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const resolvedConfirmLoadingText =
+    confirmLoadingText || (variant === "danger" ? "Deleting..." : "Working...");
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> | undefined =
+    onSubmit
+      ? async (event) => {
+          if (isSubmitting) {
+            event.preventDefault();
+            return;
+          }
+
+          setIsSubmitting(true);
+          try {
+            await onSubmit(event);
+          } finally {
+            setIsSubmitting(false);
+          }
+        }
+      : undefined;
+
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -71,10 +107,12 @@ function ButtonToDialog({
         </Text>
         <Buttons>
           {(action || onSubmit) && (
-            <form action={action} onSubmit={onSubmit}>
+            <form action={action} onSubmit={handleSubmit}>
               <SubmitButton
                 variant={variant !== "danger" ? "primary" : "danger"}
                 width="contained"
+                loading={isSubmitting}
+                loadingText={resolvedConfirmLoadingText}
                 // tabIndex={undefined} // Doesn't work. See below.
                 autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibilty)
               >
