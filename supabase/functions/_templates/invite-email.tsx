@@ -45,9 +45,7 @@ export const InviteEmail = ({
         to try it out. Follow this link to accept the invite:
       </EmailParagraph>
 
-      <EmailButton href={confirmUrl}>
-        Accept invite
-      </EmailButton>
+      <EmailButton href={confirmUrl}>Accept invite</EmailButton>
 
       <EmailParagraph>
         Just hit ‘reply’ if you run into any issues or have questions.

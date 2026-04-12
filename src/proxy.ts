@@ -31,16 +31,20 @@ export async function proxy(request: NextRequest) {
   const hasInitialReferrerCookie = request.cookies.get(INITIAL_REFERRER_COOKIE);
   const externalReferrer = getExternalReferrer(request);
 
-  if (!hasInitialReferrerCookie && externalReferrer && request.method === "GET") {
+  if (
+    !hasInitialReferrerCookie &&
+    externalReferrer &&
+    request.method === "GET"
+  ) {
     response.cookies.set(
       INITIAL_REFERRER_COOKIE,
       encodeURIComponent(externalReferrer),
       {
-      httpOnly: false,
-      maxAge: INITIAL_REFERRER_MAX_AGE,
-      path: "/",
-      sameSite: "lax",
-      secure: request.nextUrl.protocol === "https:",
+        httpOnly: false,
+        maxAge: INITIAL_REFERRER_MAX_AGE,
+        path: "/",
+        sameSite: "lax",
+        secure: request.nextUrl.protocol === "https:",
       }
     );
   }

@@ -76,9 +76,15 @@ const isNonEmptyString = (value: unknown): value is string =>
 
 const toErrorShape = (error: unknown) => {
   if (error && typeof error === "object") {
-    const maybeError = error as { code?: unknown; message?: unknown; name?: unknown };
+    const maybeError = error as {
+      code?: unknown;
+      message?: unknown;
+      name?: unknown;
+    };
     return {
-      error_code: isNonEmptyString(maybeError.code) ? maybeError.code : "unknown_error",
+      error_code: isNonEmptyString(maybeError.code)
+        ? maybeError.code
+        : "unknown_error",
       error_name: isNonEmptyString(maybeError.name) ? maybeError.name : "Error",
       error_message: isNonEmptyString(maybeError.message)
         ? maybeError.message
@@ -98,10 +104,7 @@ const getRecipientDomain = (email: string) => {
   return parts.length === 2 ? parts[1] : "unknown";
 };
 
-const logEvent = (
-  event: string,
-  details: Record<string, unknown>
-) => {
+const logEvent = (event: string, details: Record<string, unknown>) => {
   console.log(
     JSON.stringify({
       event,
@@ -114,7 +117,10 @@ const parseAndVerify = (payload: string, headers: Headers, wh: Webhook) => {
   const parsed = wh.verify(payload, Object.fromEntries(headers)) as HookPayload;
   const actionType = parsed.email_data?.email_action_type;
 
-  if (!isNonEmptyString(actionType) || !allowedActionTypes.has(actionType as EmailActionType)) {
+  if (
+    !isNonEmptyString(actionType) ||
+    !allowedActionTypes.has(actionType as EmailActionType)
+  ) {
     throw new Error(`Unsupported email_action_type: ${String(actionType)}`);
   }
 
@@ -145,7 +151,9 @@ const prepareEmail = async (
     ) &&
     !isNonEmptyString(tokenHash)
   ) {
-    throw new Error(`Invalid payload: missing token_hash for ${emailActionType}`);
+    throw new Error(
+      `Invalid payload: missing token_hash for ${emailActionType}`
+    );
   }
 
   if (
@@ -211,7 +219,9 @@ const prepareEmail = async (
 
   if (emailActionType === "email_change") {
     if (!isNonEmptyString(userNewEmail)) {
-      throw new Error("Invalid payload: missing user.new_email for email_change");
+      throw new Error(
+        "Invalid payload: missing user.new_email for email_change"
+      );
     }
 
     return {
@@ -360,7 +370,11 @@ Deno.serve(async (req) => {
     return json(400, { error: { message: "not allowed" } });
   }
 
-  if (!isNonEmptyString(hookSecret) || !isNonEmptyString(resendApiKey) || !isNonEmptyString(generalEmailAddress)) {
+  if (
+    !isNonEmptyString(hookSecret) ||
+    !isNonEmptyString(resendApiKey) ||
+    !isNonEmptyString(generalEmailAddress)
+  ) {
     logEvent("auth_email_hook_config_error", {
       hook_request_id: hookRequestId,
       has_hook_secret: isNonEmptyString(hookSecret),

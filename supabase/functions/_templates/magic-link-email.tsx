@@ -42,9 +42,7 @@ export const MagicLinkEmail = ({
         Follow this link to instantly sign in to Peels:
       </EmailParagraph>
 
-      <EmailButton href={confirmUrl}>
-        Sign in to Peels
-      </EmailButton>
+      <EmailButton href={confirmUrl}>Sign in to Peels</EmailButton>
 
       <EmailParagraph>
         Just hit ‘reply’ if you run into any issues or have questions.

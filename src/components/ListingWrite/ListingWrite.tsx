@@ -49,41 +49,69 @@ const AdditionalSettings = styled("footer")(({ theme }) => ({
   gap: `calc(${theme.spacing.unit} * 1.5)`,
 }));
 
+const AvatarUploadManagerComponent =
+  AvatarUploadManager as React.ComponentType<any>;
+const InputComponent = Input as React.ComponentType<any>;
+const InputHintComponent = InputHint as React.ComponentType<any>;
+const ListingPhotosManagerComponent =
+  ListingPhotosManager as React.ComponentType<any>;
+const LocationSelectComponent = LocationSelect as React.ComponentType<any>;
+const MultiInputComponent = MultiInput as React.ComponentType<any>;
+const SelectComponent = Select as React.ComponentType<any>;
+const TextareaComponent = Textarea as React.ComponentType<any>;
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
+type ListingErrors = Partial<Record<"name" | "location", string>>;
+
+type ListingWriteProps = {
+  initialListing?: any;
+  user: any;
+  profile: any;
+};
+
 // Component
-export default function ListingWrite({ initialListing, user, profile }) {
-  const { type } = useParams();
+export default function ListingWrite({
+  initialListing,
+  user,
+  profile,
+}: ListingWriteProps) {
+  const { type } = useParams<{ type?: string }>();
   const router = useRouter();
 
-  const listingType = initialListing?.type || type;
+  const listingType = initialListing?.type || type || "residential";
 
   // Update error state to handle both field and global errors
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<ListingErrors>({});
   const [globalError, setGlobalError] = useState("");
 
   // Handle form submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Populate editable fields
-  const [avatar, setAvatar] = useState(
-    initialListing ? initialListing.avatar : ""
+  const [avatar, setAvatar] = useState<string>(
+    initialListing ? initialListing.avatar || "" : ""
   );
-  const [name, setName] = useState(
+  const [name, setName] = useState<string>(
     listingType === "residential"
-      ? profile.first_name // Use profile.first_name for residential listings
+      ? profile.first_name || "" // Use profile.first_name for residential listings
       : initialListing
-        ? initialListing.name
+        ? initialListing.name || ""
         : "" // Use listing name for others
   );
 
-  const [description, setDescription] = useState(
-    initialListing ? initialListing.description : ""
+  const [description, setDescription] = useState<string>(
+    initialListing ? initialListing.description || "" : ""
   );
 
-  const [countryCode, setCountryCode] = useState(
-    initialListing ? initialListing.country_code : ""
+  const [countryCode, setCountryCode] = useState<string>(
+    initialListing ? initialListing.country_code || "" : ""
   );
 
-  const [coordinates, setCoordinates] = useState(
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(
     initialListing
       ? {
           latitude: initialListing.latitude,
@@ -92,63 +120,67 @@ export default function ListingWrite({ initialListing, user, profile }) {
       : null
   );
 
-  const [areaName, setAreaName] = useState(
-    initialListing ? initialListing.area_name : ""
+  const [areaName, setAreaName] = useState<string>(
+    initialListing ? initialListing.area_name || "" : ""
   );
 
-  const [acceptedItems, setAcceptedItems] = useState(
-    initialListing ? initialListing.accepted_items : [""]
+  const [acceptedItems, setAcceptedItems] = useState<string[]>(
+    initialListing ? initialListing.accepted_items || [""] : [""]
   );
-  const [rejectedItems, setRejectedItems] = useState(
-    initialListing ? initialListing.rejected_items : []
+  const [rejectedItems, setRejectedItems] = useState<string[]>(
+    initialListing ? initialListing.rejected_items || [] : []
   );
-  const [donatedItems, setDonatedItems] = useState(
-    initialListing ? initialListing.donated_items : [""]
+  const [donatedItems, setDonatedItems] = useState<string[]>(
+    initialListing ? initialListing.donated_items || [""] : [""]
   );
 
-  const [photos, setPhotos] = useState(
-    initialListing ? initialListing.photos : []
+  const [photos, setPhotos] = useState<string[]>(
+    initialListing ? initialListing.photos || [] : []
   );
-  const [links, setLinks] = useState(
-    initialListing ? initialListing.links : []
+  const [links, setLinks] = useState<string[]>(
+    initialListing ? initialListing.links || [] : []
   );
-  const [visibility, setVisibility] = useState(
+  const [visibility, setVisibility] = useState<boolean>(
     initialListing ? initialListing.visibility : true
   );
 
-  const [isStub, setIsStub] = useState(
+  const [isStub, setIsStub] = useState<boolean>(
     initialListing ? initialListing.is_stub : false
   );
 
   // Other states
   const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [pendingPhotos, setPendingPhotos] = useState([]);
+  const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
 
-  async function handleDeleteListing(event) {
+  async function handleDeleteListing(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // console.log("Deleting listing with slug:", initialListing.slug);
-    const response = await deleteListingAction(initialListing.slug);
-    if (response.success) {
-      router.push(`/profile/?message=${response.message}`);
-    } else {
-      setFeedbackMessage(response.message);
+
+    setFeedbackMessage("");
+    try {
+      const response = await deleteListingAction(initialListing.slug);
+      if (response.success) {
+        router.push(`/profile/?message=${response.message}`);
+      } else {
+        setFeedbackMessage(response.message);
+      }
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      setFeedbackMessage("Hmm, something’s not right. Mind trying again?");
     }
   }
 
   // Form handling logic here
-  async function handleSubmit(event) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (isSubmitting) return;
-
-    setIsSubmitting(true);
 
     // Reset all errors
     setErrors({});
     setGlobalError("");
 
     // Validate required fields
-    const nextErrors = {};
+    const nextErrors: ListingErrors = {};
     let validatedName = name; // Store the validated name
 
     if (listingType === "residential") {
@@ -158,7 +190,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
         if (!validation.isValid) {
           nextErrors.name = validation.error;
         } else {
-          validatedName = validation.value; // Store the trimmed value
+          validatedName = validation.value ?? ""; // Store the trimmed value
         }
       }
     } else {
@@ -167,11 +199,13 @@ export default function ListingWrite({ initialListing, user, profile }) {
       if (!validation.isValid) {
         nextErrors.name = `You can't have an empty ${listingType} name.`;
       } else {
-        validatedName = validation.value; // Store the trimmed value
+        validatedName = validation.value ?? ""; // Store the trimmed value
       }
     }
 
-    if (!coordinates) {
+    const selectedCoordinates = coordinates;
+
+    if (!selectedCoordinates) {
       nextErrors.location = "Please select a location.";
     }
 
@@ -181,9 +215,17 @@ export default function ListingWrite({ initialListing, user, profile }) {
       return;
     }
 
+    if (!selectedCoordinates) return;
+
+    setIsSubmitting(true);
+    let shouldResetSubmitting = true;
+
     try {
       // For residential listings, update the profile first name if changed
-      if (listingType === "residential" && profile.first_name !== name) {
+      if (
+        listingType === "residential" &&
+        profile.first_name !== validatedName
+      ) {
         console.log(
           "Updating first name from",
           profile.first_name,
@@ -194,31 +236,36 @@ export default function ListingWrite({ initialListing, user, profile }) {
         formData.append("first_name", validatedName);
         const result = await updateFirstNameAction(formData);
         if (result?.error) {
-          setErrors({ name: result.error });
+          setErrors({ name: String(result.error) });
           return;
         }
       }
 
       const supabase = createClient();
       const {
-        data: { user },
+        data: { user: activeUser },
       } = await supabase.auth.getUser();
+
+      if (!activeUser) {
+        setGlobalError("Please sign in and then try again.");
+        return;
+      }
 
       // Prepare the listing data
       const listingData = {
         // Add the id if it's an existing listing, so we know which to update
         ...(initialListing && { id: initialListing.id }),
-        owner_id: user.id,
+        owner_id: activeUser.id,
         type: listingType,
         ...(listingType !== "residential" && avatar && { avatar }),
         // Only include name for non-residential listings
         ...(listingType !== "residential" && { name: validatedName }),
         description,
-        location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
+        location: `POINT(${selectedCoordinates.longitude} ${selectedCoordinates.latitude})`,
         // Temporarily store the coordinates as longitude and latitude floats in the database as well
         // ...because I can't get the geometry type to convert to to long and lat dynamically if a user goes direct to a listing, e.g. http://localhost:3000/map?listing=9xvN9zxH0rzZ
-        longitude: coordinates.longitude,
-        latitude: coordinates.latitude,
+        longitude: selectedCoordinates.longitude,
+        latitude: selectedCoordinates.latitude,
         area_name: areaName,
         country_code: countryCode,
         accepted_items: acceptedItems.filter((item) => item.trim() !== ""),
@@ -235,11 +282,17 @@ export default function ListingWrite({ initialListing, user, profile }) {
       const { data, error } = await createOrUpdateListingAction(listingData);
 
       if (error) {
-        setGlobalError(error);
+        setGlobalError(String(error));
+        return;
+      }
+
+      if (!data?.slug) {
+        setGlobalError("Something went wrong. Please try again later.");
         return;
       }
 
       // Redirect to the new/updated listing
+      shouldResetSubmitting = false;
       router.push(
         `/listings/${data.slug}?status=${initialListing ? "updated" : "created"}`
       );
@@ -247,8 +300,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
       console.error("Error in handleSubmit:", error);
       setGlobalError("An unexpected error occurred. Please try again later.");
     } finally {
-      // Only reset isSubmitting if we're not navigating away
-      if (globalError) {
+      if (shouldResetSubmitting) {
         setIsSubmitting(false);
       }
     }
@@ -270,19 +322,19 @@ export default function ListingWrite({ initialListing, user, profile }) {
     setLinks([...links, ""]);
     // }
   };
-  const handleAcceptedItemChange = (index, value) => {
+  const handleAcceptedItemChange = (index: number, value: string) => {
     const newItems = [...acceptedItems];
     newItems[index] = value;
     setAcceptedItems(newItems);
   };
 
-  const handleRejectedItemChange = (index, value) => {
+  const handleRejectedItemChange = (index: number, value: string) => {
     const newItems = [...rejectedItems];
     newItems[index] = value;
     setRejectedItems(newItems);
   };
 
-  const handleLinksChange = (index, value) => {
+  const handleLinksChange = (index: number, value: string) => {
     const newLinks = [...links];
     newLinks[index] = value;
     setLinks(newLinks);
@@ -293,7 +345,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
       {initialListing && initialListing.is_stub && <Lozenge>Stub</Lozenge>}
       <Form onSubmit={handleSubmit}>
         {listingType === "residential" ? (
-          <AvatarUploadManager
+          <AvatarUploadManagerComponent
             initialAvatar={profile?.avatar || ""}
             bucket="avatars"
             entityId={user.id}
@@ -302,7 +354,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             listingType={listingType}
           />
         ) : (
-          <AvatarUploadManager
+          <AvatarUploadManagerComponent
             initialAvatar={avatar}
             bucket="listing_avatars"
             entityId={initialListing?.slug}
@@ -319,22 +371,24 @@ export default function ListingWrite({ initialListing, user, profile }) {
           {listingType === "residential" ? (
             <Field>
               <Label htmlFor="first_name">Your first name</Label>
-              <Input
+              <InputComponent
                 id="first_name"
                 name="first_name"
                 {...FIELD_CONFIGS.firstName}
                 defaultValue={profile.first_name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setName(event.target.value)
+                }
                 error={errors.name}
               />
-              <InputHint>
-                {errors.name ? errors.name : FIELD_CONFIGS.firstName.hint}
-              </InputHint>
+              <InputHintComponent>
+                {errors.name || "Use your first name or a nickname."}
+              </InputHintComponent>
             </Field>
           ) : (
             <Field>
               <Label htmlFor="name">Place name</Label>
-              <Input
+              <InputComponent
                 id="name"
                 name="name"
                 required={true}
@@ -342,16 +396,20 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 minLength={FIELD_CONFIGS.firstName.minLength}
                 placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setName(event.target.value)
+                }
                 error={errors.name}
               />
               {errors.name && (
-                <InputHint variant="error">{errors.name}</InputHint>
+                <InputHintComponent variant="error">
+                  {errors.name}
+                </InputHintComponent>
               )}
             </Field>
           )}
 
-          <LocationSelect
+          <LocationSelectComponent
             listingType={listingType}
             initialPlaceholderText={
               initialListing
@@ -374,7 +432,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
           {listingType === "business" ? (
             <Field>
               <Label htmlFor="description">Donation details</Label>
-              <Textarea
+              <TextareaComponent
                 id="description"
                 rows={6}
                 maxLength={DESCRIPTION_MAX_CHARACTERS}
@@ -382,19 +440,21 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 resize="vertical"
                 placeholder="Your donation details"
                 value={description}
-                onChange={(event) => setDescription(event.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setDescription(event.target.value)
+                }
               />
-              <InputHint>
+              <InputHintComponent>
                 What kind of scraps you have to give away and the collection
                 details. Save any links for the dedicated section, below.
-              </InputHint>
+              </InputHintComponent>
             </Field>
           ) : (
             <Field>
               <Label htmlFor="description" required={false}>
                 Short description or instructions
               </Label>
-              <Textarea
+              <TextareaComponent
                 id="description"
                 rows={listingType === "residential" ? 4 : 5}
                 maxLength={DESCRIPTION_MAX_CHARACTERS}
@@ -402,16 +462,18 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 resize="vertical"
                 placeholder={`About your ${listingType === "residential" ? "listing" : listingType}`}
                 value={description}
-                onChange={(event) => setDescription(event.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setDescription(event.target.value)
+                }
               />
-              <InputHint>
+              <InputHintComponent>
                 {listingType === "community"
                   ? "Opening hours and composting facilities."
                   : "Your composting set up and general availability."}{" "}
                 Save the scraps you accept{" "}
                 {listingType !== "residential" && "and any links"} for the
                 dedicated section{listingType !== "residential" && "s"}, below.
-              </InputHint>
+              </InputHintComponent>
             </Field>
           )}
         </FormSection>
@@ -426,7 +488,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               </p>
             </FormSectionHeader>
 
-            <MultiInput
+            <MultiInputComponent
               label="What scraps do you accept?"
               addButtonText="Add an item"
               addAnotherButtonText="Add another item"
@@ -439,7 +501,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
               limit={12}
             />
 
-            <MultiInput
+            <MultiInputComponent
               label="What scraps do you not accept?"
               addButtonText="Add an item"
               addAnotherButtonText="Add another item"
@@ -471,7 +533,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             <Label htmlFor="photo-upload-button" required={false}>
               Photos
             </Label>
-            <ListingPhotosManager
+            <ListingPhotosManagerComponent
               initialPhotos={initialListing ? photos : pendingPhotos}
               listingSlug={initialListing?.slug}
               onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
@@ -481,7 +543,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
           {/* TODO: Selecting field should highlight button, just like every other input */}
           {listingType !== "residential" && (
-            <MultiInput
+            <MultiInputComponent
               label="External links"
               required={false}
               addButtonText="Add link"
@@ -508,17 +570,17 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
             <Field>
               <Label htmlFor="visibility">Map visibility</Label>
-              <Select
+              <SelectComponent
                 id="visibility"
-                value={initialListing ? visibility : "true"}
-                onChange={(event) =>
+                value={String(initialListing ? visibility : true)}
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
                   setVisibility(event.target.value === "true")
                 }
                 required={true}
               >
                 <option value="true">Show this listing on the map</option>
                 <option value="false">Hide this listing from the map</option>
-              </Select>
+              </SelectComponent>
             </Field>
           </FormSection>
         )}
@@ -532,10 +594,12 @@ export default function ListingWrite({ initialListing, user, profile }) {
 
             <Field>
               <Label htmlFor="stub">Stub settings</Label>
-              <Select
+              <SelectComponent
                 id="stub"
-                value={isStub}
-                onChange={(event) => setIsStub(event.target.value === "true")}
+                value={String(isStub)}
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                  setIsStub(event.target.value === "true")
+                }
                 required={true}
               >
                 <option value="false">
@@ -544,12 +608,12 @@ export default function ListingWrite({ initialListing, user, profile }) {
                 <option value="true">
                   This listing is a stub that others can claim
                 </option>
-              </Select>
-              <InputHint>
+              </SelectComponent>
+              <InputHintComponent>
                 {isStub
                   ? "This listing will not contain your contact information. Others can claim it as their own and take it over."
                   : "This listing will be presented just like any other."}
-              </InputHint>
+              </InputHintComponent>
             </Field>
           </FormSection>
         )}
@@ -600,6 +664,7 @@ export default function ListingWrite({ initialListing, user, profile }) {
             initialButtonText="Delete listing"
             dialogTitle="Delete listing"
             confirmButtonText="Yes, delete listing"
+            confirmLoadingText="Deleting..."
             onSubmit={handleDeleteListing}
           >
             Are you sure you want to delete your listing? This is irreversible.

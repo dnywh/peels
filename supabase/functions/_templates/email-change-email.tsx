@@ -40,9 +40,7 @@ export const EmailChangeEmail = ({
         Follow this link to confirm your new email on Peels:
       </EmailParagraph>
 
-      <EmailButton href={confirmUrl}>
-        Change email address
-      </EmailButton>
+      <EmailButton href={confirmUrl}>Change email address</EmailButton>
 
       <EmailParagraph>
         As a reminder, you’re changing from {email} to {newEmail}.

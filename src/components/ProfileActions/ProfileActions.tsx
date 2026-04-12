@@ -1,8 +1,10 @@
+"use client";
+
 import { signOutAction, deleteAccountAction } from "@/app/actions";
 import { siteConfig } from "@/config/site";
-import Button from "@/components/Button";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
+import SubmitButton from "@/components/SubmitButton";
 
 import { styled } from "@pigment-css/react";
 
@@ -33,7 +35,15 @@ const ListItemText = styled("div")(({ theme }) => ({
   },
 }));
 
-export default function ProfileActions({ listings }) {
+const ActionForm = styled("form")({
+  flexShrink: 0,
+});
+
+type ProfileActionsProps = {
+  listings?: unknown[];
+};
+
+export default function ProfileActions({ listings = [] }: ProfileActionsProps) {
   return (
     <List>
       <ListItem>
@@ -41,9 +51,11 @@ export default function ProfileActions({ listings }) {
           <h4>Sign out</h4>
           <p>Goodbye for now!</p>
         </ListItemText>
-        <Button variant="secondary" onClick={signOutAction}>
-          Sign out
-        </Button>
+        <ActionForm action={signOutAction}>
+          <SubmitButton variant="secondary" loadingText="Signing out...">
+            Sign out
+          </SubmitButton>
+        </ActionForm>
       </ListItem>
 
       <ListItem>
@@ -84,6 +96,7 @@ export default function ProfileActions({ listings }) {
               ? `Yes, delete my account and listing${listings.length > 1 ? "s" : ""}`
               : "Yes, delete my account"
           }
+          confirmLoadingText="Deleting..."
           action={deleteAccountAction}
         >
           Are you sure you want to delete your account?{" "}

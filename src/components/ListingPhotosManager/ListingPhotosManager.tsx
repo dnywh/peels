@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
 import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
 import Compressor from "compressorjs";
 import Dropzone from "react-dropzone";
 // import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  type DropResult,
+} from "@hello-pangea/dnd";
 
 import { styled } from "@pigment-css/react";
 
@@ -81,37 +86,67 @@ const MAX_DIMENSION = 2048; // Reasonable max dimension for listing photos
 const overSizedFileAlertSingular = `Your photo is too large. The maximum file size is ${MAX_MB}MB.`;
 const overSizedFileAlertPlural = `One or more of your photos are too large. The maximum file size is ${MAX_MB}MB per photo.`;
 
+const RemoteImageComponent = RemoteImage as React.ComponentType<any>;
+const uploadListingPhotoAction = uploadListingPhoto as (
+  file: File,
+  listingSlug?: string
+) => Promise<string>;
+const deleteListingPhotoAction = deleteListingPhoto as (
+  filePath: string,
+  listingSlug?: string
+) => Promise<string[] | null>;
+
+type ListingPhotosManagerProps = {
+  initialPhotos?: string[];
+  listingSlug?: string;
+  onPhotosChange?: (photos: string[]) => void;
+  isNewListing?: boolean;
+};
+
 function ListingPhotosManager({
   initialPhotos = [],
   listingSlug,
   onPhotosChange,
   isNewListing = false,
-}) {
+}: ListingPhotosManagerProps) {
   const [photos, setPhotos] = useState(initialPhotos);
+  const photosRef = useRef(initialPhotos);
   const [isUploading, setIsUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [deletingPhoto, setDeletingPhoto] = useState<string | null>(null);
+  const isMutatingPhotos = isUploading || deletingPhoto !== null;
 
-  const compressFile = (file) => {
-    return new Promise((resolve, reject) => {
+  const updatePhotos = (
+    getNextPhotos: (currentPhotos: string[]) => string[]
+  ) => {
+    const nextPhotos = getNextPhotos(photosRef.current);
+    photosRef.current = nextPhotos;
+    setPhotos(nextPhotos);
+    onPhotosChange?.(nextPhotos);
+  };
+
+  const compressFile = (file: File) => {
+    return new Promise<File>((resolve, reject) => {
       new Compressor(file, {
         quality: 0.8, // Good balance between quality and compression
         maxWidth: MAX_DIMENSION, // Reasonable max dimension for property photos
         maxHeight: MAX_DIMENSION,
         convertSize: 1000000, // Convert PNGs to JPEGs if they're over ~1MB
-        success: (result) => resolve(result),
+        success: (result) => resolve(result as File),
         error: (err) => reject(err),
       });
     });
   };
 
-  const handleDrop = async (acceptedFiles) => {
+  const handleDrop = async (acceptedFiles: File[]) => {
+    if (isMutatingPhotos) return;
+
     console.log("Dropped files:", acceptedFiles);
 
     // Convert FileList to Array and process as if they came from input
     const files = Array.from(acceptedFiles);
 
     // Reuse existing photo handling logic
-    if (files.length + photos.length > MAX_PHOTOS) {
+    if (files.length + photosRef.current.length > MAX_PHOTOS) {
       alert(`You can only upload up to ${MAX_PHOTOS} photos`);
       return;
     }
@@ -141,19 +176,30 @@ function ListingPhotosManager({
       );
 
       const uploadPromises = compressedFiles.map((file) =>
-        uploadListingPhoto(file, !isNewListing ? listingSlug : undefined)
+        uploadListingPhotoAction(file, !isNewListing ? listingSlug : undefined)
       );
-      const newFilenames = await Promise.all(uploadPromises);
-      const newPhotos = [...photos, ...newFilenames];
-      setPhotos(newPhotos);
-      onPhotosChange?.(newPhotos);
+      const newFilenames = (await Promise.all(uploadPromises)) as string[];
+      updatePhotos((currentPhotos) => [...currentPhotos, ...newFilenames]);
     } catch (error) {
       // console.error("Upload error details:", error);
 
       // Handle different error structures from Supabase
-      if (error?.statusCode === "413" || error?.error?.statusCode === "413") {
-        alert(overSizedFileAlertPlural);
-      } else if (error?.message?.includes("max_photos")) {
+      const uploadError = error as {
+        statusCode?: string;
+        error?: { statusCode?: string };
+        message?: string;
+      };
+
+      if (
+        uploadError?.statusCode === "413" ||
+        uploadError?.error?.statusCode === "413"
+      ) {
+        alert(
+          files.length === 1
+            ? overSizedFileAlertSingular
+            : overSizedFileAlertPlural
+        );
+      } else if (uploadError?.message?.includes("max_photos")) {
         alert(`You can only upload up to ${MAX_PHOTOS} photos`);
       } else {
         alert("There was an error uploading your photos. Please try again.");
@@ -163,35 +209,55 @@ function ListingPhotosManager({
     }
   };
 
-  const handlePhotoDelete = async (photoToDelete) => {
+  const handlePhotoDelete = async (photoToDelete: string) => {
+    if (isMutatingPhotos) return;
+
+    const deletedPhotoIndex = photosRef.current.indexOf(photoToDelete);
+    setDeletingPhoto(photoToDelete);
     try {
       // Immediately remove from react-beautiful-dnd's context
-      const newPhotos = photos.filter((photo) => photo !== photoToDelete);
-      setPhotos(newPhotos);
-      onPhotosChange?.(newPhotos);
+      updatePhotos((currentPhotos) =>
+        currentPhotos.filter((photo) => photo !== photoToDelete)
+      );
 
       // Then attempt the delete operation
-      await deleteListingPhoto(photoToDelete, listingSlug);
+      await deleteListingPhotoAction(photoToDelete, listingSlug);
     } catch (error) {
       console.error("Error deleting photo:", error);
 
-      // If the delete fails, revert the UI state
-      setPhotos(photos);
-      onPhotosChange?.(photos);
+      // Restore only the failed deletion, preserving other state changes.
+      updatePhotos((currentPhotos) => {
+        if (currentPhotos.includes(photoToDelete)) {
+          return currentPhotos;
+        }
+
+        const restoreIndex =
+          deletedPhotoIndex === -1
+            ? currentPhotos.length
+            : Math.min(deletedPhotoIndex, currentPhotos.length);
+
+        return [
+          ...currentPhotos.slice(0, restoreIndex),
+          photoToDelete,
+          ...currentPhotos.slice(restoreIndex),
+        ];
+      });
       alert("Failed to delete photo. Please try again.");
+    } finally {
+      setDeletingPhoto(null);
     }
   };
 
-  const handleDragEnd = (result) => {
+  const handleDragEnd = (result: DropResult) => {
+    if (isMutatingPhotos) return;
     if (!result.destination) return;
 
-    const items = Array.from(photos);
+    const items = Array.from(photosRef.current);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
     console.log("Photos reordered:", items);
-    setPhotos(items);
-    onPhotosChange?.(items);
+    updatePhotos(() => items);
   };
 
   return (
@@ -205,7 +271,7 @@ function ListingPhotosManager({
                   droppableId="photos"
                   direction="vertical"
                   // Things that react-beautiful-dnd gets mad about me NOT defining...
-                  isDropDisabled={false}
+                  isDropDisabled={isMutatingPhotos}
                   isCombineEnabled={false}
                   ignoreContainerClipping={false}
                 >
@@ -219,6 +285,7 @@ function ListingPhotosManager({
                           key={filename}
                           draggableId={filename}
                           index={index}
+                          isDragDisabled={isMutatingPhotos}
                         >
                           {(provided, snapshot) => (
                             <PhotoItem
@@ -230,7 +297,7 @@ function ListingPhotosManager({
                                 opacity: snapshot.isDragging ? 0.8 : 1,
                               }}
                             >
-                              <RemoteImage
+                              <RemoteImageComponent
                                 bucket="listing_photos"
                                 filename={filename}
                                 alt={`Photo ${index + 1}`}
@@ -240,6 +307,9 @@ function ListingPhotosManager({
                               <Button
                                 variant="danger"
                                 size="small"
+                                loading={deletingPhoto === filename}
+                                loadingText="Deleting..."
+                                disabled={isMutatingPhotos}
                                 onClick={() => handlePhotoDelete(filename)}
                               >
                                 Delete
@@ -266,7 +336,7 @@ function ListingPhotosManager({
               type="file"
               accept="image/*"
               multiple
-              disabled={isUploading || photos.length >= MAX_PHOTOS}
+              disabled={isMutatingPhotos || photos.length >= MAX_PHOTOS}
               style={{ display: "none" }}
               id="photo-upload"
             />
@@ -277,13 +347,11 @@ function ListingPhotosManager({
                 as="span"
                 variant="secondary"
                 size="small"
-                disabled={isUploading || photos.length >= MAX_PHOTOS}
+                loading={isUploading}
+                loadingText="Uploading..."
+                disabled={isMutatingPhotos || photos.length >= MAX_PHOTOS}
               >
-                {isUploading
-                  ? "Uploading..."
-                  : photos.length > 0
-                    ? "Add more photos"
-                    : "Add photos"}
+                {photos.length > 0 ? "Add more photos" : "Add photos"}
               </Button>
             </label>
           </DropzoneContents>

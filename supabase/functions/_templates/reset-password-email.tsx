@@ -43,9 +43,7 @@ export const ResetPasswordEmail = ({
         link to reset your password:
       </EmailParagraph>
 
-      <EmailButton href={confirmUrl}>
-        Reset password
-      </EmailButton>
+      <EmailButton href={confirmUrl}>Reset password</EmailButton>
 
       <EmailParagraph>
         Just hit ‘reply’ if you run into any issues or have questions.
