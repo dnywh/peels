@@ -19,22 +19,123 @@ type ButtonStyleProps = {
   disabled?: boolean;
 };
 
-export type ButtonProps = ButtonStyleProps &
-  Omit<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    keyof ButtonStyleProps | "children" | "onClick"
-  > &
-  Omit<
-    React.AnchorHTMLAttributes<HTMLAnchorElement>,
-    keyof ButtonStyleProps | "children" | "onClick" | "href"
-  > & {
-    as?: ElementType;
-    children?: ReactNode;
-    href?: string;
-    loading?: boolean;
-    loadingText?: string;
-    onClick?: React.MouseEventHandler<HTMLElement>;
+type BaseButtonProps = ButtonStyleProps & {
+  children?: ReactNode;
+  loading?: boolean;
+  loadingText?: string;
+  onClick?: React.MouseEventHandler<HTMLElement>;
+};
+
+type DataAttributes = {
+  [dataAttribute: `data-${string}`]: string | number | boolean | undefined;
+};
+
+type SharedDomProps = React.AriaAttributes &
+  DataAttributes & {
+    autoFocus?: boolean;
+    className?: string;
+    id?: string;
+    role?: React.AriaRole;
+    style?: React.CSSProperties;
+    tabIndex?: number;
+    title?: string;
   };
+
+type LinkNavigationProps = {
+  href: string;
+  locale?: string | false;
+  onNavigate?: (event: { preventDefault: () => void }) => void;
+  prefetch?: boolean | "auto" | null;
+  replace?: boolean;
+  scroll?: boolean;
+  shallow?: boolean;
+};
+
+export type ButtonElementProps = BaseButtonProps &
+  SharedDomProps & {
+    as?: ElementType;
+    form?: string;
+    formAction?: string | ((formData: FormData) => void | Promise<void>);
+    formEncType?: string;
+    formMethod?: string;
+    formNoValidate?: boolean;
+    formTarget?: string;
+    href?: undefined;
+    name?: string;
+    type?: "button" | "submit" | "reset";
+    value?: string | number | readonly string[];
+  };
+
+export type LinkButtonProps = BaseButtonProps &
+  SharedDomProps &
+  LinkNavigationProps & {
+    as?: never;
+    download?: boolean | string;
+    formAction?: never;
+    formEncType?: never;
+    formMethod?: never;
+    formNoValidate?: never;
+    formTarget?: never;
+    name?: never;
+    rel?: string;
+    target?: React.HTMLAttributeAnchorTarget;
+    type?: never;
+    value?: never;
+  };
+
+export type ButtonProps = ButtonElementProps | LinkButtonProps;
+
+type ButtonElementRestProps = Omit<
+  ButtonElementProps,
+  keyof BaseButtonProps | "href"
+>;
+
+type LinkButtonRestProps = Omit<
+  LinkButtonProps,
+  keyof BaseButtonProps | "href"
+>;
+
+const isLinkButton = (props: ButtonProps): props is LinkButtonProps =>
+  props.href !== undefined;
+
+const getCommonProps = (props: ButtonProps) => {
+  const {
+    variant = "secondary",
+    disabled = false,
+    children,
+    tabIndex = 0,
+    loading = false,
+    loadingText = "Loading...",
+    size = "normal",
+    onClick,
+    href,
+    ...restProps
+  } = props;
+
+  return {
+    variant,
+    disabled,
+    children,
+    tabIndex,
+    loading,
+    loadingText,
+    size,
+    onClick,
+    href,
+    restProps,
+  };
+};
+
+const getButtonElementProps = (props: ButtonElementRestProps) => {
+  const { type = "button", ...buttonProps } = props;
+
+  return {
+    type,
+    buttonProps,
+  };
+};
+
+const getLinkButtonProps = (props: LinkButtonRestProps) => props;
 
 const buttonStyles = ({ theme }: { theme: any }): any => ({
   // Resets
@@ -206,23 +307,20 @@ const StyledButton = styled(UnstyledButton)<ButtonStyleProps>(buttonStyles);
 const StyledLink = styled(Link)<ButtonStyleProps>(buttonStyles);
 
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  function Button(
-    {
-      variant = "secondary",
-      disabled = false,
-      href = undefined,
+  function Button(allProps, ref) {
+    const {
+      variant,
+      disabled,
+      href,
       children,
-      tabIndex = 0,
-      loading = false,
-      loadingText = "Loading...",
-      type = "button",
-      size = "normal",
+      tabIndex,
+      loading,
+      loadingText,
+      size,
       onClick,
-      ...props
-    },
-    ref
-  ) {
-    const isLink = Boolean(href);
+      restProps,
+    } = getCommonProps(allProps);
+    const isLink = isLinkButton(allProps);
     const isLoading = loading && !isLink;
     const isDisabled = disabled || isLoading;
     const buttonContent = <span>{isLoading ? loadingText : children}</span>;
@@ -236,10 +334,12 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
       onClick?.(event);
     };
 
-    if (href) {
+    if (isLink) {
+      const linkProps = getLinkButtonProps(restProps as LinkButtonRestProps);
+
       return (
         <StyledLink
-          href={href}
+          href={allProps.href}
           ref={ref as Ref<HTMLAnchorElement>}
           variant={variant}
           tabIndex={isDisabled ? -1 : tabIndex}
@@ -247,12 +347,16 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
           aria-busy={isLoading || undefined}
           size={size}
           onClick={handleLinkClick}
-          {...props}
+          {...linkProps}
         >
           {buttonContent}
         </StyledLink>
       );
     }
+
+    const { type, buttonProps } = getButtonElementProps(
+      restProps as ButtonElementRestProps
+    );
 
     return (
       <StyledButton
@@ -265,7 +369,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         aria-busy={isLoading || undefined}
         size={size}
         onClick={onClick}
-        {...props}
+        {...buttonProps}
       >
         {buttonContent}
       </StyledButton>

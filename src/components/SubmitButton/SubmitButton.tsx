@@ -1,9 +1,9 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import Button, { type ButtonProps } from "@/components/Button";
+import Button, { type ButtonElementProps } from "@/components/Button";
 
-export type SubmitButtonProps = Omit<ButtonProps, "type"> & {
+export type SubmitButtonProps = Omit<ButtonElementProps, "type"> & {
   pending?: boolean;
   pendingText?: string;
 };

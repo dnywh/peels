@@ -222,7 +222,10 @@ export default function ListingWrite({
 
     try {
       // For residential listings, update the profile first name if changed
-      if (listingType === "residential" && profile.first_name !== name) {
+      if (
+        listingType === "residential" &&
+        profile.first_name !== validatedName
+      ) {
         console.log(
           "Updating first name from",
           profile.first_name,
