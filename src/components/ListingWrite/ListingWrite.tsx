@@ -401,10 +401,7 @@ export default function ListingWrite({
                 type="text"
                 minLength={FIELD_CONFIGS.firstName.minLength}
                 placeholder={t("Listings.form.placeNamePlaceholder", {
-                  type:
-                    listingType === "business"
-                      ? "business’"
-                      : `${listingType}’s`,
+                  type: listingType,
                 })}
                 value={name}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -463,7 +460,11 @@ export default function ListingWrite({
             </Field>
           ) : (
             <Field>
-              <Label htmlFor="description" required={false}>
+              <Label
+                htmlFor="description"
+                required={false}
+                optionalText={t("Common.optional")}
+              >
                 {t("Listings.form.descriptionLabel")}
               </Label>
               <TextareaComponent
@@ -473,7 +474,7 @@ export default function ListingWrite({
                 required={false}
                 resize="vertical"
                 placeholder={t("Listings.form.descriptionPlaceholder", {
-                  type: listingType === "residential" ? "listing" : listingType,
+                  type: listingType,
                 })}
                 value={description}
                 onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -500,6 +501,7 @@ export default function ListingWrite({
               label={t("Listings.form.acceptedLabel")}
               addButtonText={t("Listings.form.addItem")}
               addAnotherButtonText={t("Listings.form.addAnotherItem")}
+              optionalText={t("Common.optional")}
               placeholder={t("Listings.form.acceptedPlaceholder")}
               secondaryPlaceholder={t(
                 "Listings.form.acceptedSecondaryPlaceholder"
@@ -515,6 +517,7 @@ export default function ListingWrite({
               label={t("Listings.form.rejectedLabel")}
               addButtonText={t("Listings.form.addItem")}
               addAnotherButtonText={t("Listings.form.addAnotherItem")}
+              optionalText={t("Common.optional")}
               placeholder={t("Listings.form.rejectedPlaceholder")}
               secondaryPlaceholder={t(
                 "Listings.form.rejectedSecondaryPlaceholder"
@@ -543,7 +546,11 @@ export default function ListingWrite({
           </FormSectionHeader>
 
           <FieldsetWithGap>
-            <Label htmlFor="photo-upload-button" required={false}>
+            <Label
+              htmlFor="photo-upload-button"
+              required={false}
+              optionalText={t("Common.optional")}
+            >
               {t("Common.photos")}
             </Label>
             <ListingPhotosManagerComponent
@@ -560,6 +567,7 @@ export default function ListingWrite({
               label={t("Listings.form.externalLinks")}
               required={false}
               addButtonText={t("Listings.form.addLink")}
+              optionalText={t("Common.optional")}
               placeholder={t("Listings.form.linkPlaceholder")}
               items={links}
               handleItemChange={handleLinksChange}

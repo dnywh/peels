@@ -2,12 +2,12 @@ import { siteConfig } from "@/config/site";
 import Link from "next/link";
 import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const currentYear = new Date().getFullYear();
 
-export default function LegalFooter() {
-  const t = useTranslations();
+export default async function LegalFooter() {
+  const t = await getTranslations();
 
   return (
     <StyledFooter>

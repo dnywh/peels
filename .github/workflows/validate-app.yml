@@ -27,3 +27,6 @@ jobs:
 
       - name: Run app checks
         run: npm run check
+
+      - name: Build app
+        run: npm run build

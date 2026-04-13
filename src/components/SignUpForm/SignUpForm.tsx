@@ -52,7 +52,9 @@ export default function SignUpForm({
   const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const turnstileEnabled = isTurnstileEnabled();
-  const hasFieldErrors = Boolean(firstNameError || captchaError);
+  const fieldErrorCount =
+    Number(Boolean(firstNameError)) + Number(Boolean(captchaError));
+  const hasFieldErrors = fieldErrorCount > 0;
 
   const clearTokenTimeout = useCallback(() => {
     if (tokenTimeoutRef.current) {
@@ -331,7 +333,7 @@ export default function SignUpForm({
                   ),
                 })
               : hasFieldErrors
-                ? t("Errors.validationSummary", { count: 1 })
+                ? t("Errors.validationSummary", { count: fieldErrorCount })
                 : t("Errors.generic"),
           }}
         />

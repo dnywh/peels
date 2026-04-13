@@ -5,6 +5,8 @@ import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
 import { styled } from "@pigment-css/react";
 
+const AvatarComponent = Avatar as any;
+
 const MAX_LISTINGS = 12; // TODO: Store this value on Supabase and use in the related RLS policy, so they are always in sync
 
 const ListingsList = styled("ul")(({ theme }) => ({
@@ -44,7 +46,7 @@ const NewListingAvatar = styled("div")(({ theme }) => ({
   color: theme.colors.text.brand.quaternary,
 }));
 
-const sharedLinkStyles = ({ theme }) => ({
+const sharedLinkStyles = ({ theme }: { theme: any }) => ({
   padding: "0.75rem 1rem", // Visually match parent padding
   display: "flex",
   flexDirection: "row",
@@ -73,7 +75,7 @@ const AddAnotherListingLink = styled(Link)(sharedLinkStyles, {
 
 const ExistingListingLink = styled(Link)(sharedLinkStyles, {});
 
-const Text = styled("div")(({ theme }) => ({
+const textStyles = ({ theme }: { theme: any }) => ({
   display: "flex",
   flexDirection: "column",
   flex: 1,
@@ -87,31 +89,30 @@ const Text = styled("div")(({ theme }) => ({
     fontSize: "0.875rem",
     color: theme.colors.text.ui.quaternary,
   },
+});
 
-  variants: [
-    {
-      props: {
-        special: false,
-      },
-      style: {
-        "& p": {
-          lineHeight: "100%",
-        },
-      },
-      props: {
-        special: true,
-      },
-      style: {
-        "& h3": {
-          color: theme.colors.text.brand.primary,
-          fontSize: "1.25rem",
-        },
-      },
-    },
-  ],
+const Text = styled("div")(textStyles);
+
+const SpecialText = styled("div")(({ theme }) => ({
+  ...textStyles({ theme }),
+
+  "& h3": {
+    color: theme.colors.text.brand.primary,
+    fontSize: "1.25rem",
+  },
 }));
 
-export default function ProfileListings({ user, profile, listings }) {
+type ProfileListingsProps = {
+  user: any;
+  profile: any;
+  listings?: any[] | null;
+};
+
+export default function ProfileListings({
+  user,
+  profile,
+  listings,
+}: ProfileListingsProps) {
   const t = useTranslations();
   if (!listings) return null;
 
@@ -121,7 +122,7 @@ export default function ProfileListings({ user, profile, listings }) {
         return (
           <li key={listing.id}>
             <ExistingListingLink href={`/profile/listings/${listing.slug}`}>
-              <Avatar
+              <AvatarComponent
                 size="small"
                 profile={listing.type === "residential" ? profile : undefined}
                 listing={listing.type !== "residential" ? listing : undefined}
@@ -153,10 +154,10 @@ export default function ProfileListings({ user, profile, listings }) {
           {listings.length === 0 ? (
             <AddYourFirstListingLink href="/profile/listings/new">
               <NewListingAvatar aria-hidden="true">+</NewListingAvatar>
-              <Text special={true}>
+              <SpecialText>
                 <h3>{t("Profile.addListing")}</h3>
                 <p>{t("Profile.listingPrompt")}</p>
-              </Text>
+              </SpecialText>
             </AddYourFirstListingLink>
           ) : (
             <AddAnotherListingLink href="/profile/listings/new">
