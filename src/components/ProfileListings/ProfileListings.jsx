@@ -112,7 +112,7 @@ const Text = styled("div")(({ theme }) => ({
 }));
 
 export default function ProfileListings({ user, profile, listings }) {
-  const t = useTranslations("Profile");
+  const t = useTranslations();
   if (!listings) return null;
 
   return (
@@ -125,7 +125,7 @@ export default function ProfileListings({ user, profile, listings }) {
                 size="small"
                 profile={listing.type === "residential" ? profile : undefined}
                 listing={listing.type !== "residential" ? listing : undefined}
-                alt={`Your avatar for this ${listing.type} listing`}
+                alt={t("Profile.listingCardAlt", { type: listing.type })}
               />
               <Text>
                 <h3>
@@ -133,15 +133,14 @@ export default function ProfileListings({ user, profile, listings }) {
                     ? profile.first_name
                     : listing.name}
                 </h3>
-                <p>
-                  {listing.type.charAt(0).toUpperCase() + listing.type.slice(1)}{" "}
-                  listing
-                </p>
+                <p>{t("Profile.listingCardType", { type: listing.type })}</p>
               </Text>
               {!listing.visibility || listing.is_stub ? (
                 <LozengeContainer>
-                  {!listing.visibility && <Lozenge>Hidden</Lozenge>}
-                  {listing.is_stub && <Lozenge>Stub</Lozenge>}
+                  {!listing.visibility && (
+                    <Lozenge>{t("Common.hidden")}</Lozenge>
+                  )}
+                  {listing.is_stub && <Lozenge>{t("Common.stub")}</Lozenge>}
                 </LozengeContainer>
               ) : null}
             </ExistingListingLink>
@@ -155,17 +154,15 @@ export default function ProfileListings({ user, profile, listings }) {
             <AddYourFirstListingLink href="/profile/listings/new">
               <NewListingAvatar aria-hidden="true">+</NewListingAvatar>
               <Text special={true}>
-                <h3>{t("addListing")}</h3>
-                <p>
-                  Put yourself, your community spot, or your business on the map
-                </p>
+                <h3>{t("Profile.addListing")}</h3>
+                <p>{t("Profile.listingPrompt")}</p>
               </Text>
             </AddYourFirstListingLink>
           ) : (
             <AddAnotherListingLink href="/profile/listings/new">
               <NewListingAvatar aria-hidden="true">+</NewListingAvatar>
               <Text>
-                <h3>Add another listing</h3>
+                <h3>{t("Profile.addAnotherListing")}</h3>
               </Text>
             </AddAnotherListingLink>
           )}

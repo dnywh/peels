@@ -3,44 +3,24 @@ import { useNewsletterStatus } from "@/hooks/useNewsletterStatus";
 import Button from "@/components/Button";
 import PostageStamp from "@/components/PostageStamp";
 import { styled } from "@pigment-css/react";
-
-const userConfig = {
-  alreadySubscribed: {
-    title: "You’re already subscribed",
-    description:
-      "You should see the next issue appear in your email inbox. Feel free to share this page with a friend in the meantime!",
-    button: {
-      text: "Edit newsletter preference",
-      href: "/profile",
-    },
-  },
-  notYetSubscribed: {
-    title: "You’re not subscribed",
-    description: "Change your newsletter preference on your Profile page.",
-    button: {
-      text: "Edit newsletter preference",
-      href: "/profile",
-    },
-  },
-};
+import { useTranslations } from "next-intl";
 
 function UnauthenticatedCallout() {
+  const t = useTranslations();
+
   return (
     <Callout>
       <PostageStamp />
       <Text>
-        <h3>Join Peels to get the newsletter</h3>
-        <p>
-          You need to be a member of Peels to get the newsletter via email.
-          Signing up is free and only takes a few seconds.
-        </p>
+        <h3>{t("Newsletter.callout.guestTitle")}</h3>
+        <p>{t("Newsletter.callout.guestBody")}</p>
       </Text>
       <ButtonContainer>
         <Button variant="primary" href="/sign-up?newsletter_preference=true">
-          Join Peels
+          {t("Actions.joinPeels")}
         </Button>
         <Button variant="secondary" href="/sign-in">
-          Sign in
+          {t("Actions.signIn")}
         </Button>
       </ButtonContainer>
     </Callout>
@@ -51,6 +31,7 @@ function UnauthenticatedCallout() {
 // and providing information on how to opt-in (whether signed up already or not)
 // See also NewsletterAside which does a similar job, albeit inside the newsletter bounds
 export default function NewsletterCallout() {
+  const t = useTranslations();
   const status = useNewsletterStatus();
 
   if (status.isLoading || status.error || !status.isAuthenticated) {
@@ -63,20 +44,20 @@ export default function NewsletterCallout() {
       <Text>
         <h3>
           {status.isNewsletterSubscribed
-            ? userConfig.alreadySubscribed.title
-            : userConfig.notYetSubscribed.title}
+            ? t("Newsletter.callout.alreadySubscribedTitle")
+            : t("Newsletter.callout.notSubscribedTitle")}
         </h3>
         <p>
           {status.isNewsletterSubscribed
-            ? userConfig.alreadySubscribed.description
-            : userConfig.notYetSubscribed.description}
+            ? t("Newsletter.callout.alreadySubscribedBody")
+            : t("Newsletter.callout.notSubscribedBody")}
         </p>
       </Text>
       <Button
         variant={status.isNewsletterSubscribed ? "secondary" : "primary"}
-        href={userConfig.notYetSubscribed.button.href}
+        href="/profile"
       >
-        {userConfig.notYetSubscribed.button.text}
+        {t("Newsletter.callout.editPreference")}
       </Button>
     </Callout>
   );

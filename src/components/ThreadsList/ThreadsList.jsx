@@ -7,6 +7,7 @@ import AvatarPair from "@/components/AvatarPair";
 
 import { styled } from "@pigment-css/react";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
+import { useTranslations } from "next-intl";
 
 const ThreadsSidebar = styled("div")(({ theme }) => ({
   width: "100%",
@@ -157,6 +158,7 @@ const ThreadPreviewText = styled("div")(({ theme }) => ({
 }));
 
 function ThreadsList({ user, threads, currentThreadId }) {
+  const t = useTranslations("Chat");
   const router = useRouter();
   const { isThreadRead } = useUnreadMessages();
 
@@ -171,7 +173,7 @@ function ThreadsList({ user, threads, currentThreadId }) {
 
   return (
     <ThreadsSidebar>
-      <h1>Chats</h1>
+      <h1>{t("threadsTitle")}</h1>
       {threads?.length > 0 ? (
         <ThreadsUnorderedList>
           {threads.map((thread) => {
@@ -239,7 +241,7 @@ function ThreadsList({ user, threads, currentThreadId }) {
         </ThreadsUnorderedList>
       ) : (
         <ThreadsEmptyState>
-          <p>No chats yet</p>
+          <p>{t("noChats")}</p>
         </ThreadsEmptyState>
       )}
     </ThreadsSidebar>

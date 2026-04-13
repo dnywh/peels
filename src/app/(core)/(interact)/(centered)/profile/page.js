@@ -7,6 +7,7 @@ import LegalFooter from "@/components/LegalFooter";
 import { styled } from "@pigment-css/react";
 import { Suspense } from "react";
 import Toast from "@/components/Toast";
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Profile",
@@ -14,6 +15,7 @@ export const metadata = {
 
 // Keep URL-based feedback in a client leaf so server rendering is driven by auth/data only.
 export default async function ProfilePage() {
+  const t = await getTranslations("Profile.sections");
   const supabase = await createClient();
   // Get the authenticated user first, then fetch profile data in parallel.
   const {
@@ -42,17 +44,17 @@ export default async function ProfilePage() {
       </NakedSection>
 
       <Section>
-        <h2>Listings</h2>
+        <h2>{t("listings")}</h2>
         <ProfileListings user={user} profile={profile} listings={listings} />
       </Section>
 
       <Section>
-        <h2>Account</h2>
+        <h2>{t("account")}</h2>
         <ProfileAccountSettings user={user} profile={profile} />
       </Section>
 
       <Section>
-        <h2>Actions</h2>
+        <h2>{t("actions")}</h2>
         <ProfileActions listings={listings} />
       </Section>
 

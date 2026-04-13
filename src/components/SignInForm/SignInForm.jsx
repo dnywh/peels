@@ -10,8 +10,10 @@ import Field from "@/components/Field";
 import FieldHeader from "@/components/FieldHeader";
 import StrongLink from "@/components/StrongLink";
 import FormMessage from "@/components/FormMessage";
+import { useTranslations } from "next-intl";
 
 function SignInForm({ searchParams }) {
+  const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event) => {
@@ -44,7 +46,7 @@ function SignInForm({ searchParams }) {
         <FormMessage message={{ success: searchParams.success }} />
       )}
       <Field>
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t("Common.email")}</Label>
         <Input
           name="email"
           type="email"
@@ -55,13 +57,15 @@ function SignInForm({ searchParams }) {
 
       <Field>
         <FieldHeader>
-          <Label htmlFor="password">Password</Label>
-          <StrongLink href="/forgot-password">Forgot password?</StrongLink>
+          <Label htmlFor="password">{t("Common.password")}</Label>
+          <StrongLink href="/forgot-password">
+            {t("Auth.signIn.forgotPassword")}
+          </StrongLink>
         </FieldHeader>
         <Input
           type="password"
           name="password"
-          placeholder="Your password" // Overwrites the placeholder in FIELD_CONFIGS.password (if that were to be imported above)
+          placeholder={t("Common.password")}
           required={true}
         />
       </Field>
@@ -74,9 +78,9 @@ function SignInForm({ searchParams }) {
         type="submit"
         variant="primary"
         loading={isSubmitting}
-        loadingText="Signing in..."
+        loadingText={t("Status.signingIn")}
       >
-        Sign in
+        {t("Actions.signIn")}
       </Button>
     </Form>
   );

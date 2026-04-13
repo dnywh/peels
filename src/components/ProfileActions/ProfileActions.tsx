@@ -7,6 +7,7 @@ import EncodedEmailLink from "@/components/EncodedEmailLink";
 import SubmitButton from "@/components/SubmitButton";
 
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const List = styled("ul")(({ theme }) => ({
   display: "flex",
@@ -44,67 +45,68 @@ type ProfileActionsProps = {
 };
 
 export default function ProfileActions({ listings = [] }: ProfileActionsProps) {
+  const t = useTranslations();
+
   return (
     <List>
       <ListItem>
         <ListItemText>
-          <h4>Sign out</h4>
-          <p>Goodbye for now!</p>
+          <h4>{t("Profile.actions.signOutTitle")}</h4>
+          <p>{t("Profile.actions.signOutDescription")}</p>
         </ListItemText>
         <ActionForm action={signOutAction}>
-          <SubmitButton variant="secondary" loadingText="Signing out...">
-            Sign out
+          <SubmitButton
+            variant="secondary"
+            loadingText={t("Status.signingOut")}
+          >
+            {t("Actions.signOut")}
           </SubmitButton>
         </ActionForm>
       </ListItem>
 
       <ListItem>
         <ListItemText>
-          <h4>Export data</h4>
-          <p>Get a copy of your Peels data</p>
+          <h4>{t("Profile.actions.exportTitle")}</h4>
+          <p>{t("Profile.actions.exportDescription")}</p>
         </ListItemText>
         <ButtonToDialog
           variant="secondary"
-          initialButtonText="Export data"
-          dialogTitle="Coming soon"
-          cancelButtonText="Done"
+          initialButtonText={t("Actions.exportData")}
+          dialogTitle={t("Profile.actions.exportDialogTitle")}
+          cancelButtonText={t("Actions.done")}
         >
-          We’re still working on this feature. In the meantime,{" "}
-          <EncodedEmailLink address={siteConfig.encodedEmail.support}>
-            reach out
-          </EncodedEmailLink>{" "}
-          and ask us to export your data manually.
+          {t.rich("Profile.actions.exportDialog", {
+            link: (chunks) => (
+              <EncodedEmailLink address={siteConfig.encodedEmail.support}>
+                {chunks}
+              </EncodedEmailLink>
+            ),
+          })}
         </ButtonToDialog>
       </ListItem>
 
       <ListItem>
         <ListItemText>
-          <h4>Delete account</h4>
+          <h4>{t("Profile.actions.deleteTitle")}</h4>
           <p>
-            Delete your account
-            {listings?.length > 0 &&
-              `, ${listings.length > 1 ? "listings" : "listing"},`}{" "}
-            and all your data
+            {t("Profile.actions.deleteDescription", {
+              count: listings?.length ?? 0,
+            })}
           </p>
         </ListItemText>
         <ButtonToDialog
           variant="danger"
-          initialButtonText="Delete account"
-          dialogTitle="Delete account"
-          confirmButtonText={
-            listings.length > 0
-              ? `Yes, delete my account and listing${listings.length > 1 ? "s" : ""}`
-              : "Yes, delete my account"
-          }
-          confirmLoadingText="Deleting..."
+          initialButtonText={t("Profile.actions.deleteTitle")}
+          dialogTitle={t("Profile.actions.deleteTitle")}
+          confirmButtonText={t("Profile.actions.deleteConfirm", {
+            count: listings?.length ?? 0,
+          })}
+          confirmLoadingText={t("Status.deleting")}
           action={deleteAccountAction}
         >
-          Are you sure you want to delete your account?{" "}
-          {listings?.length > 0 && (
-            <>
-              Your listing{listings.length > 1 ? "s" : ""} will also be deleted.
-            </>
-          )}
+          {t("Profile.actions.deleteDialog", {
+            count: listings?.length ?? 0,
+          })}
         </ButtonToDialog>
       </ListItem>
     </List>

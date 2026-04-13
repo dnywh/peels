@@ -10,6 +10,7 @@ import ButtonToDialog from "@/components/ButtonToDialog";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
 
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const StyledChatHeader = styled("header")(({ theme }) => ({
   display: "flex",
@@ -107,6 +108,7 @@ const MainContents = styled("div")(({ theme }) => ({
 }));
 
 function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
+  const t = useTranslations();
   const router = useRouter();
 
   // TODO: Consolidate with other role, naming logic elsewhere
@@ -137,11 +139,9 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
       {isDrawer && (
         <>
           <VisuallyHidden.Root>
-            <Drawer.Title>
-              Nested chat drawer title visually hidden TODO
-            </Drawer.Title>
+            <Drawer.Title>{t("Chat.drawerTitle")}</Drawer.Title>
             <Drawer.Description>
-              Test description for aria visually hidden TODO.
+              {t("Chat.drawerDescription")}
             </Drawer.Description>
           </VisuallyHidden.Root>
         </>
@@ -188,7 +188,7 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
                   variant="secondary"
                   size="small"
                 >
-                  View listing
+                  {t("Actions.viewListing")}
                 </Button>
               </DropdownMenu.Item>
             )}
@@ -196,17 +196,18 @@ function ChatHeader({ thread, listing, user, isDrawer, isDemo }) {
               <ButtonToDialog
                 variant="danger"
                 size="small"
-                initialButtonText="Report or block"
-                dialogTitle="Let’s get this sorted"
-                cancelButtonText="Done"
+                initialButtonText={t("Chat.report")}
+                dialogTitle={t("Chat.reportTitle")}
+                cancelButtonText={t("Actions.done")}
               >
-                Sorry to hear you’re having trouble with {otherPersonName}.
-                Please{" "}
-                <EncodedEmailLink address={siteConfig.encodedEmail.support}>
-                  contact us
-                </EncodedEmailLink>{" "}
-                to report the issue or to block them from contacting you any
-                more.
+                {t.rich("Chat.reportBody", {
+                  name: otherPersonName,
+                  link: (chunks) => (
+                    <EncodedEmailLink address={siteConfig.encodedEmail.support}>
+                      {chunks}
+                    </EncodedEmailLink>
+                  ),
+                })}
               </ButtonToDialog>
             </DropdownMenu.Item>
           </DropdownMenu.Items>

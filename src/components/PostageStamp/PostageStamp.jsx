@@ -1,11 +1,14 @@
 import Image from "next/image";
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 export default function PostageStamp() {
+  const t = useTranslations("Newsletter");
+
   return (
     <StyledImage
       src="/stamp.png"
-      alt="A postage stamp"
+      alt={t("stampAlt")}
       width={224}
       height={132}
       aria-hidden="true"

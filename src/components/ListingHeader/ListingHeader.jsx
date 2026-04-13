@@ -4,6 +4,7 @@ import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
 
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const listingHeaderStyles = {
   display: "flex",
@@ -96,6 +97,7 @@ const StyledLozenge = styled(Lozenge)(({ theme }) => ({
 }));
 
 function ListingHeader({ presentation, listing, listingName, user }) {
+  const t = useTranslations();
   const avatarProps = getListingAvatar(listing, user);
 
   return (
@@ -105,7 +107,7 @@ function ListingHeader({ presentation, listing, listingName, user }) {
         src={avatarProps?.isDemo ? avatarProps.path : undefined}
         bucket={!avatarProps?.isDemo ? avatarProps?.bucket : undefined}
         filename={!avatarProps?.isDemo ? avatarProps?.filename : undefined}
-        alt={avatarProps?.alt || "The avatar for this listing"}
+        alt={avatarProps?.alt || t("Listings.read.avatarAlt")}
         size="large"
         listing={listing}
       />
@@ -117,31 +119,31 @@ function ListingHeader({ presentation, listing, listingName, user }) {
         {listing?.type === "residential" && (
           <p>
             {listing?.area_name ? (
-              <>Resident of {listing?.area_name}</>
+              <>{t("Listings.read.residentOf", { area: listing.area_name })}</>
             ) : (
-              "Local resident"
+              t("Listings.read.localResident")
             )}
           </p>
         )}
         {listing?.type === "community" && (
           <p>
             {listing?.area_name ? (
-              <>Community in {listing?.area_name}</>
+              <>{t("Listings.read.communityIn", { area: listing.area_name })}</>
             ) : (
-              "Local community"
+              t("Listings.read.localCommunity")
             )}
           </p>
         )}
         {listing?.type === "business" && (
           <p>
             {listing?.area_name ? (
-              <>Business in {listing?.area_name}</>
+              <>{t("Listings.read.businessIn", { area: listing.area_name })}</>
             ) : (
-              "Local business"
+              t("Listings.read.localBusiness")
             )}
           </p>
         )}
-        {listing?.is_stub && <StyledLozenge>Stub</StyledLozenge>}
+        {listing?.is_stub && <StyledLozenge>{t("Common.stub")}</StyledLozenge>}
       </TitleBlock>
     </StyledListingHeader>
   );

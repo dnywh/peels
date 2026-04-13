@@ -8,6 +8,7 @@ import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import StaticPageMain from "@/components/StaticPageMain";
 import { styled } from "@pigment-css/react";
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Newsletter",
@@ -18,12 +19,14 @@ export const metadata = {
   },
 };
 
-export default function NewsletterPage() {
+export default async function NewsletterPage() {
+  const t = await getTranslations("Newsletter");
+
   return (
     <StaticPageMain>
       <AboveTheFoldSection>
         <StaticPageHeader
-          title="Newsletter"
+          title={t("title")}
           subtitle={siteConfig.newsletter.description}
         />
         <NewsletterIssuesList />
@@ -31,14 +34,17 @@ export default function NewsletterPage() {
 
       <StaticPageSection>
         <HeaderBlock>
-          <h2>Get these in your inbox</h2>
-          <p>Opt-in to receive future issues of the newsletter via email.</p>
+          <h2>{t("inboxTitle")}</h2>
+          <p>{t("inboxDescription")}</p>
         </HeaderBlock>
         <NewsletterCallout />
         <FooterBlock>
           <p>
-            Or subscribe to the{" "}
-            <Link href="/newsletter/feed.xml">RSS feed</Link>.
+            {t.rich("rss", {
+              link: (chunks) => (
+                <Link href="/newsletter/feed.xml">{chunks}</Link>
+              ),
+            })}
           </p>
         </FooterBlock>
       </StaticPageSection>

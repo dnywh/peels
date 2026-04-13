@@ -15,6 +15,7 @@ import {
 } from "@hello-pangea/dnd";
 
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const DropzoneContents = styled("div")({
   display: "flex",
@@ -83,8 +84,6 @@ const MAX_PHOTOS = 5;
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
 const MAX_DIMENSION = 2048; // Reasonable max dimension for listing photos
-const overSizedFileAlertSingular = `Your photo is too large. The maximum file size is ${MAX_MB}MB.`;
-const overSizedFileAlertPlural = `One or more of your photos are too large. The maximum file size is ${MAX_MB}MB per photo.`;
 
 const RemoteImageComponent = RemoteImage as React.ComponentType<any>;
 const uploadListingPhotoAction = uploadListingPhoto as (
@@ -109,6 +108,7 @@ function ListingPhotosManager({
   onPhotosChange,
   isNewListing = false,
 }: ListingPhotosManagerProps) {
+  const t = useTranslations();
   const [photos, setPhotos] = useState(initialPhotos);
   const photosRef = useRef(initialPhotos);
   const [isUploading, setIsUploading] = useState(false);
@@ -147,7 +147,7 @@ function ListingPhotosManager({
 
     // Reuse existing photo handling logic
     if (files.length + photosRef.current.length > MAX_PHOTOS) {
-      alert(`You can only upload up to ${MAX_PHOTOS} photos`);
+      alert(t("Listings.photos.tooMany", { max: MAX_PHOTOS }));
       return;
     }
 
@@ -156,8 +156,8 @@ function ListingPhotosManager({
     if (overSizedFiles.length > 0) {
       alert(
         overSizedFiles.length === 1
-          ? overSizedFileAlertSingular
-          : overSizedFileAlertPlural
+          ? t("Listings.photos.tooLargeOne", { max: MAX_MB })
+          : t("Listings.photos.tooLargeMany", { max: MAX_MB })
       );
       return;
     }
@@ -196,13 +196,13 @@ function ListingPhotosManager({
       ) {
         alert(
           files.length === 1
-            ? overSizedFileAlertSingular
-            : overSizedFileAlertPlural
+            ? t("Listings.photos.tooLargeOne", { max: MAX_MB })
+            : t("Listings.photos.tooLargeMany", { max: MAX_MB })
         );
       } else if (uploadError?.message?.includes("max_photos")) {
-        alert(`You can only upload up to ${MAX_PHOTOS} photos`);
+        alert(t("Listings.photos.tooMany", { max: MAX_PHOTOS }));
       } else {
-        alert("There was an error uploading your photos. Please try again.");
+        alert(t("Errors.photoUploadFailed"));
       }
     } finally {
       setIsUploading(false);
@@ -242,7 +242,7 @@ function ListingPhotosManager({
           ...currentPhotos.slice(restoreIndex),
         ];
       });
-      alert("Failed to delete photo. Please try again.");
+      alert(t("Errors.failedDeletePhoto"));
     } finally {
       setDeletingPhoto(null);
     }
@@ -300,7 +300,9 @@ function ListingPhotosManager({
                               <RemoteImageComponent
                                 bucket="listing_photos"
                                 filename={filename}
-                                alt={`Photo ${index + 1}`}
+                                alt={t("Listings.photos.alt", {
+                                  number: index + 1,
+                                })}
                                 width={400}
                                 height={300}
                               />
@@ -308,11 +310,11 @@ function ListingPhotosManager({
                                 variant="danger"
                                 size="small"
                                 loading={deletingPhoto === filename}
-                                loadingText="Deleting..."
+                                loadingText={t("Status.deleting")}
                                 disabled={isMutatingPhotos}
                                 onClick={() => handlePhotoDelete(filename)}
                               >
-                                Delete
+                                {t("Actions.delete")}
                               </Button>
                             </PhotoItem>
                           )}
@@ -327,7 +329,7 @@ function ListingPhotosManager({
 
             {isDragActive && (
               <DropOverlay>
-                <p>Drop photos here</p>
+                <p>{t("Listings.photos.dropHere")}</p>
               </DropOverlay>
             )}
 
@@ -348,10 +350,12 @@ function ListingPhotosManager({
                 variant="secondary"
                 size="small"
                 loading={isUploading}
-                loadingText="Uploading..."
+                loadingText={t("Status.uploading")}
                 disabled={isMutatingPhotos || photos.length >= MAX_PHOTOS}
               >
-                {photos.length > 0 ? "Add more photos" : "Add photos"}
+                {photos.length > 0
+                  ? t("Actions.addMorePhotos")
+                  : t("Actions.addPhotos")}
               </Button>
             </label>
           </DropzoneContents>

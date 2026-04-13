@@ -1,7 +1,10 @@
+"use client";
+
 import Textarea from "@/components/Textarea";
 import IconButton from "@/components/IconButton";
 import { styled } from "@pigment-css/react";
 import FormMessage from "@/components/FormMessage";
+import { useTranslations } from "next-intl";
 
 const ChatComposerForm = styled("div")(({ theme }) => ({
   display: "flex",
@@ -47,6 +50,7 @@ function ChatComposer({
   isDemo,
   isSending = false,
 }: ChatComposerProps) {
+  const t = useTranslations();
   const isSendDisabled = !message.trim() || (!isDemo && isSending);
 
   return (
@@ -55,7 +59,9 @@ function ChatComposer({
       <ChatComposerInner onSubmit={onSubmit}>
         <TextareaComponent
           variant="chat"
-          placeholder={`Send a message${recipientName && ` to ${recipientName}`}...`}
+          placeholder={t("Chat.placeholder", {
+            name: recipientName || "empty",
+          })}
           value={message}
           onChange={handleMessageChange}
           disabled={!isDemo && isSending}
@@ -66,9 +72,9 @@ function ChatComposer({
           href={isDemo ? "/#drop-off" : undefined}
           icon="send"
           variant="send"
-          aria-label="Send"
+          aria-label={t("Chat.send")}
           loading={!isDemo && isSending}
-          loadingLabel="Sending..."
+          loadingLabel={t("Status.sending")}
           disabled={isSendDisabled}
         />
       </ChatComposerInner>

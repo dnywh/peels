@@ -20,6 +20,7 @@ import Label from "@/components/Label";
 import InputHint from "@/components/InputHint";
 
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const StyledFieldset = styled(Fieldset)(({ theme }) => ({
   display: "flex",
@@ -127,12 +128,13 @@ export default function LocationSelect({
   initialPlaceholderText,
   error,
 }) {
+  const t = useTranslations();
   const mapRef = useRef(null);
   const inputRef = useRef(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
-    initialPlaceholderText || "Your street name or nearby"
+    initialPlaceholderText || t("Listings.form.locationPlaceholder")
   );
 
   useEffect(() => {
@@ -174,8 +176,8 @@ export default function LocationSelect({
     inputRef.current.blur(); // Close and blur the input if it's open
     console.log("handling drag start");
     inputRef.current.setQuery("");
-    setPlaceholderText("Custom location"); // Clear previous value
-  }, []);
+    setPlaceholderText(t("Listings.form.customLocation")); // Clear previous value
+  }, [t]);
 
   const handleDragEnd = useCallback(
     async (event) => {
@@ -246,7 +248,7 @@ export default function LocationSelect({
   return (
     <StyledFieldset>
       <Field>
-        <Label htmlFor="country">Location</Label>
+        <Label htmlFor="country">{t("Listings.form.location")}</Label>
         {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
         <Select
           id="country"
@@ -255,7 +257,7 @@ export default function LocationSelect({
           required={true}
         >
           <option disabled={true} value="initial">
-            Select a country
+            {t("Listings.form.selectCountry")}
           </option>
           {countries.map((country) => (
             <option key={country.code} value={country.code}>
@@ -296,8 +298,8 @@ export default function LocationSelect({
               "municipality",
             ]}
             placeholder={placeholderText}
-            errorMessage="Something went wrong. Try again?"
-            noResultsMessage="No results. Keep typing or refine your search"
+            errorMessage={t("Map.searchError")}
+            noResultsMessage={t("Map.searchNoResults")}
             minLength={3}
             showPlaceType={false}
             onPick={handlePick}
@@ -308,7 +310,9 @@ export default function LocationSelect({
         <InputHint variant={error ? "error" : undefined}>
           {error
             ? error
-            : `Start typing, then select one of the suggested ${listingType === "residential" ? "options" : "addresses"} from the dropdown.`}
+            : t("Listings.form.locationHint", {
+                kind: listingType === "residential" ? "options" : "addresses",
+              })}
         </InputHint>
       </Field>
 
@@ -343,8 +347,9 @@ export default function LocationSelect({
           </MapThumbnail>
 
           <InputHint>
-            Drag the pin to refine{" "}
-            {listingType === "residential" && "or obscure"} your location.
+            {t("Listings.form.dragPinHint", {
+              obscure: listingType === "residential" ? "true" : "false",
+            })}
           </InputHint>
         </Field>
       )}

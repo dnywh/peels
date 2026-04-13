@@ -15,6 +15,7 @@ import Button from "@/components/Button";
 import ListingChatDrawer from "@/components/ListingChatDrawer";
 import StrongLink from "@/components/StrongLink";
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 // Memoize the Listing component
 const ListingRead = memo(function Listing({
@@ -24,6 +25,7 @@ const ListingRead = memo(function Listing({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
 }) {
+  const t = useTranslations();
   const router = presentation !== "demo" ? useRouter() : null;
 
   const [existingThread, setExistingThread] = useState(null);
@@ -94,10 +96,11 @@ const ListingRead = memo(function Listing({
         {presentation === "demo" ? (
           <DemoButtonContainer>
             <Button variant="primary" width="full" href="/#contact">
-              Contact{" "}
-              {listing.owner_first_name
-                ? listing.owner_first_name
-                : listing.name}
+              {t("Listings.read.contact", {
+                name: listing.owner_first_name
+                  ? listing.owner_first_name
+                  : listing.name,
+              })}
             </Button>
           </DemoButtonContainer>
         ) : (
@@ -116,7 +119,9 @@ const ListingRead = memo(function Listing({
           {listing?.description && (
             <ListingSection>
               <h3>
-                {listing.type === "business" ? "Donation details" : "About"}
+                {listing.type === "business"
+                  ? t("Listings.read.donationDetails")
+                  : t("Listings.read.about")}
               </h3>
               <MultiParagraphCluster text={listing?.description} />
             </ListingSection>
@@ -124,7 +129,7 @@ const ListingRead = memo(function Listing({
 
           {listing?.accepted_items?.length > 0 && (
             <ListingSection>
-              <h3>What’s accepted</h3>
+              <h3>{t("Listings.read.accepted")}</h3>
               <ListingItemList
                 items={listing?.accepted_items}
                 type="accepted"
@@ -134,7 +139,7 @@ const ListingRead = memo(function Listing({
 
           {listing?.rejected_items?.length > 0 && (
             <ListingSection>
-              <h3>What’s not</h3>
+              <h3>{t("Listings.read.rejected")}</h3>
               <ListingItemList
                 items={listing?.rejected_items}
                 type="rejected"
@@ -148,7 +153,7 @@ const ListingRead = memo(function Listing({
         <ColumnMinor presentation={presentation}>
           {presentation !== "drawer" && (
             <ListingSection presentation={presentation}>
-              <h3>Location</h3>
+              <h3>{t("Listings.read.location")}</h3>
 
               <MapThumbnail
                 height="320px"
@@ -176,20 +181,25 @@ const ListingRead = memo(function Listing({
               <MapDetails>
                 {listing.type === "residential" ? (
                   <p>
-                    {listingDisplayName} is a resident of{" "}
-                    {listing.area_name ? listing.area_name : "this area"}. Ask
-                    them for their exact location when you arrange a food scrap
-                    drop-off.
+                    {t("Listings.read.residentialLocation", {
+                      name: listingDisplayName,
+                      area: listing.area_name
+                        ? listing.area_name
+                        : t("Listings.read.thisArea"),
+                    })}
                   </p>
                 ) : (
                   <p>
-                    {listingDisplayName} is{" "}
-                    {listing.type === "business"
-                      ? "a business"
-                      : listing.type === "community"
-                        ? "a community spot"
-                        : ""}{" "}
-                    located in {listing.area_name}.
+                    {t("Listings.read.nonResidentialLocation", {
+                      name: listingDisplayName,
+                      type:
+                        listing.type === "business"
+                          ? t("Listings.read.businessType")
+                          : listing.type === "community"
+                            ? t("Listings.read.communityType")
+                            : "",
+                      area: listing.area_name,
+                    })}
                   </p>
                 )}
 
@@ -199,7 +209,7 @@ const ListingRead = memo(function Listing({
                     size="small"
                     href={`/map?listing=${listing.slug}`}
                   >
-                    See nearby listings
+                    {t("Actions.seeNearbyListings")}
                   </Button>
                   {listing.type !== "residential" && (
                     <>
@@ -211,7 +221,7 @@ const ListingRead = memo(function Listing({
                         )}`}
                         target="_blank"
                       >
-                        Open in Apple Maps
+                        {t("Actions.openInAppleMaps")}
                       </Button>
                       <Button
                         variant="secondary"
@@ -219,7 +229,7 @@ const ListingRead = memo(function Listing({
                         href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
                         target="_blank"
                       >
-                        Open in Google Maps
+                        {t("Actions.openInGoogleMaps")}
                       </Button>
                     </>
                   )}
@@ -235,11 +245,14 @@ const ListingRead = memo(function Listing({
                 !user && listing.type === "residential" ? undefined : "visible"
               }
             >
-              <h3>Photos</h3>
+              <h3>{t("Common.photos")}</h3>
               {!user && listing.type === "residential" ? (
                 <p>
-                  <StrongLink href="/sign-in">Sign in</StrongLink> to see this
-                  host’s photos.
+                  {t.rich("Listings.read.signInForPhotos", {
+                    link: (chunks) => (
+                      <StrongLink href="/sign-in">{chunks}</StrongLink>
+                    ),
+                  })}
                 </p>
               ) : (
                 <>
@@ -254,7 +267,7 @@ const ListingRead = memo(function Listing({
 
           {listing.links?.length > 0 && (
             <ListingSection presentation={presentation}>
-              <h3>Links</h3>
+              <h3>{t("Common.links")}</h3>
               <ListingItemList items={listing.links} type="links" />
             </ListingSection>
           )}
@@ -267,7 +280,7 @@ const ListingRead = memo(function Listing({
                 width="contained"
                 href={`/listings/${listing.slug}`}
               >
-                View full listing
+                {t("Actions.viewFullListing")}
               </Button>
             </ListingSection>
           )}

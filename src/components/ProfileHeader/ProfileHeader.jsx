@@ -1,5 +1,6 @@
 import AvatarUploadManager from "@/components/AvatarUploadManager";
 import { styled } from "@pigment-css/react";
+import { getTranslations } from "next-intl/server";
 
 const Heading1 = styled("h1")({
   fontSize: "2.25rem",
@@ -17,6 +18,8 @@ const Heading2 = styled("h2")({
 });
 
 export default async function ProfileHeader({ profile, user }) {
+  const t = await getTranslations("Common");
+
   return (
     <>
       <AvatarUploadManager
@@ -25,7 +28,7 @@ export default async function ProfileHeader({ profile, user }) {
         entityId={user.id}
       />
       {profile?.first_name && <Heading1>{profile?.first_name}</Heading1>}
-      {profile?.is_admin && <Heading2>Admin</Heading2>}
+      {profile?.is_admin && <Heading2>{t("admin")}</Heading2>}
     </>
   );
 }

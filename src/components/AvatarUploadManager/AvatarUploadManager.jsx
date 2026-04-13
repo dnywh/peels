@@ -4,11 +4,11 @@ import { useState } from "react";
 import AvatarUploadView from "@/components/AvatarUploadView";
 import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/mediaUtils";
 import Compressor from "compressorjs";
+import { useTranslations } from "next-intl";
 
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
 const MAX_DIMENSION = 1024; // Consider going down to 512 for avatars
-const overSizedFileAlertSingular = `Your photo is too large. The maximum file size is ${MAX_MB}MB.`;
 
 function AvatarUploadManager({
   initialAvatar,
@@ -19,7 +19,11 @@ function AvatarUploadManager({
   listingType,
   ...props
 }) {
+  const t = useTranslations();
   const [avatar, setAvatar] = useState(initialAvatar || "");
+  const overSizedFileAlertSingular = t("Listings.photos.tooLargeOne", {
+    max: MAX_MB,
+  });
 
   const processAvatar = (file) => {
     return new Promise((resolve, reject) => {
@@ -67,7 +71,7 @@ function AvatarUploadManager({
         if (error?.statusCode === "413" || error?.error?.statusCode === "413") {
           alert(overSizedFileAlertSingular);
         } else {
-          alert("There was an error uploading your photo. Please try again.");
+          alert(t("Errors.avatarUploadFailed"));
         }
       }
     }

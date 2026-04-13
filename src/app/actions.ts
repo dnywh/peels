@@ -11,8 +11,10 @@ import {
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 export const signUpAction = async (formData: FormData, request?: Request) => {
+  const t = await getTranslations("Errors");
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const firstNameValidation = validateName(formData.get("first_name")); // Trim first name
@@ -59,18 +61,12 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
   const turnstileEnabled = isTurnstileEnabled();
 
   if (!email || !password || !first_name) {
-    redirectUrl.searchParams.append(
-      "error",
-      "A first name, email, and password are required."
-    );
+    redirectUrl.searchParams.append("error", t("missingSignUpFields"));
     return redirect(redirectUrl.toString());
   }
 
   if (turnstileEnabled && !captchaToken) {
-    redirectUrl.searchParams.append(
-      "error",
-      "Please complete the verification challenge."
-    );
+    redirectUrl.searchParams.append("error", t("verificationChallenge"));
     return redirect(redirectUrl.toString());
   }
 
@@ -80,7 +76,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     if (!validationResult.success) {
       redirectUrl.searchParams.append(
         "error",
-        validationResult.error || "Verification failed. Please try again."
+        validationResult.error || t("verificationFailed")
       );
       return redirect(redirectUrl.toString());
     }
@@ -96,18 +92,12 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
 
   if (authError) {
     console.error("Error checking email:", authError);
-    redirectUrl.searchParams.append(
-      "error",
-      "Sorry, we couldn’t process your request."
-    );
+    redirectUrl.searchParams.append("error", t("genericLater"));
     return redirect(redirectUrl.toString());
   }
 
   if (existingAuthUser) {
-    redirectUrl.searchParams.append(
-      "error",
-      "An account with this email already exists. Please sign in instead."
-    );
+    redirectUrl.searchParams.append("error", t("accountExists"));
     return redirect(redirectUrl.toString());
   }
 
@@ -143,10 +133,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
       error?.message?.includes(pattern)
     );
     if (isHookTimeout) {
-      redirectUrl.searchParams.append(
-        "error",
-        "Hmm, something’s not right. Mind trying again?"
-      );
+      redirectUrl.searchParams.append("error", t("generic"));
       return redirect(redirectUrl.toString());
     }
     // Back to general error catching
@@ -155,7 +142,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     );
     redirectUrl.searchParams.append(
       "error",
-      error?.message || "Sign up failed"
+      error?.message || t("signUpFailed")
     );
     return redirect(redirectUrl.toString());
   }
@@ -185,13 +172,14 @@ export const signInAction = async (formData: FormData, request: Request) => {
 
 // Very similar to the sendPasswordResetEmailAction
 export const forgotPasswordAction = async (formData: FormData) => {
+  const t = await getTranslations("Errors");
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
   const callbackUrl = formData.get("callbackUrl")?.toString();
 
   if (!email) {
-    return encodedRedirect("error", "/forgot-password", "Email is required");
+    return encodedRedirect("error", "/forgot-password", t("emailRequired"));
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -202,11 +190,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.message);
-    return encodedRedirect(
-      "error",
-      "/forgot-password",
-      "Hmm, something’s not right. Mind trying again?"
-    );
+    return encodedRedirect("error", "/forgot-password", t("generic"));
   }
 
   if (callbackUrl) {
@@ -216,11 +200,12 @@ export const forgotPasswordAction = async (formData: FormData) => {
   return encodedRedirect(
     "success",
     "/forgot-password",
-    "Check your inbox (and spam) for a password reset link, assuming that email address is linked to a Peels account."
+    t("forgotPasswordSuccess")
   );
 };
 
 export const updateFirstNameAction = async (formData: FormData) => {
+  const t = await getTranslations("Errors");
   const supabase = await createClient();
   const {
     data: { user },
@@ -228,7 +213,7 @@ export const updateFirstNameAction = async (formData: FormData) => {
 
   const firstNameValidation = validateName(formData.get("first_name"));
   if (!firstNameValidation.isValid) {
-    return { error: firstNameValidation.error };
+    return { error: t("emptyName") };
   }
 
   const { error } = await supabase
@@ -240,13 +225,14 @@ export const updateFirstNameAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error updating first name:", error);
-    return { error: "Sorry, we couldn’t update your first name." };
+    return { error: t("updateFirstNameFailed") };
   }
 
   return { success: true };
 };
 
 export const sendEmailChangeEmailAction = async (formData: FormData) => {
+  const t = await getTranslations("Errors");
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({
     email: formData.get("email") as string,
@@ -255,7 +241,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
   if (error) {
     console.error("Error sending email change email:", error);
     return {
-      error: "Hmm, something’s not right. Check your email or try again.",
+      error: t("updateEmailFailed"),
     };
   }
 
@@ -263,6 +249,7 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 };
 
 export const updateNewsletterPreferenceAction = async (formData: FormData) => {
+  const t = await getTranslations("Errors");
   const supabase = await createClient();
   const {
     data: { user },
@@ -279,7 +266,7 @@ export const updateNewsletterPreferenceAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error updating newsletter preference:", error);
-    return { error: "Sorry, we couldn’t update your newsletter preference." };
+    return { error: t("updateNewsletterFailed") };
   }
 
   return { success: true };
@@ -320,6 +307,7 @@ export const updateNewsletterPreferenceAction = async (formData: FormData) => {
 
 // Whereas this action actually updates the user's password
 export const resetPasswordAction = async (formData: FormData) => {
+  const t = await getTranslations("Errors");
   const supabase = await createClient();
 
   const newPassword = formData.get("password") as string;
@@ -329,16 +317,12 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Both those fields are required."
+      t("requiredPasswordFields")
     );
   }
 
   if (newPassword !== confirmNewPassword) {
-    encodedRedirect(
-      "error",
-      "/profile/reset-password",
-      "Those passwords don’t match."
-    );
+    encodedRedirect("error", "/profile/reset-password", t("passwordMismatch"));
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -349,14 +333,14 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/profile/reset-password",
-      "Hmm, something’s not right. You might not have permission to reset this password, or you tried reusing a recent password."
+      t("resetPasswordDenied")
     );
   }
 
   encodedRedirect(
     "success",
     "/profile/reset-password",
-    "Your password has been updated. Let’s get back to composting!"
+    t("resetPasswordSuccess")
   );
 };
 
@@ -367,6 +351,7 @@ export const signOutAction = async () => {
 };
 
 export const deleteListingAction = async (slug: string) => {
+  const t = await getTranslations();
   // Check if user is logged in first
   const supabase = await createClient();
   const {
@@ -397,21 +382,22 @@ export const deleteListingAction = async (slug: string) => {
 
     if (!response.ok) {
       console.error("Error deleting listing:", data.message);
-      return { success: false, message: "Failed to delete listing." };
+      return { success: false, message: t("Errors.failedDeleteListing") };
     } else {
       console.log("Listing successfully deleted:", slug);
-      return { success: true, message: "Your listing has been deleted." };
+      return { success: true, message: t("Listings.delete.success") };
     }
   } catch (error) {
     console.error("Error deleting listing:", error);
     return {
       success: false,
-      message: "Hmm, something’s not right. Mind trying again?",
+      message: t("Errors.generic"),
     };
   }
 };
 
 export const deleteAccountAction = async () => {
+  const t = await getTranslations("Errors");
   let redirectPath: string | null = null;
 
   const supabase = await createClient();
@@ -442,7 +428,7 @@ export const deleteAccountAction = async () => {
     // const data = await response.json();
     // console.log("Response data:", data);
 
-    redirectPath = `/sign-in?success=Your account has been deleted. Sorry to see you go.`;
+    redirectPath = `/sign-in?success=${encodeURIComponent(t("accountDeleted"))}`;
 
     // if (!response.ok) {
     //   console.error("Delete account failed:", data);
@@ -450,7 +436,7 @@ export const deleteAccountAction = async () => {
     // }
   } catch (error) {
     console.error("Delete account error:", error);
-    redirectPath = `/profile?error=Error whilst deleting account`;
+    redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
   } finally {
     await supabase.auth.signOut();
     if (redirectPath) {
@@ -517,6 +503,7 @@ export async function fetchListingsInView(
 }
 
 export const createOrUpdateListingAction = async (listingData: any) => {
+  const t = await getTranslations("Errors");
   const supabase = await createClient();
 
   try {
@@ -526,7 +513,7 @@ export const createOrUpdateListingAction = async (listingData: any) => {
     if (listingData.type !== "residential" && listingData.name) {
       const nameValidation = validateName(listingData.name);
       if (!nameValidation.isValid) {
-        return { error: nameValidation.error };
+        return { error: t("emptyName") };
       }
       // Use the validated value
       listingData.name = nameValidation.value;
@@ -545,13 +532,12 @@ export const createOrUpdateListingAction = async (listingData: any) => {
       // Return specific error messages based on error codes
       if (error.code === "42501") {
         return {
-          error:
-            "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
+          error: t("tooManyListings"),
         };
       } else if (error.code === "23505") {
-        return { error: "An identical listing already exists." };
+        return { error: t("duplicateListing") };
       }
-      return { error: "Something went wrong. Please try again later." };
+      return { error: t("genericLater") };
     }
 
     // If this was a new listing with pending photos, update them
@@ -563,7 +549,7 @@ export const createOrUpdateListingAction = async (listingData: any) => {
 
       if (updateError) {
         console.error("Error updating photos:", updateError);
-        return { error: "Created listing but couldn’t save photos." };
+        return { error: t("savePhotosFailed") };
       }
     }
 
@@ -577,6 +563,6 @@ export const createOrUpdateListingAction = async (listingData: any) => {
     return { data };
   } catch (error) {
     console.error("Unexpected error in createOrUpdateListingAction:", error);
-    return { error: "An unexpected error occurred. Please try again later." };
+    return { error: t("unexpected") };
   }
 };

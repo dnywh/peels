@@ -3,12 +3,14 @@ import NewsletterIssueTile from "@/components/NewsletterIssueTile";
 import StyledList from "@/components/StyledList";
 import PastIssuesList from "@/components/PastIssuesList";
 import EmptyIssueSlot from "@/components/EmptyIssueSlot";
+import { getTranslations } from "next-intl/server";
 
 export default async function NewsletterIssuesList({
   showPastIssues = true,
 }: {
   showPastIssues?: boolean;
 }) {
+  const t = await getTranslations("Newsletter");
   const newsletterIssues = await getAllNewsletterIssues();
 
   // Only show an empty issue slot if the number of issues is even
@@ -20,7 +22,7 @@ export default async function NewsletterIssuesList({
     <>
       <StyledList>
         <section>
-          <h2>Latest issue</h2>
+          <h2>{t("latestIssue")}</h2>
           <NewsletterIssueTile
             featured={true}
             slug={newsletterIssues[0].slug}
@@ -36,7 +38,7 @@ export default async function NewsletterIssuesList({
 
         {newsletterIssues.length > 1 && showPastIssues && (
           <section>
-            <h2>Past issues</h2>
+            <h2>{t("pastIssues")}</h2>
             <PastIssuesList>
               {newsletterIssues
                 .filter((_, index) => index > 0)

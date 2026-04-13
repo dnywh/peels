@@ -8,17 +8,19 @@ import Field from "@/components/Field";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function ForgotPassword(props: {
   searchParams: Promise<Message>;
 }) {
   const searchParams = await props.searchParams;
+  const t = await getTranslations();
 
   if (searchParams.success) {
     return (
       <>
         <FormHeader button="none">
-          <h1>Email sent</h1>
+          <h1>{t("Auth.forgotPassword.sentTitle")}</h1>
         </FormHeader>
         <Form as="container">
           {/* TODO: include address that was emailed, so user can notice any typos */}
@@ -30,15 +32,12 @@ export default async function ForgotPassword(props: {
   return (
     <>
       <FormHeader button="back">
-        <h1>Forgot password</h1>
-        <p>
-          It happens to all of us. Enter your email below to receive a password
-          reset link.
-        </p>
+        <h1>{t("Auth.forgotPassword.title")}</h1>
+        <p>{t("Auth.forgotPassword.body")}</p>
       </FormHeader>
       <Form>
         <Field>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("Common.email")}</Label>
           <Input
             name="email"
             type="email"
@@ -52,9 +51,9 @@ export default async function ForgotPassword(props: {
         )}
         <SubmitButton
           formAction={forgotPasswordAction}
-          pendingText="Emailing..."
+          pendingText={t("Status.emailing")}
         >
-          Email me the link
+          {t("Actions.emailLink")}
         </SubmitButton>
       </Form>
     </>
