@@ -11,8 +11,6 @@ export default function PostageStamp() {
       alt={t("stampAlt")}
       width={224}
       height={132}
-      aria-hidden="true"
-      role="presentation"
     />
   );
 }

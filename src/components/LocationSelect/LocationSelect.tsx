@@ -62,13 +62,9 @@ async function getAreaName(
   longitude: number,
   latitude: number
 ): Promise<string> {
-  // const result = await maptilersdk.geocoding.reverse([6.249638, 46.402056]);
-  // console.log({ result });
-  // config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   const coordinates = await geocoding.reverse([longitude, latitude]);
 
   const features = coordinates.features as any[];
-  console.log({ features });
 
   if (!features || features.length === 0) {
     return "";

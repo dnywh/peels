@@ -301,7 +301,7 @@
       "mapVisibility": "Sichtbarkeit auf der Karte",
       "showOnMap": "Diesen Eintrag auf der Karte anzeigen",
       "hideFromMap": "Diesen Eintrag von der Karte ausblenden",
-      "adminHint": "Admin-only controls for this listing.",
+      "adminHint": "Nur für Admins sichtbare Steuerelemente für diesen Eintrag.",
       "stubSettings": "Stub-Einstellungen",
       "regularListing": "Dies ist ein regulärer Eintrag, der dir gehört",
       "stubListing": "Dieser Eintrag ist ein Stub, den andere beanspruchen können",
