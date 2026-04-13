@@ -16,6 +16,7 @@ import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface SignUpFormProps {
@@ -29,16 +30,15 @@ interface SignUpFormProps {
 
 const BACKGROUND_TOKEN_TIMEOUT = 10000;
 const INTERACTIVE_TOKEN_TIMEOUT = 120000;
-const EXPIRED_MESSAGE = "Verification expired. Please complete it again.";
-const TIMEOUT_MESSAGE =
-  "Security check didn’t complete. Try disabling ad blockers and then try again. If it still fails, try a different browser or network.";
-const UNSUPPORTED_MESSAGE =
-  "This browser can’t complete the security check. Please try a different browser or network.";
 
 export default function SignUpForm({
   defaultValues = {},
   error,
 }: SignUpFormProps) {
+  const t = useTranslations();
+  const expiredMessage = t("Auth.turnstile.expired");
+  const timeoutMessage = t("Auth.turnstile.timeout");
+  const unsupportedMessage = t("Auth.turnstile.unsupported");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState<string | null>(null);
 
@@ -52,7 +52,9 @@ export default function SignUpForm({
   const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const turnstileEnabled = isTurnstileEnabled();
-  const hasFieldErrors = Boolean(firstNameError || captchaError);
+  const fieldErrorCount =
+    Number(Boolean(firstNameError)) + Number(Boolean(captchaError));
+  const hasFieldErrors = fieldErrorCount > 0;
 
   const clearTokenTimeout = useCallback(() => {
     if (tokenTimeoutRef.current) {
@@ -78,13 +80,13 @@ export default function SignUpForm({
   );
 
   const scheduleTokenTimeout = useCallback(
-    (timeout: number, errorMessage = TIMEOUT_MESSAGE) => {
+    (timeout: number, errorMessage = timeoutMessage) => {
       clearTokenTimeout();
       tokenTimeoutRef.current = setTimeout(() => {
         rejectTokenPromise(errorMessage);
       }, timeout);
     },
-    [clearTokenTimeout, rejectTokenPromise]
+    [clearTokenTimeout, rejectTokenPromise, timeoutMessage]
   );
 
   // Promise-based token wait mechanism with timeout
@@ -128,34 +130,34 @@ export default function SignUpForm({
       setIsWaitingForToken(false);
       setIsTurnstileInteractive(false);
 
-      const errorMessage = `Security verification failed with error #${error}. Please try again or use a different browser.`;
+      const errorMessage = t("Auth.turnstile.failed", { code: error });
 
       setCaptchaError(errorMessage);
       rejectTokenPromise(errorMessage);
     },
-    [rejectTokenPromise]
+    [rejectTokenPromise, t]
   );
 
   const handleTurnstileExpire = useCallback(() => {
     setIsWaitingForToken(false);
     setIsTurnstileInteractive(false);
-    setCaptchaError(EXPIRED_MESSAGE);
-    rejectTokenPromise(EXPIRED_MESSAGE);
-  }, [rejectTokenPromise]);
+    setCaptchaError(expiredMessage);
+    rejectTokenPromise(expiredMessage);
+  }, [expiredMessage, rejectTokenPromise]);
 
   const handleTurnstileTimeout = useCallback(() => {
     setIsWaitingForToken(false);
     setIsTurnstileInteractive(false);
-    setCaptchaError(TIMEOUT_MESSAGE);
-    rejectTokenPromise(TIMEOUT_MESSAGE);
-  }, [rejectTokenPromise]);
+    setCaptchaError(timeoutMessage);
+    rejectTokenPromise(timeoutMessage);
+  }, [rejectTokenPromise, timeoutMessage]);
 
   const handleTurnstileUnsupported = useCallback(() => {
     setIsWaitingForToken(false);
     setIsTurnstileInteractive(false);
-    setCaptchaError(UNSUPPORTED_MESSAGE);
-    rejectTokenPromise(UNSUPPORTED_MESSAGE);
-  }, [rejectTokenPromise]);
+    setCaptchaError(unsupportedMessage);
+    rejectTokenPromise(unsupportedMessage);
+  }, [rejectTokenPromise, unsupportedMessage]);
 
   const handleTurnstileBeforeInteractive = useCallback(() => {
     setCaptchaError(null);
@@ -179,7 +181,7 @@ export default function SignUpForm({
     const formData = new FormData(event.currentTarget);
     const validation = validateName(formData.get("first_name")?.toString());
     if (!validation.isValid) {
-      setFirstNameError(validation.error ?? null);
+      setFirstNameError(t("Errors.emptyName"));
       return;
     }
 
@@ -206,7 +208,7 @@ export default function SignUpForm({
       } catch (error) {
         setIsWaitingForToken(false);
         setCaptchaError(
-          error instanceof Error ? error.message : TIMEOUT_MESSAGE
+          error instanceof Error ? error.message : timeoutMessage
         );
         return;
       }
@@ -267,7 +269,7 @@ export default function SignUpForm({
   return (
     <Form onSubmit={handleSubmit}>
       <Field>
-        <Label htmlFor="first_name">First name</Label>
+        <Label htmlFor="first_name">{t("Auth.signUp.firstName")}</Label>
         <Input
           name="first_name"
           {...FIELD_CONFIGS.firstName}
@@ -281,7 +283,7 @@ export default function SignUpForm({
       </Field>
 
       <Field>
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t("Common.email")}</Label>
         <Input
           name="email"
           {...FIELD_CONFIGS.email}
@@ -290,11 +292,11 @@ export default function SignUpForm({
       </Field>
 
       <Field>
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">{t("Common.password")}</Label>
         <Input
           name="password"
           {...FIELD_CONFIGS.password}
-          placeholder="Your new password"
+          placeholder={t("Auth.signUp.newPassword")}
         />
       </Field>
 
@@ -305,7 +307,7 @@ export default function SignUpForm({
           required={false}
           defaultChecked={defaultValues.newsletter_preference}
         >
-          Send me occasional email updates about Peels
+          {t("Auth.signUp.newsletterOptIn")}
         </CheckboxRow>
       </CheckboxCluster>
 
@@ -321,20 +323,18 @@ export default function SignUpForm({
       {(error || hasFieldErrors) && (
         <FormMessage
           message={{
-            error: error ? (
-              <>
-                {error.endsWith(".") ? error : `${error}.`} If you think this
-                might be wrong, please{" "}
-                <EncodedEmailLink address={siteConfig.encodedEmail.support}>
-                  email us
-                </EncodedEmailLink>
-                .
-              </>
-            ) : hasFieldErrors ? (
-              "Please fix the above error and then try again."
-            ) : (
-              "Hmm, something went wrong. Please try again."
-            ),
+            error: error
+              ? t.rich("Auth.signUp.errorWithSupport", {
+                  error: error.endsWith(".") ? error : `${error}.`,
+                  link: (chunks) => (
+                    <EncodedEmailLink address={siteConfig.encodedEmail.support}>
+                      {chunks}
+                    </EncodedEmailLink>
+                  ),
+                })
+              : hasFieldErrors
+                ? t("Errors.validationSummary", { count: fieldErrorCount })
+                : t("Errors.generic"),
           }}
         />
       )}
@@ -343,10 +343,12 @@ export default function SignUpForm({
         type="submit"
         variant="primary"
         loading={isSubmitting || isWaitingForToken}
-        loadingText={isWaitingForToken ? "Verifying..." : "Signing up..."}
+        loadingText={
+          isWaitingForToken ? t("Status.verifying") : t("Status.signingUp")
+        }
         disabled={isSubmitting || isWaitingForToken}
       >
-        Sign up
+        {t("Actions.signUp")}
       </Button>
     </Form>
   );

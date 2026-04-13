@@ -30,6 +30,7 @@ import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
 import FormMessage from "@/components/FormMessage";
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
@@ -79,6 +80,7 @@ export default function ListingWrite({
   user,
   profile,
 }: ListingWriteProps) {
+  const t = useTranslations();
   const { type } = useParams<{ type?: string }>();
   const router = useRouter();
 
@@ -165,7 +167,7 @@ export default function ListingWrite({
       }
     } catch (error) {
       console.error("Error deleting listing:", error);
-      setFeedbackMessage("Hmm, something’s not right. Mind trying again?");
+      setFeedbackMessage(t("Errors.generic"));
     }
   }
 
@@ -197,7 +199,7 @@ export default function ListingWrite({
       // For business/community listings, validate the name field
       const validation = validateName(name);
       if (!validation.isValid) {
-        nextErrors.name = `You can't have an empty ${listingType} name.`;
+        nextErrors.name = t("Errors.emptyListingName", { type: listingType });
       } else {
         validatedName = validation.value ?? ""; // Store the trimmed value
       }
@@ -206,7 +208,7 @@ export default function ListingWrite({
     const selectedCoordinates = coordinates;
 
     if (!selectedCoordinates) {
-      nextErrors.location = "Please select a location.";
+      nextErrors.location = t("Errors.missingLocation");
     }
 
     if (Object.keys(nextErrors).length > 0) {
@@ -247,7 +249,7 @@ export default function ListingWrite({
       } = await supabase.auth.getUser();
 
       if (!activeUser) {
-        setGlobalError("Please sign in and then try again.");
+        setGlobalError(t("Errors.generic"));
         return;
       }
 
@@ -287,7 +289,7 @@ export default function ListingWrite({
       }
 
       if (!data?.slug) {
-        setGlobalError("Something went wrong. Please try again later.");
+        setGlobalError(t("Errors.genericLater"));
         return;
       }
 
@@ -298,7 +300,7 @@ export default function ListingWrite({
       );
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-      setGlobalError("An unexpected error occurred. Please try again later.");
+      setGlobalError(t("Errors.unexpected"));
     } finally {
       if (shouldResetSubmitting) {
         setIsSubmitting(false);
@@ -342,7 +344,9 @@ export default function ListingWrite({
 
   return (
     <>
-      {initialListing && initialListing.is_stub && <Lozenge>Stub</Lozenge>}
+      {initialListing && initialListing.is_stub && (
+        <Lozenge>{t("Common.stub")}</Lozenge>
+      )}
       <Form onSubmit={handleSubmit}>
         {listingType === "residential" ? (
           <AvatarUploadManagerComponent
@@ -365,12 +369,14 @@ export default function ListingWrite({
 
         <FormSection>
           <FormSectionHeader>
-            <h2>Basics</h2>
+            <h2>{t("Listings.form.basics")}</h2>
           </FormSectionHeader>
 
           {listingType === "residential" ? (
             <Field>
-              <Label htmlFor="first_name">Your first name</Label>
+              <Label htmlFor="first_name">
+                {t("Listings.form.yourFirstName")}
+              </Label>
               <InputComponent
                 id="first_name"
                 name="first_name"
@@ -382,19 +388,21 @@ export default function ListingWrite({
                 error={errors.name}
               />
               <InputHintComponent>
-                {errors.name || "Use your first name or a nickname."}
+                {errors.name || t("Profile.account.firstNameHint")}
               </InputHintComponent>
             </Field>
           ) : (
             <Field>
-              <Label htmlFor="name">Place name</Label>
+              <Label htmlFor="name">{t("Listings.form.placeName")}</Label>
               <InputComponent
                 id="name"
                 name="name"
                 required={true}
                 type="text"
                 minLength={FIELD_CONFIGS.firstName.minLength}
-                placeholder={`Your ${listingType === "business" ? "business’" : `${listingType}’s`} name`}
+                placeholder={t("Listings.form.placeNamePlaceholder", {
+                  type: listingType,
+                })}
                 value={name}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                   setName(event.target.value)
@@ -415,10 +423,10 @@ export default function ListingWrite({
               initialListing
                 ? areaName
                 : listingType === "business"
-                  ? "Your business’ address"
+                  ? t("Listings.form.businessAddress")
                   : listingType === "community"
-                    ? "Your community’s address"
-                    : "Your street or neighbourhood"
+                    ? t("Listings.form.communityAddress")
+                    : t("Listings.form.residentialAddress")
             }
             coordinates={coordinates}
             setCoordinates={setCoordinates}
@@ -431,28 +439,33 @@ export default function ListingWrite({
 
           {listingType === "business" ? (
             <Field>
-              <Label htmlFor="description">Donation details</Label>
+              <Label htmlFor="description">
+                {t("Listings.form.donationDetails")}
+              </Label>
               <TextareaComponent
                 id="description"
                 rows={6}
                 maxLength={DESCRIPTION_MAX_CHARACTERS}
                 required={true}
                 resize="vertical"
-                placeholder="Your donation details"
+                placeholder={t("Listings.form.donationDetailsPlaceholder")}
                 value={description}
                 onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
                   setDescription(event.target.value)
                 }
               />
               <InputHintComponent>
-                What kind of scraps you have to give away and the collection
-                details. Save any links for the dedicated section, below.
+                {t("Listings.form.donationDetailsHint")}
               </InputHintComponent>
             </Field>
           ) : (
             <Field>
-              <Label htmlFor="description" required={false}>
-                Short description or instructions
+              <Label
+                htmlFor="description"
+                required={false}
+                optionalText={t("Common.optional")}
+              >
+                {t("Listings.form.descriptionLabel")}
               </Label>
               <TextareaComponent
                 id="description"
@@ -460,7 +473,9 @@ export default function ListingWrite({
                 maxLength={DESCRIPTION_MAX_CHARACTERS}
                 required={false}
                 resize="vertical"
-                placeholder={`About your ${listingType === "residential" ? "listing" : listingType}`}
+                placeholder={t("Listings.form.descriptionPlaceholder", {
+                  type: listingType,
+                })}
                 value={description}
                 onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
                   setDescription(event.target.value)
@@ -468,11 +483,8 @@ export default function ListingWrite({
               />
               <InputHintComponent>
                 {listingType === "community"
-                  ? "Opening hours and composting facilities."
-                  : "Your composting set up and general availability."}{" "}
-                Save the scraps you accept{" "}
-                {listingType !== "residential" && "and any links"} for the
-                dedicated section{listingType !== "residential" && "s"}, below.
+                  ? t("Listings.form.communityDescriptionHint")
+                  : t("Listings.form.residentialDescriptionHint")}
               </InputHintComponent>
             </Field>
           )}
@@ -481,19 +493,19 @@ export default function ListingWrite({
         {(listingType === "residential" || listingType === "community") && (
           <FormSection>
             <FormSectionHeader>
-              <h2>Composting details</h2>
-              <p>
-                Be specific so people know exactly what should be avoided. Enter
-                items separately so it’s easier to read.
-              </p>
+              <h2>{t("Listings.form.compostingDetails")}</h2>
+              <p>{t("Listings.form.compostingDetailsHint")}</p>
             </FormSectionHeader>
 
             <MultiInputComponent
-              label="What scraps do you accept?"
-              addButtonText="Add an item"
-              addAnotherButtonText="Add another item"
-              placeholder="An item you accept (e.g. ‘fruit rinds’)"
-              secondaryPlaceholder="Another item you accept"
+              label={t("Listings.form.acceptedLabel")}
+              addButtonText={t("Listings.form.addItem")}
+              addAnotherButtonText={t("Listings.form.addAnotherItem")}
+              optionalText={t("Common.optional")}
+              placeholder={t("Listings.form.acceptedPlaceholder")}
+              secondaryPlaceholder={t(
+                "Listings.form.acceptedSecondaryPlaceholder"
+              )}
               items={acceptedItems}
               minRequired={1}
               handleItemChange={handleAcceptedItemChange}
@@ -502,11 +514,14 @@ export default function ListingWrite({
             />
 
             <MultiInputComponent
-              label="What scraps do you not accept?"
-              addButtonText="Add an item"
-              addAnotherButtonText="Add another item"
-              placeholder="An item you don’t accept (e.g. ‘meat’)"
-              secondaryPlaceholder="Another item you don’t accept"
+              label={t("Listings.form.rejectedLabel")}
+              addButtonText={t("Listings.form.addItem")}
+              addAnotherButtonText={t("Listings.form.addAnotherItem")}
+              optionalText={t("Common.optional")}
+              placeholder={t("Listings.form.rejectedPlaceholder")}
+              secondaryPlaceholder={t(
+                "Listings.form.rejectedSecondaryPlaceholder"
+              )}
               items={rejectedItems}
               handleItemChange={handleRejectedItemChange}
               onClick={addRejectedItem}
@@ -517,21 +532,26 @@ export default function ListingWrite({
 
         <FormSection>
           <FormSectionHeader>
-            <h2>Media</h2>
+            <h2>{t("Listings.form.media")}</h2>
             <p>
-              Optionally show{" "}
-              {listingType === "residential"
-                ? "a bit more about your listing"
-                : listingType === "community"
-                  ? "a bit more about your community project"
-                  : "off your business"}{" "}
-              to Peels members.
+              {t("Listings.form.mediaHint", {
+                subject:
+                  listingType === "residential"
+                    ? t("Listings.form.mediaResidential")
+                    : listingType === "community"
+                      ? t("Listings.form.mediaCommunity")
+                      : t("Listings.form.mediaBusiness"),
+              })}
             </p>
           </FormSectionHeader>
 
           <FieldsetWithGap>
-            <Label htmlFor="photo-upload-button" required={false}>
-              Photos
+            <Label
+              htmlFor="photo-upload-button"
+              required={false}
+              optionalText={t("Common.optional")}
+            >
+              {t("Common.photos")}
             </Label>
             <ListingPhotosManagerComponent
               initialPhotos={initialListing ? photos : pendingPhotos}
@@ -544,10 +564,11 @@ export default function ListingWrite({
           {/* TODO: Selecting field should highlight button, just like every other input */}
           {listingType !== "residential" && (
             <MultiInputComponent
-              label="External links"
+              label={t("Listings.form.externalLinks")}
               required={false}
-              addButtonText="Add link"
-              placeholder="Your website or social media"
+              addButtonText={t("Listings.form.addLink")}
+              optionalText={t("Common.optional")}
+              placeholder={t("Listings.form.linkPlaceholder")}
               items={links}
               handleItemChange={handleLinksChange}
               onClick={addLink}
@@ -561,15 +582,14 @@ export default function ListingWrite({
         {initialListing && (
           <FormSection>
             <FormSectionHeader>
-              <h2>Visibility</h2>
-              <p>
-                Need a break from Peels? Temporarily hide this listing from the
-                map.
-              </p>
+              <h2>{t("Listings.form.visibility")}</h2>
+              <p>{t("Listings.form.visibilityHint")}</p>
             </FormSectionHeader>
 
             <Field>
-              <Label htmlFor="visibility">Map visibility</Label>
+              <Label htmlFor="visibility">
+                {t("Listings.form.mapVisibility")}
+              </Label>
               <SelectComponent
                 id="visibility"
                 value={String(initialListing ? visibility : true)}
@@ -578,8 +598,8 @@ export default function ListingWrite({
                 }
                 required={true}
               >
-                <option value="true">Show this listing on the map</option>
-                <option value="false">Hide this listing from the map</option>
+                <option value="true">{t("Listings.form.showOnMap")}</option>
+                <option value="false">{t("Listings.form.hideFromMap")}</option>
               </SelectComponent>
             </Field>
           </FormSection>
@@ -588,12 +608,12 @@ export default function ListingWrite({
         {profile?.is_admin && (
           <FormSection>
             <FormSectionHeader>
-              <h2>Admin</h2>
-              <p>Admin-only controls for this listing.</p>
+              <h2>{t("Common.admin")}</h2>
+              <p>{t("Listings.form.adminHint")}</p>
             </FormSectionHeader>
 
             <Field>
-              <Label htmlFor="stub">Stub settings</Label>
+              <Label htmlFor="stub">{t("Listings.form.stubSettings")}</Label>
               <SelectComponent
                 id="stub"
                 value={String(isStub)}
@@ -603,16 +623,14 @@ export default function ListingWrite({
                 required={true}
               >
                 <option value="false">
-                  This is a regular listing owned by you
+                  {t("Listings.form.regularListing")}
                 </option>
-                <option value="true">
-                  This listing is a stub that others can claim
-                </option>
+                <option value="true">{t("Listings.form.stubListing")}</option>
               </SelectComponent>
               <InputHintComponent>
                 {isStub
-                  ? "This listing will not contain your contact information. Others can claim it as their own and take it over."
-                  : "This listing will be presented just like any other."}
+                  ? t("Listings.form.stubActiveHint")
+                  : t("Listings.form.stubInactiveHint")}
               </InputHintComponent>
             </Field>
           </FormSection>
@@ -632,9 +650,9 @@ export default function ListingWrite({
             message={{
               error:
                 globalError ||
-                `Please fix the above error${
-                  Object.keys(errors).length > 1 ? "s" : ""
-                } and then try again.`,
+                t("Errors.validationSummary", {
+                  count: Object.keys(errors).length,
+                }),
             }}
           />
         )}
@@ -642,9 +660,9 @@ export default function ListingWrite({
           type="submit"
           variant="primary"
           loading={isSubmitting}
-          loadingText={initialListing ? "Saving..." : "Adding..."}
+          loadingText={initialListing ? t("Status.saving") : t("Status.adding")}
         >
-          {initialListing ? "Save changes" : "Add listing"}
+          {initialListing ? t("Actions.saveChanges") : t("Actions.addListing")}
         </Button>
       </Form>
 
@@ -656,18 +674,18 @@ export default function ListingWrite({
             width="contained"
             href={`/listings/${initialListing.slug}`}
           >
-            View listing
+            {t("Actions.viewListing")}
           </Button>
 
           <ButtonToDialog
             variant="danger"
-            initialButtonText="Delete listing"
-            dialogTitle="Delete listing"
-            confirmButtonText="Yes, delete listing"
-            confirmLoadingText="Deleting..."
+            initialButtonText={t("Actions.deleteListing")}
+            dialogTitle={t("Actions.deleteListing")}
+            confirmButtonText={t("Listings.delete.confirm")}
+            confirmLoadingText={t("Status.deleting")}
             onSubmit={handleDeleteListing}
           >
-            Are you sure you want to delete your listing? This is irreversible.
+            {t("Listings.delete.dialog")}
           </ButtonToDialog>
         </AdditionalSettings>
       )}

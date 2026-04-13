@@ -3,34 +3,35 @@
 import { useNewsletterStatus } from "@/hooks/useNewsletterStatus";
 import StrongLink from "@/components/StrongLink";
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 // Replaces EmailAside for the web version of newsletter issues
 // Used as an aside within a newsletter, explaining the context of the issue
 // and providing information on how to opt-in (whether signed up already or not)
 // See also NewsletterCallout which does a similar job, albeit outside of the newsletter bounds
 export default function NewsletterAside() {
+  const t = useTranslations("Newsletter.aside");
   const status = useNewsletterStatus();
 
   return (
     <Aside>
-      <h3>About this newsletter</h3>
+      <h3>{t("title")}</h3>
       <p>
-        This is the web version of the email newsletter sent out to subscribers.{" "}
-        {!status.isAuthenticated ? (
-          <>
-            <StrongLink href="/sign-up?newsletter_preference=true">
-              Join Peels
-            </StrongLink>{" "}
-            to receive future issues.
-          </>
-        ) : status.isNewsletterSubscribed ? (
-          "Feel free to share it far and wide."
-        ) : (
-          <>
-            <StrongLink href="/profile">Edit your preferences</StrongLink> to
-            receive future issues.
-          </>
-        )}
+        {!status.isAuthenticated
+          ? t.rich("bodyGuest", {
+              link: (chunks) => (
+                <StrongLink href="/sign-up?newsletter_preference=true">
+                  {chunks}
+                </StrongLink>
+              ),
+            })
+          : status.isNewsletterSubscribed
+            ? t("bodySubscribed")
+            : t.rich("bodyMember", {
+                link: (chunks) => (
+                  <StrongLink href="/profile">{chunks}</StrongLink>
+                ),
+              })}
       </p>
     </Aside>
   );

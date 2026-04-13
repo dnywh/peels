@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 
 import { GeocodingControl } from "@maptiler/geocoding-control/react";
 import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
+import { useTranslations } from "next-intl";
 
 // TODO: Add a 'required' prop for forms that require a location
 function MapSearch({
@@ -12,6 +13,8 @@ function MapSearch({
   countryCode,
   ...props
 }) {
+  const t = useTranslations("Map");
+
   return (
     <div style={props.style}>
       <GeocodingControl
@@ -44,9 +47,9 @@ function MapSearch({
           "municipality",
         ]}
         minLength={3}
-        placeholder="Search"
-        errorMessage="Something went wrong. Try again?"
-        noResultsMessage="No results. Keep typing or refine your search"
+        placeholder={t("searchPlaceholder")}
+        errorMessage={t("searchError")}
+        noResultsMessage={t("searchNoResults")}
         // showPlaceType={false}
         onPick={(event) => {
           onPick(event);

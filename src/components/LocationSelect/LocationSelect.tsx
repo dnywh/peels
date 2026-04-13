@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState, useRef } from "react";
+import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 
 import { GeocodingControl } from "@maptiler/geocoding-control/react";
 // import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
@@ -20,6 +21,10 @@ import Label from "@/components/Label";
 import InputHint from "@/components/InputHint";
 
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
+
+const GeocodingControlComponent = GeocodingControl as any;
+const InputHintComponent = InputHint as any;
 
 const StyledFieldset = styled(Fieldset)(({ theme }) => ({
   display: "flex",
@@ -32,25 +37,41 @@ const ZOOM_LEVEL = 16;
 import { config, geocoding, geolocation } from "@maptiler/client";
 
 // Reverse geocoding for legible location (area_name)
-config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
 
 // const maptilerClient = new maptilersdk.Maptiler();
 
-async function getAreaName(longitude, latitude) {
-  // const result = await maptilersdk.geocoding.reverse([6.249638, 46.402056]);
-  // console.log({ result });
-  // config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
+type LocationSelectProps = {
+  listingType: string;
+  coordinates: Coordinates | null;
+  setCoordinates: Dispatch<SetStateAction<Coordinates | null>>;
+  countryCode: string;
+  setCountryCode: Dispatch<SetStateAction<string>>;
+  areaName: string;
+  setAreaName: Dispatch<SetStateAction<string>>;
+  initialPlaceholderText?: string;
+  error?: string;
+};
+
+async function getAreaName(
+  longitude: number,
+  latitude: number
+): Promise<string> {
   const coordinates = await geocoding.reverse([longitude, latitude]);
 
-  const features = coordinates.features;
-  console.log({ features });
+  const features = coordinates.features as any[];
 
   if (!features || features.length === 0) {
-    return undefined;
+    return "";
   }
 
   // Helper function to find feature by place type
-  const findFeatureByType = (features, types) => {
+  const findFeatureByType = (features: any[], types: string[]) => {
     return features.find((f) =>
       types.some(
         (type) =>
@@ -93,7 +114,7 @@ async function getAreaName(longitude, latitude) {
     areaName = marine.text;
   } else {
     // Fallback to the most relevant feature's place name
-    areaName = features[0].place_name || undefined;
+    areaName = features[0].place_name || "";
   }
   return areaName;
 }
@@ -126,20 +147,21 @@ export default function LocationSelect({
   setAreaName,
   initialPlaceholderText,
   error,
-}) {
-  const mapRef = useRef(null);
-  const inputRef = useRef(null);
+}: LocationSelectProps) {
+  const t = useTranslations();
+  const mapRef = useRef<any>(null);
+  const inputRef = useRef<any>(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
-    initialPlaceholderText || "Your street name or nearby"
+    initialPlaceholderText || t("Listings.form.locationPlaceholder")
   );
 
   useEffect(() => {
     if (!countryCode) {
       let isMounted = true; // Track if component is mounted
 
-      async function initializeLocation() {
+      const initializeLocation = async () => {
         try {
           const response = await geolocation.info();
 
@@ -152,7 +174,7 @@ export default function LocationSelect({
           console.warn("Could not detect country from IP:", error);
           // No fallback needed - keep initial selection
         }
-      }
+      };
 
       initializeLocation();
 
@@ -163,22 +185,25 @@ export default function LocationSelect({
     }
   }, [countryCode, setCountryCode]);
 
-  const handleCountryChange = useCallback((e) => {
-    setCountryCode(e.target.value);
-    console.log("Country changed, focusing input...");
-    setMapShown(false);
-    inputRef.current.focus();
-  }, []);
+  const handleCountryChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      setCountryCode(e.target.value);
+      console.log("Country changed, focusing input...");
+      setMapShown(false);
+      inputRef.current?.focus();
+    },
+    [setCountryCode]
+  );
 
   const handleDragStart = useCallback(() => {
-    inputRef.current.blur(); // Close and blur the input if it's open
+    inputRef.current?.blur(); // Close and blur the input if it's open
     console.log("handling drag start");
-    inputRef.current.setQuery("");
-    setPlaceholderText("Custom location"); // Clear previous value
-  }, []);
+    inputRef.current?.setQuery("");
+    setPlaceholderText(t("Listings.form.customLocation")); // Clear previous value
+  }, [t]);
 
   const handleDragEnd = useCallback(
-    async (event) => {
+    async (event: any) => {
       console.log("Drag end. Location:", event.lngLat);
 
       const nextCoordinates = {
@@ -199,7 +224,7 @@ export default function LocationSelect({
   );
 
   const handlePick = useCallback(
-    async (event) => {
+    async (event: any) => {
       // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
       // Return early if that's the case
       if (!event.feature?.center) return;
@@ -219,7 +244,7 @@ export default function LocationSelect({
       );
       setAreaName(nextAreaName);
 
-      inputRef.current.blur();
+      inputRef.current?.blur();
 
       if (!mapShown) {
         console.log("Map isnt shown yet, coming now...");
@@ -246,7 +271,7 @@ export default function LocationSelect({
   return (
     <StyledFieldset>
       <Field>
-        <Label htmlFor="country">Location</Label>
+        <Label htmlFor="country">{t("Listings.form.location")}</Label>
         {/* TODO: Accessibility: label currently covers both select and geocoding control but not yet via htmlFor. Fix or make a separate visually hidden one for the geocoding control */}
         <Select
           id="country"
@@ -255,7 +280,7 @@ export default function LocationSelect({
           required={true}
         >
           <option disabled={true} value="initial">
-            Select a country
+            {t("Listings.form.selectCountry")}
           </option>
           {countries.map((country) => (
             <option key={country.code} value={country.code}>
@@ -271,7 +296,7 @@ export default function LocationSelect({
           id="custom-geocoding-styles"
           className={error ? "error" : undefined}
         >
-          <GeocodingControl
+          <GeocodingControlComponent
             // Add these two props to the custom component
             error={error}
             aria-invalid={error ? "true" : undefined}
@@ -296,8 +321,8 @@ export default function LocationSelect({
               "municipality",
             ]}
             placeholder={placeholderText}
-            errorMessage="Something went wrong. Try again?"
-            noResultsMessage="No results. Keep typing or refine your search"
+            errorMessage={t("Map.searchError")}
+            noResultsMessage={t("Map.searchNoResults")}
             minLength={3}
             showPlaceType={false}
             onPick={handlePick}
@@ -305,14 +330,16 @@ export default function LocationSelect({
             required={true}
           />
         </div>
-        <InputHint variant={error ? "error" : undefined}>
+        <InputHintComponent variant={error ? "error" : undefined}>
           {error
             ? error
-            : `Start typing, then select one of the suggested ${listingType === "residential" ? "options" : "addresses"} from the dropdown.`}
-        </InputHint>
+            : t("Listings.form.locationHint", {
+                type: listingType,
+              })}
+        </InputHintComponent>
       </Field>
 
-      {mapShown && (
+      {mapShown && coordinates && (
         <Field>
           {/* <p>Refine your pin location:</p> */}
 
@@ -342,10 +369,11 @@ export default function LocationSelect({
             <NavigationControl showZoom={true} showCompass={false} />
           </MapThumbnail>
 
-          <InputHint>
-            Drag the pin to refine{" "}
-            {listingType === "residential" && "or obscure"} your location.
-          </InputHint>
+          <InputHintComponent>
+            {t("Listings.form.dragPinHint", {
+              obscure: listingType === "residential" ? "true" : "false",
+            })}
+          </InputHintComponent>
         </Field>
       )}
     </StyledFieldset>

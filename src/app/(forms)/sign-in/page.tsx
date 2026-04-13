@@ -3,6 +3,7 @@ import FormHeader from "@/components/FormHeader";
 import StrongLink from "@/components/StrongLink";
 import SignInForm from "@/components/SignInForm";
 import FormFooter from "@/components/FormFooter";
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Sign In",
@@ -19,19 +20,22 @@ export default async function SignIn(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
+  const t = await getTranslations("Auth.signIn");
 
   return (
     <>
       {/* TODO: Make FormHeader action conditional based on whether this page (which should be a component) is rendered modally or as a page */}
       <FormHeader button="back">
-        <h1>Sign in to Peels</h1>
+        <h1>{t("title")}</h1>
       </FormHeader>
 
       <SignInForm searchParams={searchParams} />
 
       <FormFooter>
         <p>
-          First time here? <StrongLink href="/sign-up">Sign up</StrongLink>
+          {t.rich("firstTime", {
+            link: (chunks) => <StrongLink href="/sign-up">{chunks}</StrongLink>,
+          })}
         </p>
       </FormFooter>
     </>

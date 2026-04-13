@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations();
+
   return (
     <div>
       <h2>404</h2>
-      <p>Sorry, we couldn’t find the page you were looking for.</p>
-      <Link href="/">Home</Link>
+      <p>{t("NotFound.body")}</p>
+      <Link href="/">{t("Actions.home")}</Link>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import {
 
 import { styled } from "@pigment-css/react";
 import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
+import { useTranslations } from "next-intl";
 
 const List = styled("ul")(({ theme }) => ({
   display: "flex",
@@ -119,6 +120,7 @@ function ProfileAccountSettings({
   user,
   profile,
 }: ProfileAccountSettingsProps) {
+  const t = useTranslations();
   // Use our custom hook for each editable field
   const firstName = useEditableField();
   const email = useEditableField();
@@ -153,7 +155,7 @@ function ProfileAccountSettings({
 
     // Client-side validation for unchanged email
     if (newEmail === user.email) {
-      email.setError("This is already your email address.");
+      email.setError(t("Errors.alreadyYourEmail"));
       return;
     }
 
@@ -169,7 +171,7 @@ function ProfileAccountSettings({
       }
     } catch (error) {
       console.error("Error updating email:", error);
-      email.setError("Sorry, something’s gone wrong. Please try again.");
+      email.setError(t("Errors.genericLater"));
     } finally {
       email.setIsUpdating(false);
     }
@@ -178,7 +180,7 @@ function ProfileAccountSettings({
   const handleFirstNameUpdate = async (formData: FormData) => {
     const validation = validateName(formData.get("first_name"));
     if (!validation.isValid) {
-      firstName.setError(validation.error ?? null);
+      firstName.setError(t("Errors.emptyName"));
       return;
     }
 
@@ -195,7 +197,7 @@ function ProfileAccountSettings({
       }
     } catch (error) {
       console.error("Error updating first name:", error);
-      firstName.setError("Sorry, something’s gone wrong. Please try again.");
+      firstName.setError(t("Errors.genericLater"));
     } finally {
       firstName.setIsUpdating(false);
     }
@@ -223,9 +225,7 @@ function ProfileAccountSettings({
       }
     } catch (error) {
       console.error("Error updating newsletter preference:", error);
-      newsletterPreference.setError(
-        "Sorry, something’s gone wrong. Please try again."
-      );
+      newsletterPreference.setError(t("Errors.genericLater"));
     } finally {
       newsletterPreference.setIsUpdating(false);
     }
@@ -242,7 +242,7 @@ function ProfileAccountSettings({
         {firstName.isEditing ? (
           <Form nested={true} action={handleFirstNameUpdate}>
             <Field>
-              <Label>First name</Label>
+              <Label>{t("Profile.account.firstName")}</Label>
               <InputComponent
                 name="first_name"
                 {...FIELD_CONFIGS.firstName}
@@ -258,30 +258,30 @@ function ProfileAccountSettings({
               <SubmitButton
                 disabled={firstName.isUpdating}
                 loading={firstName.isUpdating}
-                pendingText="Updating..."
+                pendingText={t("Status.updating")}
               >
-                Update
+                {t("Actions.update")}
               </SubmitButton>
               <Button
                 variant="secondary"
                 onClick={handleFirstNameCancel}
                 disabled={firstName.isUpdating}
               >
-                Cancel
+                {t("Actions.cancel")}
               </Button>
             </ButtonGroup>
           </Form>
         ) : (
           <>
             <ListItemReadField>
-              <Label>First name</Label>
+              <Label>{t("Profile.account.firstName")}</Label>
               <p>{tempFirstName}</p>
             </ListItemReadField>
             <Button
               variant="secondary"
               onClick={() => firstName.setIsEditing(true)}
             >
-              Edit
+              {t("Actions.edit")}
             </Button>
           </>
         )}
@@ -291,7 +291,7 @@ function ProfileAccountSettings({
         {email.isEditing ? (
           <Form nested={true} action={handleEmailUpdate}>
             <Field>
-              <Label>Email</Label>
+              <Label>{t("Common.email")}</Label>
               <InputComponent
                 name="email"
                 defaultValue={user.email}
@@ -306,8 +306,8 @@ function ProfileAccountSettings({
                 {email.error
                   ? email.error
                   : email.success
-                    ? "Check your email for the verification link."
-                    : "We’ll send a verification link to this email."}
+                    ? t("Profile.account.emailSuccess")
+                    : t("Profile.account.emailHint")}
               </InputHint>
             </Field>
             <ButtonGroup>
@@ -315,9 +315,9 @@ function ProfileAccountSettings({
                 <SubmitButton
                   disabled={email.isUpdating}
                   loading={email.isUpdating}
-                  pendingText="Sending..."
+                  pendingText={t("Status.sending")}
                 >
-                  Send the link
+                  {t("Actions.sendLink")}
                 </SubmitButton>
               )}
               <Button
@@ -325,21 +325,21 @@ function ProfileAccountSettings({
                 onClick={() => email.reset()}
                 disabled={email.isUpdating}
               >
-                {email.success ? "Close" : "Cancel"}
+                {email.success ? t("Actions.close") : t("Actions.cancel")}
               </Button>
             </ButtonGroup>
           </Form>
         ) : (
           <>
             <ListItemReadField>
-              <Label>Email</Label>
+              <Label>{t("Common.email")}</Label>
               <p>{user.email}</p>
             </ListItemReadField>
             <Button
               variant="secondary"
               onClick={() => email.setIsEditing(true)}
             >
-              Edit
+              {t("Actions.edit")}
             </Button>
           </>
         )}
@@ -349,7 +349,7 @@ function ProfileAccountSettings({
         {newsletterPreference.isEditing ? (
           <Form nested={true} action={handleNewsletterPreferenceUpdate}>
             <Field>
-              <Label>Newsletter</Label>
+              <Label>{t("Common.newsletter")}</Label>
               <Select
                 name="newsletter_preference"
                 value={String(tempNewsletterPreference)}
@@ -358,8 +358,8 @@ function ProfileAccountSettings({
                 }
                 required={true}
               >
-                <option value="false">Not subscribed</option>
-                <option value="true">Subscribed</option>
+                <option value="false">{t("Common.notSubscribed")}</option>
+                <option value="true">{t("Common.subscribed")}</option>
               </Select>
               <InputHint
                 variant={newsletterPreference.error ? "error" : "default"}
@@ -367,8 +367,8 @@ function ProfileAccountSettings({
                 {newsletterPreference.error
                   ? newsletterPreference.error
                   : tempNewsletterPreference
-                    ? "We’ll send you occasional email updates about Peels."
-                    : "We’ll only send you necessary account or listing-related emails. "}
+                    ? t("Profile.account.newsletterSubscribedHint")
+                    : t("Profile.account.newsletterNotSubscribedHint")}
               </InputHint>
             </Field>
 
@@ -376,34 +376,34 @@ function ProfileAccountSettings({
               <SubmitButton
                 disabled={newsletterPreference.isUpdating}
                 loading={newsletterPreference.isUpdating}
-                pendingText="Updating..."
+                pendingText={t("Status.updating")}
               >
-                Update
+                {t("Actions.update")}
               </SubmitButton>
               <Button
                 variant="secondary"
                 onClick={handleNewsletterPreferenceCancel}
                 disabled={newsletterPreference.isUpdating}
               >
-                Cancel
+                {t("Actions.cancel")}
               </Button>
             </ButtonGroup>
           </Form>
         ) : (
           <>
             <ListItemReadField>
-              <Label>Newsletter</Label>
+              <Label>{t("Common.newsletter")}</Label>
               <p>
                 {tempNewsletterPreference === true
-                  ? "Subscribed"
-                  : "Not subscribed"}
+                  ? t("Common.subscribed")
+                  : t("Common.notSubscribed")}
               </p>
             </ListItemReadField>
             <Button
               variant="secondary"
               onClick={() => newsletterPreference.setIsEditing(true)}
             >
-              Edit
+              {t("Actions.edit")}
             </Button>
           </>
         )}
@@ -412,13 +412,13 @@ function ProfileAccountSettings({
       <ListItem>
         <>
           <ListItemReadField>
-            <Label>Password</Label>
+            <Label>{t("Common.password")}</Label>
             <PasswordPreview>
               {FIELD_CONFIGS.password.placeholder}
             </PasswordPreview>
           </ListItemReadField>
           <Button variant="secondary" href="/profile/reset-password">
-            Edit
+            {t("Actions.edit")}
           </Button>
         </>
       </ListItem>

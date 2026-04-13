@@ -10,6 +10,7 @@ import Button from "@/components/Button";
 import InputHint from "@/components/InputHint";
 
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const StyledField = styled(Field)({
   alignItems: "center",
@@ -64,6 +65,7 @@ function AvatarUploadView({
   inputHintShown = false,
   listingType,
 }: AvatarUploadViewProps) {
+  const t = useTranslations();
   // Hidden file input that we'll trigger programmatically
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
@@ -113,12 +115,12 @@ function AvatarUploadView({
           <AvatarComponent
             bucket={bucket}
             filename={avatar}
-            alt="Your avatar"
+            alt={t("Upload.avatarAlt")}
             size="massive"
             listing={listingType ? { type: listingType } : undefined}
           />
 
-          {loading && <LoadingSpinner>Uploading...</LoadingSpinner>}
+          {loading && <LoadingSpinner>{t("Status.uploading")}</LoadingSpinner>}
         </StyledImgContainer>
 
         {!avatar ? (
@@ -128,10 +130,10 @@ function AvatarUploadView({
             size="small"
             onClick={handleFileSelect}
             loading={loading}
-            loadingText="Uploading..."
+            loadingText={t("Status.uploading")}
             disabled={isBusy}
           >
-            Add
+            {t("Actions.add")}
           </AvatarButton>
         ) : (
           // Scenario 2 & 3: Has avatar - show menu with options
@@ -141,10 +143,12 @@ function AvatarUploadView({
               variant="secondary"
               size="small"
               loading={loading || isDeleting}
-              loadingText={loading ? "Uploading..." : "Deleting..."}
+              loadingText={
+                loading ? t("Status.uploading") : t("Status.deleting")
+              }
               disabled={isBusy}
             >
-              Edit
+              {t("Actions.edit")}
             </DropdownMenu.Button>
 
             <DropdownMenu.Items
@@ -158,7 +162,7 @@ function AvatarUploadView({
                   size="small"
                   disabled={isBusy}
                 >
-                  Replace
+                  {t("Actions.replace")}
                 </Button>
               </DropdownMenu.Item>
               <DropdownMenu.Item>
@@ -167,19 +171,17 @@ function AvatarUploadView({
                   variant="danger"
                   size="small"
                   loading={isDeleting}
-                  loadingText="Deleting..."
+                  loadingText={t("Status.deleting")}
                   disabled={isBusy}
                 >
-                  Delete
+                  {t("Actions.delete")}
                 </Button>
               </DropdownMenu.Item>
             </DropdownMenu.Items>
           </DropdownMenu.Root>
         )}
         {inputHintShown && (
-          <InputHint variant="centered">
-            Consider uploading a photo so members know who they’re messaging.
-          </InputHint>
+          <InputHint variant="centered">{t("Upload.avatarHint")}</InputHint>
         )}
       </StyledField>
     </Fieldset>

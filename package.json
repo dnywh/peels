@@ -12,6 +12,8 @@
     "supabase:reset": "supabase db reset",
     "seed:local-media": "node scripts/seed-local-media.mjs",
     "supabase:diff": "supabase db diff",
+    "i18n:check": "node scripts/check-i18n-messages.mjs",
+    "check": "npm run i18n:check && npm run format:check",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

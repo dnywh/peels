@@ -6,12 +6,110 @@
     "about": "Über"
   },
   "Actions": {
+    "add": "Hinzufügen",
+    "addListing": "Eintrag hinzufügen",
+    "addMorePhotos": "Weitere Fotos hinzufügen",
+    "addPhotos": "Fotos hinzufügen",
+    "backToPeels": "Zurück zu Peels",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "continue": "Weiter",
+    "delete": "Löschen",
+    "deleteListing": "Eintrag löschen",
+    "done": "Fertig",
+    "edit": "Bearbeiten",
+    "emailLink": "Link per E-Mail senden",
+    "exportData": "Daten exportieren",
+    "home": "Startseite",
+    "joinPeels": "Peels beitreten",
+    "noCancel": "Nein, abbrechen",
+    "openInAppleMaps": "In Apple Karten öffnen",
+    "openInGoogleMaps": "In Google Maps öffnen",
+    "replace": "Ersetzen",
+    "resetPassword": "Passwort zurücksetzen",
+    "saveChanges": "Änderungen speichern",
+    "seeNearbyListings": "Einträge in der Nähe ansehen",
+    "sendLink": "Link senden",
+    "signIn": "Anmelden",
+    "signInToContact": "Zum Kontaktieren anmelden",
+    "signOut": "Abmelden",
     "signUp": "Registrieren",
-    "signIn": "Anmelden"
+    "update": "Aktualisieren",
+    "viewFullListing": "Vollständigen Eintrag ansehen",
+    "viewListing": "Eintrag ansehen"
+  },
+  "Common": {
+    "account": "Konto",
+    "actions": "Aktionen",
+    "admin": "Admin",
+    "email": "E-Mail",
+    "hidden": "Ausgeblendet",
+    "links": "Links",
+    "listings": "Einträge",
+    "loading": "Lädt...",
+    "newsletter": "Newsletter",
+    "notSubscribed": "Nicht abonniert",
+    "optional": "optional",
+    "password": "Passwort",
+    "photos": "Fotos",
+    "source": "Quelle",
+    "stub": "Stub",
+    "subscribed": "Abonniert"
+  },
+  "Status": {
+    "adding": "Wird hinzugefügt...",
+    "copying": "Wird kopiert...",
+    "deleting": "Wird gelöscht...",
+    "emailing": "E-Mail wird gesendet...",
+    "resetting": "Wird zurückgesetzt...",
+    "saving": "Wird gespeichert...",
+    "sending": "Wird gesendet...",
+    "signingIn": "Anmeldung läuft...",
+    "signingOut": "Abmeldung läuft...",
+    "signingUp": "Registrierung läuft...",
+    "updating": "Wird aktualisiert...",
+    "uploading": "Wird hochgeladen...",
+    "verifying": "Wird verifiziert...",
+    "working": "Wird verarbeitet..."
+  },
+  "Errors": {
+    "alreadyYourEmail": "Das ist bereits deine E-Mail-Adresse.",
+    "emptyListingName": "{type, select, business {Der Name des Unternehmens darf nicht leer sein.} community {Der Name der Community darf nicht leer sein.} other {Der Name des Eintrags darf nicht leer sein.}}",
+    "emptyName": "Der Name darf nicht leer sein.",
+    "accountDeleted": "Dein Konto wurde gelöscht. Schade, dass du gehst.",
+    "accountExists": "Ein Konto mit dieser E-Mail existiert bereits. Bitte melde dich stattdessen an.",
+    "deleteAccountFailed": "Fehler beim Löschen des Kontos",
+    "duplicateListing": "Ein identischer Eintrag existiert bereits.",
+    "emailRequired": "E-Mail ist erforderlich",
+    "failedDeleteListing": "Der Eintrag konnte nicht gelöscht werden.",
+    "failedDeletePhoto": "Das Foto konnte nicht gelöscht werden. Bitte versuche es erneut.",
+    "generic": "Hmm, da stimmt etwas nicht. Versuchst du es noch einmal?",
+    "genericLater": "Etwas ist schiefgelaufen. Bitte versuche es später erneut.",
+    "missingLocation": "Bitte wähle einen Standort aus.",
+    "missingSignUpFields": "Vorname, E-Mail und Passwort sind erforderlich.",
+    "passwordMismatch": "Diese Passwörter stimmen nicht überein.",
+    "photoUploadFailed": "Beim Hochladen deiner Fotos ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+    "avatarUploadFailed": "Beim Hochladen deines Fotos ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+    "requiredPasswordFields": "Beide Felder sind erforderlich.",
+    "resetPasswordDenied": "Hmm, da stimmt etwas nicht. Vielleicht hast du keine Berechtigung, dieses Passwort zurückzusetzen, oder du hast versucht, ein kürzlich verwendetes Passwort erneut zu nutzen.",
+    "resetPasswordSuccess": "Dein Passwort wurde aktualisiert. Zurück zum Kompostieren!",
+    "savePhotosFailed": "Der Eintrag wurde erstellt, aber die Fotos konnten nicht gespeichert werden.",
+    "signUpFailed": "Registrierung fehlgeschlagen",
+    "tooManyListings": "Du hast die maximale Anzahl erlaubter Einträge erreicht. Lösche einen deiner aktuellen drei Einträge, um einen neuen zu erstellen.",
+    "tooManyMessages": "Du hast zu viele Nachrichten gesendet. Bitte versuche es später erneut.",
+    "updateEmailFailed": "Hmm, da stimmt etwas nicht. Prüfe deine E-Mail oder versuche es erneut.",
+    "updateFirstNameFailed": "Entschuldigung, wir konnten deinen Vornamen nicht aktualisieren.",
+    "updateNewsletterFailed": "Entschuldigung, wir konnten deine Newsletter-Einstellung nicht aktualisieren.",
+    "unexpected": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+    "validationSummary": "Bitte behebe {count, plural, one {den obigen Fehler} other {die obigen Fehler}} und versuche es erneut.",
+    "verificationChallenge": "Bitte schließe die Verifizierung ab.",
+    "verificationFailed": "Die Verifizierung ist fehlgeschlagen. Bitte versuche es erneut.",
+    "forgotPasswordSuccess": "Prüfe deinen Posteingang (und Spam) für einen Link zum Zurücksetzen des Passworts, sofern diese E-Mail-Adresse mit einem Peels-Konto verknüpft ist."
   },
   "Index": {
     "title": "Finde ein Zuhause für deine Küchenabfälle, wo auch immer du bist",
     "subtitle": "Peels verbindet die Menschen mit Lebensmittelkratzern mit denen, die komponieren. Es ist ein kostenloses und nicht-kommerzielles Gemeinschaftsprojekt.",
+    "hostAvatarAlt": "Der Avatar eines Peels-Gastgebers",
     "buttons": {
       "browseMap": "Karte durchsuchen",
       "signUp": "Bei Peels anmelden",
@@ -64,11 +162,270 @@
     }
   },
   "Profile": {
-    "addListing": "Angebot hinzufügen"
+    "addListing": "Eintrag hinzufügen",
+    "addAnotherListing": "Weiteren Eintrag hinzufügen",
+    "listingCardAlt": "{type, select, residential {Dein Avatar für diesen Wohneintrag} community {Dein Avatar für diesen Community-Eintrag} business {Dein Avatar für diesen Unternehmenseintrag} other {Dein Avatar für diesen Eintrag}}",
+    "listingCardType": "{type, select, residential {Wohneintrag} community {Community-Eintrag} business {Unternehmenseintrag} other {Eintrag}}",
+    "listingPrompt": "Setze dich, deinen Gemeinschaftsort oder dein Unternehmen auf die Karte",
+    "sections": {
+      "listings": "Einträge",
+      "account": "Konto",
+      "actions": "Aktionen"
+    },
+    "account": {
+      "firstName": "Vorname",
+      "firstNameHint": "Verwende deinen Vornamen oder einen Spitznamen.",
+      "emailSuccess": "Prüfe deine E-Mails für den Bestätigungslink.",
+      "emailHint": "Wir senden einen Bestätigungslink an diese E-Mail.",
+      "newsletterSubscribedHint": "Wir senden dir gelegentliche E-Mail-Updates über Peels.",
+      "newsletterNotSubscribedHint": "Wir senden dir nur notwendige E-Mails zu deinem Konto oder deinen Einträgen."
+    },
+    "actions": {
+      "signOutTitle": "Abmelden",
+      "signOutDescription": "Bis bald!",
+      "exportTitle": "Daten exportieren",
+      "exportDescription": "Erhalte eine Kopie deiner Peels-Daten",
+      "exportDialogTitle": "Demnächst",
+      "exportDialog": "Wir arbeiten noch an dieser Funktion. In der Zwischenzeit kannst du <link>uns kontaktieren</link> und uns bitten, deine Daten manuell zu exportieren.",
+      "deleteTitle": "Konto löschen",
+      "deleteDescription": "Lösche dein Konto{count, plural, =0 {} one {, deinen Eintrag,} other {, deine Einträge,}} und alle deine Daten",
+      "deleteConfirm": "{count, plural, =0 {Ja, mein Konto löschen} one {Ja, mein Konto und meinen Eintrag löschen} other {Ja, mein Konto und meine Einträge löschen}}",
+      "deleteDialog": "Möchtest du dein Konto wirklich löschen?{count, plural, =0 {} one { Dein Eintrag wird ebenfalls gelöscht.} other { Deine Einträge werden ebenfalls gelöscht.}}"
+    }
+  },
+  "Auth": {
+    "complete": {
+      "title": "Du wirst angemeldet...",
+      "body": "Wir bestätigen deinen Link sicher. Du wirst gleich weitergeleitet."
+    },
+    "forgotPassword": {
+      "title": "Passwort vergessen",
+      "sentTitle": "E-Mail gesendet",
+      "body": "Das passiert uns allen. Gib unten deine E-Mail ein, um einen Link zum Zurücksetzen des Passworts zu erhalten."
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "successTitle": "Passwort aktualisiert",
+      "body": "Gib unten dein neues Passwort ein.",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Passwort bestätigen"
+    },
+    "signIn": {
+      "title": "Bei Peels anmelden",
+      "firstTime": "Zum ersten Mal hier? <link>Registrieren</link>",
+      "forgotPassword": "Passwort vergessen?"
+    },
+    "signUp": {
+      "firstName": "Vorname",
+      "newPassword": "Dein neues Passwort",
+      "newsletterOptIn": "Sendet mir gelegentliche E-Mail-Updates über Peels",
+      "errorWithSupport": "{error} Wenn du denkst, dass das nicht stimmen kann, <link>schreib uns eine E-Mail</link>."
+    },
+    "turnstile": {
+      "expired": "Die Verifizierung ist abgelaufen. Bitte schließe sie erneut ab.",
+      "timeout": "Die Sicherheitsprüfung wurde nicht abgeschlossen. Deaktiviere Werbeblocker und versuche es erneut. Wenn es weiterhin fehlschlägt, probiere einen anderen Browser oder ein anderes Netzwerk.",
+      "unsupported": "Dieser Browser kann die Sicherheitsprüfung nicht abschließen. Bitte probiere einen anderen Browser oder ein anderes Netzwerk.",
+      "failed": "Die Sicherheitsverifizierung ist mit Fehler #{code} fehlgeschlagen. Bitte versuche es erneut oder nutze einen anderen Browser."
+    }
+  },
+  "Listings": {
+    "new": {
+      "listingTypeTitle": "Welche Art von Eintrag?",
+      "hostTypeTitle": "Wo nimmst du Essensreste an?",
+      "listingTypeLabel": "Eintragstyp",
+      "hostTypeLabel": "Gastgebertyp",
+      "options": {
+        "host": {
+          "title": "Ich nehme Essensreste an",
+          "description": "Andere können eine Abgabe von Essensresten bei dir zu Hause oder in deinem Gemeinschaftsgarten vereinbaren"
+        },
+        "business": {
+          "title": "Mein Unternehmen spendet Reste",
+          "description": "Andere können Kaffeesatz aus deinem Café, Hopfen aus deiner Brauerei oder Ähnliches abholen"
+        },
+        "residential": {
+          "title": "Bei mir zu Hause",
+          "description": "Ich nehme Reste an einer Wohnadresse an"
+        },
+        "community": {
+          "title": "An einem Gemeinschaftsort",
+          "description": "Ich betreue einen Gemeinschaftsgarten oder etwas Ähnliches"
+        }
+      }
+    },
+    "edit": {
+      "title": "Eintrag bearbeiten",
+      "notFound": "Eintrag nicht gefunden"
+    },
+    "form": {
+      "basics": "Grundlagen",
+      "placeName": "Name des Ortes",
+      "placeNamePlaceholder": "{type, select, business {Name deines Unternehmens} community {Name deiner Community} other {Name des Ortes}}",
+      "yourFirstName": "Dein Vorname",
+      "location": "Standort",
+      "selectCountry": "Land auswählen",
+      "locationPlaceholder": "Deine Straße oder ein Ort in der Nähe",
+      "customLocation": "Benutzerdefinierter Standort",
+      "locationHint": "{type, select, residential {Beginne zu tippen und wähle dann eine der vorgeschlagenen Optionen aus dem Menü.} other {Beginne zu tippen und wähle dann eine der vorgeschlagenen Adressen aus dem Menü.}}",
+      "dragPinHint": "Ziehe die Markierung, um deinen Standort zu verfeinern{obscure, select, true { oder zu verschleiern} other {}}.",
+      "businessAddress": "Adresse deines Unternehmens",
+      "communityAddress": "Adresse deiner Gemeinschaft",
+      "residentialAddress": "Deine Straße oder Nachbarschaft",
+      "donationDetails": "Details zur Spende",
+      "donationDetailsPlaceholder": "Details zu deiner Spende",
+      "donationDetailsHint": "Welche Reste du abgeben möchtest und wie die Abholung funktioniert. Links gehören in den eigenen Abschnitt weiter unten.",
+      "descriptionLabel": "Kurze Beschreibung oder Hinweise",
+      "descriptionPlaceholder": "{type, select, residential {Über deinen Eintrag} community {Über deine Community} business {Über dein Unternehmen} other {Über deinen Eintrag}}",
+      "communityDescriptionHint": "Öffnungszeiten und Kompostiermöglichkeiten. Hebe die akzeptierten Reste und Links für die eigenen Abschnitte weiter unten auf.",
+      "residentialDescriptionHint": "Dein Kompost-Setup und deine allgemeine Verfügbarkeit. Hebe die akzeptierten Reste für den eigenen Abschnitt weiter unten auf.",
+      "compostingDetails": "Kompostierungsdetails",
+      "compostingDetailsHint": "Sei konkret, damit andere genau wissen, was vermieden werden sollte. Gib Elemente einzeln ein, damit sie leichter zu lesen sind.",
+      "acceptedLabel": "Welche Reste nimmst du an?",
+      "rejectedLabel": "Welche Reste nimmst du nicht an?",
+      "addItem": "Element hinzufügen",
+      "addAnotherItem": "Weiteres Element hinzufügen",
+      "acceptedPlaceholder": "Ein Element, das du annimmst (z. B. ‘Obstschalen’)",
+      "acceptedSecondaryPlaceholder": "Ein weiteres Element, das du annimmst",
+      "rejectedPlaceholder": "Ein Element, das du nicht annimmst (z. B. ‘Fleisch’)",
+      "rejectedSecondaryPlaceholder": "Ein weiteres Element, das du nicht annimmst",
+      "media": "Medien",
+      "mediaHint": "Zeige Peels-Mitgliedern optional {subject}.",
+      "mediaResidential": "etwas mehr über deinen Eintrag",
+      "mediaCommunity": "etwas mehr über dein Gemeinschaftsprojekt",
+      "mediaBusiness": "dein Unternehmen",
+      "externalLinks": "Externe Links",
+      "addLink": "Link hinzufügen",
+      "linkPlaceholder": "Deine Website oder Social Media",
+      "visibility": "Sichtbarkeit",
+      "visibilityHint": "Brauchst du eine Pause von Peels? Blende diesen Eintrag vorübergehend von der Karte aus.",
+      "mapVisibility": "Sichtbarkeit auf der Karte",
+      "showOnMap": "Diesen Eintrag auf der Karte anzeigen",
+      "hideFromMap": "Diesen Eintrag von der Karte ausblenden",
+      "adminHint": "Nur für Admins sichtbare Steuerelemente für diesen Eintrag.",
+      "stubSettings": "Stub-Einstellungen",
+      "regularListing": "Dies ist ein regulärer Eintrag, der dir gehört",
+      "stubListing": "Dieser Eintrag ist ein Stub, den andere beanspruchen können",
+      "stubActiveHint": "Dieser Eintrag enthält keine deiner Kontaktinformationen. Andere können ihn als eigenen Eintrag beanspruchen und übernehmen.",
+      "stubInactiveHint": "Dieser Eintrag wird wie jeder andere angezeigt."
+    },
+    "read": {
+      "contact": "{name} kontaktieren",
+      "about": "Über",
+      "donationDetails": "Details zur Spende",
+      "accepted": "Was angenommen wird",
+      "rejected": "Was nicht angenommen wird",
+      "location": "Standort",
+      "residentialLocation": "{name} wohnt in {area}. Frage nach dem genauen Standort, wenn ihr die Abgabe von Essensresten vereinbart.",
+      "nonResidentialLocation": "{name} ist {type} in {area}.",
+      "thisArea": "dieser Gegend",
+      "businessType": "ein Unternehmen",
+      "communityType": "ein Gemeinschaftsort",
+      "signInForPhotos": "<link>Melde dich an</link>, um die Fotos dieses Gastgebers zu sehen.",
+      "ownerNote": "Dies ist dein eigener Eintrag{stub, select, true {, als Stub markiert} other {}}. {visibility, select, true {Sieht gut aus!} other {Du hast ihn von der Karte ausgeblendet, daher kannst im Moment nur du ihn sehen.}}",
+      "stubNote": "Dies ist ein Stub, der vom Peels-Team erstellt wurde. Prüfe die Angaben im Eintrag, bevor du vorbeischaust.",
+      "stubClaim": "Bist du die Eigentümerin oder der Eigentümer? <link>Kontaktiere uns</link>, um diesen Eintrag zu beanspruchen oder Änderungen anzufordern.",
+      "firstTime": "Zum ersten Mal hier? <link>Registrieren</link>",
+      "residentOf": "Bewohner von {area}",
+      "localResident": "Lokale Person",
+      "communityIn": "Gemeinschaft in {area}",
+      "localCommunity": "Lokale Gemeinschaft",
+      "businessIn": "Unternehmen in {area}",
+      "localBusiness": "Lokales Unternehmen",
+      "avatarAlt": "Der Avatar für diesen Eintrag"
+    },
+    "delete": {
+      "confirm": "Ja, Eintrag löschen",
+      "dialog": "Möchtest du deinen Eintrag wirklich löschen? Das kann nicht rückgängig gemacht werden.",
+      "success": "Dein Eintrag wurde gelöscht."
+    },
+    "photos": {
+      "alt": "Foto {number}",
+      "dropHere": "Fotos hier ablegen",
+      "tooMany": "Du kannst höchstens {max} Fotos hochladen",
+      "tooLargeOne": "Dein Foto ist zu groß. Die maximale Dateigröße beträgt {max} MB.",
+      "tooLargeMany": "Ein oder mehrere Fotos sind zu groß. Die maximale Dateigröße beträgt {max} MB pro Foto."
+    }
+  },
+  "Upload": {
+    "avatarAlt": "Dein Avatar",
+    "avatarHint": "Lade ein Foto hoch, damit Mitglieder wissen, wem sie schreiben."
+  },
+  "Legal": {
+    "agreement": "Ich habe die Peels-<terms>Nutzungsbedingungen</terms> und die <privacy>Datenschutzerklärung</privacy> gelesen und stimme ihnen zu",
+    "privacy": "Datenschutz",
+    "terms": "Bedingungen"
+  },
+  "Chat": {
+    "send": "Senden",
+    "placeholder": "Nachricht{name, select, empty {} other { an {name}}} senden...",
+    "empty": "Noch keine Nachrichten",
+    "threadsTitle": "Chats",
+    "noChats": "Noch keine Chats",
+    "youReachedOut": "Du hast {name} kontaktiert",
+    "personReachedOut": "{name} hat dich kontaktiert",
+    "personReachedOutAbout": "{name} hat dich wegen {listing} kontaktiert",
+    "drawerTitle": "Chat-Schublade",
+    "drawerDescription": "Unterhaltung zu diesem Eintrag.",
+    "report": "Melden oder blockieren",
+    "reportTitle": "Wir kümmern uns darum",
+    "reportBody": "Es tut uns leid, dass du Probleme mit {name} hast. Bitte <link>kontaktiere uns</link>, um das Problem zu melden oder diese Person daran zu hindern, dich weiter zu kontaktieren."
+  },
+  "Map": {
+    "drawerTitle": "Eintragsdetails",
+    "drawerDescription": "Details zum ausgewählten Eintrag.",
+    "emptyTitle": "Nichts gefunden",
+    "emptyBody": "Der Eintrag, den du suchst, existiert nicht oder wurde entfernt. Tut uns leid.",
+    "searchPlaceholder": "Suchen",
+    "searchError": "Etwas ist schiefgelaufen. Erneut versuchen?",
+    "searchNoResults": "Keine Ergebnisse. Tippe weiter oder verfeinere deine Suche",
+    "didYouKnow": "Wusstest du schon?",
+    "steps": {
+      "find": {
+        "title": "Gastgeber finden",
+        "description": "Wähle eine Markierung auf der Karte aus."
+      },
+      "contact": {
+        "title": "Kontakt aufnehmen",
+        "description": "Vereinbare eine Abgabe per Chat."
+      },
+      "dropOff": {
+        "title": "Abgeben",
+        "description": "Lerne deine Nachbarn kennen!"
+      }
+    }
+  },
+  "Newsletter": {
+    "title": "Newsletter",
+    "inboxTitle": "Direkt in dein Postfach",
+    "inboxDescription": "Aktiviere den Empfang künftiger Newsletter-Ausgaben per E-Mail.",
+    "rss": "Oder abonniere den <link>RSS-Feed</link>.",
+    "latestIssue": "Neueste Ausgabe",
+    "pastIssues": "Frühere Ausgaben",
+    "issueSubtitle": "Ausgabe #{number} · Veröffentlicht am {date}",
+    "parent": "Newsletter",
+    "stampAlt": "Eine Briefmarke",
+    "aside": {
+      "title": "Über diesen Newsletter",
+      "bodyGuest": "Dies ist die Webversion des E-Mail-Newsletters für Abonnenten. <link>Tritt Peels bei</link>, um künftige Ausgaben zu erhalten.",
+      "bodySubscribed": "Dies ist die Webversion des E-Mail-Newsletters für Abonnenten. Teile ihn gerne weiter.",
+      "bodyMember": "Dies ist die Webversion des E-Mail-Newsletters für Abonnenten. <link>Bearbeite deine Einstellungen</link>, um künftige Ausgaben zu erhalten."
+    },
+    "callout": {
+      "guestTitle": "Tritt Peels bei, um den Newsletter zu erhalten",
+      "guestBody": "Du musst Mitglied bei Peels sein, um den Newsletter per E-Mail zu erhalten. Die Registrierung ist kostenlos und dauert nur ein paar Sekunden.",
+      "alreadySubscribedTitle": "Du bist bereits abonniert",
+      "alreadySubscribedBody": "Die nächste Ausgabe sollte in deinem E-Mail-Postfach erscheinen. Teile diese Seite in der Zwischenzeit gerne mit einer Freundin oder einem Freund!",
+      "notSubscribedTitle": "Du bist nicht abonniert",
+      "notSubscribedBody": "Ändere deine Newsletter-Einstellung auf deiner Profilseite.",
+      "editPreference": "Newsletter-Einstellung bearbeiten"
+    }
+  },
+  "NotFound": {
+    "body": "Entschuldigung, wir konnten die gesuchte Seite nicht finden."
   },
   "Support": {
     "title": "Support",
-    "subtitle": "We periodically update this page with answers to common questions. Feel free to <email>email us</email> for help with anything else.",
+    "subtitle": "Wir aktualisieren diese Seite regelmäßig mit Antworten auf häufige Fragen. Für alles Weitere kannst du uns gerne <link>kontaktieren</link>.",
     "peelsFaq": {
       "title": "About Peels",
       "whosBehind": {

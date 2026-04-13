@@ -7,44 +7,42 @@ import Form from "@/components/Form";
 import FormHeader from "@/components/FormHeader";
 import RadioGroup from "@/components/RadioGroup";
 import Radio from "@/components/Radio";
+import { useTranslations } from "next-intl";
 
 // Not possible because this page is marked as "use client". Nest children in client components and then add the metadata
 // export const metadata = {
 //     title: 'Add Listing', // TODO: Generate metadata to include the type of listing, see edit listing page
 // }
 
-const listingTypes = [
-  {
-    key: "host",
-    title: "I accept food scraps",
-    description:
-      "Others can arrange food scraps drop-off to your home or your community garden",
-  },
-  {
-    key: "business",
-    title: "My business donates scraps",
-    description:
-      "Others can pick up spent coffee from your cafe, hops from your brewery, or similar",
-  },
-];
-
-const hostTypes = [
-  {
-    key: "residential",
-    title: "At my home",
-    description: "I accept scraps at a residential address",
-  },
-  {
-    key: "community",
-    title: "At a community place",
-    description: "I manage a community garden or similar",
-  },
-];
-
 function AddListingContent() {
+  const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
+  const listingTypes = [
+    {
+      key: "host",
+      title: t("Listings.new.options.host.title"),
+      description: t("Listings.new.options.host.description"),
+    },
+    {
+      key: "business",
+      title: t("Listings.new.options.business.title"),
+      description: t("Listings.new.options.business.description"),
+    },
+  ];
+  const hostTypes = [
+    {
+      key: "residential",
+      title: t("Listings.new.options.residential.title"),
+      description: t("Listings.new.options.residential.description"),
+    },
+    {
+      key: "community",
+      title: t("Listings.new.options.community.title"),
+      description: t("Listings.new.options.community.description"),
+    },
+  ];
 
   const [selectedListingType, setSelectedListingType] = useState(null);
   const [selectedHostType, setSelectedHostType] = useState(null);
@@ -86,9 +84,9 @@ function AddListingContent() {
     <>
       <FormHeader button="back">
         {type === "host" ? (
-          <h1>Where will you accept food scraps?</h1>
+          <h1>{t("Listings.new.hostTypeTitle")}</h1>
         ) : (
-          <h1>What kind of listing?</h1>
+          <h1>{t("Listings.new.listingTypeTitle")}</h1>
         )}
       </FormHeader>
 
@@ -98,7 +96,7 @@ function AddListingContent() {
             by="title"
             value={selectedHostType}
             onChange={setSelectedHostType}
-            aria-label="Host type"
+            aria-label={t("Listings.new.hostTypeLabel")}
           >
             {hostTypes.map((option) => (
               <Radio
@@ -114,7 +112,7 @@ function AddListingContent() {
             by="title"
             value={selectedListingType}
             onChange={setSelectedListingType}
-            aria-label="Listing type"
+            aria-label={t("Listings.new.listingTypeLabel")}
           >
             {listingTypes.map((option) => (
               <Radio
@@ -131,7 +129,7 @@ function AddListingContent() {
           width="full"
           disabled={type === "host" ? !selectedHostType : !selectedListingType}
         >
-          Continue
+          {t("Actions.continue")}
         </SubmitButton>
       </Form>
     </>
@@ -140,10 +138,16 @@ function AddListingContent() {
 
 function AddListingPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingFallback />}>
       <AddListingContent />
     </Suspense>
   );
+}
+
+function LoadingFallback() {
+  const t = useTranslations("Common");
+
+  return <div>{t("loading")}</div>;
 }
 
 export default AddListingPage;

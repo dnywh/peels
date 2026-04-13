@@ -6,6 +6,7 @@ import SubmitButton from "@/components/SubmitButton";
 
 import { styled } from "@pigment-css/react";
 import { useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 const DialogContent = styled(Dialog.Content)(({ theme }) => ({
   background: "white",
@@ -66,14 +67,17 @@ function ButtonToDialog({
   children,
   confirmButtonText,
   confirmLoadingText,
-  cancelButtonText = "No, cancel",
+  cancelButtonText,
   action,
   onSubmit,
   // ...props // Setting this on Button (for size etc) seems to stop the dialog from opening
 }: ButtonToDialogProps) {
+  const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resolvedConfirmLoadingText =
-    confirmLoadingText || (variant === "danger" ? "Deleting..." : "Working...");
+    confirmLoadingText ||
+    (variant === "danger" ? t("Status.deleting") : t("Status.working"));
+  const resolvedCancelButtonText = cancelButtonText || t("Actions.noCancel");
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> | undefined =
     onSubmit
@@ -122,7 +126,7 @@ function ButtonToDialog({
           )}
           <Dialog.Close asChild>
             <Button variant="secondary" width="contained">
-              {cancelButtonText}
+              {resolvedCancelButtonText}
             </Button>
           </Dialog.Close>
         </Buttons>

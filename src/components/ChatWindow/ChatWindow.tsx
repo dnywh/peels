@@ -12,6 +12,7 @@ import { formatWeekday } from "@/utils/dateUtils";
 
 import { styled } from "@pigment-css/react";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
+import { useTranslations } from "next-intl";
 
 type ChatWindowProps = {
   isDrawer?: boolean;
@@ -100,6 +101,7 @@ const ChatWindow = memo(function ChatWindow({
   existingThread = null,
   isDemo = false,
 }: ChatWindowProps) {
+  const t = useTranslations();
   // const router = useRouter();
   // Move Supabase client creation outside of render
   const supabase = useMemo(() => (isDemo ? null : createClient()), [isDemo]);
@@ -119,9 +121,7 @@ const ChatWindow = memo(function ChatWindow({
 
     // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
     if (errorMessage.includes("violates row-level security policy")) {
-      setMessageSendError(
-        "You’ve sent too many messages. Please try again later."
-      );
+      setMessageSendError(t("Errors.tooManyMessages"));
     } else {
       setMessageSendError(errorMessage);
     }
@@ -361,7 +361,7 @@ const ChatWindow = memo(function ChatWindow({
       <StyledMessagesContainer>
         {messages.length === 0 && (
           <EmptyState>
-            <p>No messages yet</p>
+            <p>{t("Chat.empty")}</p>
           </EmptyState>
         )}
         {messages.length > 0 &&
@@ -385,11 +385,16 @@ const ChatWindow = memo(function ChatWindow({
                     {showInitiationHeader && (
                       <p>
                         {isDemo || message.sender_id === user?.id
-                          ? `You reached out to ${otherPersonName}`
+                          ? t("Chat.youReachedOut", { name: otherPersonName })
                           : listing?.owner_has_multiple_non_residential_listings &&
                               listing?.name
-                            ? `${otherPersonName} reached out to you about ${listing.name}`
-                            : `${otherPersonName} reached out to you`}
+                            ? t("Chat.personReachedOutAbout", {
+                                name: otherPersonName,
+                                listing: listing.name,
+                              })
+                            : t("Chat.personReachedOut", {
+                                name: otherPersonName,
+                              })}
                       </p>
                     )}
                   </DayHeader>

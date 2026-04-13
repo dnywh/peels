@@ -6,12 +6,110 @@
     "about": "About"
   },
   "Actions": {
+    "add": "Add",
+    "addListing": "Add listing",
+    "addMorePhotos": "Add more photos",
+    "addPhotos": "Add photos",
+    "backToPeels": "Back to Peels",
+    "cancel": "Cancel",
+    "close": "Close",
+    "continue": "Continue",
+    "delete": "Delete",
+    "deleteListing": "Delete listing",
+    "done": "Done",
+    "edit": "Edit",
+    "emailLink": "Email me the link",
+    "exportData": "Export data",
+    "home": "Home",
+    "joinPeels": "Join Peels",
+    "noCancel": "No, cancel",
+    "openInAppleMaps": "Open in Apple Maps",
+    "openInGoogleMaps": "Open in Google Maps",
+    "replace": "Replace",
+    "resetPassword": "Reset password",
+    "saveChanges": "Save changes",
+    "seeNearbyListings": "See nearby listings",
+    "sendLink": "Send the link",
+    "signIn": "Sign in",
+    "signInToContact": "Sign in to contact",
+    "signOut": "Sign out",
     "signUp": "Sign up",
-    "signIn": "Sign in"
+    "update": "Update",
+    "viewFullListing": "View full listing",
+    "viewListing": "View listing"
+  },
+  "Common": {
+    "account": "Account",
+    "actions": "Actions",
+    "admin": "Admin",
+    "email": "Email",
+    "hidden": "Hidden",
+    "links": "Links",
+    "listings": "Listings",
+    "loading": "Loading...",
+    "newsletter": "Newsletter",
+    "notSubscribed": "Not subscribed",
+    "optional": "optional",
+    "password": "Password",
+    "photos": "Photos",
+    "source": "Source",
+    "stub": "Stub",
+    "subscribed": "Subscribed"
+  },
+  "Status": {
+    "adding": "Adding...",
+    "copying": "Copying...",
+    "deleting": "Deleting...",
+    "emailing": "Emailing...",
+    "resetting": "Resetting...",
+    "saving": "Saving...",
+    "sending": "Sending...",
+    "signingIn": "Signing in...",
+    "signingOut": "Signing out...",
+    "signingUp": "Signing up...",
+    "updating": "Updating...",
+    "uploading": "Uploading...",
+    "verifying": "Verifying...",
+    "working": "Working..."
+  },
+  "Errors": {
+    "alreadyYourEmail": "This is already your email address.",
+    "emptyListingName": "{type, select, business {You can't have an empty business name.} community {You can't have an empty community name.} other {You can't have an empty listing name.}}",
+    "emptyName": "You can’t have an empty name.",
+    "accountDeleted": "Your account has been deleted. Sorry to see you go.",
+    "accountExists": "An account with this email already exists. Please sign in instead.",
+    "deleteAccountFailed": "Error whilst deleting account",
+    "duplicateListing": "An identical listing already exists.",
+    "emailRequired": "Email is required",
+    "failedDeleteListing": "Failed to delete listing.",
+    "failedDeletePhoto": "Failed to delete photo. Please try again.",
+    "generic": "Hmm, something’s not right. Mind trying again?",
+    "genericLater": "Something went wrong. Please try again later.",
+    "missingLocation": "Please select a location.",
+    "missingSignUpFields": "A first name, email, and password are required.",
+    "passwordMismatch": "Those passwords don’t match.",
+    "photoUploadFailed": "There was an error uploading your photos. Please try again.",
+    "avatarUploadFailed": "There was an error uploading your photo. Please try again.",
+    "requiredPasswordFields": "Both those fields are required.",
+    "resetPasswordDenied": "Hmm, something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
+    "resetPasswordSuccess": "Your password has been updated. Let’s get back to composting!",
+    "savePhotosFailed": "Created listing but couldn’t save photos.",
+    "signUpFailed": "Sign up failed",
+    "tooManyListings": "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
+    "tooManyMessages": "You’ve sent too many messages. Please try again later.",
+    "updateEmailFailed": "Hmm, something’s not right. Check your email or try again.",
+    "updateFirstNameFailed": "Sorry, we couldn’t update your first name.",
+    "updateNewsletterFailed": "Sorry, we couldn’t update your newsletter preference.",
+    "unexpected": "An unexpected error occurred. Please try again later.",
+    "validationSummary": "Please fix the above error{count, plural, one {} other {s}} and then try again.",
+    "verificationChallenge": "Please complete the verification challenge.",
+    "verificationFailed": "Verification failed. Please try again.",
+    "forgotPasswordSuccess": "Check your inbox (and spam) for a password reset link, assuming that email address is linked to a Peels account."
   },
   "Index": {
     "title": "Find a home for your food scraps, wherever you are",
     "subtitle": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
+    "hostAvatarAlt": "The avatar for a Peels host",
     "buttons": {
       "browseMap": "Browse the map",
       "signUp": "Sign up to Peels",
@@ -64,7 +162,266 @@
     }
   },
   "Profile": {
-    "addListing": "Add a listing"
+    "addListing": "Add a listing",
+    "addAnotherListing": "Add another listing",
+    "listingCardAlt": "{type, select, residential {Your avatar for this residential listing} community {Your avatar for this community listing} business {Your avatar for this business listing} other {Your avatar for this listing}}",
+    "listingCardType": "{type, select, residential {Residential listing} community {Community listing} business {Business listing} other {Listing}}",
+    "listingPrompt": "Put yourself, your community spot, or your business on the map",
+    "sections": {
+      "listings": "Listings",
+      "account": "Account",
+      "actions": "Actions"
+    },
+    "account": {
+      "firstName": "First name",
+      "firstNameHint": "Use your first name or a nickname.",
+      "emailSuccess": "Check your email for the verification link.",
+      "emailHint": "We’ll send a verification link to this email.",
+      "newsletterSubscribedHint": "We’ll send you occasional email updates about Peels.",
+      "newsletterNotSubscribedHint": "We’ll only send you necessary account or listing-related emails."
+    },
+    "actions": {
+      "signOutTitle": "Sign out",
+      "signOutDescription": "Goodbye for now!",
+      "exportTitle": "Export data",
+      "exportDescription": "Get a copy of your Peels data",
+      "exportDialogTitle": "Coming soon",
+      "exportDialog": "We’re still working on this feature. In the meantime, <link>reach out</link> and ask us to export your data manually.",
+      "deleteTitle": "Delete account",
+      "deleteDescription": "Delete your account{count, plural, =0 {} one {, listing,} other {, listings,}} and all your data",
+      "deleteConfirm": "{count, plural, =0 {Yes, delete my account} one {Yes, delete my account and listing} other {Yes, delete my account and listings}}",
+      "deleteDialog": "Are you sure you want to delete your account?{count, plural, =0 {} one { Your listing will also be deleted.} other { Your listings will also be deleted.}}"
+    }
+  },
+  "Auth": {
+    "complete": {
+      "title": "Signing you in...",
+      "body": "We’re securely confirming your link. You’ll be redirected in a moment."
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "sentTitle": "Email sent",
+      "body": "It happens to all of us. Enter your email below to receive a password reset link."
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "successTitle": "Password updated",
+      "body": "Please enter your new password below.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password"
+    },
+    "signIn": {
+      "title": "Sign in to Peels",
+      "firstTime": "First time here? <link>Sign up</link>",
+      "forgotPassword": "Forgot password?"
+    },
+    "signUp": {
+      "firstName": "First name",
+      "newPassword": "Your new password",
+      "newsletterOptIn": "Send me occasional email updates about Peels",
+      "errorWithSupport": "{error} If you think this might be wrong, please <link>email us</link>."
+    },
+    "turnstile": {
+      "expired": "Verification expired. Please complete it again.",
+      "timeout": "Security check didn’t complete. Try disabling ad blockers and then try again. If it still fails, try a different browser or network.",
+      "unsupported": "This browser can’t complete the security check. Please try a different browser or network.",
+      "failed": "Security verification failed with error #{code}. Please try again or use a different browser."
+    }
+  },
+  "Listings": {
+    "new": {
+      "listingTypeTitle": "What kind of listing?",
+      "hostTypeTitle": "Where will you accept food scraps?",
+      "listingTypeLabel": "Listing type",
+      "hostTypeLabel": "Host type",
+      "options": {
+        "host": {
+          "title": "I accept food scraps",
+          "description": "Others can arrange food scraps drop-off to your home or your community garden"
+        },
+        "business": {
+          "title": "My business donates scraps",
+          "description": "Others can pick up spent coffee from your cafe, hops from your brewery, or similar"
+        },
+        "residential": {
+          "title": "At my home",
+          "description": "I accept scraps at a residential address"
+        },
+        "community": {
+          "title": "At a community place",
+          "description": "I manage a community garden or similar"
+        }
+      }
+    },
+    "edit": {
+      "title": "Edit listing",
+      "notFound": "Listing not found"
+    },
+    "form": {
+      "basics": "Basics",
+      "placeName": "Place name",
+      "placeNamePlaceholder": "{type, select, business {Your business’ name} community {Your community’s name} other {Your place name}}",
+      "yourFirstName": "Your first name",
+      "location": "Location",
+      "selectCountry": "Select a country",
+      "locationPlaceholder": "Your street name or nearby",
+      "customLocation": "Custom location",
+      "locationHint": "{type, select, residential {Start typing, then select one of the suggested options from the dropdown.} other {Start typing, then select one of the suggested addresses from the dropdown.}}",
+      "dragPinHint": "Drag the pin to refine{obscure, select, true { or obscure} other {}} your location.",
+      "businessAddress": "Your business’ address",
+      "communityAddress": "Your community’s address",
+      "residentialAddress": "Your street or neighbourhood",
+      "donationDetails": "Donation details",
+      "donationDetailsPlaceholder": "Your donation details",
+      "donationDetailsHint": "What kind of scraps you have to give away and the collection details. Save any links for the dedicated section, below.",
+      "descriptionLabel": "Short description or instructions",
+      "descriptionPlaceholder": "{type, select, residential {About your listing} community {About your community} business {About your business} other {About your listing}}",
+      "communityDescriptionHint": "Opening hours and composting facilities. Save the scraps you accept and any links for the dedicated sections, below.",
+      "residentialDescriptionHint": "Your composting set up and general availability. Save the scraps you accept for the dedicated section, below.",
+      "compostingDetails": "Composting details",
+      "compostingDetailsHint": "Be specific so people know exactly what should be avoided. Enter items separately so it’s easier to read.",
+      "acceptedLabel": "What scraps do you accept?",
+      "rejectedLabel": "What scraps do you not accept?",
+      "addItem": "Add an item",
+      "addAnotherItem": "Add another item",
+      "acceptedPlaceholder": "An item you accept (e.g. ‘fruit rinds’)",
+      "acceptedSecondaryPlaceholder": "Another item you accept",
+      "rejectedPlaceholder": "An item you don’t accept (e.g. ‘meat’)",
+      "rejectedSecondaryPlaceholder": "Another item you don’t accept",
+      "media": "Media",
+      "mediaHint": "Optionally show {subject} to Peels members.",
+      "mediaResidential": "a bit more about your listing",
+      "mediaCommunity": "a bit more about your community project",
+      "mediaBusiness": "off your business",
+      "externalLinks": "External links",
+      "addLink": "Add link",
+      "linkPlaceholder": "Your website or social media",
+      "visibility": "Visibility",
+      "visibilityHint": "Need a break from Peels? Temporarily hide this listing from the map.",
+      "mapVisibility": "Map visibility",
+      "showOnMap": "Show this listing on the map",
+      "hideFromMap": "Hide this listing from the map",
+      "adminHint": "Admin-only controls for this listing.",
+      "stubSettings": "Stub settings",
+      "regularListing": "This is a regular listing owned by you",
+      "stubListing": "This listing is a stub that others can claim",
+      "stubActiveHint": "This listing will not contain your contact information. Others can claim it as their own and take it over.",
+      "stubInactiveHint": "This listing will be presented just like any other."
+    },
+    "read": {
+      "contact": "Contact {name}",
+      "about": "About",
+      "donationDetails": "Donation details",
+      "accepted": "What’s accepted",
+      "rejected": "What’s not",
+      "location": "Location",
+      "residentialLocation": "{name} is a resident of {area}. Ask them for their exact location when you arrange a food scrap drop-off.",
+      "nonResidentialLocation": "{name} is {type} located in {area}.",
+      "thisArea": "this area",
+      "businessType": "a business",
+      "communityType": "a community spot",
+      "signInForPhotos": "<link>Sign in</link> to see this host’s photos.",
+      "ownerNote": "This is your own listing{stub, select, true {, marked as a stub} other {}}. {visibility, select, true {Lookin’ good!} other {You’ve hidden it from the map, so only you can see this right now.}}",
+      "stubNote": "This is a stub created by the Peels team. Double-check the listing information before visiting.",
+      "stubClaim": "Are you the owner? <link>Reach out</link> to claim this listing or to request changes.",
+      "firstTime": "First time here? <link>Sign up</link>",
+      "residentOf": "Resident of {area}",
+      "localResident": "Local resident",
+      "communityIn": "Community in {area}",
+      "localCommunity": "Local community",
+      "businessIn": "Business in {area}",
+      "localBusiness": "Local business",
+      "avatarAlt": "The avatar for this listing"
+    },
+    "delete": {
+      "confirm": "Yes, delete listing",
+      "dialog": "Are you sure you want to delete your listing? This is irreversible.",
+      "success": "Your listing has been deleted."
+    },
+    "photos": {
+      "alt": "Photo {number}",
+      "dropHere": "Drop photos here",
+      "tooMany": "You can only upload up to {max} photos",
+      "tooLargeOne": "Your photo is too large. The maximum file size is {max}MB.",
+      "tooLargeMany": "One or more of your photos are too large. The maximum file size is {max}MB per photo."
+    }
+  },
+  "Upload": {
+    "avatarAlt": "Your avatar",
+    "avatarHint": "Consider uploading a photo so members know who they’re messaging."
+  },
+  "Legal": {
+    "agreement": "I have read and agree to the Peels <terms>terms of use</terms> and <privacy>privacy policy</privacy>",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "Chat": {
+    "send": "Send",
+    "placeholder": "Send a message{name, select, empty {} other { to {name}}}...",
+    "empty": "No messages yet",
+    "threadsTitle": "Chats",
+    "noChats": "No chats yet",
+    "youReachedOut": "You reached out to {name}",
+    "personReachedOut": "{name} reached out to you",
+    "personReachedOutAbout": "{name} reached out to you about {listing}",
+    "drawerTitle": "Chat drawer",
+    "drawerDescription": "Conversation for this listing.",
+    "report": "Report or block",
+    "reportTitle": "Let’s get this sorted",
+    "reportBody": "Sorry to hear you’re having trouble with {name}. Please <link>contact us</link> to report the issue or to block them from contacting you any more."
+  },
+  "Map": {
+    "drawerTitle": "Listing details",
+    "drawerDescription": "Selected listing details.",
+    "emptyTitle": "Coming up empty",
+    "emptyBody": "The listing you’re looking for doesn’t exist or has been removed. Sorry to disappoint.",
+    "searchPlaceholder": "Search",
+    "searchError": "Something went wrong. Try again?",
+    "searchNoResults": "No results. Keep typing or refine your search",
+    "didYouKnow": "Did you know?",
+    "steps": {
+      "find": {
+        "title": "Find a host",
+        "description": "Select a marker on the map."
+      },
+      "contact": {
+        "title": "Contact",
+        "description": "Arrange a drop-off via chat."
+      },
+      "dropOff": {
+        "title": "Drop-off",
+        "description": "Meet your neighbours!"
+      }
+    }
+  },
+  "Newsletter": {
+    "title": "Newsletter",
+    "inboxTitle": "Get these in your inbox",
+    "inboxDescription": "Opt-in to receive future issues of the newsletter via email.",
+    "rss": "Or subscribe to the <link>RSS feed</link>.",
+    "latestIssue": "Latest issue",
+    "pastIssues": "Past issues",
+    "issueSubtitle": "Issue #{number} · Published {date}",
+    "parent": "Newsletter",
+    "stampAlt": "A postage stamp",
+    "aside": {
+      "title": "About this newsletter",
+      "bodyGuest": "This is the web version of the email newsletter sent out to subscribers. <link>Join Peels</link> to receive future issues.",
+      "bodySubscribed": "This is the web version of the email newsletter sent out to subscribers. Feel free to share it far and wide.",
+      "bodyMember": "This is the web version of the email newsletter sent out to subscribers. <link>Edit your preferences</link> to receive future issues."
+    },
+    "callout": {
+      "guestTitle": "Join Peels to get the newsletter",
+      "guestBody": "You need to be a member of Peels to get the newsletter via email. Signing up is free and only takes a few seconds.",
+      "alreadySubscribedTitle": "You’re already subscribed",
+      "alreadySubscribedBody": "You should see the next issue appear in your email inbox. Feel free to share this page with a friend in the meantime!",
+      "notSubscribedTitle": "You’re not subscribed",
+      "notSubscribedBody": "Change your newsletter preference on your Profile page.",
+      "editPreference": "Edit newsletter preference"
+    }
+  },
+  "NotFound": {
+    "body": "Sorry, we couldn’t find the page you were looking for."
   },
   "Support": {
     "title": "Support",

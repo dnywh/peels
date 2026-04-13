@@ -4,12 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
 import { facts } from "@/data/facts";
-
-const steps = [
-  { title: "Find a host", description: "Select a marker on the map." },
-  { title: "Contact", description: "Arrange a drop-off via chat." },
-  { title: "Drop-off", description: "Meet your neighbours!" },
-];
+import { useTranslations } from "next-intl";
 const sidebarWidth = "clamp(20rem, 30vw, 30rem);";
 
 const StyledSidebar = styled("div")(({ theme }) => ({
@@ -119,7 +114,22 @@ const StepList = styled("ol")(({ theme }) => ({
 }));
 
 export default function MapSidebar({ user, covered }) {
+  const t = useTranslations();
   const [randomFact, setRandomFact] = useState(null);
+  const steps = [
+    {
+      title: t("Map.steps.find.title"),
+      description: t("Map.steps.find.description"),
+    },
+    {
+      title: t("Map.steps.contact.title"),
+      description: t("Map.steps.contact.description"),
+    },
+    {
+      title: t("Map.steps.dropOff.title"),
+      description: t("Map.steps.dropOff.description"),
+    },
+  ];
 
   useEffect(() => {
     // Only generate a random fact if there is NO selected listing, not when one is opened
@@ -139,13 +149,13 @@ export default function MapSidebar({ user, covered }) {
         // If user has sent >0 messages, show a fun composting fact
         // Otherwise show the fundamentals (1, 2, 3) of Peels
         <Fact>
-          <h3>Did you know?</h3>
+          <h3>{t("Map.didYouKnow")}</h3>
           <p>{randomFact.fact}</p>
           {randomFact.source && (
             <p>
               <small>
                 <Link href={randomFact.source} target="_blank">
-                  Source
+                  {t("Common.source")}
                 </Link>
               </small>
             </p>

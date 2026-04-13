@@ -27,6 +27,7 @@ import {
   getListingDisplayType,
 } from "@/utils/listingUtils";
 import { useDeviceContext } from "@/hooks/useDeviceContext";
+import { useTranslations } from "next-intl";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 const pagePadding = "24px";
@@ -257,6 +258,7 @@ export default function MapPageClient({
   initialListingSlug,
   initialListing,
 }) {
+  const t = useTranslations();
   const mapRef = useRef(null);
   const searchInputRef = useRef(null);
   const drawerContentRef = useRef(null);
@@ -392,14 +394,17 @@ export default function MapPageClient({
         .single();
 
       if (error) {
-        setSelectedListing({ error: true, message: "Listing not found" });
+        setSelectedListing({
+          error: true,
+          message: t("Listings.edit.notFound"),
+        });
         return;
       }
 
       setSelectedListing(data);
     } catch (err) {
       console.warn("loadListingBySlug failed:", err);
-      setSelectedListing({ error: true, message: "Listing not found" });
+      setSelectedListing({ error: true, message: t("Listings.edit.notFound") });
     }
   };
 
@@ -456,7 +461,10 @@ export default function MapPageClient({
         .single();
 
       if (error) {
-        setSelectedListing({ error: true, message: "Listing not found" });
+        setSelectedListing({
+          error: true,
+          message: t("Listings.edit.notFound"),
+        });
         setIsDrawerOpen(true);
         setSnap(snapPoints[0]);
         return;
@@ -476,7 +484,7 @@ export default function MapPageClient({
       router.push(`/map?listing=${data.slug}`, { scroll: false });
     } catch (err) {
       console.warn("handleMarkerClick failed:", err);
-      setSelectedListing({ error: true, message: "Listing not found" });
+      setSelectedListing({ error: true, message: t("Listings.edit.notFound") });
       setIsDrawerOpen(true);
       setSnap(snapPoints[0]);
     }
@@ -682,9 +690,9 @@ export default function MapPageClient({
               }}
             >
               <VisuallyHidden.Root>
-                <Drawer.Title>Nested chat drawer</Drawer.Title>
+                <Drawer.Title>{t("Map.drawerTitle")}</Drawer.Title>
                 <Drawer.Description>
-                  Test description for aria.
+                  {t("Map.drawerDescription")}
                 </Drawer.Description>
               </VisuallyHidden.Root>
 
@@ -742,14 +750,11 @@ export default function MapPageClient({
                 {selectedListing?.error ? (
                   <NoListingFound>
                     <header>
-                      <h2>Coming up empty</h2>
-                      <p>
-                        The listing you’re looking for doesn’t exist or has been
-                        removed. Sorry to disappoint.
-                      </p>
+                      <h2>{t("Map.emptyTitle")}</h2>
+                      <p>{t("Map.emptyBody")}</p>
                     </header>
                     <Button variant="secondary" onClick={handleCloseListing}>
-                      Close
+                      {t("Actions.close")}
                     </Button>
                   </NoListingFound>
                 ) : (

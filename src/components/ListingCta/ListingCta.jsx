@@ -4,6 +4,7 @@ import EncodedEmailLink from "@/components/EncodedEmailLink";
 import Button from "@/components/Button";
 import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const StyledListingCta = styled("aside")(({ theme }) => ({
   backgroundColor: theme.colors.background.slight,
@@ -34,6 +35,8 @@ const Text = styled("div")(({ theme }) => ({
 }));
 
 function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
+  const t = useTranslations();
+
   if (viewer === "owner") {
     return (
       <StyledListingCta>
@@ -42,13 +45,13 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
           width="full"
           href={`/profile/listings/${slug}`}
         >
-          Edit listing
+          {t("Listings.edit.title")}
         </Button>
         <p>
-          This is your own listing{isStub && ", marked as a stub"}.{" "}
-          {visibility
-            ? "Lookin’ good!"
-            : "You’ve hidden it from the map, so only you can see this right now."}
+          {t("Listings.read.ownerNote", {
+            stub: isStub ? "true" : "false",
+            visibility: visibility ? "true" : "false",
+          })}
         </p>
       </StyledListingCta>
     );
@@ -58,16 +61,15 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
       <StyledListingCta>
         <PeelsLogo color="quaternary" />
         <Text>
+          <p>{t("Listings.read.stubNote")}</p>
           <p>
-            This is a stub created by the Peels team. Double-check the listing
-            information before visiting.
-          </p>
-          <p>
-            Are you the owner?{" "}
-            <EncodedEmailLink address={siteConfig.encodedEmail.support}>
-              Reach out
-            </EncodedEmailLink>{" "}
-            to claim this listing or to request changes.
+            {t.rich("Listings.read.stubClaim", {
+              link: (chunks) => (
+                <EncodedEmailLink address={siteConfig.encodedEmail.support}>
+                  {chunks}
+                </EncodedEmailLink>
+              ),
+            })}
           </p>
         </Text>
       </StyledListingCta>
@@ -81,10 +83,12 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
         width="full"
         href={`/sign-in?redirect_to=/listings/${slug}`}
       >
-        Sign in to contact
+        {t("Actions.signInToContact")}
       </Button>
       <p>
-        First time here? <StrongLink href="/sign-up">Sign up</StrongLink>
+        {t.rich("Listings.read.firstTime", {
+          link: (chunks) => <StrongLink href="/sign-up">{chunks}</StrongLink>,
+        })}
       </p>
     </StyledListingCta>
   );

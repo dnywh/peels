@@ -1,16 +1,33 @@
 "use client";
 import { useId, useRef } from "react";
+import type {
+  ChangeEvent,
+  HTMLInputTypeAttribute,
+  KeyboardEvent,
+  ReactNode,
+} from "react";
 
-import Form from "@/components/Form";
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Input from "@/components/Input";
-import SubmitButton from "@/components/SubmitButton";
 import Button from "@/components/Button";
-import Textarea from "@/components/Textarea";
 
-import { styled } from "@pigment-css/react";
+type MultiInputProps = {
+  label: ReactNode;
+  placeholder?: string;
+  secondaryPlaceholder?: string;
+  items: string[];
+  minRequired?: number;
+  handleItemChange: (index: number, value: string) => void;
+  onClick: () => void;
+  limit?: number;
+  type?: HTMLInputTypeAttribute;
+  pattern?: string;
+  addButtonText?: string;
+  addAnotherButtonText?: string;
+  optionalText?: string;
+};
 
 function MultiInput({
   label,
@@ -25,9 +42,10 @@ function MultiInput({
   pattern = undefined,
   addButtonText = "Add",
   addAnotherButtonText = "Add another",
-}) {
+  optionalText,
+}: MultiInputProps) {
   const uniqueId = useId();
-  const addButtonRef = useRef(null);
+  const addButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const handleAddItem = () => {
     onClick();
@@ -41,7 +59,10 @@ function MultiInput({
     }, 0);
   };
 
-  const handleInputKeyDown = (e, index) => {
+  const handleInputKeyDown = (
+    e: KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent form submission
       if (addButtonRef.current) {
@@ -56,6 +77,7 @@ function MultiInput({
         <Label
           required={minRequired > 0}
           htmlFor={`${uniqueId}-${items.length - 1}`}
+          optionalText={optionalText}
         >
           {label}
         </Label>
@@ -68,8 +90,12 @@ function MultiInput({
             pattern={pattern ? pattern : undefined}
             placeholder={index === 0 ? placeholder : secondaryPlaceholder}
             value={item}
-            onChange={(e) => handleItemChange(index, e.target.value)}
-            onKeyDown={(e) => handleInputKeyDown(e, index)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleItemChange(index, e.target.value)
+            }
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
+              handleInputKeyDown(e, index)
+            }
           />
         ))}
         {items.length < limit && (

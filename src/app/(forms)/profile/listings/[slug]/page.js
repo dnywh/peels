@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 
 import FormHeader from "@/components/FormHeader";
 import ListingWrite from "@/components/ListingWrite";
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Edit Listing",
@@ -29,6 +30,7 @@ export const metadata = {
 
 // Next.js automatically provides params
 export default async function EditListingPage({ params }) {
+  const t = await getTranslations();
   const { slug } = await params;
   const supabase = await createClient();
   const {
@@ -48,13 +50,13 @@ export default async function EditListingPage({ params }) {
     .single();
 
   if (!listing) {
-    return <div>Listing not found</div>;
+    return <div>{t("Listings.edit.notFound")}</div>;
   }
 
   return (
     <>
       <FormHeader button="back">
-        <h1>Edit listing</h1>
+        <h1>{t("Listings.edit.title")}</h1>
       </FormHeader>
 
       <ListingWrite initialListing={listing} user={user} profile={profile} />

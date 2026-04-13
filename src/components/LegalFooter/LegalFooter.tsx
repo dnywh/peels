@@ -2,10 +2,13 @@ import { siteConfig } from "@/config/site";
 import Link from "next/link";
 import PeelsLogo from "@/components/PeelsLogo";
 import { styled } from "@pigment-css/react";
+import { getTranslations } from "next-intl/server";
 
 const currentYear = new Date().getFullYear();
 
-export default function LegalFooter() {
+export default async function LegalFooter() {
+  const t = await getTranslations();
+
   return (
     <StyledFooter>
       <PeelsLogo color="quaternary" />
@@ -14,13 +17,13 @@ export default function LegalFooter() {
       </p>
 
       <StyledNav>
-        <Link href={siteConfig.links.about}>About</Link>
-        <Link href={siteConfig.links.support}>Support</Link>
-        <Link href={siteConfig.links.newsletter}>Newsletter</Link>
+        <Link href={siteConfig.links.about}>{t("App.about")}</Link>
+        <Link href={siteConfig.links.support}>{t("Support.title")}</Link>
+        <Link href={siteConfig.links.newsletter}>{t("Newsletter.title")}</Link>
         {/* <Link href={siteConfig.links.colophon}>Colophon</Link> */}
-        <Link href={siteConfig.links.terms}>Terms</Link>
-        <Link href={siteConfig.links.privacy}>Privacy</Link>
-        <Link href={siteConfig.links.contact}>Contact</Link>
+        <Link href={siteConfig.links.terms}>{t("Legal.terms")}</Link>
+        <Link href={siteConfig.links.privacy}>{t("Legal.privacy")}</Link>
+        <Link href={siteConfig.links.contact}>{t("Contact.title")}</Link>
       </StyledNav>
     </StyledFooter>
   );

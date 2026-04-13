@@ -12,6 +12,7 @@ import StaticPageSection from "@/components/StaticPageSection";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import { getNewsletterIssueImageUrl } from "@/utils/storage";
+import { getTranslations } from "next-intl/server";
 
 type NewsletterIssuePageProps = {
   params: Promise<{ slug: string }>;
@@ -54,6 +55,7 @@ export default async function NewsletterIssuePage({
   params,
 }: NewsletterIssuePageProps) {
   const { slug } = await params;
+  const t = await getTranslations("Newsletter");
   const { metadata, customMetadata, formattedDate } =
     await getNewsletterIssueMetadata(slug);
   const title = customMetadata.verboseTitle
@@ -75,8 +77,11 @@ export default async function NewsletterIssuePage({
       <section>
         <StaticPageHeader
           title={title}
-          subtitle={`Issue #${issueNumber} · Published ${formattedDate}`}
-          parent="Newsletter"
+          subtitle={t("issueSubtitle", {
+            number: issueNumber,
+            date: formattedDate,
+          })}
+          parent={t("parent")}
         />
         <LongformTextContainer>
           <NewsletterIssueMarkdown />
@@ -85,14 +90,17 @@ export default async function NewsletterIssuePage({
 
       <StaticPageSection>
         <HeaderBlock>
-          <h2>Get these in your inbox</h2>
+          <h2>{t("inboxTitle")}</h2>
           <p>{siteConfig.newsletter.description}</p>
         </HeaderBlock>
         <NewsletterCallout />
         <FooterBlock>
           <p>
-            Or subscribe to the{" "}
-            <Link href="/newsletter/feed.xml">RSS feed</Link>.
+            {t.rich("rss", {
+              link: (chunks) => (
+                <Link href="/newsletter/feed.xml">{chunks}</Link>
+              ),
+            })}
           </p>
         </FooterBlock>
       </StaticPageSection>

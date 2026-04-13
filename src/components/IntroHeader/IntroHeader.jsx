@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import MapPin from "@/components/MapPin";
 import Avatar from "@/components/Avatar";
 import { styled, keyframes } from "@pigment-css/react";
+import { useTranslations } from "next-intl";
 
 const featuredItems = [
   {
@@ -123,6 +124,7 @@ const enterMarkerAnimation = keyframes({
 });
 
 function IntroHeader() {
+  const t = useTranslations("Index");
   const [itemIndex, setItemIndex] = useState(0);
   const [prevItemIndex, setPrevItemIndex] = useState(null);
 
@@ -149,7 +151,7 @@ function IntroHeader() {
             isExiting={true}
             isDemo={true}
             src={`/avatars/featured/${featuredItems[prevItemIndex].photo}`}
-            alt="The avatar for a Peels host"
+            alt={t("hostAvatarAlt")}
             size="massive"
           />
         </>
@@ -163,7 +165,7 @@ function IntroHeader() {
         isExiting={false}
         isDemo={true}
         src={`/avatars/featured/${featuredItems[itemIndex].photo}`}
-        alt="The avatar for a Peels host"
+        alt={t("hostAvatarAlt")}
         size="massive"
       />
     </MapContainer>
