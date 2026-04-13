@@ -4,13 +4,12 @@ These instructions apply to the whole repository.
 
 ## Language
 
-- Use Australian English in PR descriptions, review replies, docs, and other prose.
-- Use US English in code identifiers, filenames, script names, and API shapes.
+- Use Australian/British English over US English.
 
 ## Frontend
 
 - Prefer Server Components by default. Only add `"use client"` when the component needs browser-only APIs, state/effects, event handlers, or client-only libraries.
-- When touching JS/JSX components, convert them to TS/TSX when it is reasonable and scoped to the change. Avoid broad conversion-only refactors.
+- When touching JS/JSX components, convert them to TS/TSX when it is reasonable and scoped to the change.
 - Keep shared presentational components server-safe where possible. For translated labels or suffixes, prefer passing translated text from the caller instead of adding `useTranslations` to a shared component.
 
 ## Internationalisation
