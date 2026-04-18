@@ -47,10 +47,26 @@ const getCookie = (name: string): string | null => {
   if (!value) return null;
 
   try {
-    return decodeURIComponent(value);
+    return normaliseReferrer(value);
   } catch {
     return value;
   }
+};
+
+const normaliseReferrer = (referrer: string): string => {
+  let current = referrer;
+
+  for (let i = 0; i < 3; i += 1) {
+    try {
+      const decoded = decodeURIComponent(current);
+      if (decoded === current) break;
+      current = decoded;
+    } catch {
+      break;
+    }
+  }
+
+  return current;
 };
 
 const getExternalDocumentReferrer = (): string | null => {
@@ -72,7 +88,7 @@ const getExternalDocumentReferrer = (): string | null => {
 };
 
 const storeInitialReferrer = (referrer: string) => {
-  localStorage.setItem(INITIAL_REFERRER_KEY, referrer);
+  localStorage.setItem(INITIAL_REFERRER_KEY, normaliseReferrer(referrer));
 };
 
 export function captureAttributionParams() {
@@ -125,9 +141,16 @@ export function getStoredAttributionParams(): StoredAttributionParams {
     const stored = localStorage.getItem(UTM_STORAGE_KEY);
     const storedInitialReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
     const cookieReferrer = getCookie(INITIAL_REFERRER_COOKIE);
-    const initialReferrer = storedInitialReferrer ?? cookieReferrer;
+    const initialReferrer = storedInitialReferrer
+      ? normaliseReferrer(storedInitialReferrer)
+      : cookieReferrer;
 
     if (!storedInitialReferrer && initialReferrer) {
+      storeInitialReferrer(initialReferrer);
+    } else if (
+      storedInitialReferrer &&
+      initialReferrer !== storedInitialReferrer
+    ) {
       storeInitialReferrer(initialReferrer);
     }
 

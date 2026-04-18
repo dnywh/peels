@@ -13,6 +13,24 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
+const normaliseReferrer = (referrer: string | undefined) => {
+  if (!referrer) return undefined;
+
+  let current = referrer;
+
+  for (let i = 0; i < 3; i += 1) {
+    try {
+      const decoded = decodeURIComponent(current);
+      if (decoded === current) break;
+      current = decoded;
+    } catch {
+      break;
+    }
+  }
+
+  return current;
+};
+
 export const signUpAction = async (formData: FormData, request?: Request) => {
   const t = await getTranslations("Errors");
   const email = formData.get("email")?.toString();
@@ -28,7 +46,9 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
   const origin = headersList.get("origin");
 
   // Get attribution data
-  const referrer = formData.get("initial_referrer")?.toString();
+  const referrer = normaliseReferrer(
+    formData.get("initial_referrer")?.toString()
+  );
   const utmSource = formData.get("utm_source")?.toString();
   const utmMedium = formData.get("utm_medium")?.toString();
   const utmCampaign = formData.get("utm_campaign")?.toString();
