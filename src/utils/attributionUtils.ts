@@ -149,6 +149,7 @@ export function getStoredAttributionParams(): StoredAttributionParams {
       storeInitialReferrer(initialReferrer);
     } else if (
       storedInitialReferrer &&
+      initialReferrer &&
       initialReferrer !== storedInitialReferrer
     ) {
       storeInitialReferrer(initialReferrer);
