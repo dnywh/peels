@@ -77,6 +77,7 @@ const ListingRead = memo(function Listing({
         ? listing.name
         : listing.owner_first_name
       : getListingDisplayName(listing, user);
+  const coordinates = listing?.coordinates;
 
   if (!listing && presentation !== "demo") {
     console.log("Listing not found");
@@ -158,15 +159,15 @@ const ListingRead = memo(function Listing({
               <MapThumbnail
                 height="320px"
                 initialViewState={{
-                  longitude: listing.longitude,
-                  latitude: listing.latitude,
+                  longitude: coordinates.longitude,
+                  latitude: coordinates.latitude,
                   zoom: initialZoomLevel,
                 }}
                 interactive={false}
               >
                 <Marker
-                  longitude={listing.longitude}
-                  latitude={listing.latitude}
+                  longitude={coordinates.longitude}
+                  latitude={coordinates.latitude}
                   anchor="center"
                   onClick={(event) => {
                     event.originalEvent.stopPropagation();
@@ -216,7 +217,7 @@ const ListingRead = memo(function Listing({
                       <Button
                         variant="secondary"
                         size="small"
-                        href={`https://maps.apple.com/?ll=${listing.latitude},${listing.longitude}&q=${encodeURIComponent(
+                        href={`https://maps.apple.com/?ll=${coordinates.latitude},${coordinates.longitude}&q=${encodeURIComponent(
                           listing.name
                         )}`}
                         target="_blank"
@@ -226,7 +227,7 @@ const ListingRead = memo(function Listing({
                       <Button
                         variant="secondary"
                         size="small"
-                        href={`https://maps.google.com/?q=${listing.latitude},${listing.longitude}`}
+                        href={`https://maps.google.com/?q=${coordinates.latitude},${coordinates.longitude}`}
                         target="_blank"
                       >
                         {t("Actions.openInGoogleMaps")}

@@ -53,14 +53,20 @@ const DEFAULT_COORDINATES = {
   zoom: 9,
 };
 
+function getListingCoordinates(listing) {
+  return listing?.coordinates ?? null;
+}
+
 function hasValidCoordinates(listing) {
+  const coordinates = getListingCoordinates(listing);
+
   return (
     listing &&
     !listing.error &&
-    typeof listing.latitude === "number" &&
-    typeof listing.longitude === "number" &&
-    Number.isFinite(listing.latitude) &&
-    Number.isFinite(listing.longitude)
+    typeof coordinates?.latitude === "number" &&
+    typeof coordinates?.longitude === "number" &&
+    Number.isFinite(coordinates.latitude) &&
+    Number.isFinite(coordinates.longitude)
   );
 }
 
@@ -86,7 +92,9 @@ export default function MapImmersive({
   isDesktop,
   countryCode,
 }) {
-  const isFirstLoad = useRef(true);
+  const selectedListingCoordinates = getListingCoordinates(selectedListing);
+  const hasAppliedInitialPositionRef = useRef(false);
+  const centeredListingIdRef = useRef(null);
   const [lastKnownPosition, setLastKnownPosition] = useState(null);
   const [isListingInView, setIsListingInView] = useState(true);
   const hasInitialPosition =
@@ -111,11 +119,15 @@ export default function MapImmersive({
 
     // If there's a selected listing with valid coords, center on it instead of using IP location
     if (hasValidCoordinates(selectedListing)) {
+      const coordinates = getListingCoordinates(selectedListing);
+
       mapRef.current?.flyTo({
-        center: [selectedListing.longitude, selectedListing.latitude],
+        center: [coordinates.longitude, coordinates.latitude],
         zoom: 12,
         duration: 0,
       });
+      hasAppliedInitialPositionRef.current = true;
+      centeredListingIdRef.current = selectedListing.id;
     }
 
     const bounds = mapRef.current.getMap().getBounds();
@@ -133,9 +145,10 @@ export default function MapImmersive({
 
     // Check if selected listing is in view (only when it has valid coords)
     if (hasValidCoordinates(selectedListing)) {
+      const coordinates = getListingCoordinates(selectedListing);
       const isInView = bounds.contains([
-        selectedListing.longitude,
-        selectedListing.latitude,
+        coordinates.longitude,
+        coordinates.latitude,
       ]);
       setIsListingInView(isInView);
     }
@@ -144,8 +157,10 @@ export default function MapImmersive({
   const handleFlyToListing = useCallback(() => {
     if (!hasValidCoordinates(selectedListing) || !mapRef.current) return;
 
+    const coordinates = getListingCoordinates(selectedListing);
+
     mapRef.current.flyTo({
-      center: [selectedListing.longitude, selectedListing.latitude],
+      center: [coordinates.longitude, coordinates.latitude],
       duration: 1500,
     });
   }, [selectedListing]);
@@ -154,32 +169,66 @@ export default function MapImmersive({
     let protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
-    // Only handle initial positioning on first load
-    if (isFirstLoad.current) {
-      isFirstLoad.current = false;
-
-      // If there's a selected listing in URL with valid coords, center on it
-      if (hasValidCoordinates(selectedListing)) {
-        mapRef.current?.flyTo({
-          center: [selectedListing.longitude, selectedListing.latitude],
-          zoom: 12,
-          duration: 0,
-        });
-      }
-      // If no listing but we have IP coordinates, use those
-      else if (initialCoordinates) {
-        mapRef.current?.flyTo({
-          center: [initialCoordinates.longitude, initialCoordinates.latitude],
-          zoom: initialCoordinates.zoom,
-          duration: 0,
-        });
-      }
-    }
-
     return () => {
       maplibregl.removeProtocol("pmtiles");
     };
-  }, []); // Empty dependency array as before
+  }, []);
+
+  useEffect(() => {
+    if (
+      hasAppliedInitialPositionRef.current ||
+      hasValidCoordinates(selectedListing) ||
+      !initialCoordinates ||
+      !mapRef.current
+    ) {
+      return;
+    }
+
+    hasAppliedInitialPositionRef.current = true;
+    mapRef.current.flyTo({
+      center: [initialCoordinates.longitude, initialCoordinates.latitude],
+      zoom: initialCoordinates.zoom,
+      duration: 0,
+    });
+  }, [initialCoordinates, mapRef, selectedListing]);
+
+  useEffect(() => {
+    if (
+      !mapRef.current ||
+      !hasValidCoordinates(selectedListing) ||
+      centeredListingIdRef.current === selectedListing.id
+    ) {
+      return;
+    }
+
+    const coordinates = getListingCoordinates(selectedListing);
+    const map = mapRef.current.getMap();
+    const bounds = map.getBounds();
+    const isInView = bounds.contains([
+      coordinates.longitude,
+      coordinates.latitude,
+    ]);
+
+    if (isInView) {
+      hasAppliedInitialPositionRef.current = true;
+      centeredListingIdRef.current = selectedListing.id;
+      setIsListingInView(true);
+      return;
+    }
+
+    mapRef.current.flyTo({
+      center: [coordinates.longitude, coordinates.latitude],
+      zoom: 12,
+      duration: 900,
+    });
+    hasAppliedInitialPositionRef.current = true;
+    centeredListingIdRef.current = selectedListing.id;
+  }, [
+    mapRef,
+    selectedListing,
+    selectedListingCoordinates?.latitude,
+    selectedListingCoordinates?.longitude,
+  ]);
 
   // Set mapController to set relationship between MapSearch and MapImmersive
   // Can't get this to work, perhaps delete all mapController and createMapLibreGlMapController code if I can't get it working
@@ -193,9 +242,11 @@ export default function MapImmersive({
   // Update lastKnownPosition when we have a valid position
   useEffect(() => {
     if (hasValidCoordinates(selectedListing)) {
+      const coordinates = getListingCoordinates(selectedListing);
+
       setLastKnownPosition({
-        latitude: selectedListing.latitude,
-        longitude: selectedListing.longitude,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
       });
     } else if (initialCoordinates && !lastKnownPosition) {
       setLastKnownPosition(initialCoordinates);
@@ -210,9 +261,10 @@ export default function MapImmersive({
     }
 
     const bounds = mapRef.current.getMap().getBounds();
+    const coordinates = getListingCoordinates(selectedListing);
     const isInView = bounds.contains([
-      selectedListing.longitude,
-      selectedListing.latitude,
+      coordinates.longitude,
+      coordinates.latitude,
     ]);
     console.log("isInView", isInView);
     setIsListingInView(isInView);
@@ -269,13 +321,13 @@ export default function MapImmersive({
             initialViewState={{
               longitude:
                 (hasValidCoordinates(selectedListing)
-                  ? selectedListing.longitude
+                  ? selectedListingCoordinates.longitude
                   : null) ??
                 initialCoordinates?.longitude ??
                 DEFAULT_COORDINATES.longitude,
               latitude:
                 (hasValidCoordinates(selectedListing)
-                  ? selectedListing.latitude
+                  ? selectedListingCoordinates.latitude
                   : null) ??
                 initialCoordinates?.latitude ??
                 DEFAULT_COORDINATES.latitude,
@@ -308,8 +360,8 @@ export default function MapImmersive({
               .map((listing) => (
                 <DrawerTrigger key={listing.id}>
                   <Marker
-                    longitude={listing.longitude}
-                    latitude={listing.latitude}
+                    longitude={listing.coordinates.longitude}
+                    latitude={listing.coordinates.latitude}
                     anchor="center"
                     onClick={(event) => {
                       event.originalEvent.stopPropagation();

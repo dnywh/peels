@@ -114,12 +114,7 @@ export default function ListingWrite({
   );
 
   const [coordinates, setCoordinates] = useState<Coordinates | null>(
-    initialListing
-      ? {
-          latitude: initialListing.latitude,
-          longitude: initialListing.longitude,
-        }
-      : null
+    initialListing?.coordinates ?? null
   );
 
   const [areaName, setAreaName] = useState<string>(
@@ -264,10 +259,6 @@ export default function ListingWrite({
         ...(listingType !== "residential" && { name: validatedName }),
         description,
         location: `POINT(${selectedCoordinates.longitude} ${selectedCoordinates.latitude})`,
-        // Temporarily store the coordinates as longitude and latitude floats in the database as well
-        // ...because I can't get the geometry type to convert to to long and lat dynamically if a user goes direct to a listing, e.g. http://localhost:3000/map?listing=9xvN9zxH0rzZ
-        longitude: selectedCoordinates.longitude,
-        latitude: selectedCoordinates.latitude,
         area_name: areaName,
         country_code: countryCode,
         accepted_items: acceptedItems.filter((item) => item.trim() !== ""),
