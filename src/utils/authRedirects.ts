@@ -24,7 +24,7 @@ export const getDefaultNextPathByType = (type: string | null | undefined) => {
   return "/profile";
 };
 
-export const normalizeNextPath = (
+export const normaliseNextPath = (
   candidatePath: string | null | undefined,
   fallbackPath: string
 ) => {
@@ -49,8 +49,8 @@ export const normalizeNextPath = (
 };
 
 export const appendSuccessParam = (path: string, successValue: string) => {
-  const normalizedPath = normalizeNextPath(path, "/profile");
-  const url = new URL(normalizedPath, "https://www.peels.app");
+  const normalisedPath = normaliseNextPath(path, "/profile");
+  const url = new URL(normalisedPath, "https://www.peels.app");
   url.searchParams.set("success", successValue);
   return `${url.pathname}${url.search}${url.hash}`;
 };
