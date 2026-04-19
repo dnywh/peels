@@ -79,10 +79,23 @@ export function hasValidCoordinates(
   );
 }
 
+// Wrap a longitude into the canonical [-180, 180] range. MapLibre reports
+// bounds as "unwrapped" coordinates (values outside the canonical range when
+// the user has panned across the antimeridian), but the `listings_in_view`
+// RPC feeds them into PostGIS' `st_makeenvelope`, which expects canonical
+// longitudes.
+function wrapLongitude(lng: number): number {
+  return ((((lng + 180) % 360) + 360) % 360) - 180;
+}
+
 // Expand a viewport bbox by a fraction (e.g. 0.3 => 30% larger in each
 // direction). This lets us fetch a slightly padded area so that small pans
 // reuse already-loaded pins without hitting the network again.
-export function padBounds(bounds: LngLatBounds, factor = 0.3): BoundingBox {
+//
+// Returns 1 or 2 boxes. Two are returned when the padded viewport crosses
+// the antimeridian (e.g. Fiji, NZ → Alaska), so the caller can fetch both
+// halves and merge the results.
+export function padBounds(bounds: LngLatBounds, factor = 0.3): BoundingBox[] {
   const sw = bounds.getSouthWest();
   const ne = bounds.getNorthEast();
 
@@ -92,12 +105,27 @@ export function padBounds(bounds: LngLatBounds, factor = 0.3): BoundingBox {
   const latPad = latSpan * factor;
   const lngPad = lngSpan * factor;
 
-  return {
-    south: Math.max(-90, sw.lat - latPad),
-    north: Math.min(90, ne.lat + latPad),
-    west: sw.lng - lngPad,
-    east: ne.lng + lngPad,
-  };
+  const south = Math.max(-90, sw.lat - latPad);
+  const north = Math.min(90, ne.lat + latPad);
+
+  // If the padded viewport already covers the whole globe, just request the
+  // whole world (avoids degenerate envelopes in PostGIS).
+  if (lngSpan + 2 * lngPad >= 360) {
+    return [{ south, north, west: -180, east: 180 }];
+  }
+
+  const west = wrapLongitude(sw.lng - lngPad);
+  const east = wrapLongitude(ne.lng + lngPad);
+
+  if (west <= east) {
+    return [{ south, north, west, east }];
+  }
+
+  // Crosses the antimeridian — split into two valid envelopes.
+  return [
+    { south, north, west, east: 180 },
+    { south, north, west: -180, east },
+  ];
 }
 
 export function isCoordinateInBounds(

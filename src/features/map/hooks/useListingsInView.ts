@@ -65,24 +65,35 @@ export function useListingsInView(): UseListingsInViewResult {
   const inFlightCountRef = useRef(0);
 
   const runFetch = useCallback(async (bounds: LngLatBounds) => {
-    const padded = padBounds(bounds, VIEWPORT_PAD_FACTOR);
+    // `padBounds` returns 1 box normally, or 2 when the viewport crosses the
+    // antimeridian. We fetch each and merge, deduping by id.
+    const paddedBoxes = padBounds(bounds, VIEWPORT_PAD_FACTOR);
 
     const requestId = ++requestIdRef.current;
     inFlightCountRef.current += 1;
     setIsFetching(true);
 
     try {
-      const data = await fetchListingsInView(
-        padded.south,
-        padded.west,
-        padded.north,
-        padded.east
+      const responses = await Promise.all(
+        paddedBoxes.map((box) =>
+          fetchListingsInView(box.south, box.west, box.north, box.east)
+        )
       );
 
       // Ignore stale responses — a newer request has already superseded this one.
       if (requestId !== requestIdRef.current) return;
 
-      setListings((data ?? []) as ListingMarker[]);
+      const seen = new Set<number>();
+      const merged: ListingMarker[] = [];
+      for (const response of responses) {
+        for (const marker of (response ?? []) as ListingMarker[]) {
+          if (seen.has(marker.id)) continue;
+          seen.add(marker.id);
+          merged.push(marker);
+        }
+      }
+
+      setListings(merged);
     } catch (error) {
       if (requestId !== requestIdRef.current) return;
       console.error("Error fetching listings in view:", error);

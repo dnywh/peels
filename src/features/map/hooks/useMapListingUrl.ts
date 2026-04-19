@@ -187,10 +187,12 @@ export function useMapListingUrl({
         if (token !== requestTokenRef.current) return;
 
         if (error || !data) {
-          setSelectedListing({
-            error: true,
-            message: t("Listings.edit.notFound"),
-          });
+          // Tap-driven fetches happen before the URL is pushed, so surfacing
+          // an error sentinel here would either be invisible (no listing in
+          // URL → drawer stays closed) or desync the UI from the URL (still
+          // pointing at the previous listing). Revert the optimistic pin and
+          // leave `selectedListing` alone instead.
+          console.warn("Failed to select listing by id:", error);
           setOptimisticListingId(null);
           return;
         }
@@ -208,14 +210,10 @@ export function useMapListingUrl({
       } catch (err) {
         if (token !== requestTokenRef.current) return;
         console.warn("Failed to select listing by id:", err);
-        setSelectedListing({
-          error: true,
-          message: t("Listings.edit.notFound"),
-        });
         setOptimisticListingId(null);
       }
     },
-    [router, supabase, t, tableName]
+    [router, supabase, tableName]
   );
 
   const closeListing = useCallback(() => {
