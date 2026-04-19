@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import {
   getDefaultNextPathByType,
   isSupportedEmailAuthType,
-  normalizeNextPath,
+  normaliseNextPath,
 } from "@/utils/authRedirects";
 
 const INVALID_LINK_MESSAGE =
@@ -37,7 +37,7 @@ export default function AuthHashCompletion() {
       queryParams.get("next") ?? queryParams.get("redirect_to");
     const requestedType = queryParams.get("type") ?? hashType;
     const defaultNextPath = getDefaultNextPathByType(requestedType);
-    const nextPath = normalizeNextPath(preferredNextPath, defaultNextPath);
+    const nextPath = normaliseNextPath(preferredNextPath, defaultNextPath);
 
     const authCode = queryParams.get("code");
     const hasAuthHashPayload =
@@ -126,7 +126,7 @@ export default function AuthHashCompletion() {
       return;
     }
 
-    const typedNextPath = normalizeNextPath(
+    const typedNextPath = normaliseNextPath(
       preferredNextPath,
       getDefaultNextPathByType(type)
     );
@@ -177,7 +177,7 @@ export default function AuthHashCompletion() {
           return;
         }
 
-        const resolvedNextPath = normalizeNextPath(data.next, typedNextPath);
+        const resolvedNextPath = normaliseNextPath(data.next, typedNextPath);
         debugAuth("session-finalized", {
           type,
           nextPath: resolvedNextPath,

@@ -36,17 +36,13 @@ export async function proxy(request: NextRequest) {
     externalReferrer &&
     request.method === "GET"
   ) {
-    response.cookies.set(
-      INITIAL_REFERRER_COOKIE,
-      encodeURIComponent(externalReferrer),
-      {
-        httpOnly: false,
-        maxAge: INITIAL_REFERRER_MAX_AGE,
-        path: "/",
-        sameSite: "lax",
-        secure: request.nextUrl.protocol === "https:",
-      }
-    );
+    response.cookies.set(INITIAL_REFERRER_COOKIE, externalReferrer, {
+      httpOnly: false,
+      maxAge: INITIAL_REFERRER_MAX_AGE,
+      path: "/",
+      sameSite: "lax",
+      secure: request.nextUrl.protocol === "https:",
+    });
   }
 
   return response;

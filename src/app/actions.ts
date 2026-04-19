@@ -1,6 +1,7 @@
 "use server";
 
 import { validateName } from "@/lib/formValidation";
+import { getSafeHttpReferrer } from "@/utils/referrer";
 import { createClient } from "@/utils/supabase/server";
 import { getBaseUrl } from "@/utils/url";
 import {
@@ -28,7 +29,9 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
   const origin = headersList.get("origin");
 
   // Get attribution data
-  const referrer = formData.get("initial_referrer")?.toString();
+  const referrer = getSafeHttpReferrer(
+    formData.get("initial_referrer")?.toString()
+  );
   const utmSource = formData.get("utm_source")?.toString();
   const utmMedium = formData.get("utm_medium")?.toString();
   const utmCampaign = formData.get("utm_campaign")?.toString();
