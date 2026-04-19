@@ -43,7 +43,7 @@ export default async function EditListingPage({ params }) {
     .single();
 
   const { data: listing } = await supabase
-    .from("listings")
+    .from("listings_private_data")
     .select()
     .eq("owner_id", user.id)
     .match({ slug })

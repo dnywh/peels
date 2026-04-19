@@ -174,8 +174,6 @@ insert into public.listings (
   visibility,
   type,
   avatar,
-  latitude,
-  longitude,
   country_code,
   area_name,
   is_stub
@@ -194,8 +192,6 @@ values
     true,
     'community',
     'demo/farm.jpg',
-    -33.9110,
-    151.1569,
     'AU',
     'Marrickville',
     false
@@ -213,8 +209,6 @@ values
     true,
     'business',
     'demo/brewery.jpg',
-    -33.9063,
-    151.1645,
     'AU',
     'Enmore',
     false
@@ -232,8 +226,6 @@ values
     true,
     'residential',
     null,
-    -33.8986,
-    151.1781,
     'AU',
     'Newtown',
     false
@@ -251,8 +243,6 @@ set
   visibility = excluded.visibility,
   type = excluded.type,
   avatar = excluded.avatar,
-  latitude = excluded.latitude,
-  longitude = excluded.longitude,
   country_code = excluded.country_code,
   area_name = excluded.area_name,
   is_stub = excluded.is_stub;
