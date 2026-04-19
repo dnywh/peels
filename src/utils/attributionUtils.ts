@@ -123,14 +123,15 @@ export function getStoredAttributionParams(): StoredAttributionParams {
     const stored = localStorage.getItem(UTM_STORAGE_KEY);
     const storedInitialReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
     const cookieReferrer = getCookie(INITIAL_REFERRER_COOKIE);
-    const initialReferrer = storedInitialReferrer
-      ? normaliseReferrer(storedInitialReferrer)
-      : cookieReferrer;
+    const initialReferrer =
+      storedInitialReferrer !== null
+        ? normaliseReferrer(storedInitialReferrer)
+        : cookieReferrer;
 
-    if (!storedInitialReferrer && initialReferrer) {
+    if (storedInitialReferrer === null && initialReferrer) {
       storeInitialReferrer(initialReferrer);
     } else if (
-      storedInitialReferrer &&
+      storedInitialReferrer !== null &&
       initialReferrer &&
       initialReferrer !== storedInitialReferrer
     ) {
