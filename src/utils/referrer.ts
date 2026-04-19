@@ -26,12 +26,12 @@ export function normaliseReferrer(referrer: string | undefined) {
 }
 
 export function getSafeHttpReferrer(referrer: string | undefined) {
-  const normalisedReferrer = normaliseReferrer(referrer)?.trim();
+  const cleanedReferrer = normaliseReferrer(referrer)?.trim();
 
-  if (!normalisedReferrer) return undefined;
+  if (!cleanedReferrer) return undefined;
 
   try {
-    const referrerUrl = new URL(normalisedReferrer);
+    const referrerUrl = new URL(cleanedReferrer);
 
     if (!["http:", "https:"].includes(referrerUrl.protocol)) {
       return undefined;

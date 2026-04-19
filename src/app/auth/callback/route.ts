@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { appendSuccessParam, normalizeNextPath } from "@/utils/authRedirects";
+import { appendSuccessParam, normaliseNextPath } from "@/utils/authRedirects";
 import { NextResponse } from "next/server";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   const requestedNextPath =
     requestUrl.searchParams.get("next") ??
     requestUrl.searchParams.get("redirect_to");
-  const nextPath = normalizeNextPath(requestedNextPath, "/profile");
+  const nextPath = normaliseNextPath(requestedNextPath, "/profile");
 
   if (code) {
     const supabase = await createClient();

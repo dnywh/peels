@@ -1,7 +1,7 @@
 const PRODUCTION_SUPABASE_HOST = "mfnaqdyunuafbwukbbyr.supabase.co";
 const STORAGE_PUBLIC_PATH = "/storage/v1/object/public";
 
-function normalizeAssetPath(assetPath: string) {
+function normaliseAssetPath(assetPath: string) {
   return assetPath.replace(/^\/+/, "");
 }
 
@@ -22,7 +22,7 @@ export function getStoragePublicUrl(bucket: string, assetPath: string) {
 
   if (!supabaseUrl) return null;
 
-  return `${supabaseUrl.replace(/\/$/, "")}${STORAGE_PUBLIC_PATH}/${bucket}/${normalizeAssetPath(assetPath)}`;
+  return `${supabaseUrl.replace(/\/$/, "")}${STORAGE_PUBLIC_PATH}/${bucket}/${normaliseAssetPath(assetPath)}`;
 }
 
 export function usesHostedStaticAssets() {
@@ -43,7 +43,7 @@ export function getStaticAssetUrl(
 export function getStaticFontUrl(assetPath: string) {
   return getStoragePublicUrl(
     "static",
-    `fonts/${normalizeAssetPath(assetPath)}`
+    `fonts/${normaliseAssetPath(assetPath)}`
   );
 }
 

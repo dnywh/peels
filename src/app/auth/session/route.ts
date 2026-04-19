@@ -3,7 +3,7 @@ import {
   appendSuccessParam,
   getDefaultNextPathByType,
   isSupportedEmailAuthType,
-  normalizeNextPath,
+  normaliseNextPath,
 } from "@/utils/authRedirects";
 import { NextResponse } from "next/server";
 
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   }
 
   const defaultNextPath = getDefaultNextPathByType(type);
-  const nextPath = normalizeNextPath(
+  const nextPath = normaliseNextPath(
     typeof body?.next === "string" ? body.next : null,
     defaultNextPath
   );

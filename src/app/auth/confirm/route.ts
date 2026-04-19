@@ -3,7 +3,7 @@ import {
   appendSuccessParam,
   getDefaultNextPathByType,
   isSupportedEmailAuthType,
-  normalizeNextPath,
+  normaliseNextPath,
 } from "@/utils/authRedirects";
 import { NextResponse } from "next/server";
 
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     requestUrl.searchParams.get("next") ??
     requestUrl.searchParams.get("redirect_to");
   const defaultNextPath = getDefaultNextPathByType(authType);
-  const nextPath = normalizeNextPath(requestedNextPath, defaultNextPath);
+  const nextPath = normaliseNextPath(requestedNextPath, defaultNextPath);
 
   if (!tokenHash || !isSupportedEmailAuthType(authType)) {
     debugAuth("invalid-confirm-query", {

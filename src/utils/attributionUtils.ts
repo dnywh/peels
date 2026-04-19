@@ -48,7 +48,11 @@ const getCookie = (name: string): string | null => {
 
   if (!value) return null;
 
-  return normaliseReferrer(value) ?? null;
+  const cleanedValue = normaliseReferrer(value);
+
+  if (!cleanedValue.trim()) return null;
+
+  return cleanedValue;
 };
 
 const getExternalDocumentReferrer = (): string | null => {
