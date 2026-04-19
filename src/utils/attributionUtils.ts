@@ -1,6 +1,6 @@
 "use client";
 
-import { normalizeReferrer } from "@/utils/referrer";
+import { normaliseReferrer } from "@/utils/referrer";
 
 const UTM_STORAGE_KEY = "attribution_params";
 const INITIAL_REFERRER_KEY = "initial_referrer";
@@ -48,7 +48,7 @@ const getCookie = (name: string): string | null => {
 
   if (!value) return null;
 
-  return normalizeReferrer(value) ?? null;
+  return normaliseReferrer(value) ?? null;
 };
 
 const getExternalDocumentReferrer = (): string | null => {
@@ -70,7 +70,7 @@ const getExternalDocumentReferrer = (): string | null => {
 };
 
 const storeInitialReferrer = (referrer: string) => {
-  localStorage.setItem(INITIAL_REFERRER_KEY, normalizeReferrer(referrer));
+  localStorage.setItem(INITIAL_REFERRER_KEY, normaliseReferrer(referrer));
 };
 
 export function captureAttributionParams() {
@@ -124,7 +124,7 @@ export function getStoredAttributionParams(): StoredAttributionParams {
     const storedInitialReferrer = localStorage.getItem(INITIAL_REFERRER_KEY);
     const cookieReferrer = getCookie(INITIAL_REFERRER_COOKIE);
     const initialReferrer = storedInitialReferrer
-      ? normalizeReferrer(storedInitialReferrer)
+      ? normaliseReferrer(storedInitialReferrer)
       : cookieReferrer;
 
     if (!storedInitialReferrer && initialReferrer) {

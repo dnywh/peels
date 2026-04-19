@@ -1,14 +1,16 @@
-export function normalizeReferrer(referrer: string): string;
-export function normalizeReferrer(referrer: undefined): undefined;
-export function normalizeReferrer(
+const encodedReferrerPrefix = /^https?%(?:25)*3a%(?:25)*2f%(?:25)*2f/i;
+
+export function normaliseReferrer(referrer: string): string;
+export function normaliseReferrer(referrer: undefined): undefined;
+export function normaliseReferrer(
   referrer: string | undefined
 ): string | undefined;
-export function normalizeReferrer(referrer: string | undefined) {
-  if (!referrer) return undefined;
+export function normaliseReferrer(referrer: string | undefined) {
+  if (referrer === undefined) return undefined;
 
   let current = referrer;
 
-  for (let i = 0; i < 3; i += 1) {
+  for (let i = 0; i < 3 && encodedReferrerPrefix.test(current); i += 1) {
     try {
       const decoded = decodeURIComponent(current);
       if (decoded === current) break;

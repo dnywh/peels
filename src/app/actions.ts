@@ -1,8 +1,8 @@
 "use server";
 
 import { validateName } from "@/lib/formValidation";
+import { normaliseReferrer } from "@/utils/referrer";
 import { createClient } from "@/utils/supabase/server";
-import { normalizeReferrer } from "@/utils/referrer";
 import { getBaseUrl } from "@/utils/url";
 import {
   encodedRedirect,
@@ -29,7 +29,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
   const origin = headersList.get("origin");
 
   // Get attribution data
-  const referrer = normalizeReferrer(
+  const referrer = normaliseReferrer(
     formData.get("initial_referrer")?.toString()
   );
   const utmSource = formData.get("utm_source")?.toString();
