@@ -92,13 +92,17 @@ export default function MapPageClient({
     }
   }, [closeListing, isListingSelected]);
 
-  const handleDrawerOpenChange = useCallback(() => {
-    // Drawer-driven close (e.g. escape key on desktop) should also update
-    // the URL.
-    if (isListingSelected) {
-      closeListing();
-    }
-  }, [closeListing, isListingSelected]);
+  const handleDrawerOpenChange = useCallback(
+    (open: boolean) => {
+      // Drawer-driven close (e.g. escape key on desktop) should also update
+      // the URL. We only act on the close transition — `open === true` is
+      // already reflected by `isListingSelected` from the URL.
+      if (!open && isListingSelected) {
+        closeListing();
+      }
+    },
+    [closeListing, isListingSelected]
+  );
 
   return (
     <StyledMapPage>

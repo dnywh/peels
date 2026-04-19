@@ -46,13 +46,20 @@ export function useIpInitialLocation({
     ensureMapTilerConfig();
 
     let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     async function initializeLocation() {
-      try {
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error("Location timeout")), 3000);
-        });
+      // Race the network call against a 3s timeout. We track the timeout id
+      // so we can clear it once the race settles — otherwise the losing
+      // branch can still fire and surface as an unhandled rejection.
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          timeoutId = null;
+          reject(new Error("Location timeout"));
+        }, 3000);
+      });
 
+      try {
         const response = (await Promise.race([
           geolocation.info(),
           timeoutPromise,
@@ -80,10 +87,16 @@ export function useIpInitialLocation({
           });
         }
       } catch (error) {
+        if (cancelled) return;
         console.warn(
           "Could not determine location from MapTiler:",
           (error as Error).message
         );
+      } finally {
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
       }
     }
 
@@ -91,6 +104,10 @@ export function useIpInitialLocation({
 
     return () => {
       cancelled = true;
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
     };
   }, [skip]);
 

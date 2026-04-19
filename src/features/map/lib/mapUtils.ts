@@ -1,7 +1,7 @@
 import type { LngLatBounds } from "maplibre-gl";
 
 import {
-  isListing,
+  isListingError,
   type Listing,
   type ListingCoordinates,
   type ListingMarker,
@@ -45,19 +45,30 @@ export const SNAP_POINTS = {
   full: 1,
 } as const;
 
+// `Listing` and `ListingMarker` both carry a nullable `coordinates` field.
+// `SelectedListing` can additionally be a `ListingError` sentinel, which has
+// no coordinates. Narrowing explicitly here (rather than treating anything
+// without `error === true` as a listing) keeps the intent readable.
+type CoordinateBearing = Listing | ListingMarker;
+
+function hasCoordinateField(
+  listing: CoordinateBearing | SelectedListing | null | undefined
+): listing is CoordinateBearing {
+  if (!listing) return false;
+  if (isListingError(listing as SelectedListing)) return false;
+  return "coordinates" in listing;
+}
+
 export function getListingCoordinates(
-  listing: Listing | ListingMarker | SelectedListing | null | undefined
+  listing: CoordinateBearing | SelectedListing | null | undefined
 ): ListingCoordinates | null {
-  if (!listing) return null;
-  if (!isListing(listing as SelectedListing)) return null;
-  return (listing as Listing | ListingMarker).coordinates ?? null;
+  if (!hasCoordinateField(listing)) return null;
+  return listing.coordinates ?? null;
 }
 
 export function hasValidCoordinates(
-  listing: Listing | ListingMarker | SelectedListing | null | undefined
-): listing is (Listing | ListingMarker) & {
-  coordinates: ListingCoordinates;
-} {
+  listing: CoordinateBearing | SelectedListing | null | undefined
+): listing is CoordinateBearing & { coordinates: ListingCoordinates } {
   const coordinates = getListingCoordinates(listing);
   return Boolean(
     coordinates &&

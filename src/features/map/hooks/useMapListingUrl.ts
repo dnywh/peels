@@ -80,6 +80,12 @@ export function useMapListingUrl({
 
   const tableName = user ? "listings_private_data" : "listings_public_data";
 
+  // Monotonically increasing token for every in-flight listing fetch (by slug
+  // or by id). Responses only get to update state when their token is still
+  // the most recent one — avoids older requests overwriting newer selections
+  // when slugs flip rapidly or the public/private view changes mid-flight.
+  const requestTokenRef = useRef(0);
+
   // If the public/private view flips (e.g. session finished loading) while the
   // same listing is open, refetch with the correct view.
   useEffect(() => {
@@ -91,12 +97,16 @@ export function useMapListingUrl({
 
   const fetchBySlug = useCallback(
     async (slug: string) => {
+      const token = ++requestTokenRef.current;
+
       try {
         const { data, error } = await supabase
           .from(tableName)
           .select()
           .eq("slug", slug)
           .single();
+
+        if (token !== requestTokenRef.current) return;
 
         if (error) {
           setSelectedListing({
@@ -113,6 +123,7 @@ export function useMapListingUrl({
         resolvedTableRef.current = tableName;
         setOptimisticListingId(listing.id ?? null);
       } catch (err) {
+        if (token !== requestTokenRef.current) return;
         console.warn("Failed to load listing by slug:", err);
         setSelectedListing({
           error: true,
@@ -164,6 +175,7 @@ export function useMapListingUrl({
     async (id: number) => {
       // Tap → pin grows immediately, even before the network round-trip.
       setOptimisticListingId(id);
+      const token = ++requestTokenRef.current;
 
       try {
         const { data, error } = await supabase
@@ -171,6 +183,8 @@ export function useMapListingUrl({
           .select()
           .eq("id", id)
           .single();
+
+        if (token !== requestTokenRef.current) return;
 
         if (error || !data) {
           setSelectedListing({
@@ -192,6 +206,7 @@ export function useMapListingUrl({
           router.push(`/map?listing=${slug}`, { scroll: false });
         }
       } catch (err) {
+        if (token !== requestTokenRef.current) return;
         console.warn("Failed to select listing by id:", err);
         setSelectedListing({
           error: true,
@@ -204,6 +219,9 @@ export function useMapListingUrl({
   );
 
   const closeListing = useCallback(() => {
+    // Invalidate any in-flight fetches so their late responses don't reopen
+    // the drawer.
+    requestTokenRef.current += 1;
     resolvedSlugRef.current = null;
     resolvedTableRef.current = null;
     setOptimisticListingId(null);
