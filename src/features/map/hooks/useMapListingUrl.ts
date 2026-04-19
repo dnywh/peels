@@ -65,7 +65,29 @@ export function useMapListingUrl({
     initialListing?.slug ?? initialListingSlug ?? null
   );
 
+  // Which Supabase view was used when we resolved `resolvedSlugRef`. When auth
+  // loads or the session ends, `tableName` flips — we must refetch so we do not
+  // keep showing columns from the wrong view.
+  const resolvedTableRef = useRef<string | null>(
+    initialListingSlug &&
+      initialListing?.slug &&
+      initialListing.slug === initialListingSlug
+      ? user
+        ? "listings_private_data"
+        : "listings_public_data"
+      : null
+  );
+
   const tableName = user ? "listings_private_data" : "listings_public_data";
+
+  // If the public/private view flips (e.g. session finished loading) while the
+  // same listing is open, refetch with the correct view.
+  useEffect(() => {
+    if (!listingSlug) return;
+    if (resolvedTableRef.current === null) return;
+    if (resolvedTableRef.current === tableName) return;
+    resolvedTableRef.current = null;
+  }, [listingSlug, tableName]);
 
   const fetchBySlug = useCallback(
     async (slug: string) => {
@@ -88,6 +110,7 @@ export function useMapListingUrl({
         const listing = data as Listing;
         setSelectedListing(listing);
         resolvedSlugRef.current = slug;
+        resolvedTableRef.current = tableName;
         setOptimisticListingId(listing.id ?? null);
       } catch (err) {
         console.warn("Failed to load listing by slug:", err);
@@ -109,6 +132,7 @@ export function useMapListingUrl({
   useEffect(() => {
     if (!listingSlug) {
       resolvedSlugRef.current = null;
+      resolvedTableRef.current = null;
       setOptimisticListingId(null);
       return;
     }
@@ -121,16 +145,20 @@ export function useMapListingUrl({
     ) {
       setSelectedListing(initialListing);
       resolvedSlugRef.current = listingSlug;
+      resolvedTableRef.current = tableName;
       setOptimisticListingId(initialListing.id ?? null);
       return;
     }
 
-    if (resolvedSlugRef.current === listingSlug) {
+    if (
+      resolvedSlugRef.current === listingSlug &&
+      resolvedTableRef.current === tableName
+    ) {
       return;
     }
 
     fetchBySlug(listingSlug);
-  }, [fetchBySlug, initialListing, initialListingSlug, listingSlug]);
+  }, [fetchBySlug, initialListing, initialListingSlug, listingSlug, tableName]);
 
   const selectListingById = useCallback(
     async (id: number) => {
@@ -160,6 +188,7 @@ export function useMapListingUrl({
         if (slug) {
           // Claim this slug so the URL sync effect doesn't refetch.
           resolvedSlugRef.current = slug;
+          resolvedTableRef.current = tableName;
           router.push(`/map?listing=${slug}`, { scroll: false });
         }
       } catch (err) {
@@ -176,6 +205,7 @@ export function useMapListingUrl({
 
   const closeListing = useCallback(() => {
     resolvedSlugRef.current = null;
+    resolvedTableRef.current = null;
     setOptimisticListingId(null);
     router.push("/map", { scroll: false });
   }, [router]);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import type { ComponentType } from "react";
+import type { ComponentType, CSSProperties } from "react";
 
 import Map, {
   NavigationControl,
@@ -90,19 +90,19 @@ const LoadingChip = styled("div")(({ theme }) => ({
   transition: "opacity 150ms ease",
 }));
 
-const attributionControlMobileStyle: React.CSSProperties = {
+const attributionControlMobileStyle: CSSProperties = {
   marginRight: `calc(clamp(var(--spacing-tabBar-marginX), calc(((100vw - var(--spacing-tabBar-maxWidth)) / 2)), 100vw) + 4px)`,
   marginBottom: "5.25rem",
   opacity: 0.875,
 };
 
-const attributionControlDesktopStyle: React.CSSProperties = {
+const attributionControlDesktopStyle: CSSProperties = {
   opacity: 1,
   marginRight: "10px",
   marginBottom: "10px",
 };
 
-const searchStyle: React.CSSProperties = {
+const searchStyle: CSSProperties = {
   position: "absolute",
   top: "0.75rem",
   left: "0.75rem",
@@ -178,9 +178,6 @@ export default function MapView({
     selectedListing,
   });
 
-  const hasInitialPosition =
-    hasValidCoordinates(selectedListing) || Boolean(initialCoordinates);
-
   useEffect(() => {
     const protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -245,61 +242,59 @@ export default function MapView({
 
   return (
     <MapContainer>
-      {hasInitialPosition && (
-        <>
-          <Map
-            ref={mapRef}
-            attributionControl={false}
-            mapStyle={MAP_STYLE}
-            renderWorldCopies={true}
-            initialViewState={resolveInitialViewState(
-              selectedListing,
-              initialCoordinates
-            )}
-            onMoveEnd={handleMoveEnd}
-            onLoad={handleLoad}
-            onClick={handleMapClickInternal}
-          >
-            <GeolocateControl showUserLocation={true} />
-            <NavigationControl showZoom={true} showCompass={false} />
+      <>
+        <Map
+          ref={mapRef}
+          attributionControl={false}
+          mapStyle={MAP_STYLE}
+          renderWorldCopies={true}
+          initialViewState={resolveInitialViewState(
+            selectedListing,
+            initialCoordinates
+          )}
+          onMoveEnd={handleMoveEnd}
+          onLoad={handleLoad}
+          onClick={handleMapClickInternal}
+        >
+          <GeolocateControl showUserLocation={true} />
+          <NavigationControl showZoom={true} showCompass={false} />
 
-            <AttributionControl
-              compact={true}
-              style={
-                !isDesktop
-                  ? attributionControlMobileStyle
-                  : attributionControlDesktopStyle
-              }
-            />
-
-            <MapPinLayer
-              listings={listings}
-              selectedListingId={selectedListingId}
-              DrawerTrigger={DrawerTrigger}
-              onMarkerClick={onMarkerClick}
-            />
-          </Map>
-
-          <MapSearch
-            onPick={handleSearchPick}
-            countryCode={countryCode}
-            style={searchStyle}
+          <AttributionControl
+            compact={true}
+            style={
+              !isDesktop
+                ? attributionControlMobileStyle
+                : attributionControlDesktopStyle
+            }
           />
 
-          {isFetching && <LoadingChip>{t("loadingPins")}</LoadingChip>}
+          <MapPinLayer
+            listings={listings}
+            selectedListingId={selectedListingId}
+            DrawerTrigger={DrawerTrigger}
+            onMarkerClick={onMarkerClick}
+          />
+        </Map>
 
-          {showReturnButton && (
-            <ReturnToListingButton
-              onClick={flyToSelected}
-              variant="secondary"
-              size="small"
-              width="contained"
-            >
-              {t("returnToListing")}
-            </ReturnToListingButton>
-          )}
-        </>
-      )}
+        <MapSearch
+          onPick={handleSearchPick}
+          countryCode={countryCode}
+          style={searchStyle}
+        />
+
+        {isFetching && <LoadingChip>{t("loadingPins")}</LoadingChip>}
+
+        {showReturnButton && (
+          <ReturnToListingButton
+            onClick={flyToSelected}
+            variant="secondary"
+            size="small"
+            width="contained"
+          >
+            {t("returnToListing")}
+          </ReturnToListingButton>
+        )}
+      </>
     </MapContainer>
   );
 }

@@ -64,11 +64,18 @@ export function useIpInitialLocation({
 
         if (cancelled) return;
 
-        if (response?.latitude && response?.longitude) {
+        const lat = response?.latitude;
+        const lng = response?.longitude;
+        if (
+          typeof lat === "number" &&
+          typeof lng === "number" &&
+          Number.isFinite(lat) &&
+          Number.isFinite(lng)
+        ) {
           setCountryCode(response.country_code ?? null);
           setInitialCoordinates({
-            latitude: response.latitude,
-            longitude: response.longitude,
+            latitude: lat,
+            longitude: lng,
             zoom: ZOOM_LEVEL_DEFAULT,
           });
         }

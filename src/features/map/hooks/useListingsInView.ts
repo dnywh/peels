@@ -17,12 +17,14 @@ type UseListingsInViewResult = {
   requestBounds: (bounds: LngLatBounds) => void;
 };
 
-type Debounced<T extends (...args: never[]) => unknown> = T & {
+// `any[]` is intentional: the debounced function can be called with any
+// argument list; `never[]` is too strict and fails to accept `runFetch`.
+type Debounced<T extends (...args: any[]) => unknown> = T & {
   cancel: () => void;
 };
 
 // Trailing-edge debounce. Keeps the hook dependency-light (no @types/lodash).
-function debounce<T extends (...args: never[]) => unknown>(
+function debounce<T extends (...args: any[]) => unknown>(
   fn: T,
   wait: number
 ): Debounced<T> {
