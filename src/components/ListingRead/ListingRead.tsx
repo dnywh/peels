@@ -1,6 +1,6 @@
 "use client";
 import { Fragment, useState, memo, useEffect } from "react";
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
@@ -315,23 +315,11 @@ export default ListingRead;
 
 type PresentationVariantProps = {
   presentation?: Presentation;
-  children?: ReactNode;
 };
 
 type ListingSectionVariantProps = PresentationVariantProps & {
   overflowX?: "visible";
 };
-
-// Pigment's variant typing narrows shared props to the first variant's literal.
-// Cast the `styled()` factory so our variant props survive as a string union.
-type StyledWithVariants<P> = (arg: unknown) => ComponentType<P>;
-
-const styledDivWithPresentation = styled(
-  "div"
-) as unknown as StyledWithVariants<PresentationVariantProps>;
-const styledSectionWithSection = styled(
-  "section"
-) as unknown as StyledWithVariants<ListingSectionVariantProps>;
 
 const sharedColumnStyles = {
   display: "flex",
@@ -339,7 +327,7 @@ const sharedColumnStyles = {
   gap: "3rem",
 };
 
-const ColumnMain = styledDivWithPresentation(({ theme }: { theme: any }) => ({
+const ColumnMain = styled("div")<PresentationVariantProps>(({ theme }) => ({
   ...sharedColumnStyles,
 
   variants: [
@@ -357,7 +345,7 @@ const ColumnMain = styledDivWithPresentation(({ theme }: { theme: any }) => ({
   ],
 }));
 
-const ColumnMinor = styledDivWithPresentation(({ theme }: { theme: any }) => ({
+const ColumnMinor = styled("div")<PresentationVariantProps>(({ theme }) => ({
   ...sharedColumnStyles,
 
   variants: [
@@ -372,8 +360,8 @@ const ColumnMinor = styledDivWithPresentation(({ theme }: { theme: any }) => ({
   ],
 }));
 
-const ListingContents = styledDivWithPresentation(
-  ({ theme }: { theme: any }) => ({
+const ListingContents = styled("div")<PresentationVariantProps>(
+  ({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     gap: "3rem",
@@ -399,9 +387,9 @@ const ListingContents = styledDivWithPresentation(
   })
 );
 
-const ListingSection = styledSectionWithSection(
-  ({ theme }: { theme: any }) => ({
-    padding: " 0 1rem",
+const ListingSection = styled("section")<ListingSectionVariantProps>(
+  ({ theme }) => ({
+    padding: "0 1rem",
 
     "& h3": {
       fontWeight: "500",
