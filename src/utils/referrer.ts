@@ -10,7 +10,7 @@ export function normaliseReferrer(
 export function normaliseReferrer(referrer: string | undefined) {
   if (referrer === undefined) return undefined;
 
-  let current = referrer;
+  let current = referrer.trim();
 
   for (let i = 0; i < 3 && encodedReferrerPrefix.test(current); i += 1) {
     try {
