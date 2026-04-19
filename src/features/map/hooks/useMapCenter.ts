@@ -3,15 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MapRef } from "react-map-gl/maplibre";
 
+import type { ListingCoordinates, SelectedListing } from "@/types/listing";
+
 import {
   FLY_DURATION,
   ZOOM_LEVEL_SELECTED,
   getListingCoordinates,
   hasValidCoordinates,
   isCoordinateInBounds,
-  type ListingCoordinates,
-  type SelectedListing,
-} from "@/utils/mapUtils";
+} from "../lib/mapUtils";
 
 type UseMapCenterArgs = {
   mapRef: React.RefObject<MapRef | null>;
@@ -82,7 +82,7 @@ export function useMapCenter({
     // If we loaded with a selected listing, "claim" its id so the effect below
     // doesn't try to fly to it again (the map's initialViewState already did).
     if (hasValidCoordinates(selectedListing)) {
-      centeredListingIdRef.current = selectedListing.id ?? null;
+      centeredListingIdRef.current = selectedListing.id;
     }
 
     recomputeIsInView();
@@ -98,8 +98,8 @@ export function useMapCenter({
     if (!map || !hasHandledLoadRef.current) return;
     if (!hasValidCoordinates(selectedListing)) return;
 
-    const listingId = selectedListing.id ?? null;
-    if (listingId !== null && centeredListingIdRef.current === listingId) {
+    const listingId = selectedListing.id;
+    if (centeredListingIdRef.current === listingId) {
       return;
     }
 

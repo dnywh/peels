@@ -7,8 +7,12 @@ import { useTranslations } from "next-intl";
 
 import { facts } from "@/data/facts";
 
+import type { User } from "@supabase/supabase-js";
+
+import { SIDEBAR_WIDTH } from "../lib/mapUtils";
+
 type MapSidebarProps = {
-  user: { id: string } | null | undefined;
+  user: User | null | undefined;
   covered: boolean;
 };
 
@@ -16,8 +20,6 @@ type Fact = {
   fact: string;
   source?: string;
 };
-
-const sidebarWidth = "clamp(20rem, 30vw, 30rem);";
 
 const StyledSidebar = styled("div")(({ theme }) => ({
   backgroundColor: theme.colors.background.pit,
@@ -30,7 +32,7 @@ const StyledSidebar = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
-  width: sidebarWidth,
+  width: SIDEBAR_WIDTH,
   height: "100%",
   wordWrap: "anywhere", // for source URLs on facts, remove when those go
   border: `2px dashed ${theme.colors.border.base}`,

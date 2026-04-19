@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { geolocation } from "@maptiler/client";
+import { config, geolocation } from "@maptiler/client";
 
-import { ZOOM_LEVEL_DEFAULT, type ListingCoordinates } from "@/utils/mapUtils";
+import type { ListingCoordinates } from "@/types/listing";
+
+import { ZOOM_LEVEL_DEFAULT } from "../lib/mapUtils";
 
 type UseIpInitialLocationArgs = {
   // Skip when the page already has a listing slug (deep-linked selections
@@ -16,7 +18,19 @@ type UseIpInitialLocationResult = {
   countryCode: string | null;
 };
 
-// One-time IP-based initial centre. MapImmersive falls back to
+// Guarded one-time init so the key is only assigned in the browser (the hook
+// only runs client-side) and only on the first consumer of the hook.
+let hasConfiguredMapTiler = false;
+
+function ensureMapTilerConfig() {
+  if (hasConfiguredMapTiler) return;
+  const key = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+  if (!key) return;
+  config.apiKey = key;
+  hasConfiguredMapTiler = true;
+}
+
+// One-time IP-based initial centre. MapView falls back to
 // DEFAULT_COORDINATES if this fails or is skipped.
 export function useIpInitialLocation({
   skip = false,
@@ -28,6 +42,8 @@ export function useIpInitialLocation({
 
   useEffect(() => {
     if (skip) return;
+
+    ensureMapTilerConfig();
 
     let cancelled = false;
 

@@ -1,5 +1,7 @@
 "use client";
 import { Fragment, useState, memo, useEffect } from "react";
+import type { ComponentType, ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
 
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 import { createClient } from "@/utils/supabase/client";
@@ -17,29 +19,53 @@ import StrongLink from "@/components/StrongLink";
 import { styled } from "@pigment-css/react";
 import { useTranslations } from "next-intl";
 
-// Memoize the Listing component
+import type { DemoListing, Listing } from "@/types/listing";
+
+type Presentation = "full" | "drawer" | "demo";
+
+type ListingReadListing = Listing | DemoListing;
+
+type ListingReadProps = {
+  user: User | null;
+  listing: ListingReadListing | null;
+  presentation?: Presentation;
+};
+
+function isDemoListing(
+  listing: ListingReadListing | null
+): listing is DemoListing {
+  return Boolean(listing && (listing as DemoListing).is_demo === true);
+}
+
 const ListingRead = memo(function Listing({
   user,
   listing,
   presentation = "full",
-  isChatDrawerOpen,
-  setIsChatDrawerOpen,
-}) {
+}: ListingReadProps) {
   const t = useTranslations();
-  const router = presentation !== "demo" ? useRouter() : null;
+  // Hooks must be called unconditionally; router is unused in demo mode.
+  const router = useRouter();
 
-  const [existingThread, setExistingThread] = useState(null);
-  const [mapZoomLevel, setMapZoomLevel] = useState(null);
+  const [existingThread, setExistingThread] = useState<unknown>(null);
+  const [mapZoomLevel, setMapZoomLevel] = useState<number | null>(null);
+  // Chat drawer state is owned here so that each selected listing gets a
+  // fresh drawer. The parent resets this by remounting with `key`.
+  const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
 
-  // Only initialize Supabase if not in demo mode
   const supabase = presentation !== "demo" ? createClient() : null;
+
+  const isDemo = presentation === "demo";
+  const demoListing = isDemoListing(listing) ? listing : null;
+  const realListing =
+    !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
 
   // Load existing thread if any (only if not in demo mode)
   useEffect(() => {
-    if (presentation === "demo" || !supabase || !user || !listing) return;
+    if (isDemo || !supabase || !user || !realListing) return;
 
     // TODO: Should this only be called when the actual ListingChatDrawer is loaded?
     async function loadExistingThread() {
+      if (!supabase || !user || !realListing) return;
       const { data: thread, error } = await supabase
         .from("chat_threads_with_participants")
         .select(
@@ -49,9 +75,9 @@ const ListingRead = memo(function Listing({
         `
         )
         .match({
-          listing_id: listing.id,
+          listing_id: realListing.id,
           initiator_id: user.id,
-          owner_id: listing.owner_id,
+          owner_id: realListing.owner_id,
         })
         .maybeSingle();
 
@@ -64,28 +90,27 @@ const ListingRead = memo(function Listing({
     }
 
     loadExistingThread();
-  }, [listing?.id, user?.id, presentation, supabase]);
+  }, [realListing?.id, user?.id, isDemo, supabase, realListing]);
 
   const initialZoomLevel = 14;
   useEffect(() => {
     setMapZoomLevel(initialZoomLevel);
   }, []);
 
-  const listingDisplayName =
-    presentation === "demo"
-      ? listing?.name
-        ? listing.name
-        : listing.owner_first_name
-      : getListingDisplayName(listing, user);
-  const coordinates = listing?.coordinates;
+  const listingDisplayName: string = isDemo
+    ? (demoListing?.name ?? demoListing?.owner_first_name ?? "")
+    : realListing
+      ? getListingDisplayName(realListing, user)
+      : "";
 
-  if (!listing && presentation !== "demo") {
-    console.log("Listing not found");
+  const coordinates = realListing?.coordinates ?? null;
+
+  if (!listing && !isDemo) {
     return null;
   }
 
   return (
-    <Fragment key={listing?.id ? listing.id : undefined}>
+    <Fragment key={realListing?.id ? realListing.id : undefined}>
       <ColumnMain presentation={presentation}>
         <ListingHeader
           presentation={presentation}
@@ -94,27 +119,25 @@ const ListingRead = memo(function Listing({
           user={user}
         />
 
-        {presentation === "demo" ? (
+        {isDemo && demoListing ? (
           <DemoButtonContainer>
             <Button variant="primary" width="full" href="/#contact">
               {t("Listings.read.contact", {
-                name: listing.owner_first_name
-                  ? listing.owner_first_name
-                  : listing.name,
+                name: demoListing.owner_first_name ?? demoListing.name ?? "",
               })}
             </Button>
           </DemoButtonContainer>
-        ) : (
+        ) : realListing ? (
           <ListingChatDrawer
-            isNested={presentation === "drawer" ? true : false}
+            isNested={presentation === "drawer"}
             user={user}
-            listing={listing}
+            listing={realListing}
             isChatDrawerOpen={isChatDrawerOpen}
             setIsChatDrawerOpen={setIsChatDrawerOpen}
             existingThread={existingThread}
             listingDisplayName={listingDisplayName}
           />
-        )}
+        ) : null}
 
         <ListingContents presentation={presentation}>
           {listing?.description && (
@@ -124,35 +147,29 @@ const ListingRead = memo(function Listing({
                   ? t("Listings.read.donationDetails")
                   : t("Listings.read.about")}
               </h3>
-              <MultiParagraphCluster text={listing?.description} />
+              <MultiParagraphCluster text={listing.description} />
             </ListingSection>
           )}
 
-          {listing?.accepted_items?.length > 0 && (
+          {listing?.accepted_items && listing.accepted_items.length > 0 && (
             <ListingSection>
               <h3>{t("Listings.read.accepted")}</h3>
-              <ListingItemList
-                items={listing?.accepted_items}
-                type="accepted"
-              />
+              <ListingItemList items={listing.accepted_items} type="accepted" />
             </ListingSection>
           )}
 
-          {listing?.rejected_items?.length > 0 && (
+          {listing?.rejected_items && listing.rejected_items.length > 0 && (
             <ListingSection>
               <h3>{t("Listings.read.rejected")}</h3>
-              <ListingItemList
-                items={listing?.rejected_items}
-                type="rejected"
-              />
+              <ListingItemList items={listing.rejected_items} type="rejected" />
             </ListingSection>
           )}
         </ListingContents>
       </ColumnMain>
 
-      {presentation !== "demo" && (
+      {realListing && !isDemo && (
         <ColumnMinor presentation={presentation}>
-          {presentation !== "drawer" && (
+          {presentation !== "drawer" && coordinates && (
             <ListingSection presentation={presentation}>
               <h3>{t("Listings.read.location")}</h3>
 
@@ -171,21 +188,24 @@ const ListingRead = memo(function Listing({
                   anchor="center"
                   onClick={(event) => {
                     event.originalEvent.stopPropagation();
-                    router.push(`/map?listing=${listing.slug}`);
+                    router.push(`/map?listing=${realListing.slug}`);
                   }}
                 >
-                  <MapPin selected={true} type={listing.type} />
+                  <MapPin
+                    selected={true}
+                    type={realListing.type ?? undefined}
+                  />
                 </Marker>
                 <NavigationControl showCompass={false} />
               </MapThumbnail>
 
               <MapDetails>
-                {listing.type === "residential" ? (
+                {realListing.type === "residential" ? (
                   <p>
                     {t("Listings.read.residentialLocation", {
                       name: listingDisplayName,
-                      area: listing.area_name
-                        ? listing.area_name
+                      area: realListing.area_name
+                        ? realListing.area_name
                         : t("Listings.read.thisArea"),
                     })}
                   </p>
@@ -194,12 +214,12 @@ const ListingRead = memo(function Listing({
                     {t("Listings.read.nonResidentialLocation", {
                       name: listingDisplayName,
                       type:
-                        listing.type === "business"
+                        realListing.type === "business"
                           ? t("Listings.read.businessType")
-                          : listing.type === "community"
+                          : realListing.type === "community"
                             ? t("Listings.read.communityType")
                             : "",
-                      area: listing.area_name,
+                      area: realListing.area_name ?? "",
                     })}
                   </p>
                 )}
@@ -208,17 +228,17 @@ const ListingRead = memo(function Listing({
                   <Button
                     variant="secondary"
                     size="small"
-                    href={`/map?listing=${listing.slug}`}
+                    href={`/map?listing=${realListing.slug}`}
                   >
                     {t("Actions.seeNearbyListings")}
                   </Button>
-                  {listing.type !== "residential" && (
+                  {realListing.type !== "residential" && (
                     <>
                       <Button
                         variant="secondary"
                         size="small"
                         href={`https://maps.apple.com/?ll=${coordinates.latitude},${coordinates.longitude}&q=${encodeURIComponent(
-                          listing.name
+                          realListing.name ?? ""
                         )}`}
                         target="_blank"
                       >
@@ -239,37 +259,37 @@ const ListingRead = memo(function Listing({
             </ListingSection>
           )}
 
-          {listing.photos?.length > 0 && (
+          {realListing.photos && realListing.photos.length > 0 && (
             <ListingSection
               presentation={presentation}
               overflowX={
-                !user && listing.type === "residential" ? undefined : "visible"
+                !user && realListing.type === "residential"
+                  ? undefined
+                  : "visible"
               }
             >
               <h3>{t("Common.photos")}</h3>
-              {!user && listing.type === "residential" ? (
+              {!user && realListing.type === "residential" ? (
                 <p>
                   {t.rich("Listings.read.signInForPhotos", {
-                    link: (chunks) => (
+                    link: (chunks: ReactNode) => (
                       <StrongLink href="/sign-in">{chunks}</StrongLink>
                     ),
                   })}
                 </p>
               ) : (
-                <>
-                  <ListingPhotoGallery
-                    presentation={presentation}
-                    photos={listing.photos}
-                  />
-                </>
+                <ListingPhotoGallery
+                  presentation={presentation}
+                  photos={realListing.photos}
+                />
               )}
             </ListingSection>
           )}
 
-          {listing.links?.length > 0 && (
+          {realListing.links && realListing.links.length > 0 && (
             <ListingSection presentation={presentation}>
               <h3>{t("Common.links")}</h3>
-              <ListingItemList items={listing.links} type="links" />
+              <ListingItemList items={realListing.links} type="links" />
             </ListingSection>
           )}
 
@@ -279,7 +299,7 @@ const ListingRead = memo(function Listing({
                 variant="secondary"
                 size="small"
                 width="contained"
-                href={`/listings/${listing.slug}`}
+                href={`/listings/${realListing.slug}`}
               >
                 {t("Actions.viewFullListing")}
               </Button>
@@ -293,14 +313,33 @@ const ListingRead = memo(function Listing({
 
 export default ListingRead;
 
-const sharedColumnStyles = {
-  // Inherit same flex properties as parent, given these columns should be invisible when drawer
-  display: "flex",
-  flexDirection: "column",
-  gap: "3rem", // Match in MapPageClient (StyledDrawerInner)
+type PresentationVariantProps = {
+  presentation?: Presentation;
+  children?: ReactNode;
 };
 
-const ColumnMain = styled("div")(({ theme }) => ({
+type ListingSectionVariantProps = PresentationVariantProps & {
+  overflowX?: "visible";
+};
+
+// Pigment's variant typing narrows shared props to the first variant's literal.
+// Cast the `styled()` factory so our variant props survive as a string union.
+type StyledWithVariants<P> = (arg: unknown) => ComponentType<P>;
+
+const styledDivWithPresentation = styled(
+  "div"
+) as unknown as StyledWithVariants<PresentationVariantProps>;
+const styledSectionWithSection = styled(
+  "section"
+) as unknown as StyledWithVariants<ListingSectionVariantProps>;
+
+const sharedColumnStyles = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "3rem",
+};
+
+const ColumnMain = styledDivWithPresentation(({ theme }: { theme: any }) => ({
   ...sharedColumnStyles,
 
   variants: [
@@ -318,15 +357,13 @@ const ColumnMain = styled("div")(({ theme }) => ({
   ],
 }));
 
-const ColumnMinor = styled("div")(({ theme }) => ({
+const ColumnMinor = styledDivWithPresentation(({ theme }: { theme: any }) => ({
   ...sharedColumnStyles,
 
   variants: [
     {
       props: { presentation: "full" },
       style: {
-        // Make second column gap smaller on larger breakpoint
-
         "@media (min-width: 1280px)": {
           gap: "1.5rem",
         },
@@ -335,93 +372,92 @@ const ColumnMinor = styled("div")(({ theme }) => ({
   ],
 }));
 
-const ListingContents = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "3rem", // Match in MapPageClient (StyledDrawerInner)
+const ListingContents = styledDivWithPresentation(
+  ({ theme }: { theme: any }) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: "3rem",
 
-  // Match styling of other sections
-  variants: [
-    {
-      props: { presentation: "full" },
-      style: {
-        padding: "1.5rem 0",
-        backgroundColor: theme.colors.background.top,
-        border: `1px solid ${theme.colors.border.base}`,
-        borderRadius: theme.corners.base,
+    variants: [
+      {
+        props: { presentation: "full" },
+        style: {
+          padding: "1.5rem 0",
+          backgroundColor: theme.colors.background.top,
+          border: `1px solid ${theme.colors.border.base}`,
+          borderRadius: theme.corners.base,
 
-        "@media (min-width: 768px)": {
-          padding: "0 0.5rem", // 0.5rem + 1rem = 1.5rem used elsewhere in 'naked' ListingSection instances
-          backgroundColor: "unset",
-          border: "unset",
-          borderRadius: "unset",
-        },
-      },
-    },
-  ],
-}));
-
-const ListingSection = styled("section")(({ theme }) => ({
-  // width: "100%",
-  padding: " 0 1rem", // Pad by default ,override on Photos section (overflowX: "visible")
-
-  "& h3": {
-    // Match newsletter issue headers
-    fontWeight: "500",
-    marginBottom: "0.5rem",
-    color: theme.colors.text.ui.secondary,
-  },
-
-  "& p + p": {
-    // Add paragraph spacing
-    marginTop: "0.5rem",
-    color: theme.colors.text.ui.primary,
-  },
-
-  variants: [
-    {
-      props: { overflowX: "visible" },
-      style: {
-        padding: "0", // Pad by default, override on Photos section (overflowX: "visible")
-        overflowX: "visible",
-
-        "& h3": {
-          padding: "0 1rem", // Account for removed padding on parent
-        },
-      },
-    },
-    {
-      // TODO: This 'overflowX: undefined' is ignored, targeting everything with presentation: full. Ideally I can only target the presentation: full items that DON'T have an overflowX prop defined
-      props: { overflowX: undefined, presentation: "full" },
-      style: {
-        backgroundColor: theme.colors.background.top,
-        border: `1px solid ${theme.colors.border.base}`,
-        borderRadius: theme.corners.base,
-
-        padding: "1rem 1rem 1.5rem",
-
-        "@media (min-width: 768px)": {
-          padding: "1rem 1.5rem 1.5rem",
-        },
-      },
-    },
-    {
-      props: { overflowX: "visible", presentation: "full" },
-      style: {
-        padding: "1rem 0 1.5rem",
-
-        "@media (min-width: 768px)": {
-          "& h3": {
-            padding: "0 1.5rem", // Account for removed padding on parent
+          "@media (min-width: 768px)": {
+            padding: "0 0.5rem",
+            backgroundColor: "unset",
+            border: "unset",
+            borderRadius: "unset",
           },
         },
       },
+    ],
+  })
+);
+
+const ListingSection = styledSectionWithSection(
+  ({ theme }: { theme: any }) => ({
+    padding: " 0 1rem",
+
+    "& h3": {
+      fontWeight: "500",
+      marginBottom: "0.5rem",
+      color: theme.colors.text.ui.secondary,
     },
-  ],
-}));
+
+    "& p + p": {
+      marginTop: "0.5rem",
+      color: theme.colors.text.ui.primary,
+    },
+
+    variants: [
+      {
+        props: { overflowX: "visible" },
+        style: {
+          padding: "0",
+          overflowX: "visible",
+
+          "& h3": {
+            padding: "0 1rem",
+          },
+        },
+      },
+      {
+        props: { overflowX: undefined, presentation: "full" },
+        style: {
+          backgroundColor: theme.colors.background.top,
+          border: `1px solid ${theme.colors.border.base}`,
+          borderRadius: theme.corners.base,
+
+          padding: "1rem 1rem 1.5rem",
+
+          "@media (min-width: 768px)": {
+            padding: "1rem 1.5rem 1.5rem",
+          },
+        },
+      },
+      {
+        props: { overflowX: "visible", presentation: "full" },
+        style: {
+          padding: "1rem 0 1.5rem",
+
+          "@media (min-width: 768px)": {
+            "& h3": {
+              padding: "0 1.5rem",
+            },
+          },
+        },
+      },
+    ],
+  })
+);
 
 const DemoButtonContainer = styled("div")({
-  padding: "0 1rem", // Match padding from other parts of ListingRead
+  padding: "0 1rem",
 });
 
 const MapDetails = styled("div")(({ theme }) => ({
@@ -442,9 +478,9 @@ const ButtonGroup = styled("div")({
   gap: "0.5rem",
 });
 
-// A much fancier version than just using whiteSpace: "pre-wrap", which renders looking like a completely new empty paragraph in between lines
-const MultiParagraphCluster = ({ text }) => {
-  const paragraphs = text.split("\n").filter((line) => line.trim() !== ""); // Split by line breaks and filter out empty lines
+// Split by line breaks and render each paragraph with inline link parsing.
+function MultiParagraphCluster({ text }: { text: string }) {
+  const paragraphs = text.split("\n").filter((line) => line.trim() !== "");
   return (
     <>
       {paragraphs.map((paragraph, index) => (
@@ -462,4 +498,4 @@ const MultiParagraphCluster = ({ text }) => {
       ))}
     </>
   );
-};
+}

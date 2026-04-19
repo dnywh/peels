@@ -1,28 +1,12 @@
 import type { LngLatBounds } from "maplibre-gl";
 
-export type ListingType = "business" | "community" | "residential";
-
-export type ListingCoordinates = {
-  latitude: number;
-  longitude: number;
-};
-
-export type ListingMarker = {
-  id: number;
-  type: ListingType | string | null;
-  coordinates: ListingCoordinates | null;
-};
-
-export type SelectedListing = {
-  id?: number;
-  slug?: string;
-  name?: string;
-  type?: ListingType | string | null;
-  coordinates?: ListingCoordinates | null;
-  error?: boolean;
-  message?: string;
-  [key: string]: unknown;
-};
+import {
+  isListing,
+  type Listing,
+  type ListingCoordinates,
+  type ListingMarker,
+  type SelectedListing,
+} from "@/types/listing";
 
 export type BoundingBox = {
   south: number;
@@ -49,25 +33,33 @@ export const FLY_DURATION = {
   searchPick: 3200,
 } as const;
 
+// Shared sidebar width used by both the desktop layout and the map padding
+// calculations so the map always accounts for the covered viewport area.
+export const SIDEBAR_WIDTH = "clamp(20rem, 30vw, 30rem)";
+
+// Snap points for the mobile listing drawer. 0.35 gives enough room for the
+// listing header/CTA while keeping the map visible; 1 is the fully expanded
+// state.
+export const SNAP_POINTS = {
+  partial: 0.35,
+  full: 1,
+} as const;
+
 export function getListingCoordinates(
-  listing: SelectedListing | ListingMarker | null | undefined
+  listing: Listing | ListingMarker | SelectedListing | null | undefined
 ): ListingCoordinates | null {
-  const coords = (listing as { coordinates?: ListingCoordinates | null })
-    ?.coordinates;
-  return coords ?? null;
+  if (!listing) return null;
+  if (!isListing(listing as SelectedListing)) return null;
+  return (listing as Listing | ListingMarker).coordinates ?? null;
 }
 
 export function hasValidCoordinates(
-  listing: SelectedListing | ListingMarker | null | undefined
-): listing is (SelectedListing | ListingMarker) & {
+  listing: Listing | ListingMarker | SelectedListing | null | undefined
+): listing is (Listing | ListingMarker) & {
   coordinates: ListingCoordinates;
 } {
   const coordinates = getListingCoordinates(listing);
-  const error = (listing as { error?: boolean } | null | undefined)?.error;
-
   return Boolean(
-    listing &&
-    !error &&
     coordinates &&
     typeof coordinates.latitude === "number" &&
     typeof coordinates.longitude === "number" &&

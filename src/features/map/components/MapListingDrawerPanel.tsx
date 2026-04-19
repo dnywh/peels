@@ -4,19 +4,21 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Drawer } from "vaul";
 import { styled } from "@pigment-css/react";
 import { useTranslations } from "next-intl";
+import type { User } from "@supabase/supabase-js";
 
 import ListingRead from "@/components/ListingRead";
 import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
-
 import {
   getListingDisplayName,
   getListingDisplayType,
 } from "@/utils/listingUtils";
-import type { SelectedListing } from "@/utils/mapUtils";
+import { isListingError, type SelectedListing } from "@/types/listing";
 
-type MapListingDrawerProps = {
-  user: { id: string } | null;
+import { SIDEBAR_WIDTH } from "../lib/mapUtils";
+
+type MapListingDrawerPanelProps = {
+  user: User | null;
   selectedListing: SelectedListing | null;
   isDesktop: boolean;
   hasTouch: boolean;
@@ -25,38 +27,20 @@ type MapListingDrawerProps = {
   isPartialSnap: boolean;
   onToggleSnap: () => void;
   onClose: () => void;
-  isChatDrawerOpen: boolean;
-  setIsChatDrawerOpen: (value: boolean) => void;
   drawerContentRef: React.MutableRefObject<HTMLDivElement | null>;
 };
-
-const ListingReadComponent = ListingRead as React.ComponentType<{
-  user: unknown;
-  listing: SelectedListing | null;
-  presentation?: string;
-  isChatDrawerOpen?: boolean;
-  setIsChatDrawerOpen?: (value: boolean) => void;
-}>;
-
-const IconButtonComponent = IconButton as React.ComponentType<{
-  icon: string;
-  onClick?: () => void;
-  className?: string;
-}>;
-
-const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 
 const sharedButtonStyles = {
   pointerEvents: "all" as const,
 };
 
-const StyledIconButtonAbsolute = styled(IconButtonComponent)({
+const StyledIconButtonAbsolute = styled(IconButton)({
   ...sharedButtonStyles,
   position: "absolute",
   right: "0.75rem",
 });
 
-const StyledIconButtonStationary = styled(IconButtonComponent)({
+const StyledIconButtonStationary = styled(IconButton)({
   ...sharedButtonStyles,
   position: "relative",
 });
@@ -94,7 +78,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
     bottom: "24px",
     left: "unset",
     outline: "none",
-    width: sidebarWidth,
+    width: SIDEBAR_WIDTH,
   },
 }));
 
@@ -209,7 +193,7 @@ const NoListingFound = styled("div")(({ theme }) => ({
   },
 }));
 
-export default function MapListingDrawer({
+export default function MapListingDrawerPanel({
   user,
   selectedListing,
   isDesktop,
@@ -219,20 +203,20 @@ export default function MapListingDrawer({
   isPartialSnap,
   onToggleSnap,
   onClose,
-  isChatDrawerOpen,
-  setIsChatDrawerOpen,
   drawerContentRef,
-}: MapListingDrawerProps) {
+}: MapListingDrawerPanelProps) {
   const t = useTranslations();
 
-  const showErrorPanel = Boolean(selectedListing?.error);
+  const showErrorPanel = isListingError(selectedListing);
+  const listingForDisplay = isListingError(selectedListing)
+    ? null
+    : selectedListing;
 
   return (
     <Drawer.Portal>
       <StyledDrawerContent
         ref={drawerContentRef}
         data-vaul-no-drag={isDesktop ? true : undefined}
-        data-testid="content"
         style={{
           overflowY: isFullSnap || isDesktop ? "auto" : "hidden",
         }}
@@ -256,12 +240,14 @@ export default function MapListingDrawer({
           >
             <StyledHeaderText>
               <h3 style={{ fontSize: "0.85rem" }}>
-                {selectedListing
-                  ? getListingDisplayName(selectedListing, user)
+                {listingForDisplay
+                  ? getListingDisplayName(listingForDisplay, user)
                   : ""}
               </h3>
               <p>
-                {selectedListing ? getListingDisplayType(selectedListing) : ""}
+                {listingForDisplay
+                  ? getListingDisplayType(listingForDisplay)
+                  : ""}
               </p>
             </StyledHeaderText>
           </StyledDrawerHeaderInner>
@@ -301,12 +287,11 @@ export default function MapListingDrawer({
               </Button>
             </NoListingFound>
           ) : (
-            <ListingReadComponent
+            <ListingRead
+              key={listingForDisplay?.id ?? "empty"}
               user={user}
-              listing={selectedListing}
+              listing={listingForDisplay}
               presentation="drawer"
-              isChatDrawerOpen={isChatDrawerOpen}
-              setIsChatDrawerOpen={setIsChatDrawerOpen}
             />
           )}
         </StyledDrawerInner>

@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LngLatBounds } from "maplibre-gl";
 
 import { fetchListingsInView } from "@/app/actions";
-import { padBounds, type ListingMarker } from "@/utils/mapUtils";
+import type { ListingMarker } from "@/types/listing";
+
+import { padBounds } from "../lib/mapUtils";
 
 const DEBOUNCE_MS = 150;
 const VIEWPORT_PAD_FACTOR = 0.3;

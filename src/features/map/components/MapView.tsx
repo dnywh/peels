@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
-import type { ComponentType, Ref } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import type { ComponentType } from "react";
 
 import Map, {
   NavigationControl,
@@ -11,62 +11,47 @@ import Map, {
   type ViewStateChangeEvent,
   type MapLayerMouseEvent,
 } from "react-map-gl/maplibre";
-import maplibregl from "maplibre-gl";
+import maplibregl, { type LngLatBounds } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import { useTranslations } from "next-intl";
-
-import MapSearch from "@/components/MapSearch";
-import Button from "@/components/Button";
-import MapPinLayer from "./MapPinLayer";
-
 import { styled } from "@pigment-css/react";
 
-import { useMapCenter } from "@/hooks/useMapCenter";
+import Button from "@/components/Button";
+import type {
+  ListingCoordinates,
+  ListingMarker,
+  SelectedListing,
+} from "@/types/listing";
+
+import MapPinLayer from "./MapPinLayer";
+import MapSearch from "./MapSearch";
 import {
   DEFAULT_COORDINATES,
   ZOOM_LEVEL_DEFAULT,
   ZOOM_LEVEL_SELECTED,
   getListingCoordinates,
   hasValidCoordinates,
-  type ListingCoordinates,
-  type ListingMarker,
-  type SelectedListing,
-} from "@/utils/mapUtils";
+} from "../lib/mapUtils";
+import { useListingsInView } from "../hooks/useListingsInView";
+import { useMapCenter } from "../hooks/useMapCenter";
 
-type MapImmersiveProps = {
-  mapRef: Ref<MapRef | null>;
-  searchInputRef?: Ref<HTMLInputElement | null>;
-  listings: ListingMarker[];
-  isFetching: boolean;
+type GeocodingPickEvent = {
+  feature?: { center?: [number, number] };
+};
+
+type MapViewProps = {
   selectedListing: SelectedListing | null;
   selectedListingId: number | null;
   listingSlug: string | null;
   initialCoordinates: (ListingCoordinates & { zoom: number }) | null;
-  onBoundsChange: (bounds: maplibregl.LngLatBounds) => void;
   onMapClick: () => void;
   onMarkerClick: (listing: ListingMarker) => void;
-  onSearchPick: (event: { feature?: { center?: [number, number] } }) => void;
   DrawerTrigger: ComponentType<{ children?: React.ReactNode }>;
   isDesktop: boolean;
   countryCode: string | null;
 };
-
-const MapSearchComponent = MapSearch as ComponentType<{
-  onPick: (event: { feature?: { center?: [number, number] } }) => void;
-  searchInputRef?: Ref<HTMLInputElement | null>;
-  countryCode?: string | null;
-  style?: React.CSSProperties;
-}>;
-
-const ButtonComponent = Button as ComponentType<{
-  onClick?: () => void;
-  variant?: string;
-  size?: string;
-  width?: string;
-  children?: React.ReactNode;
-}>;
 
 const MapContainer = styled("div")({
   position: "relative",
@@ -75,7 +60,7 @@ const MapContainer = styled("div")({
   backgroundColor: "lightblue",
 });
 
-const ReturnToListingButton = styled(ButtonComponent)({
+const ReturnToListingButton = styled(Button)({
   position: "absolute",
   top: "20px",
   left: "50%",
@@ -125,23 +110,23 @@ const searchStyle: React.CSSProperties = {
 };
 
 // MapLibre style spec — protomaps tiles with the bundled light theme. Kept as
-// a factory so the Map receives a stable object only when the key changes.
-function buildMapStyle() {
-  return {
-    version: 8 as const,
-    glyphs:
-      "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-    sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-    sources: {
-      protomaps: {
-        type: "vector" as const,
-        url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-        attribution: '<a href="https://protomaps.com">Protomaps</a>',
-      },
+// a module-level constant because it has no runtime-dependent inputs (the env
+// key is inlined at build time and the layers array is stable). Stable
+// reference also keeps the Map from re-evaluating its style on re-renders.
+const MAP_STYLE = {
+  version: 8 as const,
+  glyphs:
+    "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+  sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+  sources: {
+    protomaps: {
+      type: "vector" as const,
+      url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
+      attribution: '<a href="https://protomaps.com">Protomaps</a>',
     },
-    layers: layers("protomaps", "light", "en"),
-  };
-}
+  },
+  layers: layers("protomaps", "light", "en"),
+};
 
 function resolveInitialViewState(
   selectedListing: SelectedListing | null,
@@ -166,31 +151,32 @@ function resolveInitialViewState(
   };
 }
 
-export default function MapImmersive({
-  mapRef,
-  searchInputRef,
-  listings,
-  isFetching,
+export default function MapView({
   selectedListing,
   selectedListingId,
   listingSlug,
   initialCoordinates,
-  onBoundsChange,
   onMapClick,
   onMarkerClick,
-  onSearchPick,
   DrawerTrigger,
   isDesktop,
   countryCode,
-}: MapImmersiveProps) {
+}: MapViewProps) {
   const t = useTranslations("Map");
-  const mapRefObject = mapRef as React.RefObject<MapRef | null>;
+  const mapRef = useRef<MapRef | null>(null);
 
-  const { isSelectedInView, handleMapLoad, handleMapMoveEnd, flyToSelected } =
-    useMapCenter({
-      mapRef: mapRefObject,
-      selectedListing,
-    });
+  const { listings, isFetching, requestBounds } = useListingsInView();
+
+  const {
+    isSelectedInView,
+    handleMapLoad,
+    handleMapMoveEnd,
+    flyToSelected,
+    flyToCoordinate,
+  } = useMapCenter({
+    mapRef,
+    selectedListing,
+  });
 
   const hasInitialPosition =
     hasValidCoordinates(selectedListing) || Boolean(initialCoordinates);
@@ -204,22 +190,29 @@ export default function MapImmersive({
     };
   }, []);
 
+  const emitBoundsChange = useCallback(
+    (bounds: LngLatBounds) => {
+      requestBounds(bounds);
+    },
+    [requestBounds]
+  );
+
   const handleLoad = useCallback(() => {
     handleMapLoad();
-    const map = mapRefObject.current?.getMap();
+    const map = mapRef.current?.getMap();
     if (map) {
-      onBoundsChange(map.getBounds());
+      emitBoundsChange(map.getBounds());
     }
-  }, [handleMapLoad, mapRefObject, onBoundsChange]);
+  }, [emitBoundsChange, handleMapLoad]);
 
   const handleMoveEnd = useCallback(
     (_event: ViewStateChangeEvent) => {
-      const map = mapRefObject.current?.getMap();
+      const map = mapRef.current?.getMap();
       if (!map) return;
-      onBoundsChange(map.getBounds());
+      emitBoundsChange(map.getBounds());
       handleMapMoveEnd();
     },
-    [handleMapMoveEnd, mapRefObject, onBoundsChange]
+    [emitBoundsChange, handleMapMoveEnd]
   );
 
   const handleMapClickInternal = useCallback(
@@ -229,6 +222,21 @@ export default function MapImmersive({
       }
     },
     [listingSlug, onMapClick, selectedListingId]
+  );
+
+  const handleSearchPick = useCallback(
+    (event: GeocodingPickEvent) => {
+      // Quirk in MapTiler's Geocoding component: tapping close is also an
+      // "onPick" with no center. Ignore those.
+      const center = event?.feature?.center;
+      if (!center) return;
+
+      flyToCoordinate(
+        { longitude: center[0], latitude: center[1] },
+        ZOOM_LEVEL_DEFAULT
+      );
+    },
+    [flyToCoordinate]
   );
 
   const showReturnButton = Boolean(
@@ -242,7 +250,7 @@ export default function MapImmersive({
           <Map
             ref={mapRef}
             attributionControl={false}
-            mapStyle={buildMapStyle()}
+            mapStyle={MAP_STYLE}
             renderWorldCopies={true}
             initialViewState={resolveInitialViewState(
               selectedListing,
@@ -272,9 +280,8 @@ export default function MapImmersive({
             />
           </Map>
 
-          <MapSearchComponent
-            searchInputRef={searchInputRef}
-            onPick={onSearchPick}
+          <MapSearch
+            onPick={handleSearchPick}
             countryCode={countryCode}
             style={searchStyle}
           />

@@ -4,11 +4,9 @@ import type { ComponentType } from "react";
 import { Marker } from "react-map-gl/maplibre";
 
 import MapPin from "@/components/MapPin";
-import {
-  hasValidCoordinates,
-  type ListingCoordinates,
-  type ListingMarker,
-} from "@/utils/mapUtils";
+import type { ListingCoordinates, ListingMarker } from "@/types/listing";
+
+import { hasValidCoordinates } from "../lib/mapUtils";
 
 type MapPinLayerProps = {
   listings: ListingMarker[];
@@ -16,12 +14,6 @@ type MapPinLayerProps = {
   DrawerTrigger: ComponentType<{ children?: React.ReactNode }>;
   onMarkerClick: (listing: ListingMarker) => void;
 };
-
-type MapPinType = "business" | "community" | "residential";
-
-function toPinType(type: ListingMarker["type"]): MapPinType | undefined {
-  return typeof type === "string" ? (type as MapPinType) : undefined;
-}
 
 export default function MapPinLayer({
   listings,
@@ -49,7 +41,10 @@ export default function MapPinLayer({
                 }}
                 style={{ zIndex: isSelected ? 1 : 0 }}
               >
-                <MapPin selected={isSelected} type={toPinType(listing.type)} />
+                <MapPin
+                  selected={isSelected}
+                  type={listing.type ?? undefined}
+                />
               </Marker>
             </DrawerTrigger>
           );

@@ -5,12 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/utils/supabase/client";
-import type { SelectedListing } from "@/utils/mapUtils";
+import type { Listing, SelectedListing } from "@/types/listing";
+import type { User } from "@supabase/supabase-js";
 
 type UseMapListingUrlArgs = {
-  user: { id: string } | null | undefined;
+  user: User | null | undefined;
   initialListingSlug?: string | null;
-  initialListing?: SelectedListing | null;
+  initialListing?: Listing | null;
 };
 
 type UseMapListingUrlResult = {
@@ -55,9 +56,7 @@ export function useMapListingUrl({
   const [selectedListing, setSelectedListing] =
     useState<SelectedListing | null>(initialListing ?? null);
   const [optimisticListingId, setOptimisticListingId] = useState<number | null>(
-    initialListing && typeof initialListing.id === "number"
-      ? (initialListing.id as number)
-      : null
+    initialListing?.id ?? null
   );
 
   // The last slug we've resolved locally. Used to skip the fetch in the URL
@@ -86,10 +85,10 @@ export function useMapListingUrl({
           return;
         }
 
-        setSelectedListing(data as SelectedListing);
+        const listing = data as Listing;
+        setSelectedListing(listing);
         resolvedSlugRef.current = slug;
-        const nextId = (data as { id?: number })?.id;
-        setOptimisticListingId(typeof nextId === "number" ? nextId : null);
+        setOptimisticListingId(listing.id ?? null);
       } catch (err) {
         console.warn("Failed to load listing by slug:", err);
         setSelectedListing({
@@ -122,8 +121,7 @@ export function useMapListingUrl({
     ) {
       setSelectedListing(initialListing);
       resolvedSlugRef.current = listingSlug;
-      const nextId = initialListing.id;
-      setOptimisticListingId(typeof nextId === "number" ? nextId : null);
+      setOptimisticListingId(initialListing.id ?? null);
       return;
     }
 
@@ -155,7 +153,7 @@ export function useMapListingUrl({
           return;
         }
 
-        const listing = data as SelectedListing;
+        const listing = data as Listing;
         setSelectedListing(listing);
         const slug = listing.slug;
 
