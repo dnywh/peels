@@ -112,32 +112,45 @@ export function useMapDrawerState({
     };
   }, [isDesktop, isFullSnap]);
 
-  // Desktop: the drawer is portalled, so it isn't in the tree on first
-  // render. Watch the document for it to mount, then attach once.
+  // Desktop: the drawer is portalled, so it may not be in the tree on the
+  // first render. If the ref is already set by the time this effect runs
+  // (common on subsequent listing changes), attach directly; otherwise fall
+  // back to a MutationObserver that attaches once the portal mounts.
   useEffect(() => {
     if (!isDesktop || !isListingSelected) return;
 
+    let attachedTo: HTMLElement | null = null;
+
     const handleScroll = () => {
-      if (drawerContentRef.current) {
-        setIsDrawerHeaderShown(
-          drawerContentRef.current.scrollTop > SCROLL_THRESHOLD
-        );
+      if (attachedTo) {
+        setIsDrawerHeaderShown(attachedTo.scrollTop > SCROLL_THRESHOLD);
       }
     };
 
-    const observer = new MutationObserver(() => {
-      const drawerContent = drawerContentRef.current;
-      if (drawerContent) {
-        drawerContent.addEventListener("scroll", handleScroll);
-        observer.disconnect();
-      }
-    });
+    const attach = (element: HTMLElement) => {
+      attachedTo = element;
+      element.addEventListener("scroll", handleScroll);
+    };
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    let observer: MutationObserver | null = null;
+
+    if (drawerContentRef.current) {
+      attach(drawerContentRef.current);
+    } else {
+      observer = new MutationObserver(() => {
+        const drawerContent = drawerContentRef.current;
+        if (drawerContent) {
+          attach(drawerContent);
+          observer?.disconnect();
+          observer = null;
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
 
     return () => {
-      observer.disconnect();
-      drawerContentRef.current?.removeEventListener("scroll", handleScroll);
+      observer?.disconnect();
+      attachedTo?.removeEventListener("scroll", handleScroll);
     };
   }, [isDesktop, isListingSelected]);
 
