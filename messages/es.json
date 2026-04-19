@@ -378,6 +378,8 @@
     "searchPlaceholder": "Buscar",
     "searchError": "Algo salió mal. ¿Intentarlo de nuevo?",
     "searchNoResults": "Sin resultados. Sigue escribiendo o ajusta tu búsqueda",
+    "returnToListing": "Volver al anuncio",
+    "loadingPins": "Cargando…",
     "didYouKnow": "¿Sabías que?",
     "steps": {
       "find": {

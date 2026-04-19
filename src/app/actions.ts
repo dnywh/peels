@@ -494,7 +494,6 @@ export async function fetchListingsInView(
       return [];
     }
 
-    console.log(`Successfully fetched ${data?.length || 0} listings`);
     return data || [];
   } catch (error) {
     console.error("Fatal error in fetchListingsInView:", {
