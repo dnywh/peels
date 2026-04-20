@@ -154,7 +154,11 @@ const iconMap: Record<ListingType, React.ComponentType<{ size?: string }>> = {
 };
 
 function isListingPinType(value: string | undefined): value is ListingType {
-  return value !== undefined && value in iconMap;
+  // Guard against inherited Object.prototype keys like `"toString"` that a
+  // plain `value in iconMap` check would accept.
+  return (
+    value !== undefined && Object.prototype.hasOwnProperty.call(iconMap, value)
+  );
 }
 
 function MapPin({ selected = false, type }: MapPinProps) {

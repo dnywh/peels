@@ -5,7 +5,7 @@ import { config, geolocation } from "@maptiler/client";
 
 import type { ListingCoordinates } from "@/types/listing";
 
-import { ZOOM_LEVEL_DEFAULT } from "../lib/mapUtils";
+import { DEFAULT_COORDINATES, ZOOM_LEVEL_DEFAULT } from "../lib/mapUtils";
 
 type UseIpInitialLocationArgs = {
   // Skip when the page already has a listing slug (deep-linked selections
@@ -30,8 +30,9 @@ function ensureMapTilerConfig() {
   hasConfiguredMapTiler = true;
 }
 
-// One-time IP-based initial centre. MapView falls back to
-// DEFAULT_COORDINATES if this fails or is skipped.
+// One-time IP-based initial centre. On timeout or error we still resolve to
+// `DEFAULT_COORDINATES` so MapView, which gates on `initialCoordinates`
+// being set, always eventually mounts.
 export function useIpInitialLocation({
   skip = false,
 }: UseIpInitialLocationArgs = {}): UseIpInitialLocationResult {
@@ -47,6 +48,14 @@ export function useIpInitialLocation({
 
     let cancelled = false;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    const applyFallback = () => {
+      if (cancelled) return;
+      setInitialCoordinates({
+        ...DEFAULT_COORDINATES,
+        zoom: ZOOM_LEVEL_DEFAULT,
+      });
+    };
 
     async function initializeLocation() {
       // Race the network call against a 3s timeout. We track the timeout id
@@ -85,6 +94,8 @@ export function useIpInitialLocation({
             longitude: lng,
             zoom: ZOOM_LEVEL_DEFAULT,
           });
+        } else {
+          applyFallback();
         }
       } catch (error) {
         if (cancelled) return;
@@ -92,6 +103,7 @@ export function useIpInitialLocation({
           "Could not determine location from MapTiler:",
           (error as Error).message
         );
+        applyFallback();
       } finally {
         if (timeoutId !== null) {
           clearTimeout(timeoutId);

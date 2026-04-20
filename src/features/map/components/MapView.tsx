@@ -178,6 +178,14 @@ export default function MapView({
     selectedListing,
   });
 
+  // MapLibre's `initialViewState` is only consumed once at mount, so we wait
+  // for either a selected listing or the IP-based (or fallback) initial
+  // centre to resolve before mounting the Map. `useIpInitialLocation`
+  // always resolves (to DEFAULT_COORDINATES on failure), so this cannot
+  // stall indefinitely.
+  const hasInitialPosition =
+    hasValidCoordinates(selectedListing) || Boolean(initialCoordinates);
+
   useEffect(() => {
     const protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -242,59 +250,61 @@ export default function MapView({
 
   return (
     <MapContainer>
-      <>
-        <Map
-          ref={mapRef}
-          attributionControl={false}
-          mapStyle={MAP_STYLE}
-          renderWorldCopies={true}
-          initialViewState={resolveInitialViewState(
-            selectedListing,
-            initialCoordinates
-          )}
-          onMoveEnd={handleMoveEnd}
-          onLoad={handleLoad}
-          onClick={handleMapClickInternal}
-        >
-          <GeolocateControl showUserLocation={true} />
-          <NavigationControl showZoom={true} showCompass={false} />
-
-          <AttributionControl
-            compact={true}
-            style={
-              !isDesktop
-                ? attributionControlMobileStyle
-                : attributionControlDesktopStyle
-            }
-          />
-
-          <MapPinLayer
-            listings={listings}
-            selectedListingId={selectedListingId}
-            DrawerTrigger={DrawerTrigger}
-            onMarkerClick={onMarkerClick}
-          />
-        </Map>
-
-        <MapSearch
-          onPick={handleSearchPick}
-          countryCode={countryCode}
-          style={searchStyle}
-        />
-
-        {isFetching && <LoadingChip>{t("loadingPins")}</LoadingChip>}
-
-        {showReturnButton && (
-          <ReturnToListingButton
-            onClick={flyToSelected}
-            variant="secondary"
-            size="small"
-            width="contained"
+      {hasInitialPosition && (
+        <>
+          <Map
+            ref={mapRef}
+            attributionControl={false}
+            mapStyle={MAP_STYLE}
+            renderWorldCopies={true}
+            initialViewState={resolveInitialViewState(
+              selectedListing,
+              initialCoordinates
+            )}
+            onMoveEnd={handleMoveEnd}
+            onLoad={handleLoad}
+            onClick={handleMapClickInternal}
           >
-            {t("returnToListing")}
-          </ReturnToListingButton>
-        )}
-      </>
+            <GeolocateControl showUserLocation={true} />
+            <NavigationControl showZoom={true} showCompass={false} />
+
+            <AttributionControl
+              compact={true}
+              style={
+                !isDesktop
+                  ? attributionControlMobileStyle
+                  : attributionControlDesktopStyle
+              }
+            />
+
+            <MapPinLayer
+              listings={listings}
+              selectedListingId={selectedListingId}
+              DrawerTrigger={DrawerTrigger}
+              onMarkerClick={onMarkerClick}
+            />
+          </Map>
+
+          <MapSearch
+            onPick={handleSearchPick}
+            countryCode={countryCode}
+            style={searchStyle}
+          />
+
+          {isFetching && <LoadingChip>{t("loadingPins")}</LoadingChip>}
+
+          {showReturnButton && (
+            <ReturnToListingButton
+              onClick={flyToSelected}
+              variant="secondary"
+              size="small"
+              width="contained"
+            >
+              {t("returnToListing")}
+            </ReturnToListingButton>
+          )}
+        </>
+      )}
     </MapContainer>
   );
 }

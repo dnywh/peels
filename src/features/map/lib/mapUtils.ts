@@ -15,11 +15,12 @@ export type BoundingBox = {
   east: number;
 };
 
-// Default coordinates for Brisbane, Australia
-export const DEFAULT_COORDINATES: ListingCoordinates & { zoom: number } = {
+// Default coordinates for Brisbane, Australia — the absolute fallback when
+// IP-based geolocation is unavailable. Pair with `ZOOM_LEVEL_DEFAULT` for
+// the zoom level.
+export const DEFAULT_COORDINATES: ListingCoordinates = {
   latitude: -27.4683,
   longitude: 153.0322,
-  zoom: 9,
 };
 
 export const ZOOM_LEVEL_DEFAULT = 11;

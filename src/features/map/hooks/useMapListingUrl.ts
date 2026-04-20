@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -49,7 +49,10 @@ export function useMapListingUrl({
   const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createClient();
+  // `createClient()` builds a new Supabase browser client each call, so
+  // memoize to keep the reference stable — otherwise `fetchBySlug` /
+  // `selectListingById` churn on every render.
+  const supabase = useMemo(() => createClient(), []);
 
   const listingSlug = searchParams.get("listing");
 
