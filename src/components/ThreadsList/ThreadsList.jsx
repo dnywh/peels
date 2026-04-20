@@ -1,7 +1,5 @@
 "use client";
-import { useCallback } from "react";
-import { useRouter } from "next/navigation";
-// import Link from "next/link";
+import Link from "next/link";
 
 import AvatarPair from "@/components/AvatarPair";
 
@@ -83,7 +81,7 @@ const ThreadsUnorderedList = styled("ul")(({ theme }) => ({
   ...sharedThreadsContainerStyles({ theme }),
 }));
 
-const ThreadPreview = styled("a")(({ theme }) => ({
+const ThreadPreview = styled(Link)(({ theme }) => ({
   cursor: "pointer",
   display: "flex",
   flexDirection: "row",
@@ -103,31 +101,20 @@ const ThreadPreview = styled("a")(({ theme }) => ({
     //   boxShadow: `0 0 4px 1rem ${theme.colors.background.sunk}`,
     // },
   },
-
-  variants: [
-    {
-      props: { selected: true },
-      style: {
-        // cursor: "auto",
-        backgroundColor: theme.colors.background.sunk,
-      },
+  '&[data-selected="true"]': {
+    backgroundColor: theme.colors.background.sunk,
+  },
+  '&[data-unread="true"]': {
+    position: "relative",
+    "&::after": {
+      content: '""',
+      width: "10px",
+      height: "10px",
+      backgroundColor: theme.colors.tab.unread,
+      borderRadius: "50%",
+      flexShrink: 0,
     },
-    {
-      props: { unread: true },
-      style: {
-        // backgroundColor: theme.colors.background.sunk,
-        position: "relative",
-        "&::after": {
-          content: '""',
-          width: "10px",
-          height: "10px",
-          backgroundColor: theme.colors.tab.unread,
-          borderRadius: "50%",
-          flexShrink: 0,
-        },
-      },
-    },
-  ],
+  },
 }));
 
 const ThreadPreviewText = styled("div")(({ theme }) => ({
@@ -159,23 +146,13 @@ const ThreadPreviewText = styled("div")(({ theme }) => ({
 
 function ThreadsList({ user, threads, currentThreadId }) {
   const t = useTranslations("Chat");
-  const router = useRouter();
   const { isThreadRead } = useUnreadMessages();
-
-  const handleThreadSelect = useCallback(
-    (thread) => {
-      if (thread.id !== currentThreadId) {
-        router.push(`/chats/${thread.id}`);
-      }
-    },
-    [currentThreadId, router]
-  );
 
   return (
     <ThreadsSidebar>
       <h1>{t("threadsTitle")}</h1>
       {threads?.length > 0 ? (
-        <ThreadsUnorderedList>
+        <ThreadsUnorderedList data-testid="thread-list">
           {threads.map((thread) => {
             // TODO: Consolidate with other role and otherPersonName and displayNameVerbose logic elsewhere
             const role =
@@ -205,9 +182,20 @@ function ThreadsList({ user, threads, currentThreadId }) {
             return (
               <li key={thread.id}>
                 <ThreadPreview
-                  selected={thread.id === currentThreadId}
-                  unread={hasUnreadMessages}
-                  onClick={() => handleThreadSelect(thread)}
+                  href={`/chats/${thread.id}`}
+                  data-selected={
+                    thread.id === currentThreadId ? "true" : undefined
+                  }
+                  data-unread={hasUnreadMessages ? "true" : undefined}
+                  aria-current={
+                    thread.id === currentThreadId ? "page" : undefined
+                  }
+                  data-testid={`thread-preview-${thread.id}`}
+                  onClick={(event) => {
+                    if (thread.id === currentThreadId) {
+                      event.preventDefault();
+                    }
+                  }}
                 >
                   {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
                   <AvatarPair

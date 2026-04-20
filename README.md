@@ -216,6 +216,24 @@ npm run dev
 - Heavy commenting is encouraged to make the codebase accessible to others
 - Code formatting is handled by Prettier. Please ensure your code is formatted according to `.prettierrc` before submitting a pull request
 
+### Testing
+
+Peels keeps testing intentionally small:
+
+- `npm run check` for i18n and formatting checks
+- `npm run build` for the production build
+- `npm run test:e2e` for the headless Playwright smoke suite
+
+The smoke suite covers seeded sign-in, public listing, profile, and chat flows against local Supabase data. It is designed to stay small and high-signal rather than grow into a broad frontend testing matrix.
+
+For the first local Playwright run, install the browser once with:
+
+```bash
+npx playwright install chromium
+```
+
+Map changes are still a manual smoke-check area. When you touch `/map`, verify that the page loads, listing selection still works, search still works, and nothing obviously breaks in the browser.
+
 ### Getting Help
 
 - Check existing [issues](https://github.com/dnywh/peels/issues) for known problems

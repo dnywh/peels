@@ -41,17 +41,19 @@ function SignInForm({ searchParams }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} data-testid="sign-in-form">
       {searchParams?.success && (
         <FormMessage message={{ success: searchParams.success }} />
       )}
       <Field>
         <Label htmlFor="email">{t("Common.email")}</Label>
         <Input
+          id="email"
           name="email"
           type="email"
           placeholder="you@example.com"
           required
+          data-testid="sign-in-email"
         />
       </Field>
 
@@ -63,10 +65,12 @@ function SignInForm({ searchParams }) {
           </StrongLink>
         </FieldHeader>
         <Input
+          id="password"
           type="password"
           name="password"
           placeholder={t("Common.password")}
           required={true}
+          data-testid="sign-in-password"
         />
       </Field>
 
@@ -79,6 +83,7 @@ function SignInForm({ searchParams }) {
         variant="primary"
         loading={isSubmitting}
         loadingText={t("Status.signingIn")}
+        data-testid="sign-in-submit"
       >
         {t("Actions.signIn")}
       </Button>

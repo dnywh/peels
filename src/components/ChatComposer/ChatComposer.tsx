@@ -56,7 +56,7 @@ function ChatComposer({
   return (
     <ChatComposerForm>
       {error && <FormMessage message={{ error: error }} />}
-      <ChatComposerInner onSubmit={onSubmit}>
+      <ChatComposerInner onSubmit={onSubmit} data-testid="chat-composer">
         <TextareaComponent
           variant="chat"
           placeholder={t("Chat.placeholder", {
@@ -66,6 +66,7 @@ function ChatComposer({
           onChange={handleMessageChange}
           disabled={!isDemo && isSending}
           rows={1}
+          data-testid="chat-composer-input"
         />
         <StyledIconButton
           type={isDemo ? "button" : "submit"}
@@ -76,6 +77,7 @@ function ChatComposer({
           loading={!isDemo && isSending}
           loadingLabel={t("Status.sending")}
           disabled={isSendDisabled}
+          data-testid="chat-composer-send"
         />
       </ChatComposerInner>
     </ChatComposerForm>

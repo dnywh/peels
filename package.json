@@ -14,6 +14,8 @@
     "supabase:diff": "supabase db diff",
     "i18n:check": "node scripts/check-i18n-messages.mjs",
     "check": "npm run i18n:check && npm run format:check",
+    "test:e2e": "playwright test",
+    "test:e2e:debug": "playwright test --headed --workers=1",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -56,6 +58,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@pigment-css/nextjs-plugin": "^0.0.30",
     "@pigment-css/react": "^0.0.30",
     "@types/node": "22.9.0",
