@@ -1,6 +1,6 @@
 "use server";
 
-import { getEmailDomain, isDisposableEmailDomain } from "@/lib/emailValidation";
+import { isDisposableSignupEmail } from "@/lib/emailValidation";
 import {
   validateFirstName,
   validateName,
@@ -111,8 +111,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     return redirect(redirectUrl.toString());
   }
 
-  const emailDomain = getEmailDomain(email);
-  if (emailDomain && isDisposableEmailDomain(emailDomain)) {
+  if (isDisposableSignupEmail(email)) {
     redirectUrl.searchParams.append("error", t("disposableEmailNotAllowed"));
     return redirect(redirectUrl.toString());
   }

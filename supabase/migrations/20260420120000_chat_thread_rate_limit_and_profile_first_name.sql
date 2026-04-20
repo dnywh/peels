@@ -38,7 +38,16 @@ GRANT ALL ON FUNCTION public.check_thread_initiation_rate_limit(uuid) TO service
 
 DROP POLICY IF EXISTS "Users can create threads they're involved in" ON public.chat_threads;
 
-CREATE POLICY "Users can create threads they're involved in" ON public.chat_threads FOR INSERT TO authenticated WITH CHECK (((auth.uid() = initiator_id) OR (auth.uid() = owner_id)) AND public.check_message_rate_limit(auth.uid()) AND ((auth.uid() <> initiator_id) OR public.check_thread_initiation_rate_limit(auth.uid()))));
+CREATE POLICY "Users can create threads they're involved in" ON public.chat_threads
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    (auth.uid() = initiator_id OR auth.uid() = owner_id)
+    AND public.check_message_rate_limit(auth.uid())
+    AND (
+      auth.uid() <> initiator_id
+      OR public.check_thread_initiation_rate_limit(auth.uid())
+    )
+  );
 
 
 CREATE OR REPLACE FUNCTION public.enforce_profile_first_name_rules() RETURNS trigger
