@@ -191,6 +191,11 @@ function ThreadsList({ user, threads, currentThreadId }) {
                     thread.id === currentThreadId ? "page" : undefined
                   }
                   data-testid={`thread-preview-${thread.id}`}
+                  onClick={(event) => {
+                    if (thread.id === currentThreadId) {
+                      event.preventDefault();
+                    }
+                  }}
                 >
                   {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
                   <AvatarPair
