@@ -107,6 +107,11 @@ export default function MapPageClient({
     [closeListing, isListingSelected, resetDrawer]
   );
 
+  const handlePanelClose = useCallback(() => {
+    resetDrawer();
+    closeListing();
+  }, [closeListing, resetDrawer]);
+
   return (
     <StyledMapPage>
       <StyledMapWrapper>
@@ -142,7 +147,7 @@ export default function MapPageClient({
             isFullSnap={isFullSnap}
             isPartialSnap={isPartialSnap}
             onToggleSnap={handleSnapChange}
-            onClose={closeListing}
+            onClose={handlePanelClose}
             drawerContentRef={drawerContentRef}
           />
         </Drawer.Root>

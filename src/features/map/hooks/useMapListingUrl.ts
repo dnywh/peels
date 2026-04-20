@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { User } from "@supabase/supabase-js";
 
@@ -32,9 +31,15 @@ type CachedListing = {
 };
 
 const MAP_TITLE = `Map · ${siteConfig.name}`;
+const MAX_CACHED_LISTINGS = 24;
 
 function buildCacheKey(slug: string, tableName: string) {
   return `${tableName}:${slug}`;
+}
+
+function readListingSlugFromLocation() {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get("listing");
 }
 
 export function useMapListingUrl({
@@ -43,11 +48,12 @@ export function useMapListingUrl({
   initialListing,
 }: UseMapListingUrlArgs): UseMapListingUrlResult {
   const t = useTranslations();
-  const searchParams = useSearchParams();
   const supabase = useMemo(() => createClient(), []);
 
-  const listingSlug = searchParams.get("listing");
   const tableName = user ? "listings_private_data" : "listings_public_data";
+  const [listingSlug, setListingSlug] = useState<string | null>(
+    initialListingSlug ?? null
+  );
 
   const [selectedListing, setSelectedListing] =
     useState<SelectedListing | null>(initialListing ?? null);
@@ -68,12 +74,44 @@ export function useMapListingUrl({
   );
   const cacheRef = useRef<Map<string, CachedListing>>(new Map());
 
+  const setCachedListing = useCallback(
+    (slug: string, listing: Listing) => {
+      const cacheKey = buildCacheKey(slug, tableName);
+      const cache = cacheRef.current;
+
+      if (cache.has(cacheKey)) {
+        cache.delete(cacheKey);
+      }
+
+      cache.set(cacheKey, { listing });
+
+      if (cache.size > MAX_CACHED_LISTINGS) {
+        const oldestKey = cache.keys().next().value;
+        if (oldestKey) {
+          cache.delete(oldestKey);
+        }
+      }
+    },
+    [tableName]
+  );
+
   useEffect(() => {
     if (!initialListing?.slug) return;
-    cacheRef.current.set(buildCacheKey(initialListing.slug, tableName), {
-      listing: initialListing,
-    });
-  }, [initialListing, tableName]);
+    setCachedListing(initialListing.slug, initialListing);
+  }, [initialListing, setCachedListing]);
+
+  useEffect(() => {
+    const syncListingSlug = () => {
+      setListingSlug(readListingSlugFromLocation());
+    };
+
+    syncListingSlug();
+    window.addEventListener("popstate", syncListingSlug);
+
+    return () => {
+      window.removeEventListener("popstate", syncListingSlug);
+    };
+  }, []);
 
   const getCachedListing = useCallback(
     (slug: string) => {
@@ -131,7 +169,7 @@ export function useMapListingUrl({
         }
 
         const listing = data as Listing;
-        cacheRef.current.set(buildCacheKey(slug, tableName), { listing });
+        setCachedListing(slug, listing);
         setSelectedListing(listing);
         setSelectedListingId(listing.id ?? optimisticId);
         setIsSelectedListingLoading(false);
@@ -146,7 +184,7 @@ export function useMapListingUrl({
         setIsSelectedListingLoading(false);
       }
     },
-    [supabase, t, tableName]
+    [setCachedListing, supabase, t, tableName]
   );
 
   useEffect(() => {
@@ -238,6 +276,7 @@ export function useMapListingUrl({
         void fetchBySlug(listing.slug, listing.id);
       }
 
+      setListingSlug(listing.slug);
       window.history.pushState(
         null,
         "",
@@ -257,6 +296,7 @@ export function useMapListingUrl({
     setIsSelectedListingLoading(false);
     setDocumentTitle(null);
 
+    setListingSlug(null);
     window.history.pushState(null, "", "/map");
   }, [setDocumentTitle]);
 
