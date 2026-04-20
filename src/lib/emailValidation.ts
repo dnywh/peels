@@ -1,11 +1,9 @@
 import disposableDomains from "disposable-email-domains";
 
+// List is published from the upstream disposable blocklist; bump the package to pick up new domains.
 const DISPOSABLE_DOMAINS = new Set(
   (disposableDomains as string[]).map((d) => d.toLowerCase())
 );
-
-/** Domains observed in abuse or missing from the upstream package — keep short and reviewed */
-const EXTRA_BLOCKED_EMAIL_DOMAINS = new Set(["merepost.com"]);
 
 export function getEmailDomain(email: string): string | null {
   const trimmed = email.trim().toLowerCase();
@@ -15,6 +13,5 @@ export function getEmailDomain(email: string): string | null {
 }
 
 export function isDisposableEmailDomain(domain: string): boolean {
-  const d = domain.toLowerCase();
-  return DISPOSABLE_DOMAINS.has(d) || EXTRA_BLOCKED_EMAIL_DOMAINS.has(d);
+  return DISPOSABLE_DOMAINS.has(domain.toLowerCase());
 }

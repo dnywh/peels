@@ -25,6 +25,14 @@ export type FirstNameErrorCode =
   | "reserved"
   | "invalidChars";
 
+/** NBSP/em space/etc. → ASCII space so spacing between words validates reliably */
+function normalizeSpacingForFirstName(s: string): string {
+  return s
+    .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000\uFEFF]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function validateFirstName(name: unknown): {
   isValid: boolean;
   value?: string;
@@ -36,7 +44,7 @@ export function validateFirstName(name: unknown): {
   }
 
   const normalized = raw.normalize("NFKC");
-  const collapsed = normalized.replace(/\s+/g, " ").trim();
+  const collapsed = normalizeSpacingForFirstName(normalized);
   if (!collapsed) {
     return { isValid: false, error: "empty" };
   }
