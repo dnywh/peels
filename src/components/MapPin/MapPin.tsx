@@ -3,7 +3,17 @@ import MapCommunityIcon from "../MapCommunityIcon";
 import MapResidentialIcon from "../MapResidentialIcon";
 import { styled } from "@pigment-css/react";
 
-const UnselectedPin = styled("div")(({ theme }) => ({
+import type { ListingType } from "@/types/listing";
+
+type MapPinProps = {
+  selected?: boolean;
+  // Accept any string so callers that hold generic listing types (e.g.
+  // LocationSelect) can still pass them in; unknown values just render the
+  // default pin without a specialised icon.
+  type?: string;
+};
+
+const UnselectedPin = styled("div")({
   cursor: "pointer",
   width: "48px",
   height: "48px",
@@ -11,7 +21,7 @@ const UnselectedPin = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-}));
+});
 
 const UnselectedPinInner = styled("div")(({ theme }) => ({
   boxShadow: `0 0 0 2.5px ${theme.colors.marker.border}`,
@@ -50,28 +60,6 @@ const UnselectedPinInner = styled("div")(({ theme }) => ({
   ],
 }));
 
-const SelectedPin = styled("div")(({ theme }) => ({
-  display: "flex",
-  cursor: "pointer",
-
-  // . TODO: is there a way to group these two CSS declarations?
-  // I.e. so the transition is only declared once
-  [`& ${SelectedPinDot}`]: {
-    transition: "transform 75ms ease-in-out",
-  },
-  [`& ${SelectedPinRing}`]: {
-    transition: "transform 75ms ease-in-out",
-  },
-  "&:hover": {
-    [`& ${SelectedPinDot}`]: {
-      transform: "scale(1.05)",
-    },
-    [`& ${SelectedPinRing}`]: {
-      transform: "scale(1.25)",
-    },
-  },
-}));
-
 const SelectedPinRing = styled("div")(({ theme }) => ({
   width: "80px",
   height: "80px",
@@ -90,7 +78,34 @@ const SelectedPinDot = styled("div")(({ theme }) => ({
   boxShadow: `0 0 1px 1px ${theme.colors.border.elevated}`,
 }));
 
-const SelectedPinIcon = styled("svg")(({ theme }) => ({
+const SelectedPin = styled("div")({
+  display: "flex",
+  cursor: "pointer",
+
+  [`& ${SelectedPinDot}`]: {
+    transition: "transform 75ms ease-in-out",
+  },
+  [`& ${SelectedPinRing}`]: {
+    transition: "transform 75ms ease-in-out",
+  },
+  "&:hover": {
+    [`& ${SelectedPinDot}`]: {
+      transform: "scale(1.05)",
+    },
+    [`& ${SelectedPinRing}`]: {
+      transform: "scale(1.25)",
+    },
+  },
+});
+
+// Cast to `any` for the styled() call because Pigment's `variants` inference
+// narrows the shared `type` prop to the literal of the first variant, which
+// doesn't reflect what we actually want here (a string union).
+const SelectedPinIcon = (
+  styled("svg") as unknown as (
+    arg: unknown
+  ) => React.ComponentType<React.SVGProps<SVGSVGElement> & { type?: string }>
+)(({ theme }: { theme: any }) => ({
   fill: theme.colors.text.ui.emptyState, // Backup fill for when type is not specified
   stroke: theme.colors.marker.border,
   strokeWidth: "1.5px",
@@ -128,50 +143,26 @@ const SelectedPinIcon = styled("svg")(({ theme }) => ({
   ],
 }));
 
-const SelectedPinVisual = styled("svg")(({ theme }) => ({
-  fill: theme.colors.marker.dot,
-}));
-
 const ICON = `M18.149 15.8139C18.2078 15.7251 18.2326 15.6533 18.2915 15.5646C19.3387 13.9878 20 12.0412 20 10C20 4.4 15.5 0 10 0C4.5 0 0 4.5 0 10C0 11.8662 0.522404 13.6453 1.40473 15.0937C1.52799 15.296 1.62851 15.5285 1.79602 15.696C1.79734 15.6974 1.79867 15.6987 1.8 15.7C1.90535 15.8054 1.94349 15.9666 2.02739 16.0897C2.18874 16.3264 2.36323 16.5632 2.6 16.8C4.5396 19.1126 7.70356 22.2044 9.18572 23.6258C9.64236 24.0637 10.3577 24.0638 10.8151 23.6266C12.2976 22.2097 15.4607 19.1376 17.4 16.9C17.5711 16.6433 17.8155 16.3866 18.0078 16.1299C18.07 16.0467 18.0918 15.9006 18.149 15.8139Z`;
 
-const pinStyleCoarse = {
-  backgroundColor: "rgba(0, 0, 255, 0.15)",
-  borderRadius: "50%",
-  // width: "200px",
-  // height: "200px",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
+// Keyed on the shared `ListingType` union so adding a new type there becomes
+// a compile error here — prevents the two from drifting out of sync.
+const iconMap: Record<ListingType, React.ComponentType<{ size?: string }>> = {
+  business: MapBusinessIcon as React.ComponentType<{ size?: string }>,
+  community: MapCommunityIcon as React.ComponentType<{ size?: string }>,
+  residential: MapResidentialIcon as React.ComponentType<{ size?: string }>,
 };
 
-const iconMap = {
-  business: MapBusinessIcon,
-  community: MapCommunityIcon,
-  residential: MapResidentialIcon,
-};
+function isListingPinType(value: string | undefined): value is ListingType {
+  // Guard against inherited Object.prototype keys like `"toString"` that a
+  // plain `value in iconMap` check would accept.
+  return (
+    value !== undefined && Object.prototype.hasOwnProperty.call(iconMap, value)
+  );
+}
 
-function MapPin({
-  selected = false,
-  type,
-  zoomLevel = null,
-  distanceAcrossMapWidth = 0,
-  mapWidth = 0,
-}) {
-  // console.log("zoomLevel", zoomLevel);
-  const basicSize = 2 ** (zoomLevel * 0.565);
-  // const size = 1000 / (1 + Math.exp(-10 * (zoomLevel - 10)));
-  // const size = 100 * zoomLevel ** 0.5;
-
-  // at 14 zoom level, size is 20
-  //at 22 zoom level, size is 100
-
-  const km = 0.5;
-  const smartSize = (mapWidth / distanceAcrossMapWidth) * km;
-
-  // console.log("size", smartSize, "zoomLevel", zoomLevel);
-  // console.log(distanceAcrossMapWidth, mapWidth, { smartSize });
-
-  const IconComponent = type && iconMap[type];
+function MapPin({ selected = false, type }: MapPinProps) {
+  const IconComponent = isListingPinType(type) ? iconMap[type] : null;
 
   if (selected) {
     return (
@@ -190,10 +181,11 @@ function MapPin({
 
   return (
     <UnselectedPin>
-      <UnselectedPinInner type={type}>
+      <UnselectedPinInner type={type ?? ""}>
         {IconComponent && <IconComponent size="normal" />}
       </UnselectedPinInner>
     </UnselectedPin>
   );
 }
+
 export default MapPin;

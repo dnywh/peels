@@ -1,10 +1,14 @@
 "use client";
+import type { ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
 import { useDeviceContext } from "@/hooks/useDeviceContext";
 import { Drawer } from "vaul";
 import Button from "@/components/Button";
 import ChatWindow from "@/components/ChatWindow";
 import ListingCta from "@/components/ListingCta";
 import { styled } from "@pigment-css/react";
+
+import type { Listing } from "@/types/listing";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 
@@ -15,7 +19,7 @@ const StyledDrawerOverlay = styled(Drawer.Overlay)({
 });
 
 const ListingCtaContainer = styled("div")({
-  padding: "0 1rem", // Match padding from other parts of ListingRead
+  padding: "0 1rem",
 
   "& > *": {
     width: "100%",
@@ -24,17 +28,16 @@ const ListingCtaContainer = styled("div")({
 
 const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   background: theme.colors.background.top,
-  borderRadius: `${theme.corners.base} ${theme.corners.base} 0 0`, // Match over drawer content
+  borderRadius: `${theme.corners.base} ${theme.corners.base} 0 0`,
 
   overflowX: "hidden",
 
   "&::after": {
-    display: "none", // Otherwise seems to include side scroll, even when overflowX hidden
+    display: "none",
   },
 
   marginTop: "24px",
-  // maxHeight: "95%",
-  height: "95%", // Take up full height even if the message contents aren't overflowing yet
+  height: "95%",
   position: "fixed",
   bottom: "0",
   left: "0",
@@ -43,7 +46,7 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
   flexDirection: "column",
 
   "@media (min-width: 768px)": {
-    borderRadius: theme.corners.base, // Match over drawer content
+    borderRadius: theme.corners.base,
     height: "unset",
     marginTop: "unset",
     top: "24px",
@@ -52,36 +55,36 @@ const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
     left: "unset",
     outline: "none",
     width: sidebarWidth,
-    // height: "100%",
   },
 }));
 
-// We need to define two different drawer components, because depending on the 'modal' prop, a different number of hooks will be rendered
-// React doesn't like when we conditionally change the number of hooks. It's better to just render a separate component for each case
-// Shared drawer props to reduce repetition
-const getDrawerProps = ({
-  isNested,
-  isChatDrawerOpen,
-  setIsChatDrawerOpen,
-  isDesktop,
-  ...rest
-}) => ({
-  isNested,
-  direction: isDesktop ? "right" : undefined,
-  open: isChatDrawerOpen,
-  onOpenChange: setIsChatDrawerOpen,
-  ...rest,
-});
-
-const ModalDrawer = (props) => {
-  const DrawerComponent = props.isNested ? Drawer.NestedRoot : Drawer.Root;
-  return <DrawerComponent modal={true} {...getDrawerProps(props)} />;
+type ListingChatDrawerProps = {
+  isNested?: boolean;
+  user: User | null;
+  listing: Listing;
+  isChatDrawerOpen: boolean;
+  setIsChatDrawerOpen: (open: boolean) => void;
+  existingThread: unknown;
 };
 
-const NonModalDrawer = (props) => {
-  const DrawerComponent = props.isNested ? Drawer.NestedRoot : Drawer.Root;
-  return <DrawerComponent modal={false} {...getDrawerProps(props)} />;
+type SharedDrawerProps = {
+  isNested?: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  direction?: "right";
+  children?: ReactNode;
 };
+
+// We need two drawer variants because `modal` changes which hooks vaul renders.
+function ModalDrawer({ isNested, ...rest }: SharedDrawerProps) {
+  const DrawerComponent = isNested ? Drawer.NestedRoot : Drawer.Root;
+  return <DrawerComponent modal={true} {...rest} />;
+}
+
+function NonModalDrawer({ isNested, ...rest }: SharedDrawerProps) {
+  const DrawerComponent = isNested ? Drawer.NestedRoot : Drawer.Root;
+  return <DrawerComponent modal={false} {...rest} />;
+}
 
 export default function ListingChatDrawer({
   isNested,
@@ -90,15 +93,15 @@ export default function ListingChatDrawer({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
   existingThread,
-  listingDisplayName,
-  ...props
-}) {
+}: ListingChatDrawerProps) {
   const { isDesktop, hasTouch } = useDeviceContext();
 
-  // We can infer modal behavior based on presentation
-  // If it's a mobile breakpoint, always use a model
-  // If it's a desktop breakpoint, only use a modal if it's NOT a nested drawer
-  const shouldUseModal = !isDesktop || isNested === false;
+  // Mobile: always modal. Desktop: modal only if NOT a nested drawer.
+  // (`!isNested` treats an omitted prop the same as `false`.)
+  const shouldUseModal = !isDesktop || !isNested;
+
+  const visibility = listing.visibility ?? undefined;
+  const isStub = listing.is_stub ?? undefined;
 
   const drawerContent = (
     <>
@@ -108,14 +111,14 @@ export default function ListingChatDrawer({
             <ListingCta
               viewer="owner"
               slug={listing.slug}
-              visibility={listing.visibility}
-              isStub={listing.is_stub}
+              visibility={visibility}
+              isStub={isStub}
             />
           ) : listing.is_stub ? (
             <ListingCta
               viewer="guest"
               slug={listing.slug}
-              visibility={listing.visibility}
+              visibility={visibility}
               isStub={true}
             />
           ) : (
@@ -129,8 +132,8 @@ export default function ListingChatDrawer({
           <ListingCta
             viewer="guest"
             slug={listing.slug}
-            visibility={listing.visibility}
-            isStub={listing.is_stub}
+            visibility={visibility}
+            isStub={isStub}
           />
         )}
       </ListingCtaContainer>
@@ -154,10 +157,9 @@ export default function ListingChatDrawer({
   return (
     <DrawerComponent
       isNested={isNested}
-      isChatDrawerOpen={isChatDrawerOpen}
-      setIsChatDrawerOpen={setIsChatDrawerOpen}
-      isDesktop={isDesktop}
-      {...props}
+      open={isChatDrawerOpen}
+      onOpenChange={setIsChatDrawerOpen}
+      direction={isDesktop ? "right" : undefined}
     >
       {drawerContent}
     </DrawerComponent>

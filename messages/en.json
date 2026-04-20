@@ -378,6 +378,8 @@
     "searchPlaceholder": "Search",
     "searchError": "Something went wrong. Try again?",
     "searchNoResults": "No results. Keep typing or refine your search",
+    "returnToListing": "Return to listing",
+    "loadingPins": "Loading…",
     "didYouKnow": "Did you know?",
     "steps": {
       "find": {

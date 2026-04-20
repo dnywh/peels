@@ -1,19 +1,27 @@
+import { cache } from "react";
+import type { Metadata } from "next/types";
+
 import { createClient } from "@/utils/supabase/server";
 import { siteConfig } from "@/config/site";
 import { generateListingMetadata } from "@/utils/listingUtils";
-import MapPageClient from "@/components/MapPageClient";
-import { cache } from "react";
+import MapPageClient from "@/features/map";
+import type { Listing } from "@/types/listing";
 
-// Fetch data only once and use across metadata and page
-const getInitialData = cache(async (listingSlug) => {
+type MapPageSearchParams = {
+  listing?: string;
+};
+
+type MapPageProps = {
+  searchParams: Promise<MapPageSearchParams>;
+};
+
+const getInitialData = cache(async (listingSlug: string | undefined) => {
   const supabase = await createClient();
 
-  // Get user first
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Then get listing data if slug exists
   const listingResponse = listingSlug
     ? await supabase
         .from(user ? "listings_private_data" : "listings_public_data")
@@ -24,11 +32,13 @@ const getInitialData = cache(async (listingSlug) => {
 
   return {
     user,
-    listing: listingResponse?.data,
+    listing: (listingResponse?.data ?? null) as Listing | null,
   };
 });
 
-export async function generateMetadata({ searchParams }) {
+export async function generateMetadata({
+  searchParams,
+}: MapPageProps): Promise<Metadata> {
   const listingSlug = (await searchParams)?.listing;
 
   if (!listingSlug) {
@@ -42,18 +52,17 @@ export async function generateMetadata({ searchParams }) {
 
   const { user, listing } = await getInitialData(listingSlug);
 
-  // Use shared utility to generate metadata
   return generateListingMetadata(listing, user);
 }
 
-export default async function Page({ searchParams }) {
+export default async function Page({ searchParams }: MapPageProps) {
   const listingSlug = (await searchParams)?.listing;
   const { user, listing } = await getInitialData(listingSlug);
 
   return (
     <MapPageClient
       user={user}
-      initialListingSlug={listingSlug}
+      initialListingSlug={listingSlug ?? null}
       initialListing={listing}
     />
   );

@@ -1,11 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { styled } from "@pigment-css/react";
-import { facts } from "@/data/facts";
 import { useTranslations } from "next-intl";
-const sidebarWidth = "clamp(20rem, 30vw, 30rem);";
+
+import { facts } from "@/data/facts";
+
+import type { User } from "@supabase/supabase-js";
+
+import { SIDEBAR_WIDTH } from "../lib/mapUtils";
+
+type MapSidebarProps = {
+  user: User | null | undefined;
+  covered: boolean;
+};
+
+type Fact = {
+  fact: string;
+  source?: string;
+};
 
 const StyledSidebar = styled("div")(({ theme }) => ({
   backgroundColor: theme.colors.background.pit,
@@ -18,7 +32,7 @@ const StyledSidebar = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
-  width: sidebarWidth,
+  width: SIDEBAR_WIDTH,
   height: "100%",
   wordWrap: "anywhere", // for source URLs on facts, remove when those go
   border: `2px dashed ${theme.colors.border.base}`,
@@ -26,7 +40,7 @@ const StyledSidebar = styled("div")(({ theme }) => ({
   overflowY: "hidden",
 }));
 
-const Fact = styled("div")(({ theme }) => ({
+const FactBlock = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
@@ -106,16 +120,17 @@ const StepList = styled("ol")(({ theme }) => ({
       leadingTrim: "both",
       fontSize: "1em",
       fontWeight: "700",
-      // Use same override as StepHeader in PeelsHowItWorks
-      // Override the oldstyle numbers just in this case, since that was affecting optical alignment
+      // Override the oldstyle numbers just in this case, since that was
+      // affecting optical alignment
       fontVariantNumeric: "lining-nums",
     },
   },
 }));
 
-export default function MapSidebar({ user, covered }) {
+export default function MapSidebar({ user, covered }: MapSidebarProps) {
   const t = useTranslations();
-  const [randomFact, setRandomFact] = useState(null);
+  const [randomFact, setRandomFact] = useState<Fact | null>(null);
+
   const steps = [
     {
       title: t("Map.steps.find.title"),
@@ -132,7 +147,6 @@ export default function MapSidebar({ user, covered }) {
   ];
 
   useEffect(() => {
-    // Only generate a random fact if there is NO selected listing, not when one is opened
     if (!covered) {
       setRandomFact(facts[Math.floor(Math.random() * facts.length)]);
     }
@@ -140,15 +154,8 @@ export default function MapSidebar({ user, covered }) {
 
   return (
     <StyledSidebar className="sidebar" data-covered={covered}>
-      {/* <MapSearch
-          onPick={handleSearchPick}
-          mapController={mapController}
-        /> */}
       {user && randomFact && (
-        // TODO
-        // If user has sent >0 messages, show a fun composting fact
-        // Otherwise show the fundamentals (1, 2, 3) of Peels
-        <Fact>
+        <FactBlock>
           <h3>{t("Map.didYouKnow")}</h3>
           <p>{randomFact.fact}</p>
           {randomFact.source && (
@@ -160,12 +167,12 @@ export default function MapSidebar({ user, covered }) {
               </small>
             </p>
           )}
-        </Fact>
+        </FactBlock>
       )}
       {!user && (
         <StepList>
-          {steps.map((step, index) => (
-            <li key={index}>
+          {steps.map((step) => (
+            <li key={step.title}>
               <h3>{step.title}</h3>
               <p>{step.description}</p>
             </li>
