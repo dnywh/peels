@@ -1,5 +1,7 @@
--- Environments that already applied 20260420120000 before we assigned back to NEW.first_name
--- get the same trigger body; new installs get it from the original migration, this is idempotent.
+-- Hygiene: 20260420120000 now includes `NEW.first_name := v`, so a fresh `db reset` already
+-- creates the right function. This migration replays the same body for databases that ran an
+-- earlier revision of 20260420120000 (preview/prod). Re-applying on a new install is a no-op
+-- (CREATE OR REPLACE with identical SQL). Safe to keep.
 
 CREATE OR REPLACE FUNCTION public.enforce_profile_first_name_rules() RETURNS trigger
     LANGUAGE plpgsql
