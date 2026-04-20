@@ -161,7 +161,7 @@ export default function MapSidebar({ user, covered }: MapSidebarProps) {
           {randomFact.source && (
             <p>
               <small>
-                <Link href={randomFact.source} target="_blank">
+                <Link href={randomFact.source} target="_blank" rel="noopener">
                   {t("Common.source")}
                 </Link>
               </small>

@@ -1,0 +1,87 @@
+import Link from "next/link";
+import type { ComponentProps, ReactNode } from "react";
+import { styled } from "@pigment-css/react";
+
+import { resolveExternalRel } from "@/utils/linkRel";
+
+const getSharedStyles = ({ theme }: { theme: any }) => ({
+  color: theme.colors.text.primary,
+  fontWeight: "500",
+  textDecoration: "underline",
+  transition: "opacity 150ms ease-in-out",
+  "&:hover": {
+    opacity: 0.65,
+  },
+});
+
+const StyledLink = styled(Link)(getSharedStyles);
+const StyledPlainAnchor = styled("a")(getSharedStyles);
+
+type AnchorHTMLProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
+type NextLinkProps = Omit<ComponentProps<typeof Link>, "href">;
+
+type SharedStrongLinkProps = {
+  href: string;
+  children?: ReactNode;
+  target?: React.HTMLAttributeAnchorTarget;
+  rel?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+};
+
+// `as="anchor"` renders a plain `<a>` for cases where Next's Link misbehaves
+// (e.g. `mailto:` — see https://dannywhite.net/notes/next-link-email/).
+// Anything else renders a Next.js Link and forwards Link-specific props.
+type StrongLinkProps = SharedStrongLinkProps &
+  (({ as?: undefined } & NextLinkProps) | { as: "anchor" });
+
+// Pre-styled anchor element. Defaults `rel="noopener"` whenever
+// `target="_blank"` is set (via `resolveExternalRel`) while preserving the
+// Referer header, so external sites can still see the traffic is from Peels.
+export default function StrongLink(props: StrongLinkProps) {
+  const { href, children, target, rel, className, style, onClick } = props;
+  const resolvedRel = resolveExternalRel(target, rel);
+
+  if (props.as === "anchor") {
+    return (
+      <StyledPlainAnchor
+        href={href}
+        target={target}
+        rel={resolvedRel}
+        className={className}
+        style={style}
+        onClick={onClick}
+      >
+        {children}
+      </StyledPlainAnchor>
+    );
+  }
+
+  // Pull out the shared props so the spread only forwards Link-specific ones.
+  const {
+    href: _h,
+    children: _c,
+    target: _t,
+    rel: _r,
+    className: _cl,
+    style: _st,
+    onClick: _oc,
+    as: _as,
+    ...linkProps
+  } = props;
+
+  return (
+    <StyledLink
+      href={href}
+      target={target}
+      rel={resolvedRel}
+      className={className}
+      style={style}
+      onClick={onClick}
+      {...(linkProps as NextLinkProps)}
+    >
+      {children}
+    </StyledLink>
+  );
+}
