@@ -1,6 +1,11 @@
 "use server";
 
-import { validateName } from "@/lib/formValidation";
+import { isDisposableSignupEmail } from "@/lib/emailValidation";
+import {
+  validateFirstName,
+  validateName,
+  type FirstNameErrorCode,
+} from "@/lib/formValidation";
 import { getSafeHttpReferrer } from "@/utils/referrer";
 import { createClient } from "@/utils/supabase/server";
 import { getBaseUrl } from "@/utils/url";
@@ -14,14 +19,52 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
+function translateFirstNameFieldError(
+  t: Awaited<ReturnType<typeof getTranslations>>,
+  code?: FirstNameErrorCode
+): string {
+  switch (code) {
+    case "empty":
+      return t("emptyName");
+    case "tooShort":
+      return t("firstNameTooShort");
+    case "tooLong":
+      return t("firstNameTooLong");
+    case "forbiddenContent":
+    case "reserved":
+      return t("firstNameNotAllowed");
+    case "invalidChars":
+      return t("firstNameInvalidChars");
+    default:
+      return t("generic");
+  }
+}
+
 export const signUpAction = async (formData: FormData, request?: Request) => {
   const t = await getTranslations("Errors");
-  const email = formData.get("email")?.toString();
+  const email = (formData.get("email")?.toString() ?? "").trim();
   const password = formData.get("password")?.toString();
-  const firstNameValidation = validateName(formData.get("first_name")); // Trim first name
-  const first_name = firstNameValidation.isValid
-    ? firstNameValidation.value
-    : null;
+  const rawFirstName = formData.get("first_name")?.toString();
+  const firstNameValidation = validateFirstName(formData.get("first_name"));
+  if (!firstNameValidation.isValid) {
+    const preservedData = new URLSearchParams();
+    if (email) preservedData.set("email", email);
+    if (rawFirstName?.trim())
+      preservedData.set("first_name", rawFirstName.trim());
+    const redirectUrl = new URL(
+      "/sign-up",
+      (await headers()).get("origin") || getBaseUrl()
+    );
+    preservedData.forEach((value, key) => {
+      redirectUrl.searchParams.append(key, value);
+    });
+    redirectUrl.searchParams.append(
+      "error",
+      translateFirstNameFieldError(t, firstNameValidation.error)
+    );
+    return redirect(redirectUrl.toString());
+  }
+  const first_name = firstNameValidation.value;
   const newsletterPreference = formData.has("newsletter_preference"); // Will only be passed if input is checked when form submitted
 
   const supabase = await createClient();
@@ -65,6 +108,11 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
 
   if (!email || !password || !first_name) {
     redirectUrl.searchParams.append("error", t("missingSignUpFields"));
+    return redirect(redirectUrl.toString());
+  }
+
+  if (isDisposableSignupEmail(email)) {
+    redirectUrl.searchParams.append("error", t("disposableEmailNotAllowed"));
     return redirect(redirectUrl.toString());
   }
 
@@ -214,9 +262,11 @@ export const updateFirstNameAction = async (formData: FormData) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const firstNameValidation = validateName(formData.get("first_name"));
+  const firstNameValidation = validateFirstName(formData.get("first_name"));
   if (!firstNameValidation.isValid) {
-    return { error: t("emptyName") };
+    return {
+      error: translateFirstNameFieldError(t, firstNameValidation.error),
+    };
   }
 
   const { error } = await supabase
@@ -228,6 +278,9 @@ export const updateFirstNameAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error updating first name:", error);
+    if (error.code === "23514" || /first name/i.test(error.message ?? "")) {
+      return { error: t("firstNameNotAllowed") };
+    }
     return { error: t("updateFirstNameFailed") };
   }
 
