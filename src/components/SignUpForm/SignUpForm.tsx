@@ -12,7 +12,7 @@ import InputHint from "@/components/InputHint";
 import Label from "@/components/Label";
 import LegalAgreement from "@/components/LegalAgreement";
 import { siteConfig } from "@/config/site";
-import { FIELD_CONFIGS, validateName } from "@/lib/formValidation";
+import { FIELD_CONFIGS, validateFirstName } from "@/lib/formValidation";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
@@ -179,9 +179,30 @@ export default function SignUpForm({
 
     // Client-side validation
     const formData = new FormData(event.currentTarget);
-    const validation = validateName(formData.get("first_name")?.toString());
+    const validation = validateFirstName(
+      formData.get("first_name")?.toString()
+    );
     if (!validation.isValid) {
-      setFirstNameError(t("Errors.emptyName"));
+      switch (validation.error) {
+        case "empty":
+          setFirstNameError(t("Errors.emptyName"));
+          break;
+        case "tooShort":
+          setFirstNameError(t("Errors.firstNameTooShort"));
+          break;
+        case "tooLong":
+          setFirstNameError(t("Errors.firstNameTooLong"));
+          break;
+        case "invalidChars":
+          setFirstNameError(t("Errors.firstNameInvalidChars"));
+          break;
+        case "forbiddenContent":
+        case "reserved":
+          setFirstNameError(t("Errors.firstNameNotAllowed"));
+          break;
+        default:
+          setFirstNameError(t("Errors.generic"));
+      }
       return;
     }
 

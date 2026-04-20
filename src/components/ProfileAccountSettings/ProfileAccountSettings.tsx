@@ -16,7 +16,7 @@ import {
 } from "@/app/actions";
 
 import { styled } from "@pigment-css/react";
-import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
+import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
 import { useTranslations } from "next-intl";
 
 const List = styled("ul")(({ theme }) => ({
@@ -178,9 +178,28 @@ function ProfileAccountSettings({
   };
 
   const handleFirstNameUpdate = async (formData: FormData) => {
-    const validation = validateName(formData.get("first_name"));
+    const validation = validateFirstName(formData.get("first_name"));
     if (!validation.isValid) {
-      firstName.setError(t("Errors.emptyName"));
+      switch (validation.error) {
+        case "empty":
+          firstName.setError(t("Errors.emptyName"));
+          break;
+        case "tooShort":
+          firstName.setError(t("Errors.firstNameTooShort"));
+          break;
+        case "tooLong":
+          firstName.setError(t("Errors.firstNameTooLong"));
+          break;
+        case "invalidChars":
+          firstName.setError(t("Errors.firstNameInvalidChars"));
+          break;
+        case "forbiddenContent":
+        case "reserved":
+          firstName.setError(t("Errors.firstNameNotAllowed"));
+          break;
+        default:
+          firstName.setError(t("Errors.generic"));
+      }
       return;
     }
 

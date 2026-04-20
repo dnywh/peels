@@ -121,7 +121,14 @@ const ChatWindow = memo(function ChatWindow({
 
     // Turn the rate limiting message into something more friendly (original: new row violates row-level security policy for table "chat_messages")
     if (errorMessage.includes("violates row-level security policy")) {
-      setMessageSendError(t("Errors.tooManyMessages"));
+      if (
+        errorMessage.includes("chat_threads") ||
+        errorMessage.includes('"chat_threads"')
+      ) {
+        setMessageSendError(t("Errors.tooManyThreads"));
+      } else {
+        setMessageSendError(t("Errors.tooManyMessages"));
+      }
     } else {
       setMessageSendError(errorMessage);
     }
