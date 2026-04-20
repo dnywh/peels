@@ -356,7 +356,7 @@ const ChatWindow = memo(function ChatWindow({
       : existingThread.initiator_first_name;
 
   return (
-    <StyledChatWindow>
+    <StyledChatWindow data-testid="chat-window">
       <ChatHeader
         thread={existingThread ? existingThread : undefined}
         listing={listing}
@@ -365,9 +365,9 @@ const ChatWindow = memo(function ChatWindow({
         isDrawer={isDrawer}
       />
 
-      <StyledMessagesContainer>
+      <StyledMessagesContainer data-testid="chat-message-list">
         {messages.length === 0 && (
-          <EmptyState>
+          <EmptyState data-testid="chat-empty-state">
             <p>{t("Chat.empty")}</p>
           </EmptyState>
         )}

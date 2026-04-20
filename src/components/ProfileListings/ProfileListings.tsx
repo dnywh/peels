@@ -117,7 +117,7 @@ export default function ProfileListings({
   if (!listings) return null;
 
   return (
-    <ListingsList>
+    <ListingsList data-testid="profile-listings">
       {listings.map((listing) => {
         return (
           <li key={listing.id}>

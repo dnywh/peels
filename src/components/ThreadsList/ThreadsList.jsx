@@ -175,7 +175,7 @@ function ThreadsList({ user, threads, currentThreadId }) {
     <ThreadsSidebar>
       <h1>{t("threadsTitle")}</h1>
       {threads?.length > 0 ? (
-        <ThreadsUnorderedList>
+        <ThreadsUnorderedList data-testid="thread-list">
           {threads.map((thread) => {
             // TODO: Consolidate with other role and otherPersonName and displayNameVerbose logic elsewhere
             const role =
@@ -208,6 +208,7 @@ function ThreadsList({ user, threads, currentThreadId }) {
                   selected={thread.id === currentThreadId}
                   unread={hasUnreadMessages}
                   onClick={() => handleThreadSelect(thread)}
+                  data-testid={`thread-preview-${thread.id}`}
                 >
                   {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
                   <AvatarPair

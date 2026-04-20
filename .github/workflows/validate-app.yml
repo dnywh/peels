@@ -30,3 +30,54 @@ jobs:
 
       - name: Build app
         run: npm run build
+
+  e2e:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase stack
+        run: supabase start
+
+      - name: Replay migrations and seed data
+        run: npm run supabase:reset
+
+      - name: Write local app env
+        shell: bash
+        run: |
+          eval "$(supabase status -o env | sed 's/^/export /')"
+          cat <<EOF > .env.local
+          NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000
+          NEXT_PUBLIC_SUPABASE_URL=${API_URL}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=${ANON_KEY}
+          NEXT_PUBLIC_MAPTILER_API_KEY=playwright-local
+          NEXT_PUBLIC_PROTOMAPS_API_KEY=playwright-local
+          NEXT_PUBLIC_TURNSTILE_ENABLED=
+          EOF
+
+      - name: Seed local demo media
+        run: npm run seed:local-media
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright smoke tests
+        run: npm run test:e2e

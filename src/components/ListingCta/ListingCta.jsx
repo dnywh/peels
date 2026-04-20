@@ -39,7 +39,7 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
 
   if (viewer === "owner") {
     return (
-      <StyledListingCta>
+      <StyledListingCta data-testid="listing-owner-cta">
         <Button
           variant="secondary"
           width="full"
@@ -58,7 +58,7 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
   }
   if (isStub) {
     return (
-      <StyledListingCta>
+      <StyledListingCta data-testid="listing-stub-cta">
         <PeelsLogo color="quaternary" />
         <Text>
           <p>{t("Listings.read.stubNote")}</p>
@@ -77,11 +77,12 @@ function ListingCta({ viewer, slug, visibility = true, isStub = false }) {
   }
 
   return (
-    <StyledListingCta>
+    <StyledListingCta data-testid="listing-guest-cta">
       <Button
         variant="primary"
         width="full"
         href={`/sign-in?redirect_to=/listings/${slug}`}
+        data-testid="listing-sign-in-to-contact"
       >
         {t("Actions.signInToContact")}
       </Button>
