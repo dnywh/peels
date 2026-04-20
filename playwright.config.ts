@@ -6,6 +6,7 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
   workers: 1,
+  forbidOnly: !!process.env.CI,
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL,

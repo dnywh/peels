@@ -1,7 +1,5 @@
 "use client";
-import { useCallback } from "react";
-import { useRouter } from "next/navigation";
-// import Link from "next/link";
+import Link from "next/link";
 
 import AvatarPair from "@/components/AvatarPair";
 
@@ -83,7 +81,7 @@ const ThreadsUnorderedList = styled("ul")(({ theme }) => ({
   ...sharedThreadsContainerStyles({ theme }),
 }));
 
-const ThreadPreview = styled("a")(({ theme }) => ({
+const ThreadPreview = styled(Link)(({ theme }) => ({
   cursor: "pointer",
   display: "flex",
   flexDirection: "row",
@@ -159,17 +157,7 @@ const ThreadPreviewText = styled("div")(({ theme }) => ({
 
 function ThreadsList({ user, threads, currentThreadId }) {
   const t = useTranslations("Chat");
-  const router = useRouter();
   const { isThreadRead } = useUnreadMessages();
-
-  const handleThreadSelect = useCallback(
-    (thread) => {
-      if (thread.id !== currentThreadId) {
-        router.push(`/chats/${thread.id}`);
-      }
-    },
-    [currentThreadId, router]
-  );
 
   return (
     <ThreadsSidebar>
@@ -205,9 +193,12 @@ function ThreadsList({ user, threads, currentThreadId }) {
             return (
               <li key={thread.id}>
                 <ThreadPreview
+                  href={`/chats/${thread.id}`}
                   selected={thread.id === currentThreadId}
                   unread={hasUnreadMessages}
-                  onClick={() => handleThreadSelect(thread)}
+                  aria-current={
+                    thread.id === currentThreadId ? "page" : undefined
+                  }
                   data-testid={`thread-preview-${thread.id}`}
                 >
                   {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
