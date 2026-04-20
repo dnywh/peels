@@ -2,7 +2,7 @@
 
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Drawer } from "vaul";
-import { styled } from "@pigment-css/react";
+import { keyframes, styled } from "@pigment-css/react";
 import { useTranslations } from "next-intl";
 import type { User } from "@supabase/supabase-js";
 
@@ -201,17 +201,17 @@ const LoadingState = styled("div")({
   padding: "0 1rem",
 });
 
+const mapDrawerPulse = keyframes({
+  "0%": { opacity: 0.55 },
+  "50%": { opacity: 1 },
+  "100%": { opacity: 0.55 },
+});
+
 const SkeletonBlock = styled("div")(({ theme }) => ({
   borderRadius: theme.corners.base,
   background: theme.colors.background.slight,
   opacity: 0.85,
-  animation: "mapDrawerPulse 1.2s ease-in-out infinite",
-
-  "@keyframes mapDrawerPulse": {
-    "0%": { opacity: 0.55 },
-    "50%": { opacity: 1 },
-    "100%": { opacity: 0.55 },
-  },
+  animation: `${mapDrawerPulse} 1.2s ease-in-out infinite`,
 }));
 
 const SkeletonHeader = styled("div")({

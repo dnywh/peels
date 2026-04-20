@@ -100,19 +100,6 @@ export function useMapListingUrl({
     setCachedListing(initialListing.slug, initialListing);
   }, [initialListing, setCachedListing]);
 
-  useEffect(() => {
-    const syncListingSlug = () => {
-      setListingSlug(readListingSlugFromLocation());
-    };
-
-    syncListingSlug();
-    window.addEventListener("popstate", syncListingSlug);
-
-    return () => {
-      window.removeEventListener("popstate", syncListingSlug);
-    };
-  }, []);
-
   const getCachedListing = useCallback(
     (slug: string) => {
       return (
@@ -121,6 +108,56 @@ export function useMapListingUrl({
     },
     [tableName]
   );
+
+  useEffect(() => {
+    const syncListingSlug = () => {
+      const nextSlug = readListingSlugFromLocation();
+      setListingSlug(nextSlug);
+
+      if (!nextSlug) {
+        setIsListingSelected(false);
+        setSelectedListingId(null);
+        setIsSelectedListingLoading(false);
+        return;
+      }
+
+      setIsListingSelected(true);
+
+      if (
+        nextSlug === initialListingSlug &&
+        initialListing &&
+        initialListing.slug === nextSlug
+      ) {
+        setSelectedListing(initialListing);
+        setSelectedListingId(initialListing.id ?? null);
+        setIsSelectedListingLoading(false);
+        return;
+      }
+
+      const cachedListing = getCachedListing(nextSlug);
+      if (cachedListing) {
+        setSelectedListing(cachedListing);
+        setSelectedListingId(cachedListing.id ?? null);
+        setIsSelectedListingLoading(false);
+        return;
+      }
+
+      if (
+        nextSlug !== activeSlugRef.current ||
+        activeTableRef.current !== tableName
+      ) {
+        setSelectedListingId(null);
+        setIsSelectedListingLoading(true);
+      }
+    };
+
+    syncListingSlug();
+    window.addEventListener("popstate", syncListingSlug);
+
+    return () => {
+      window.removeEventListener("popstate", syncListingSlug);
+    };
+  }, [getCachedListing, initialListing, initialListingSlug, tableName]);
 
   const setDocumentTitle = useCallback(
     (listing: Listing | null) => {
