@@ -20,3 +20,11 @@ These instructions apply to the whole repository.
 - Run `npm run i18n:check` after editing messages. Run `npm run check` before handing work back.
 - Do not put dynamic user-generated content, internal enum values, table names, route constants, CSS strings, logs, or analytics identifiers into message files.
 - For listing types and other enums, pass stable keys such as `business`, `community`, or `residential` and handle display grammar in translations, usually with ICU `select`.
+
+## Supabase
+
+- Treat `supabase/migrations/` as append-only once a migration has landed on any shared environment.
+- Do not edit an existing historical migration to change live schema behaviour on staging or production. That only affects fresh or reset environments.
+- When changing database schema, functions, views, policies, triggers, or grants, add a new forward migration instead.
+- If a previous migration introduced the object you need to change, use a new migration with `create or replace`, `alter`, or the appropriate forward-only SQL rather than modifying the old file.
+- If you are unsure whether a migration has already been applied anywhere shared, assume that it has and create a new migration.

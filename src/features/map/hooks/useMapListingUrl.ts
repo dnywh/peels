@@ -296,6 +296,14 @@ export function useMapListingUrl({
 
   const selectListing = useCallback(
     (listing: ListingMarker) => {
+      if (!listing.slug) {
+        console.warn(
+          "Cannot select map listing because the marker payload is missing a slug.",
+          listing
+        );
+        return;
+      }
+
       requestTokenRef.current += 1;
       activeSlugRef.current = listing.slug;
       activeTableRef.current = tableName;
