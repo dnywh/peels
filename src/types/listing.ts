@@ -62,6 +62,7 @@ export function isListing(
 /** Shape returned by the `listings_in_view` RPC — map markers only. */
 export type ListingMarker = {
   id: number;
+  slug: string;
   type: ListingType | null;
   coordinates: ListingCoordinates | null;
 };

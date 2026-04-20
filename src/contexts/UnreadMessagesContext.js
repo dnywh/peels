@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 
 const UnreadMessagesContext = createContext();
@@ -9,7 +9,7 @@ export function UnreadMessagesProvider({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [threadReadStatus, setThreadReadStatus] = useState({});
   const [hasViewedChats, setHasViewedChats] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   // Check for unread messages on mount
   useEffect(() => {
@@ -84,7 +84,7 @@ export function UnreadMessagesProvider({ children }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
   // Real-time subscription for new messages
   useEffect(() => {

@@ -45,6 +45,7 @@ type MapViewProps = {
   selectedListing: SelectedListing | null;
   selectedListingId: number | null;
   listingSlug: string | null;
+  isListingSelected: boolean;
   initialCoordinates: (ListingCoordinates & { zoom: number }) | null;
   onMapClick: () => void;
   onMarkerClick: (listing: ListingMarker) => void;
@@ -76,8 +77,9 @@ const ReturnToListingButton = styled(Button)({
 const LoadingChip = styled("div")(({ theme }) => ({
   position: "absolute",
   top: "0.75rem",
-  right: "0.75rem",
-  zIndex: 1,
+  left: "50%",
+  transform: "translateX(-50%)",
+  zIndex: 2,
   padding: "0.25rem 0.75rem",
   borderRadius: "999px",
   background: theme.colors.background.top,
@@ -155,6 +157,7 @@ export default function MapView({
   selectedListing,
   selectedListingId,
   listingSlug,
+  isListingSelected,
   initialCoordinates,
   onMapClick,
   onMarkerClick,
@@ -222,11 +225,11 @@ export default function MapView({
 
   const handleMapClickInternal = useCallback(
     (_event: MapLayerMouseEvent) => {
-      if (selectedListingId !== null || listingSlug) {
+      if (selectedListingId !== null || isListingSelected || listingSlug) {
         onMapClick();
       }
     },
-    [listingSlug, onMapClick, selectedListingId]
+    [isListingSelected, listingSlug, onMapClick, selectedListingId]
   );
 
   const handleSearchPick = useCallback(
@@ -245,7 +248,7 @@ export default function MapView({
   );
 
   const showReturnButton = Boolean(
-    selectedListing && listingSlug && !isSelectedInView
+    selectedListing && isListingSelected && !isSelectedInView
   );
 
   return (

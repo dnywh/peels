@@ -19,6 +19,7 @@ type UseMapDrawerStateResult = {
   isFullSnap: boolean;
   isPartialSnap: boolean;
   isDrawerHeaderShown: boolean;
+  resetDrawer: () => void;
   handleSnapChange: () => void;
 };
 
@@ -47,6 +48,15 @@ export function useMapDrawerState({
 
   const isFullSnap = snap === SNAP_POINTS.full;
   const isPartialSnap = snap === SNAP_POINTS.partial;
+
+  const resetDrawer = useCallback(() => {
+    document.documentElement.classList.remove("drawer-fully-open");
+    setSnap(SNAP_POINTS.partial);
+    setIsDrawerHeaderShown(false);
+    if (drawerContentRef.current) {
+      drawerContentRef.current.scrollTop = 0;
+    }
+  }, []);
 
   // Snap to full on desktop. On mobile we stay at the partial snap until the
   // user explicitly expands or a new listing is opened.
@@ -79,17 +89,12 @@ export function useMapDrawerState({
   // changes (including browser back/forward).
   useEffect(() => {
     if (!listingSlug) {
-      document.documentElement.classList.remove("drawer-fully-open");
-      setSnap(SNAP_POINTS.partial);
+      resetDrawer();
       return;
     }
 
-    setSnap(SNAP_POINTS.partial);
-    setIsDrawerHeaderShown(false);
-    if (drawerContentRef.current) {
-      drawerContentRef.current.scrollTop = 0;
-    }
-  }, [listingSlug]);
+    resetDrawer();
+  }, [listingSlug, resetDrawer]);
 
   // Mobile: we can attach the scroll handler directly when the drawer is
   // fully snapped because the drawer content is the scroll container.
@@ -174,6 +179,7 @@ export function useMapDrawerState({
     isFullSnap,
     isPartialSnap,
     isDrawerHeaderShown,
+    resetDrawer,
     handleSnapChange,
   };
 }
