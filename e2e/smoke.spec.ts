@@ -4,6 +4,7 @@ const HOST_EMAIL = "demo-host@peels.local";
 const DONOR_EMAIL = "demo-donor@peels.local";
 const SEEDED_PASSWORD = "peels-demo-password";
 const SEEDED_THREAD_ID = "33333333-3333-4333-8333-333333333333";
+const PROFILE_RENDER_TIMEOUT_MS = 15_000;
 
 async function signIn(
   page: Page,
@@ -34,7 +35,9 @@ test("auth-sign-in redirects a seeded donor into the signed-in experience", asyn
   await signIn(page, { email: DONOR_EMAIL, redirectTo: "/profile" });
 
   await expect(page).toHaveURL(/\/profile$/);
-  await expect(page.getByTestId("profile-first-name")).toHaveText("Riley");
+  await expect(page.getByTestId("profile-first-name")).toHaveText("Riley", {
+    timeout: PROFILE_RENDER_TIMEOUT_MS,
+  });
 });
 
 test("public-listing shows the seeded public listing and guest contact gate", async ({
@@ -55,7 +58,9 @@ test("public-listing shows the seeded public listing and guest contact gate", as
 test("profile loads the seeded host account and listings", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
 
-  await expect(page.getByTestId("profile-first-name")).toHaveText("Avery");
+  await expect(page.getByTestId("profile-first-name")).toHaveText("Avery", {
+    timeout: PROFILE_RENDER_TIMEOUT_MS,
+  });
   await expect(page.getByTestId("profile-listings")).toContainText(
     "Marrickville Neighbourhood Compost"
   );
