@@ -41,12 +41,9 @@ DROP POLICY IF EXISTS "Users can create threads they're involved in" ON public.c
 CREATE POLICY "Users can create threads they're involved in" ON public.chat_threads
   FOR INSERT TO authenticated
   WITH CHECK (
-    (auth.uid() = initiator_id OR auth.uid() = owner_id)
+    auth.uid() = initiator_id
     AND public.check_message_rate_limit(auth.uid())
-    AND (
-      auth.uid() <> initiator_id
-      OR public.check_thread_initiation_rate_limit(auth.uid())
-    )
+    AND public.check_thread_initiation_rate_limit(auth.uid())
   );
 
 
