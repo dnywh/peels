@@ -20,6 +20,7 @@ import { SIDEBAR_WIDTH } from "../lib/mapUtils";
 type MapListingDrawerPanelProps = {
   user: User | null;
   selectedListing: SelectedListing | null;
+  isSelectedListingLoading: boolean;
   isDesktop: boolean;
   hasTouch: boolean;
   isDrawerHeaderShown: boolean;
@@ -193,9 +194,42 @@ const NoListingFound = styled("div")(({ theme }) => ({
   },
 }));
 
+const LoadingState = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1.5rem",
+  padding: "0 1rem",
+});
+
+const SkeletonBlock = styled("div")(({ theme }) => ({
+  borderRadius: theme.corners.base,
+  background: theme.colors.background.slight,
+  opacity: 0.85,
+  animation: "mapDrawerPulse 1.2s ease-in-out infinite",
+
+  "@keyframes mapDrawerPulse": {
+    "0%": { opacity: 0.55 },
+    "50%": { opacity: 1 },
+    "100%": { opacity: 0.55 },
+  },
+}));
+
+const SkeletonHeader = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
+});
+
+const SkeletonText = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.75rem",
+});
+
 export default function MapListingDrawerPanel({
   user,
   selectedListing,
+  isSelectedListingLoading,
   isDesktop,
   hasTouch,
   isDrawerHeaderShown,
@@ -208,9 +242,10 @@ export default function MapListingDrawerPanel({
   const t = useTranslations();
 
   const showErrorPanel = isListingError(selectedListing);
-  const listingForDisplay = isListingError(selectedListing)
-    ? null
-    : selectedListing;
+  const listingForDisplay =
+    isSelectedListingLoading || isListingError(selectedListing)
+      ? null
+      : selectedListing;
 
   return (
     <Drawer.Portal>
@@ -239,16 +274,25 @@ export default function MapListingDrawerPanel({
             }}
           >
             <StyledHeaderText>
-              <h3 style={{ fontSize: "0.85rem" }}>
-                {listingForDisplay
-                  ? getListingDisplayName(listingForDisplay, user)
-                  : ""}
-              </h3>
-              <p>
-                {listingForDisplay
-                  ? getListingDisplayType(listingForDisplay)
-                  : ""}
-              </p>
+              {isSelectedListingLoading ? (
+                <SkeletonHeader>
+                  <SkeletonBlock style={{ height: "0.85rem", width: "65%" }} />
+                  <SkeletonBlock style={{ height: "0.8rem", width: "40%" }} />
+                </SkeletonHeader>
+              ) : (
+                <>
+                  <h3 style={{ fontSize: "0.85rem" }}>
+                    {listingForDisplay
+                      ? getListingDisplayName(listingForDisplay, user)
+                      : ""}
+                  </h3>
+                  <p>
+                    {listingForDisplay
+                      ? getListingDisplayType(listingForDisplay)
+                      : ""}
+                  </p>
+                </>
+              )}
             </StyledHeaderText>
           </StyledDrawerHeaderInner>
 
@@ -276,7 +320,20 @@ export default function MapListingDrawerPanel({
         </StyledDrawerHeader>
 
         <StyledDrawerInner>
-          {showErrorPanel ? (
+          {isSelectedListingLoading ? (
+            <LoadingState aria-busy={true}>
+              <p>{t("Map.loadingListing")}</p>
+              <SkeletonBlock style={{ height: "3rem", width: "100%" }} />
+              <SkeletonText>
+                <SkeletonBlock style={{ height: "1rem", width: "45%" }} />
+                <SkeletonBlock style={{ height: "4.5rem", width: "100%" }} />
+                <SkeletonBlock style={{ height: "1rem", width: "35%" }} />
+                <SkeletonBlock style={{ height: "7rem", width: "100%" }} />
+                <SkeletonBlock style={{ height: "1rem", width: "30%" }} />
+                <SkeletonBlock style={{ height: "5rem", width: "100%" }} />
+              </SkeletonText>
+            </LoadingState>
+          ) : showErrorPanel ? (
             <NoListingFound>
               <header>
                 <h2>{t("Map.emptyTitle")}</h2>

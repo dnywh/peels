@@ -385,6 +385,7 @@
     "searchError": "Etwas ist schiefgelaufen. Erneut versuchen?",
     "searchNoResults": "Keine Ergebnisse. Tippe weiter oder verfeinere deine Suche",
     "returnToListing": "Zurück zum Eintrag",
+    "loadingListing": "Eintrag wird geladen…",
     "loadingPins": "Wird geladen…",
     "didYouKnow": "Wusstest du schon?",
     "steps": {

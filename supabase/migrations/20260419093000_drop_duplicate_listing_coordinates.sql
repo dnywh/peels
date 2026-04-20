@@ -102,7 +102,7 @@ create or replace function public.listings_in_view(
   min_long double precision,
   max_lat double precision,
   max_long double precision
-) returns table(id bigint, type text, coordinates jsonb)
+) returns table(id bigint, slug text, type text, coordinates jsonb)
 language plpgsql
 security definer
 set search_path = ''
@@ -111,6 +111,7 @@ begin
   return query
   select
     listings.id,
+    listings.slug,
     listings.type,
     jsonb_build_object(
       'latitude', extensions.st_y(listings.location::extensions.geometry),

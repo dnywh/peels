@@ -385,6 +385,7 @@
     "searchError": "Something went wrong. Try again?",
     "searchNoResults": "No results. Keep typing or refine your search",
     "returnToListing": "Return to listing",
+    "loadingListing": "Loading listing…",
     "loadingPins": "Loading…",
     "didYouKnow": "Did you know?",
     "steps": {

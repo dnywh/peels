@@ -57,7 +57,8 @@ export default function MapPageClient({
     selectedListing,
     selectedListingId,
     isListingSelected,
-    selectListingById,
+    isSelectedListingLoading,
+    selectListing,
     closeListing,
   } = useMapListingUrl({ user, initialListingSlug, initialListing });
 
@@ -72,6 +73,7 @@ export default function MapPageClient({
     isFullSnap,
     isPartialSnap,
     isDrawerHeaderShown,
+    resetDrawer,
     handleSnapChange,
   } = useMapDrawerState({ isDesktop, listingSlug, isListingSelected });
 
@@ -79,18 +81,18 @@ export default function MapPageClient({
     (listing: ListingMarker) => {
       if (listing.id === selectedListingId && isListingSelected) return;
 
-      // Optimistic pin grow + single fetch (selectListingById sets the
-      // optimistic id synchronously, fetches by id, then pushes the URL).
-      void selectListingById(listing.id);
+      resetDrawer();
+      selectListing(listing);
     },
-    [isListingSelected, selectListingById, selectedListingId]
+    [isListingSelected, resetDrawer, selectListing, selectedListingId]
   );
 
   const handleMapClick = useCallback(() => {
     if (isListingSelected) {
+      resetDrawer();
       closeListing();
     }
-  }, [closeListing, isListingSelected]);
+  }, [closeListing, isListingSelected, resetDrawer]);
 
   const handleDrawerOpenChange = useCallback(
     (open: boolean) => {
@@ -98,10 +100,11 @@ export default function MapPageClient({
       // the URL. We only act on the close transition — `open === true` is
       // already reflected by `isListingSelected` from the URL.
       if (!open && isListingSelected) {
+        resetDrawer();
         closeListing();
       }
     },
-    [closeListing, isListingSelected]
+    [closeListing, isListingSelected, resetDrawer]
   );
 
   return (
@@ -120,6 +123,7 @@ export default function MapPageClient({
             selectedListing={selectedListing}
             selectedListingId={selectedListingId}
             listingSlug={listingSlug}
+            isListingSelected={isListingSelected}
             initialCoordinates={initialCoordinates}
             onMapClick={handleMapClick}
             onMarkerClick={handleMarkerClick}
@@ -131,6 +135,7 @@ export default function MapPageClient({
           <MapListingDrawerPanel
             user={user}
             selectedListing={selectedListing}
+            isSelectedListingLoading={isSelectedListingLoading}
             isDesktop={isDesktop}
             hasTouch={hasTouch}
             isDrawerHeaderShown={isDrawerHeaderShown}
