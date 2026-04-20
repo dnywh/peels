@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { createClient } from "@/utils/supabase/client";
-import type { Listing, SelectedListing } from "@/types/listing";
+import { isListing, type Listing, type SelectedListing } from "@/types/listing";
 import type { User } from "@supabase/supabase-js";
 
 type UseMapListingUrlArgs = {
@@ -85,6 +85,19 @@ export function useMapListingUrl({
   // the most recent one — avoids older requests overwriting newer selections
   // when slugs flip rapidly or the public/private view changes mid-flight.
   const requestTokenRef = useRef(0);
+
+  // Id of the listing currently rendered in the drawer (or null when nothing
+  // or an error is shown). Kept in a ref so `selectListingById` can revert
+  // the optimistic pin id after a failed tap without going through stale
+  // closure values.
+  const resolvedListingIdRef = useRef<number | null>(
+    initialListing?.id ?? null
+  );
+  useEffect(() => {
+    resolvedListingIdRef.current = isListing(selectedListing)
+      ? (selectedListing.id ?? null)
+      : null;
+  }, [selectedListing]);
 
   // If the public/private view flips (e.g. session finished loading) while the
   // same listing is open, refetch with the correct view.
@@ -173,6 +186,10 @@ export function useMapListingUrl({
 
   const selectListingById = useCallback(
     async (id: number) => {
+      // Capture the pin id of the drawer's current resolved listing before
+      // the optimistic change, so we can restore it if the fetch fails.
+      const previousResolvedId = resolvedListingIdRef.current;
+
       // Tap → pin grows immediately, even before the network round-trip.
       setOptimisticListingId(id);
       const token = ++requestTokenRef.current;
@@ -190,10 +207,11 @@ export function useMapListingUrl({
           // Tap-driven fetches happen before the URL is pushed, so surfacing
           // an error sentinel here would either be invisible (no listing in
           // URL → drawer stays closed) or desync the UI from the URL (still
-          // pointing at the previous listing). Revert the optimistic pin and
-          // leave `selectedListing` alone instead.
+          // pointing at the previous listing). Revert the optimistic pin to
+          // whatever the drawer is currently showing and leave
+          // `selectedListing` alone.
           console.warn("Failed to select listing by id:", error);
-          setOptimisticListingId(null);
+          setOptimisticListingId(previousResolvedId);
           return;
         }
 
@@ -210,7 +228,7 @@ export function useMapListingUrl({
       } catch (err) {
         if (token !== requestTokenRef.current) return;
         console.warn("Failed to select listing by id:", err);
-        setOptimisticListingId(null);
+        setOptimisticListingId(previousResolvedId);
       }
     },
     [router, supabase, tableName]
