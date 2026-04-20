@@ -53,6 +53,7 @@ function SignInForm({ searchParams }) {
           type="email"
           placeholder="you@example.com"
           required
+          data-testid="sign-in-email"
         />
       </Field>
 
@@ -69,6 +70,7 @@ function SignInForm({ searchParams }) {
           name="password"
           placeholder={t("Common.password")}
           required={true}
+          data-testid="sign-in-password"
         />
       </Field>
 

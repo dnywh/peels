@@ -11,6 +11,10 @@ export default defineConfig({
   use: {
     baseURL,
     headless: true,
+    locale: "en-AU",
+    extraHTTPHeaders: {
+      "Accept-Language": "en-AU,en;q=0.9",
+    },
     trace: "retain-on-failure",
     video: "retain-on-failure",
     screenshot: "only-on-failure",

@@ -101,31 +101,20 @@ const ThreadPreview = styled(Link)(({ theme }) => ({
     //   boxShadow: `0 0 4px 1rem ${theme.colors.background.sunk}`,
     // },
   },
-
-  variants: [
-    {
-      props: { selected: true },
-      style: {
-        // cursor: "auto",
-        backgroundColor: theme.colors.background.sunk,
-      },
+  '&[data-selected="true"]': {
+    backgroundColor: theme.colors.background.sunk,
+  },
+  '&[data-unread="true"]': {
+    position: "relative",
+    "&::after": {
+      content: '""',
+      width: "10px",
+      height: "10px",
+      backgroundColor: theme.colors.tab.unread,
+      borderRadius: "50%",
+      flexShrink: 0,
     },
-    {
-      props: { unread: true },
-      style: {
-        // backgroundColor: theme.colors.background.sunk,
-        position: "relative",
-        "&::after": {
-          content: '""',
-          width: "10px",
-          height: "10px",
-          backgroundColor: theme.colors.tab.unread,
-          borderRadius: "50%",
-          flexShrink: 0,
-        },
-      },
-    },
-  ],
+  },
 }));
 
 const ThreadPreviewText = styled("div")(({ theme }) => ({
@@ -194,8 +183,10 @@ function ThreadsList({ user, threads, currentThreadId }) {
               <li key={thread.id}>
                 <ThreadPreview
                   href={`/chats/${thread.id}`}
-                  selected={thread.id === currentThreadId}
-                  unread={hasUnreadMessages}
+                  data-selected={
+                    thread.id === currentThreadId ? "true" : undefined
+                  }
+                  data-unread={hasUnreadMessages ? "true" : undefined}
                   aria-current={
                     thread.id === currentThreadId ? "page" : undefined
                   }

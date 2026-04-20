@@ -19,8 +19,8 @@ async function signIn(
 
   await expect(page.getByTestId("sign-in-form")).toBeVisible();
 
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(SEEDED_PASSWORD);
+  await page.locator("#email").fill(email);
+  await page.locator("#password").fill(SEEDED_PASSWORD);
 
   await Promise.all([
     page.waitForURL((url) => url.pathname === redirectTo),
