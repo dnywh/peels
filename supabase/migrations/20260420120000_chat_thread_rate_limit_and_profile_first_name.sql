@@ -63,6 +63,7 @@ BEGIN
   END IF;
 
   v := trim(both FROM NEW.first_name);
+  NEW.first_name := v;
 
   IF length(v) < 2 OR length(v) > 24 THEN
     RAISE EXCEPTION 'First name must be between 2 and 24 characters.'
