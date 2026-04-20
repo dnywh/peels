@@ -42,7 +42,7 @@ function translateFirstNameFieldError(
 
 export const signUpAction = async (formData: FormData, request?: Request) => {
   const t = await getTranslations("Errors");
-  const email = formData.get("email")?.toString();
+  const email = (formData.get("email")?.toString() ?? "").trim();
   const password = formData.get("password")?.toString();
   const rawFirstName = formData.get("first_name")?.toString();
   const firstNameValidation = validateFirstName(formData.get("first_name"));
