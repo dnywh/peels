@@ -30,9 +30,10 @@ function ensureMapTilerConfig() {
   hasConfiguredMapTiler = true;
 }
 
-// One-time IP-based initial centre. On timeout or error we still resolve to
-// `DEFAULT_COORDINATES` so MapView, which gates on `initialCoordinates`
-// being set, always eventually mounts.
+// One-time IP-based initial centre. On timeout, error, or when skipped we
+// still resolve to `DEFAULT_COORDINATES` so MapView, which gates on
+// `initialCoordinates` being set, always eventually mounts — including deep
+// links to listings with `coordinates: null` or that resolve to an error.
 export function useIpInitialLocation({
   skip = false,
 }: UseIpInitialLocationArgs = {}): UseIpInitialLocationResult {
@@ -42,7 +43,16 @@ export function useIpInitialLocation({
   const [countryCode, setCountryCode] = useState<string | null>(null);
 
   useEffect(() => {
-    if (skip) return;
+    if (skip) {
+      // Deep-linked: we're not running the IP lookup, but MapView still
+      // needs a non-null initial centre in case the listing itself has no
+      // valid coordinates (error sentinel or coordinates: null).
+      setInitialCoordinates({
+        ...DEFAULT_COORDINATES,
+        zoom: ZOOM_LEVEL_DEFAULT,
+      });
+      return;
+    }
 
     ensureMapTilerConfig();
 

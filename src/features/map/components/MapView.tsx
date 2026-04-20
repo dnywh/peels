@@ -181,8 +181,8 @@ export default function MapView({
   // MapLibre's `initialViewState` is only consumed once at mount, so we wait
   // for either a selected listing or the IP-based (or fallback) initial
   // centre to resolve before mounting the Map. `useIpInitialLocation`
-  // always resolves (to DEFAULT_COORDINATES on failure), so this cannot
-  // stall indefinitely.
+  // always resolves (to DEFAULT_COORDINATES on failure or when skipped), so
+  // this cannot stall indefinitely.
   const hasInitialPosition =
     hasValidCoordinates(selectedListing) || Boolean(initialCoordinates);
 
