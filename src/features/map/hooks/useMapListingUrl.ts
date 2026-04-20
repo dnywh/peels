@@ -155,6 +155,10 @@ export function useMapListingUrl({
   // do clear the pin-selection id so the pin snaps back immediately.
   useEffect(() => {
     if (!listingSlug) {
+      // Invalidate any in-flight fetch so a late response can't re-select
+      // the listing the user just navigated away from (e.g. browser Back
+      // while a deep-link fetch is still in flight).
+      requestTokenRef.current += 1;
       resolvedSlugRef.current = null;
       resolvedTableRef.current = null;
       setOptimisticListingId(null);

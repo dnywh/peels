@@ -65,7 +65,6 @@ type ListingChatDrawerProps = {
   isChatDrawerOpen: boolean;
   setIsChatDrawerOpen: (open: boolean) => void;
   existingThread: unknown;
-  listingDisplayName: string;
 };
 
 type SharedDrawerProps = {
@@ -94,12 +93,12 @@ export default function ListingChatDrawer({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
   existingThread,
-  listingDisplayName: _listingDisplayName,
 }: ListingChatDrawerProps) {
   const { isDesktop, hasTouch } = useDeviceContext();
 
   // Mobile: always modal. Desktop: modal only if NOT a nested drawer.
-  const shouldUseModal = !isDesktop || isNested === false;
+  // (`!isNested` treats an omitted prop the same as `false`.)
+  const shouldUseModal = !isDesktop || !isNested;
 
   const visibility = listing.visibility ?? undefined;
   const isStub = listing.is_stub ?? undefined;

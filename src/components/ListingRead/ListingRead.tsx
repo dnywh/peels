@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState, memo, useEffect } from "react";
+import { Fragment, useState, memo, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 
@@ -47,12 +47,17 @@ const ListingRead = memo(function Listing({
   const router = useRouter();
 
   const [existingThread, setExistingThread] = useState<unknown>(null);
-  const [mapZoomLevel, setMapZoomLevel] = useState<number | null>(null);
   // Chat drawer state is owned here so that each selected listing gets a
   // fresh drawer. The parent resets this by remounting with `key`.
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
 
-  const supabase = presentation !== "demo" ? createClient() : null;
+  // `createClient()` builds a new Supabase browser client on every call, so
+  // memoize to keep the reference stable — otherwise the thread-loading
+  // effect below (which depends on `supabase`) would re-run on every render.
+  const supabase = useMemo(
+    () => (presentation !== "demo" ? createClient() : null),
+    [presentation]
+  );
 
   const isDemo = presentation === "demo";
   const demoListing = isDemoListing(listing) ? listing : null;
@@ -93,9 +98,6 @@ const ListingRead = memo(function Listing({
   }, [realListing?.id, user?.id, isDemo, supabase, realListing]);
 
   const initialZoomLevel = 14;
-  useEffect(() => {
-    setMapZoomLevel(initialZoomLevel);
-  }, []);
 
   const listingDisplayName: string = isDemo
     ? (demoListing?.name ?? demoListing?.owner_first_name ?? "")
@@ -135,7 +137,6 @@ const ListingRead = memo(function Listing({
             isChatDrawerOpen={isChatDrawerOpen}
             setIsChatDrawerOpen={setIsChatDrawerOpen}
             existingThread={existingThread}
-            listingDisplayName={listingDisplayName}
           />
         ) : null}
 
