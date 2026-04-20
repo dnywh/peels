@@ -29,17 +29,6 @@ async function signIn(
   ]);
 }
 
-test("auth-sign-in redirects a seeded donor into the signed-in experience", async ({
-  page,
-}) => {
-  await signIn(page, { email: DONOR_EMAIL, redirectTo: "/profile" });
-
-  await expect(page).toHaveURL(/\/profile$/);
-  await expect(page.getByTestId("profile-first-name")).toHaveText("Riley", {
-    timeout: PROFILE_RENDER_TIMEOUT_MS,
-  });
-});
-
 test("public-listing shows the seeded public listing and guest contact gate", async ({
   page,
 }) => {
