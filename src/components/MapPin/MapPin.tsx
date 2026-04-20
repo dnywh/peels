@@ -3,7 +3,7 @@ import MapCommunityIcon from "../MapCommunityIcon";
 import MapResidentialIcon from "../MapResidentialIcon";
 import { styled } from "@pigment-css/react";
 
-type ListingPinType = "business" | "community" | "residential";
+import type { ListingType } from "@/types/listing";
 
 type MapPinProps = {
   selected?: boolean;
@@ -145,19 +145,16 @@ const SelectedPinIcon = (
 
 const ICON = `M18.149 15.8139C18.2078 15.7251 18.2326 15.6533 18.2915 15.5646C19.3387 13.9878 20 12.0412 20 10C20 4.4 15.5 0 10 0C4.5 0 0 4.5 0 10C0 11.8662 0.522404 13.6453 1.40473 15.0937C1.52799 15.296 1.62851 15.5285 1.79602 15.696C1.79734 15.6974 1.79867 15.6987 1.8 15.7C1.90535 15.8054 1.94349 15.9666 2.02739 16.0897C2.18874 16.3264 2.36323 16.5632 2.6 16.8C4.5396 19.1126 7.70356 22.2044 9.18572 23.6258C9.64236 24.0637 10.3577 24.0638 10.8151 23.6266C12.2976 22.2097 15.4607 19.1376 17.4 16.9C17.5711 16.6433 17.8155 16.3866 18.0078 16.1299C18.07 16.0467 18.0918 15.9006 18.149 15.8139Z`;
 
-const iconMap: Record<
-  ListingPinType,
-  React.ComponentType<{ size?: string }>
-> = {
+// Keyed on the shared `ListingType` union so adding a new type there becomes
+// a compile error here — prevents the two from drifting out of sync.
+const iconMap: Record<ListingType, React.ComponentType<{ size?: string }>> = {
   business: MapBusinessIcon as React.ComponentType<{ size?: string }>,
   community: MapCommunityIcon as React.ComponentType<{ size?: string }>,
   residential: MapResidentialIcon as React.ComponentType<{ size?: string }>,
 };
 
-function isListingPinType(value: string | undefined): value is ListingPinType {
-  return (
-    value === "business" || value === "community" || value === "residential"
-  );
+function isListingPinType(value: string | undefined): value is ListingType {
+  return value !== undefined && value in iconMap;
 }
 
 function MapPin({ selected = false, type }: MapPinProps) {

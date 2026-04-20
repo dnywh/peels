@@ -64,13 +64,18 @@ const ListingRead = memo(function Listing({
   const realListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
 
-  // Load existing thread if any (only if not in demo mode)
+  // Load existing thread if any (only if not in demo mode). Depend on the
+  // specific listing fields used inside the effect so a new `realListing`
+  // object identity with the same id/owner doesn't refire the query.
+  const listingId = realListing?.id;
+  const listingOwnerId = realListing?.owner_id;
+  const userId = user?.id;
   useEffect(() => {
-    if (isDemo || !supabase || !user || !realListing) return;
+    if (isDemo || !supabase || !userId || !listingId || !listingOwnerId) return;
 
     // TODO: Should this only be called when the actual ListingChatDrawer is loaded?
     async function loadExistingThread() {
-      if (!supabase || !user || !realListing) return;
+      if (!supabase) return;
       const { data: thread, error } = await supabase
         .from("chat_threads_with_participants")
         .select(
@@ -80,9 +85,9 @@ const ListingRead = memo(function Listing({
         `
         )
         .match({
-          listing_id: realListing.id,
-          initiator_id: user.id,
-          owner_id: realListing.owner_id,
+          listing_id: listingId,
+          initiator_id: userId,
+          owner_id: listingOwnerId,
         })
         .maybeSingle();
 
@@ -95,7 +100,7 @@ const ListingRead = memo(function Listing({
     }
 
     loadExistingThread();
-  }, [realListing?.id, user?.id, isDemo, supabase, realListing]);
+  }, [listingId, listingOwnerId, userId, isDemo, supabase]);
 
   const initialZoomLevel = 14;
 
