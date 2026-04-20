@@ -3,6 +3,8 @@ import Link from "next/link";
 import { styled } from "@pigment-css/react";
 import { forwardRef, type ElementType, type ReactNode, type Ref } from "react";
 
+import { resolveExternalRel } from "@/utils/linkRel";
+
 export type ButtonVariant =
   | "primary"
   | "secondary"
@@ -336,6 +338,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
 
     if (isLink) {
       const linkProps = getLinkButtonProps(restProps as LinkButtonRestProps);
+      const rel = resolveExternalRel(linkProps.target, linkProps.rel);
 
       return (
         <StyledLink
@@ -348,6 +351,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
           size={size}
           onClick={handleLinkClick}
           {...linkProps}
+          rel={rel}
         >
           {buttonContent}
         </StyledLink>
