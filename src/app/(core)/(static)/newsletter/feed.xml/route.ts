@@ -14,11 +14,12 @@ export async function GET(request: Request) {
     normaliseLocale(requestUrl.searchParams.get("locale")) ?? defaultLocale;
   const t = await getTranslations({ locale, namespace: "Newsletter" });
   const newsletterIssues = await getAllNewsletterIssues(locale);
+  const feedUrl = `${siteConfig.url}/newsletter/feed.xml?locale=${locale}`;
   const feed = new Feed({
     title: `${siteConfig.name}: ${t("title")}`,
     description: t("description"),
-    id: `${siteConfig.url}/newsletter`,
-    link: `${siteConfig.url}/newsletter/feed.xml?locale=${locale}`,
+    id: feedUrl,
+    link: feedUrl,
     favicon: `${siteConfig.url}/favicon.ico`,
     language: locale,
     copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.name}`,

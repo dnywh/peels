@@ -429,8 +429,10 @@ const chatEmailCopy = {
     ownerFooterBeforeLink: "Don’t want emails like this? ",
     ownerFooterLink: "Manage",
     ownerFooterAfterLink: " your listing to hide or remove it from Peels.",
-    initiatorFooter:
-      "You’re receiving this email because you originally reached out to {senderName} on Peels.",
+    initiatorFooterBeforeLink:
+      "You’re receiving this email because you originally reached out to {senderName} on ",
+    initiatorFooterLink: "Peels",
+    initiatorFooterAfterLink: ".",
     residentOf: "Resident of {listingAreaName}",
     body: "Hi {recipientName}, you’ve received a new message from {senderName}{listingContext}. Check it out on Peels:",
     button: "View message",
@@ -445,8 +447,10 @@ const chatEmailCopy = {
     ownerFooterBeforeLink: "¿No quieres recibir correos como este? ",
     ownerFooterLink: "Gestiona",
     ownerFooterAfterLink: " tu anuncio para ocultarlo o quitarlo de Peels.",
-    initiatorFooter:
-      "Recibes este correo porque contactaste antes con {senderName} en Peels.",
+    initiatorFooterBeforeLink:
+      "Recibes este correo porque contactaste antes con {senderName} en ",
+    initiatorFooterLink: "Peels",
+    initiatorFooterAfterLink: ".",
     residentOf: "Persona residente de {listingAreaName}",
     body: "Hola {recipientName}, has recibido un nuevo mensaje de {senderName}{listingContext}. Échale un vistazo en Peels:",
     button: "Ver mensaje",
@@ -462,8 +466,10 @@ const chatEmailCopy = {
     ownerFooterLink: "Verwalte",
     ownerFooterAfterLink:
       " deinen Eintrag, um ihn auf Peels auszublenden oder zu entfernen.",
-    initiatorFooter:
-      "Du erhältst diese E-Mail, weil du {senderName} ursprünglich über Peels kontaktiert hast.",
+    initiatorFooterBeforeLink:
+      "Du erhältst diese E-Mail, weil du {senderName} ursprünglich über ",
+    initiatorFooterLink: "Peels",
+    initiatorFooterAfterLink: " kontaktiert hast.",
     residentOf: "Person aus {listingAreaName}",
     body: "Hallo {recipientName}, du hast eine neue Nachricht von {senderName}{listingContext} erhalten. Schau sie dir auf Peels an:",
     button: "Nachricht ansehen",
@@ -479,8 +485,10 @@ const chatEmailCopy = {
     ownerFooterLink: "Gere",
     ownerFooterAfterLink:
       " o teu anúncio para o ocultares ou removeres do Peels.",
-    initiatorFooter:
-      "Recebeste este e-mail porque entraste em contacto com {senderName} no Peels.",
+    initiatorFooterBeforeLink:
+      "Recebeste este e-mail porque entraste em contacto com {senderName} no ",
+    initiatorFooterLink: "Peels",
+    initiatorFooterAfterLink: ".",
     residentOf: "Pessoa de {listingAreaName}",
     body: "Olá {recipientName}, recebeste uma nova mensagem de {senderName}{listingContext}. Vê tudo no Peels:",
     button: "Ver mensagem",
@@ -497,8 +505,10 @@ const chatEmailCopy = {
     ownerFooterLink: "Gérez",
     ownerFooterAfterLink:
       " votre annonce pour la masquer ou la supprimer de Peels.",
-    initiatorFooter:
-      "Vous recevez cet e-mail parce que vous avez contacté {senderName} via Peels.",
+    initiatorFooterBeforeLink:
+      "Vous recevez cet e-mail parce que vous avez contacté {senderName} via ",
+    initiatorFooterLink: "Peels",
+    initiatorFooterAfterLink: ".",
     residentOf: "Personne située à {listingAreaName}",
     body: "Bonjour {recipientName}, vous avez reçu un nouveau message de {senderName}{listingContext}. Consultez-le sur Peels :",
     button: "Voir le message",

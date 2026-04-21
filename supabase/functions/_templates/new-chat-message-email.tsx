@@ -72,7 +72,13 @@ export const NewChatMessageEmail = ({
             {copy.ownerFooterAfterLink}
           </>
         ) : (
-          copy.initiatorFooter.replace("{senderName}", senderName)
+          <>
+            {copy.initiatorFooterBeforeLink.replace("{senderName}", senderName)}
+            <EmailLink href={`${siteUrl}/chats/${threadId}`}>
+              {copy.initiatorFooterLink}
+            </EmailLink>
+            {copy.initiatorFooterAfterLink}
+          </>
         )
       }
     >

@@ -30,7 +30,11 @@ begin
     new.id,
     (new.raw_user_meta_data->>'first_name')::text,
     (new.raw_user_meta_data->>'is_newsletter_subscribed')::boolean,
-    (new.raw_user_meta_data->>'preferred_locale')::text,
+    case
+      when (new.raw_user_meta_data->>'preferred_locale')::text in ('en', 'es', 'de', 'pt-BR', 'fr')
+        then (new.raw_user_meta_data->>'preferred_locale')::text
+      else null
+    end,
     (new.raw_user_meta_data->>'http_referrer')::text,
     (new.raw_user_meta_data->>'utm_source')::text,
     (new.raw_user_meta_data->>'utm_medium')::text,
