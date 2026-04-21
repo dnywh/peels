@@ -1,3 +1,10 @@
+drop function if exists public.listings_in_view(
+  double precision,
+  double precision,
+  double precision,
+  double precision
+);
+
 create or replace function public.listings_in_view(
   min_lat double precision,
   min_long double precision,
