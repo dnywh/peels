@@ -19,12 +19,26 @@ export function resolveContentLocale(
   return normaliseLocale(locale) ?? defaultLocale;
 }
 
+function parseContentCalendarDate(dateString: string) {
+  const isoDateMatch = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (!isoDateMatch) {
+    return new Date(dateString);
+  }
+
+  const [, year, month, day] = isoDateMatch;
+  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+}
+
 export function formatContentDate(dateString: string, locale: Locale) {
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
-  }).format(new Date(dateString));
+    // Treat authored content dates as stable calendar dates rather than
+    // shifting them with the runtime's local timezone.
+    timeZone: "UTC",
+  }).format(parseContentCalendarDate(dateString));
 }
 
 async function doesContentFileExist(contentPath: string) {
