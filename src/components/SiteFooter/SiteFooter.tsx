@@ -9,7 +9,7 @@ import { hasSupabaseAuthCookie } from "@/utils/supabase/authCookies";
 
 const currentYear = new Date().getFullYear();
 
-export default async function LegalFooter() {
+export default async function SiteFooter() {
   const t = await getTranslations();
   const cookieStore = await cookies();
   const hasSignedInSession = hasSupabaseAuthCookie(cookieStore.getAll());

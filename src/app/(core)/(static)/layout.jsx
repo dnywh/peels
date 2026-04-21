@@ -1,6 +1,6 @@
 import TabBar from "@/components/TabBar";
 import { TabBarProvider } from "@/contexts/TabBarContext";
-import LegalFooter from "@/components/LegalFooter";
+import SiteFooter from "@/components/SiteFooter";
 import { styled } from "@pigment-css/react";
 import AccountButton from "@/components/AccountButton";
 
@@ -29,7 +29,7 @@ export default async function Layout({ children }) {
         <StyledAccountButton />
         <TabBar breakpoint="md" position="fixed" />
         {children}
-        <LegalFooter />
+        <SiteFooter />
         <TabBar breakpoint="sm" />
       </StaticPage>
     </TabBarProvider>

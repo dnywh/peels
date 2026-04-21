@@ -3,13 +3,13 @@ import ProfileHeader from "@/components/ProfileHeader";
 import ProfileAccountSettings from "@/components/ProfileAccountSettings";
 import ProfileListings from "@/components/ProfileListings";
 import ProfileActions from "@/components/ProfileActions";
-import LegalFooter from "@/components/LegalFooter";
+import SiteFooter from "@/components/SiteFooter";
 import { styled } from "@pigment-css/react";
 import { Suspense } from "react";
 import Toast from "@/components/Toast";
 import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
-import { normaliseLocale } from "@/i18n/config";
+import { defaultLocale, normaliseLocale } from "@/i18n/config";
 
 export async function generateMetadata() {
   const t = await getTranslations("Profile.sections");
@@ -48,7 +48,7 @@ export default async function ProfilePage() {
     (typeof userMetadataPreferredLocale === "string"
       ? normaliseLocale(userMetadataPreferredLocale)
       : undefined) ??
-    "en";
+    defaultLocale;
 
   return (
     <>
@@ -81,7 +81,7 @@ export default async function ProfilePage() {
         <ProfileActions listings={listings} />
       </Section>
 
-      <LegalFooter />
+      <SiteFooter />
     </>
   );
 }

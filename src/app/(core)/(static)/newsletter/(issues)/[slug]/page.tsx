@@ -16,16 +16,27 @@ import FooterBlock from "@/components/FooterBlock";
 import { getNewsletterIssueImageUrl } from "@/utils/storage";
 import TranslationNotice from "@/components/TranslationNotice";
 import { getLocale, getTranslations } from "next-intl/server";
+import { getLocaleFromSearchParams } from "@/utils/authRedirects";
 
 type NewsletterIssuePageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ locale?: string | string[] | undefined }>;
+};
+
+const resolveNewsletterIssueLocale = async (
+  searchParams: NewsletterIssuePageProps["searchParams"]
+) => {
+  const requestedLocale = getLocaleFromSearchParams(await searchParams);
+
+  return requestedLocale ?? (await getLocale());
 };
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: NewsletterIssuePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const locale = await getLocale();
+  const locale = await resolveNewsletterIssueLocale(searchParams);
   const { metadata, customMetadata } = await getNewsletterIssueMetadata(
     slug,
     locale
@@ -60,9 +71,10 @@ export async function generateStaticParams() {
 
 export default async function NewsletterIssuePage({
   params,
+  searchParams,
 }: NewsletterIssuePageProps) {
   const { slug } = await params;
-  const locale = await getLocale();
+  const locale = await resolveNewsletterIssueLocale(searchParams);
   const t = await getTranslations({ locale, namespace: "Newsletter" });
   const { metadata, customMetadata, formattedDate } =
     await getNewsletterIssueMetadata(slug, locale);

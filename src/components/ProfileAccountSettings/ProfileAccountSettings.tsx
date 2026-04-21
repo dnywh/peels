@@ -15,7 +15,12 @@ import {
   updatePreferredLocaleAction,
   sendEmailChangeEmailAction,
 } from "@/app/actions";
-import { localeLabels, locales, type Locale } from "@/i18n/config";
+import {
+  defaultLocale,
+  localeLabels,
+  locales,
+  type Locale,
+} from "@/i18n/config";
 
 import { styled } from "@pigment-css/react";
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
@@ -135,7 +140,7 @@ function ProfileAccountSettings({
     profile?.is_newsletter_subscribed
   );
   const [tempPreferredLocale, setTempPreferredLocale] = useState<Locale>(
-    profile?.preferred_locale ?? "en"
+    profile?.preferred_locale ?? defaultLocale
   );
 
   // const handlePasswordUpdate = async (formData) => {
@@ -283,7 +288,7 @@ function ProfileAccountSettings({
   };
 
   const handlePreferredLocaleCancel = () => {
-    setTempPreferredLocale(profile?.preferred_locale ?? "en");
+    setTempPreferredLocale(profile?.preferred_locale ?? defaultLocale);
     preferredLocale.reset();
   };
 
