@@ -32,11 +32,13 @@ const getDefaultNextPathByType = (type: AuthEmailType) =>
 export const buildAuthConfirmUrl = ({
   email,
   emailActionType,
+  locale,
   redirectTo,
   tokenHash,
 }: {
   email?: string;
   emailActionType: string;
+  locale?: string;
   redirectTo: string;
   tokenHash: string;
 }) => {
@@ -76,6 +78,9 @@ export const buildAuthConfirmUrl = ({
   confirmUrl.searchParams.set("token_hash", tokenHash);
   confirmUrl.searchParams.set("type", safeAction);
   confirmUrl.searchParams.set("next", nextPath);
+  if (locale) {
+    confirmUrl.searchParams.set("locale", locale);
+  }
   if (email) {
     confirmUrl.searchParams.set("email", email);
   }

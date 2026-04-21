@@ -1,10 +1,15 @@
 import { CodeInline } from "npm:@react-email/components";
 import EmailBody from "./components/EmailBody.tsx";
-import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
+import {
+  getAuthEmailCopy,
+  getAuthEmailSharedCopy,
+  type SupportedLocale,
+} from "../_shared/i18n.ts";
 import * as React from "npm:react";
 
 interface ReauthenticationEmailProps {
+  locale: SupportedLocale;
   //   username: string;
   //   lang: string;
   token: string;
@@ -18,6 +23,7 @@ interface ReauthenticationEmailProps {
 // https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/auth-hook-react-email-resend/_templates/sign-up.tsx
 
 export const ReauthenticationEmail = ({
+  locale,
   //   username,
   //   lang,
   token,
@@ -26,26 +32,26 @@ export const ReauthenticationEmail = ({
   // redirect_to,
   // token_hash,
 }: ReauthenticationEmailProps) => {
+  const copy = getAuthEmailCopy(locale, "reauthentication");
+  const sharedCopy = getAuthEmailSharedCopy(locale);
   return (
     <EmailBody
-      previewText="Here’s your code for Peels."
-      headingText="Your reauthentication code"
-      footerText="You’re receiving this email because you requested help a reauthentication code for Peels."
+      previewText={copy.preview}
+      headingText={copy.heading}
+      footerText={copy.footer}
     >
-      <EmailParagraph>Enter the following code on Peels:</EmailParagraph>
+      <EmailParagraph>{copy.body}</EmailParagraph>
 
       <EmailParagraph>
         <CodeInline>{token}</CodeInline>
       </EmailParagraph>
 
-      <EmailParagraph>
-        Just hit ‘reply’ if you run into any issues or have questions.
-      </EmailParagraph>
+      <EmailParagraph>{sharedCopy.replyHelp}</EmailParagraph>
 
       <EmailParagraph>
-        Best,
+        {sharedCopy.signOff},
         <br />
-        Peels team
+        {sharedCopy.team}
       </EmailParagraph>
     </EmailBody>
   );

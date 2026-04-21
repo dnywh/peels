@@ -2,9 +2,15 @@ import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
 import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
+import {
+  getAuthEmailCopy,
+  getAuthEmailSharedCopy,
+  type SupportedLocale,
+} from "../_shared/i18n.ts";
 import * as React from "npm:react";
 
 interface MagicLinkEmailProps {
+  locale: SupportedLocale;
   //   username: string;
   //   lang: string;
   //   token: string;
@@ -18,6 +24,7 @@ interface MagicLinkEmailProps {
 // https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/auth-hook-react-email-resend/_templates/sign-up.tsx
 
 export const MagicLinkEmail = ({
+  locale,
   //   username,
   //   lang,
   //   token,
@@ -26,32 +33,31 @@ export const MagicLinkEmail = ({
   redirect_to,
   token_hash,
 }: MagicLinkEmailProps) => {
+  const copy = getAuthEmailCopy(locale, "magicLink");
+  const sharedCopy = getAuthEmailSharedCopy(locale);
   const confirmUrl = buildAuthConfirmUrl({
     emailActionType: email_action_type,
+    locale,
     redirectTo: redirect_to,
     tokenHash: token_hash,
   });
 
   return (
     <EmailBody
-      previewText="Here’s a link to instantly sign in to Peels."
-      headingText="Your magic link"
-      footerText="You’re receiving this email because you requested help signing in to Peels."
+      previewText={copy.preview}
+      headingText={copy.heading}
+      footerText={copy.footer}
     >
-      <EmailParagraph>
-        Follow this link to instantly sign in to Peels:
-      </EmailParagraph>
+      <EmailParagraph>{copy.body}</EmailParagraph>
 
-      <EmailButton href={confirmUrl}>Sign in to Peels</EmailButton>
+      <EmailButton href={confirmUrl}>{copy.button}</EmailButton>
 
-      <EmailParagraph>
-        Just hit ‘reply’ if you run into any issues or have questions.
-      </EmailParagraph>
+      <EmailParagraph>{sharedCopy.replyHelp}</EmailParagraph>
 
       <EmailParagraph>
-        Best,
+        {sharedCopy.signOff},
         <br />
-        Peels team
+        {sharedCopy.team}
       </EmailParagraph>
     </EmailBody>
   );

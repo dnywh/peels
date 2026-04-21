@@ -19,11 +19,6 @@ export const siteConfig = {
     general: "dGVhbUBwZWVscy5hcHA=",
     newsletter: "bmV3c2xldHRlckBwZWVscy5hcHA=",
   },
-  newsletter: {
-    description:
-      // TODO: Store in translations files instead
-      "Occasional updates on how Peels is supporting community composting around the world.",
-  },
   meta: {
     explainer:
       "a community platform for connecting folks with food scraps to those who compost",

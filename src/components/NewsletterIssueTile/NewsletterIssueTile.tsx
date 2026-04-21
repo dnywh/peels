@@ -11,7 +11,7 @@ interface NewsletterIssueTileProps {
   slug: string;
   title: string;
   issueNumber: number;
-  date: string;
+  subtitle: string;
   previewImages?: string[];
 }
 
@@ -20,7 +20,7 @@ export default function NewsletterIssueTile({
   slug,
   title,
   issueNumber,
-  date,
+  subtitle,
   previewImages,
 }: NewsletterIssueTileProps) {
   return (
@@ -32,9 +32,7 @@ export default function NewsletterIssueTile({
       >
         <Text featured={featured}>
           <h3>{title}</h3>
-          <p>
-            Issue #{issueNumber} · {date}
-          </p>
+          <p>{subtitle}</p>
         </Text>
         {featured && (
           <Images>

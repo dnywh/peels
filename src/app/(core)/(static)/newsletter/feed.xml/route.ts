@@ -3,24 +3,39 @@ import { Feed } from "feed";
 import { getAllNewsletterIssues } from "@/lib/content/handlers/newsletter";
 import { siteConfig } from "@/config/site";
 import { getNewsletterIssueImageUrl } from "@/utils/storage";
+import { defaultLocale, normaliseLocale } from "@/i18n/config";
+import { getTranslations } from "next-intl/server";
 
-export const dynamic = "force-static"; // Force as prerendered static content on build, not dynamic (otherwise issues don't populate)
+export const revalidate = 3600;
 
-const feed = new Feed({
-  title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches layout.tsx)
-  description: siteConfig.newsletter.description,
-  id: `${siteConfig.url}/newsletter`,
-  link: `${siteConfig.url}/newsletter/feed.xml`,
-  favicon: `${siteConfig.url}/favicon.ico`,
-  language: "en",
-  copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.name}`,
-});
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const requestedLocale = requestUrl.searchParams.get("locale");
+  const locale = normaliseLocale(requestedLocale) ?? defaultLocale;
+  const t = await getTranslations({ locale, namespace: "Newsletter" });
+  const newsletterIssues = await getAllNewsletterIssues(locale);
+  const feedUrl = new URL("/newsletter/feed.xml", siteConfig.url);
 
-export async function GET() {
-  const newsletterIssues = await getAllNewsletterIssues();
+  if (requestedLocale) {
+    feedUrl.searchParams.set("locale", locale);
+  }
+
+  const feed = new Feed({
+    title: `${siteConfig.name}: ${t("title")}`,
+    description: t("description"),
+    id: feedUrl.toString(),
+    link: feedUrl.toString(),
+    favicon: `${siteConfig.url}/favicon.ico`,
+    language: locale,
+    copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.name}`,
+  });
 
   newsletterIssues.forEach((issue) => {
-    const issueLink = `${siteConfig.url}/newsletter/${issue.slug}`;
+    const issueUrl = new URL(`/newsletter/${issue.slug}`, siteConfig.url);
+    if (locale !== defaultLocale) {
+      issueUrl.searchParams.set("locale", locale);
+    }
+    const issueLink = issueUrl.toString();
     const issueImage = new URL(
       getNewsletterIssueImageUrl(
         issue.customMetadata.issueNumber,
@@ -30,7 +45,7 @@ export async function GET() {
     ).toString();
     feed.addItem({
       title: issue.metadata.title,
-      link: `${siteConfig.url}/newsletter/${issue.slug}`,
+      link: issueLink,
       description: issue.metadata.description,
       author: issue.metadata.authors.map((author) => ({
         name: author,
@@ -38,7 +53,7 @@ export async function GET() {
       image: issueImage,
       content: `${
         issue.metadata.description ? `<p>${issue.metadata.description}</p>` : ""
-      }<p><a href="${issueLink}">Read this full issue on Peels</a></p>`,
+      }<p><a href="${issueLink}">${t("readFullIssue")}</a></p>`,
       date: new Date(issue.customMetadata.publishDate),
     });
   });
@@ -46,6 +61,7 @@ export async function GET() {
   return new Response(feed.rss2(), {
     headers: {
       "Content-Type": "application/rss+xml",
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
 }

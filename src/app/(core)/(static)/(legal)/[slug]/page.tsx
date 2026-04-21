@@ -1,12 +1,15 @@
-// For documentation, see analagous setup for newsletter issues
-import dynamic from "next/dynamic";
+// For documentation, see analogous setup for newsletter issues
 import type { Metadata } from "next/types";
 import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import LongformTextContainer from "@/components/LongformTextContainer";
+import TranslationNotice from "@/components/TranslationNotice";
 import { getAllContentSlugs } from "@/lib/content/utils";
-import { getLegalPageMetadata } from "@/lib/content/handlers/legal";
-import { formatPublishDate } from "@/utils/dateUtils";
+import {
+  getLegalPageMetadata,
+  getLegalPageModule,
+} from "@/lib/content/handlers/legal";
+import { getLocale, getTranslations } from "next-intl/server";
 
 type LegalPageProps = {
   params: Promise<{ slug: string }>;
@@ -16,7 +19,8 @@ export async function generateMetadata({
   params,
 }: LegalPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { metadata } = await getLegalPageMetadata(slug);
+  const locale = await getLocale();
+  const { metadata } = await getLegalPageMetadata(slug, locale);
 
   if (metadata) {
     return {
@@ -38,7 +42,14 @@ export async function generateStaticParams() {
 
 export default async function LegalPage({ params }: LegalPageProps) {
   const { slug } = await params;
-  const { metadata, customMetadata } = await getLegalPageMetadata(slug);
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: "Legal" });
+  const { metadata, customMetadata, formattedDate } =
+    await getLegalPageMetadata(slug, locale);
+  const {
+    file: { default: LegalPageMarkdown },
+    isFallback,
+  } = await getLegalPageModule(slug, locale);
 
   // Set unique inline title if verbose title passed through (assuming customMetadata has even been provided)
   // E.g. 'Privacy' in the <title> and 'Privacy policy' in the inline <h1>
@@ -51,16 +62,10 @@ export default async function LegalPage({ params }: LegalPageProps) {
   // Set description to last updated date, if provided
   // TODO: Any way to use this in OG metadata?
   //   TODO use consistent date formatting here, chat messages (maybe), and newsletter issues
-  const pageDescription = customMetadata
-    ? customMetadata.updatedDate
-      ? `Last updated ${formatPublishDate(customMetadata.updatedDate)}`
-      : metadata.description
-    : metadata.description;
-
-  //   Dynamically import MDX files
-  const LegalPageMarkdown = dynamic(
-    () => import(`@/content/legal/${slug}.mdx`)
-  );
+  const pageDescription =
+    customMetadata?.updatedDate && formattedDate
+      ? t("lastUpdated", { date: formattedDate })
+      : metadata.description;
 
   return (
     // // Largely matches newsletter/(issues) page.tsx
@@ -69,6 +74,12 @@ export default async function LegalPage({ params }: LegalPageProps) {
       <section>
         <StaticPageHeader title={pageTitle} subtitle={pageDescription} />
         <LongformTextContainer>
+          {isFallback && (
+            <TranslationNotice
+              title={t("fallbackTitle")}
+              body={t("fallbackBody")}
+            />
+          )}
           <LegalPageMarkdown />
         </LongformTextContainer>
       </section>

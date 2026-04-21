@@ -2,11 +2,17 @@ import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
 import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
+import {
+  getAuthEmailCopy,
+  getAuthEmailSharedCopy,
+  type SupportedLocale,
+} from "../_shared/i18n.ts";
 import * as React from "npm:react";
 
 interface EmailChangeEmailProps {
   email: string;
   newEmail: string;
+  locale: SupportedLocale;
   supabase_url: string;
   email_action_type: string;
   redirect_to: string;
@@ -19,41 +25,43 @@ interface EmailChangeEmailProps {
 export const EmailChangeEmail = ({
   email,
   newEmail,
+  locale,
   supabase_url,
   email_action_type,
   redirect_to,
   token_hash,
 }: EmailChangeEmailProps) => {
+  const copy = getAuthEmailCopy(locale, "emailChange");
+  const sharedCopy = getAuthEmailSharedCopy(locale);
   const confirmUrl = buildAuthConfirmUrl({
     emailActionType: email_action_type,
+    locale,
     redirectTo: redirect_to,
     tokenHash: token_hash,
   });
 
   return (
     <EmailBody
-      previewText="Here’s a link to change the email address you use on Peels."
-      headingText="Confirm your email change"
-      footerText="You’re receiving this email because you requested an email address change on Peels."
+      previewText={copy.preview}
+      headingText={copy.heading}
+      footerText={copy.footer}
     >
+      <EmailParagraph>{copy.body}</EmailParagraph>
+
+      <EmailButton href={confirmUrl}>{copy.button}</EmailButton>
+
       <EmailParagraph>
-        Follow this link to confirm your new email on Peels:
+        {copy.reminder
+          .replace("{email}", email)
+          .replace("{newEmail}", newEmail)}
       </EmailParagraph>
 
-      <EmailButton href={confirmUrl}>Change email address</EmailButton>
+      <EmailParagraph>{sharedCopy.replyHelp}</EmailParagraph>
 
       <EmailParagraph>
-        As a reminder, you’re changing from {email} to {newEmail}.
-      </EmailParagraph>
-
-      <EmailParagraph>
-        Just hit ‘reply’ if you run into any issues or have questions.
-      </EmailParagraph>
-
-      <EmailParagraph>
-        Best,
+        {sharedCopy.signOff},
         <br />
-        Peels team
+        {sharedCopy.team}
       </EmailParagraph>
     </EmailBody>
   );

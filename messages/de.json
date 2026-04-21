@@ -44,6 +44,8 @@
     "admin": "Admin",
     "email": "E-Mail",
     "hidden": "Ausgeblendet",
+    "language": "Sprache",
+    "languageHint": "Besucherinnen und Besucher können die Sprache hier wechseln. Angemeldete Mitglieder können zusätzlich eine Standardsprache in ihrem Konto speichern.",
     "links": "Links",
     "listings": "Einträge",
     "loading": "Lädt...",
@@ -115,6 +117,8 @@
   "Index": {
     "title": "Finde ein Zuhause für deine Küchenabfälle, wo auch immer du bist",
     "subtitle": "Peels verbindet die Menschen mit Lebensmittelkratzern mit denen, die komponieren. Es ist ein kostenloses und nicht-kommerzielles Gemeinschaftsprojekt.",
+    "metaDescription": "Peels verbindet Menschen mit Lebensmittelresten mit denjenigen, die kompostieren. Es ist ein kostenloses, nicht-kommerzielles Gemeinschaftsprojekt.",
+    "metaKeywords": "Lebensmittelabfall, Essensreste, Kompost, Kompost in meiner Nähe, Kompost-Abgabestelle, Abgabe von Lebensmittelresten",
     "hostAvatarAlt": "Der Avatar eines Peels-Gastgebers",
     "buttons": {
       "browseMap": "Karte durchsuchen",
@@ -183,6 +187,7 @@
       "firstNameHint": "Verwende deinen Vornamen oder einen Spitznamen.",
       "emailSuccess": "Prüfe deine E-Mails für den Bestätigungslink.",
       "emailHint": "Wir senden einen Bestätigungslink an diese E-Mail.",
+      "languageHint": "Wähle die Standardsprache, die Peels und deine Konto-E-Mails verwenden sollen.",
       "newsletterSubscribedHint": "Wir senden dir gelegentliche E-Mail-Updates über Peels.",
       "newsletterNotSubscribedHint": "Wir senden dir nur notwendige E-Mails zu deinem Konto oder deinen Einträgen."
     },
@@ -358,6 +363,9 @@
   },
   "Legal": {
     "agreement": "Ich habe die Peels-<terms>Nutzungsbedingungen</terms> und die <privacy>Datenschutzerklärung</privacy> gelesen und stimme ihnen zu",
+    "fallbackTitle": "Diese Seite ist derzeit nur auf Englisch verfügbar",
+    "fallbackBody": "Wir übersetzen einige unserer rechtlichen und referenzbezogenen Seiten noch. Vorerst ist die vollständige Seite unten auf Englisch verfügbar.",
+    "lastUpdated": "Zuletzt aktualisiert am {date}",
     "privacy": "Datenschutz",
     "terms": "Bedingungen"
   },
@@ -405,13 +413,18 @@
   },
   "Newsletter": {
     "title": "Newsletter",
+    "description": "Gelegentliche Neuigkeiten darüber, wie Peels gemeinschaftliches Kompostieren auf der ganzen Welt unterstützt.",
     "inboxTitle": "Direkt in dein Postfach",
     "inboxDescription": "Aktiviere den Empfang künftiger Newsletter-Ausgaben per E-Mail.",
     "rss": "Oder abonniere den <link>RSS-Feed</link>.",
     "latestIssue": "Neueste Ausgabe",
     "pastIssues": "Frühere Ausgaben",
     "issueSubtitle": "Ausgabe #{number} · Veröffentlicht am {date}",
+    "issueTile": "Ausgabe #{number} · {date}",
     "parent": "Newsletter",
+    "fallbackTitle": "Diese Ausgabe ist derzeit nur auf Englisch verfügbar",
+    "fallbackBody": "Wir arbeiten noch an Übersetzungen der Newsletter-Ausgaben. Bis dahin ist die vollständige Ausgabe unten die englische Version.",
+    "readFullIssue": "Diese vollständige Ausgabe auf Peels lesen",
     "stampAlt": "Eine Briefmarke",
     "aside": {
       "title": "Über diesen Newsletter",
@@ -450,8 +463,8 @@
         "answer": "Peels is a non-commercial, community-led project. We may incorporate as a not-for-profit in the future and accept grant funding or sponsorships for further development, but we never intend to start charging for the service."
       },
       "fogo": {
-        "question": "I have a FOGO bin. Is community composting still relevant?",
-        "answer": "Lucky you! Unfortunately, you’re in the minority. Most people don’t yet have access to kerbside compost collection. As long as that’s the case, there’ll be a need for community composting resources."
+        "question": "Ich habe bereits eine kommunale Sammlung für Lebensmittelreste. Ist gemeinschaftliches Kompostieren trotzdem relevant?",
+        "answer": "Ja. Viele Menschen haben noch immer keinen verlässlichen Zugang zu einer Sammlung von Lebensmittelresten, und gemeinschaftliches Kompostieren kann ausserdem lokaler, sozialer und lehrreicher sein als ein stadtweites Angebot. Peels soll sowohl Orte mit bestehender Sammlung als auch Orte unterstützen, die so ein Angebot erst noch aufbauen."
       },
       "mapPrivacy": {
         "question": "I’m not comfortable putting my address on a map. Can I still participate?",
@@ -462,12 +475,12 @@
         "answer": "<p>You’re awesome. Thank you.</p><p>If you’re inclined to help on the technical side, check out our <repo>GitHub repo</repo>. It has information on how to contribute, plus some existing issues that could do with your eyes.</p> <p>Community organising is also a big part of getting Peels off the ground. Please don’t hesistate to <email>email us</email> if that’s something you could help with.</p>"
       },
       "promotion": {
-        "question": "How can I promote Peels to my community?",
-        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Check out our <promoKit>promo kit</promoKit> which includes social media tiles and and a printable poster in bothletter and A4 sizes. Don’t hesistate to <email>reach out</email> for something more specific to your community.</p>"
+        "question": "Wie kann ich Peels in meiner Community bekannt machen?",
+        "answer": "<p>Erst einmal: Danke! Peels funktioniert nur mit einer lebendigen Karte voller Einträge, deshalb ist Weiterempfehlen so wichtig.</p><p>Schau dir unser <promoKit>Promo-Kit</promoKit> an. Es enthält Social-Media-Grafiken und druckbare Poster im US-Letter- und A4-Format. <email>Melde dich gern</email>, wenn du etwas Spezifischeres für deine Community brauchst.</p>"
       },
       "government": {
-        "question": "I represent local or state government. How can I get involved?",
-        "answer": "<p>We’ve already partnered with councils from all over Australia, and are always keen to work with more (around the world, too!). Please <email>email us</email>.</p>"
+        "question": "Ich vertrete eine lokale oder regionale Behörde. Wie kann ich mich einbringen?",
+        "answer": "<p>Wir arbeiten gern mit öffentlichen Stellen, Gemeinschaftsorganisationen und Bildungsinitiativen zusammen, überall dort, wo Peels dabei helfen kann, mehr Lebensmittelreste vor der Deponie zu bewahren. Bitte <email>schreib uns</email>.</p>"
       }
     },
     "supportFaq": {

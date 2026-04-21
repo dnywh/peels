@@ -14,6 +14,10 @@ import {
   isTurnstileEnabled,
   validateTurnstileToken,
 } from "@/utils/utils";
+import { getUserLocale, setUserLocale } from "@/i18n/services/locale";
+import { resolveAuthLocale } from "@/utils/authRedirects";
+import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
+import { normaliseLocale } from "@/i18n/config";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -45,6 +49,9 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
   const email = (formData.get("email")?.toString() ?? "").trim();
   const password = formData.get("password")?.toString();
   const rawFirstName = formData.get("first_name")?.toString();
+  const locale = resolveAuthLocale(
+    formData.get("locale")?.toString() ?? (await getUserLocale())
+  );
   const firstNameValidation = validateFirstName(formData.get("first_name"));
   if (!firstNameValidation.isValid) {
     const preservedData = new URLSearchParams();
@@ -161,10 +168,11 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     options: {
       // Note: We validate Turnstile server-side above, so we don't pass captchaToken to Supabase
       // This allows us to have granular control (only on sign-up, not sign-in/password reset)
-      emailRedirectTo: `${origin || getBaseUrl()}/auth/complete?next=/profile`,
+      emailRedirectTo: `${origin || getBaseUrl()}/auth/complete?next=/profile&locale=${locale}`,
       data: {
         first_name,
         is_newsletter_subscribed: newsletterPreference,
+        preferred_locale: locale,
         http_referrer: referrer,
         utm_source: utmSource || null,
         utm_medium: utmMedium || null,
@@ -228,15 +236,16 @@ export const forgotPasswordAction = async (formData: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
   const callbackUrl = formData.get("callbackUrl")?.toString();
+  const locale = resolveAuthLocale(
+    formData.get("locale")?.toString() ?? (await getUserLocale())
+  );
 
   if (!email) {
     return encodedRedirect("error", "/forgot-password", t("emailRequired"));
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${
-      origin || getBaseUrl()
-    }/auth/complete?next=/profile/reset-password`,
+    redirectTo: `${origin || getBaseUrl()}/auth/complete?next=/profile/reset-password&locale=${locale}`,
   });
 
   if (error) {
@@ -290,9 +299,18 @@ export const updateFirstNameAction = async (formData: FormData) => {
 export const sendEmailChangeEmailAction = async (formData: FormData) => {
   const t = await getTranslations("Errors");
   const supabase = await createClient();
-  const { error } = await supabase.auth.updateUser({
-    email: formData.get("email") as string,
-  });
+  const origin = (await headers()).get("origin");
+  const locale = resolveAuthLocale(
+    formData.get("locale")?.toString() ?? (await getUserLocale())
+  );
+  const { error } = await supabase.auth.updateUser(
+    {
+      email: formData.get("email") as string,
+    },
+    {
+      emailRedirectTo: `${origin || getBaseUrl()}/auth/complete?next=/profile&locale=${locale}`,
+    }
+  );
 
   if (error) {
     console.error("Error sending email change email:", error);
@@ -324,6 +342,70 @@ export const updateNewsletterPreferenceAction = async (formData: FormData) => {
     console.error("Error updating newsletter preference:", error);
     return { error: t("updateNewsletterFailed") };
   }
+
+  return { success: true };
+};
+
+export const setDisplayLocaleAction = async (formData: FormData) => {
+  const nextLocale = normaliseLocale(formData.get("locale")?.toString());
+
+  if (!nextLocale) {
+    return { error: "Invalid locale" };
+  }
+
+  await setUserLocale(nextLocale);
+  revalidatePath("/", "layout");
+
+  return { success: true };
+};
+
+export const updatePreferredLocaleAction = async (formData: FormData) => {
+  const t = await getTranslations("Errors");
+  const supabase = await createClient();
+  const nextLocale = normaliseLocale(
+    formData.get("preferred_locale")?.toString()
+  );
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.id || !nextLocale) {
+    return { error: t("generic") };
+  }
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      preferred_locale: nextLocale,
+    })
+    .eq("id", user.id);
+
+  const profileUpdated =
+    !profileError || isMissingPreferredLocaleColumn(profileError);
+
+  if (profileError && !isMissingPreferredLocaleColumn(profileError)) {
+    console.error("Error updating preferred locale profile:", profileError);
+  }
+
+  const { error: authError } = await supabase.auth.updateUser({
+    data: {
+      preferred_locale: nextLocale,
+    },
+  });
+
+  const authUpdated = !authError;
+
+  if (authError) {
+    console.error("Error updating preferred locale auth metadata:", authError);
+  }
+
+  if (!profileUpdated && !authUpdated) {
+    return { error: t("genericLater") };
+  }
+
+  await setUserLocale(nextLocale);
+  revalidatePath("/profile");
+  revalidatePath("/", "layout");
 
   return { success: true };
 };

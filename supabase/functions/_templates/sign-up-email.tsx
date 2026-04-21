@@ -2,11 +2,17 @@ import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
 import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
+import {
+  getAuthEmailCopy,
+  getAuthEmailSharedCopy,
+  type SupportedLocale,
+} from "../_shared/i18n.ts";
 import * as React from "npm:react";
 
 interface SignUpEmailProps {
   email: string;
   firstName: string;
+  locale: SupportedLocale;
   //   lang: string;
   //   token: string;
   supabase_url: string;
@@ -21,6 +27,7 @@ interface SignUpEmailProps {
 export const SignUpEmail = ({
   email,
   firstName,
+  locale,
   //   lang,
   //   token,
   supabase_url,
@@ -28,34 +35,34 @@ export const SignUpEmail = ({
   redirect_to,
   token_hash,
 }: SignUpEmailProps) => {
+  const copy = getAuthEmailCopy(locale, "signup");
+  const sharedCopy = getAuthEmailSharedCopy(locale);
   const confirmUrl = buildAuthConfirmUrl({
     email,
     emailActionType: email_action_type,
+    locale,
     redirectTo: redirect_to,
     tokenHash: token_hash,
   });
 
   return (
     <EmailBody
-      previewText={`Let's get you composting, ${firstName}! Here’s a link to verify your Peels account.`}
-      headingText="Welcome to Peels"
-      footerText="You’re receiving this email because you signed up for a Peels account."
+      previewText={copy.preview.replace("{firstName}", firstName)}
+      headingText={copy.heading}
+      footerText={copy.footer}
     >
       <EmailParagraph>
-        We’re so glad you’re here, {firstName}! Follow this link to verify your
-        account:
+        {copy.body.replace("{firstName}", firstName)}
       </EmailParagraph>
 
-      <EmailButton href={confirmUrl}>Verify your Peels account</EmailButton>
+      <EmailButton href={confirmUrl}>{copy.button}</EmailButton>
+
+      <EmailParagraph>{sharedCopy.replyHelp}</EmailParagraph>
 
       <EmailParagraph>
-        Just hit ‘reply’ if you run into any issues or have questions.
-      </EmailParagraph>
-
-      <EmailParagraph>
-        Best,
+        {sharedCopy.signOff},
         <br />
-        Peels team
+        {sharedCopy.team}
       </EmailParagraph>
     </EmailBody>
   );

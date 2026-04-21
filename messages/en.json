@@ -44,6 +44,8 @@
     "admin": "Admin",
     "email": "Email",
     "hidden": "Hidden",
+    "language": "Language",
+    "languageHint": "Guests can switch language here. Signed-in members can also save a default language in their account settings.",
     "links": "Links",
     "listings": "Listings",
     "loading": "Loading...",
@@ -115,6 +117,8 @@
   "Index": {
     "title": "Find a home for your food scraps, wherever you are",
     "subtitle": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
+    "metaDescription": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
+    "metaKeywords": "food waste, food scraps, share waste, sharewaste, makesoil, compost near me, compost drop-off, food scrap drop-off",
     "hostAvatarAlt": "The avatar for a Peels host",
     "buttons": {
       "browseMap": "Browse the map",
@@ -183,6 +187,7 @@
       "firstNameHint": "Use your first name or a nickname.",
       "emailSuccess": "Check your email for the verification link.",
       "emailHint": "We’ll send a verification link to this email.",
+      "languageHint": "Choose the default language you want Peels and account emails to use.",
       "newsletterSubscribedHint": "We’ll send you occasional email updates about Peels.",
       "newsletterNotSubscribedHint": "We’ll only send you necessary account or listing-related emails."
     },
@@ -358,6 +363,9 @@
   },
   "Legal": {
     "agreement": "I have read and agree to the Peels <terms>terms of use</terms> and <privacy>privacy policy</privacy>",
+    "fallbackTitle": "This page is currently available in English",
+    "fallbackBody": "We’re still translating some of our legal and reference pages. For now, the full page below is the English version.",
+    "lastUpdated": "Last updated {date}",
     "privacy": "Privacy",
     "terms": "Terms"
   },
@@ -405,13 +413,18 @@
   },
   "Newsletter": {
     "title": "Newsletter",
+    "description": "Occasional updates on how Peels is supporting community composting around the world.",
     "inboxTitle": "Get these in your inbox",
     "inboxDescription": "Opt-in to receive future issues of the newsletter via email.",
     "rss": "Or subscribe to the <link>RSS feed</link>.",
     "latestIssue": "Latest issue",
     "pastIssues": "Past issues",
     "issueSubtitle": "Issue #{number} · Published {date}",
+    "issueTile": "Issue #{number} · {date}",
     "parent": "Newsletter",
+    "fallbackTitle": "This issue is currently available in English",
+    "fallbackBody": "We’re still translating newsletter issues. For now, the full issue below is the English version.",
+    "readFullIssue": "Read this full issue on Peels",
     "stampAlt": "A postage stamp",
     "aside": {
       "title": "About this newsletter",
@@ -450,8 +463,8 @@
         "answer": "Peels is a non-commercial, community-led project. We may incorporate as a not-for-profit in the future and accept grant funding or sponsorships for further development, but we never intend to start charging for the service."
       },
       "fogo": {
-        "question": "I have a FOGO bin. Is community composting still relevant?",
-        "answer": "Lucky you! Unfortunately, you’re in the minority. Most people don’t yet have access to kerbside compost collection. As long as that’s the case, there’ll be a need for community composting resources."
+        "question": "I already have municipal food-scrap collection. Is community composting still relevant?",
+        "answer": "Absolutely. Many people still don’t have access to reliable food-scrap collection, and community composting can also be more local, social, and educational than a council or city-wide service. Peels is designed to support both the places that already have collection and the places still building it."
       },
       "mapPrivacy": {
         "question": "I’m not comfortable putting my address on a map. Can I still participate?",
@@ -463,11 +476,11 @@
       },
       "promotion": {
         "question": "How can I promote Peels to my community?",
-        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Check out our <promoKit>promo kit</promoKit> which includes social media tiles and and a printable poster in bothletter and A4 sizes. Don’t hesistate to <email>reach out</email> for something more specific to your community.</p>"
+        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Check out our <promoKit>promo kit</promoKit> which includes social media tiles and printable posters in both US letter and A4 sizes. Don’t hesitate to <email>reach out</email> if you need something more specific for your community.</p>"
       },
       "government": {
-        "question": "I represent local or state government. How can I get involved?",
-        "answer": "<p>We’ve already partnered with councils from all over Australia, and are always keen to work with more (around the world, too!). Please <email>email us</email>.</p>"
+        "question": "I represent local or regional government. How can I get involved?",
+        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Please <email>email us</email>.</p>"
       }
     },
     "supportFaq": {

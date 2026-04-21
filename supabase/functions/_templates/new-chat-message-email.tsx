@@ -5,9 +5,11 @@ import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
 import EmailLink from "./components/EmailLink.tsx";
 import { assignments } from "../_shared/tokens.js";
+import { getChatEmailCopy, type SupportedLocale } from "../_shared/i18n.ts";
 import * as React from "npm:react";
 
 interface NewChatMessageEmailProps {
+  locale: SupportedLocale;
   senderName: string;
   recipientName: string;
   // messageContent: string;
@@ -24,6 +26,7 @@ interface NewChatMessageEmailProps {
 }
 
 export const NewChatMessageEmail = ({
+  locale,
   senderName,
   recipientName,
   // messageContent,
@@ -39,25 +42,42 @@ export const NewChatMessageEmail = ({
   ownerHasMultipleNonResidentialListings,
 }: NewChatMessageEmailProps) => {
   const siteUrl = "https://www.peels.app";
+  const copy = getChatEmailCopy(locale);
+  const listingContext =
+    ownerHasMultipleNonResidentialListings && listingName
+      ? locale === "es"
+        ? ` sobre tu ubicación ${listingName}`
+        : locale === "de"
+          ? ` zu deinem Standort ${listingName}`
+          : locale === "pt-BR"
+            ? ` sobre o teu local ${listingName}`
+            : locale === "fr"
+              ? ` au sujet de votre lieu ${listingName}`
+              : ` about your ${listingName} location`
+      : "";
   return (
     <EmailBody
       logoUnread={true}
-      previewText={`Hi ${recipientName}, you’ve received a new message from ${senderName}. Visit Peels to see what they wrote.`}
-      headingText="New message on Peels"
+      previewText={copy.preview
+        .replace("{recipientName}", recipientName)
+        .replace("{senderName}", senderName)}
+      headingText={copy.heading}
       footerText={
         recipientRole === "owner" ? (
           <>
-            Don’t want emails like this?{" "}
+            {copy.ownerFooterBeforeLink}
             <EmailLink href={`${siteUrl}/profile/listings/${listingSlug}`}>
-              Manage
-            </EmailLink>{" "}
-            your listing to hide or remove it from Peels.
+              {copy.ownerFooterLink}
+            </EmailLink>
+            {copy.ownerFooterAfterLink}
           </>
         ) : (
           <>
-            You’re receiving this email because you originally reached out to{" "}
-            {senderName} on{" "}
-            <EmailLink href={`${siteUrl}/profile`}>Peels</EmailLink>.
+            {copy.initiatorFooterBeforeLink.replace("{senderName}", senderName)}
+            <EmailLink href={`${siteUrl}/chats/${threadId}`}>
+              {copy.initiatorFooterLink}
+            </EmailLink>
+            {copy.initiatorFooterAfterLink}
           </>
         )
       }
@@ -76,27 +96,28 @@ export const NewChatMessageEmail = ({
 
         {recipientRole === "initiator" && (
           <Text style={listingByline}>
-            {listingName ? listingName : `Resident of ${listingAreaName}`}
+            {listingName
+              ? listingName
+              : copy.residentOf.replace("{listingAreaName}", listingAreaName)}
           </Text>
         )}
       </Row>
 
       <EmailParagraph>
-        Hi {recipientName}, you’ve received a new message from {senderName}
-        {ownerHasMultipleNonResidentialListings && listingName
-          ? ` about your ${listingName} location`
-          : ""}
-        . Check it out on Peels:
+        {copy.body
+          .replace("{recipientName}", recipientName)
+          .replace("{senderName}", senderName)
+          .replace("{listingContext}", listingContext)}
       </EmailParagraph>
 
       <EmailButton href={`${siteUrl}/chats/${threadId}`}>
-        View message
+        {copy.button}
       </EmailButton>
 
       <EmailParagraph>
-        Best,
+        {copy.signOff},
         <br />
-        Peels team
+        {copy.team}
       </EmailParagraph>
     </EmailBody>
   );

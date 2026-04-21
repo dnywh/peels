@@ -11,6 +11,7 @@ import { MagicLinkEmail } from "../_templates/magic-link-email.tsx";
 import { InviteEmail } from "../_templates/invite-email.tsx";
 import { ReauthenticationEmail } from "../_templates/reauthentication-email.tsx";
 import { renderAsync } from "npm:@react-email/components@0.0.22";
+import { getAuthEmailCopy, resolveEmailLocale } from "../_shared/i18n.ts";
 
 declare const EdgeRuntime: {
   waitUntil: (promise: Promise<unknown>) => void;
@@ -31,6 +32,7 @@ type HookPayload = {
     new_email?: string;
     user_metadata?: {
       first_name?: string;
+      preferred_locale?: string;
     };
   };
   email_data: {
@@ -144,6 +146,10 @@ const prepareEmail = async (
   const userEmail = hookPayload.user.email;
   const userNewEmail = hookPayload.user.new_email ?? "";
   const firstName = hookPayload.user.user_metadata?.first_name ?? "there";
+  const locale = resolveEmailLocale({
+    redirectTo,
+    preferredLocale: hookPayload.user.user_metadata?.preferred_locale,
+  });
 
   if (
     ["signup", "invite", "magiclink", "recovery", "email_change"].includes(
@@ -164,11 +170,13 @@ const prepareEmail = async (
   }
 
   if (emailActionType === "recovery") {
+    const copy = getAuthEmailCopy(locale, "recovery");
     return {
       to: userEmail,
-      subject: "Reset your password on Peels",
+      subject: copy.subject,
       html: await renderAsync(
         React.createElement(ResetPasswordEmail, {
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -177,6 +185,7 @@ const prepareEmail = async (
       ),
       text: await renderAsync(
         React.createElement(ResetPasswordEmail, {
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -189,13 +198,15 @@ const prepareEmail = async (
   }
 
   if (emailActionType === "signup") {
+    const copy = getAuthEmailCopy(locale, "signup");
     return {
       to: userEmail,
-      subject: "Verify your Peels account",
+      subject: copy.subject,
       html: await renderAsync(
         React.createElement(SignUpEmail, {
           email: userEmail,
           firstName,
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -206,6 +217,7 @@ const prepareEmail = async (
         React.createElement(SignUpEmail, {
           email: userEmail,
           firstName,
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -224,13 +236,15 @@ const prepareEmail = async (
       );
     }
 
+    const copy = getAuthEmailCopy(locale, "emailChange");
     return {
       to: userNewEmail,
-      subject: "Confirm your email change on Peels",
+      subject: copy.subject,
       html: await renderAsync(
         React.createElement(EmailChangeEmail, {
           email: userEmail,
           newEmail: userNewEmail,
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -241,6 +255,7 @@ const prepareEmail = async (
         React.createElement(EmailChangeEmail, {
           email: userEmail,
           newEmail: userNewEmail,
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -253,11 +268,13 @@ const prepareEmail = async (
   }
 
   if (emailActionType === "magiclink") {
+    const copy = getAuthEmailCopy(locale, "magicLink");
     return {
       to: userEmail,
-      subject: "Your magic link for Peels",
+      subject: copy.subject,
       html: await renderAsync(
         React.createElement(MagicLinkEmail, {
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -266,6 +283,7 @@ const prepareEmail = async (
       ),
       text: await renderAsync(
         React.createElement(MagicLinkEmail, {
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -278,11 +296,13 @@ const prepareEmail = async (
   }
 
   if (emailActionType === "invite") {
+    const copy = getAuthEmailCopy(locale, "invite");
     return {
       to: userEmail,
-      subject: "You’ve been invited to Peels",
+      subject: copy.subject,
       html: await renderAsync(
         React.createElement(InviteEmail, {
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -291,6 +311,7 @@ const prepareEmail = async (
       ),
       text: await renderAsync(
         React.createElement(InviteEmail, {
+          locale,
           supabase_url: supabaseUrl,
           token_hash: tokenHash,
           redirect_to: redirectTo,
@@ -303,16 +324,19 @@ const prepareEmail = async (
   }
 
   if (emailActionType === "reauthentication") {
+    const copy = getAuthEmailCopy(locale, "reauthentication");
     return {
       to: userEmail,
-      subject: "Confirm reauthentication on Peels",
+      subject: copy.subject,
       html: await renderAsync(
         React.createElement(ReauthenticationEmail, {
+          locale,
           token,
         })
       ),
       text: await renderAsync(
         React.createElement(ReauthenticationEmail, {
+          locale,
           token,
         }),
         { plainText: true }
@@ -322,16 +346,19 @@ const prepareEmail = async (
   }
 
   // "email" type is treated as generic email OTP verification.
+  const copy = getAuthEmailCopy(locale, "reauthentication");
   return {
     to: userEmail,
-    subject: "Your verification code for Peels",
+    subject: copy.genericSubject,
     html: await renderAsync(
       React.createElement(ReauthenticationEmail, {
+        locale,
         token,
       })
     ),
     text: await renderAsync(
       React.createElement(ReauthenticationEmail, {
+        locale,
         token,
       }),
       { plainText: true }

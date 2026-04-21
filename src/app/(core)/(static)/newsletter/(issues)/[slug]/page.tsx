@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { Metadata } from "next/types";
 import StaticPageMain from "@/components/StaticPageMain";
@@ -7,22 +6,42 @@ import LongformTextContainer from "@/components/LongformTextContainer";
 import NewsletterCallout from "@/components/NewsletterCallout";
 import { siteConfig } from "@/config/site";
 import { getAllContentSlugs } from "@/lib/content/utils";
-import { getNewsletterIssueMetadata } from "@/lib/content/handlers/newsletter";
+import {
+  getNewsletterIssueMetadata,
+  getNewsletterIssueModule,
+} from "@/lib/content/handlers/newsletter";
 import StaticPageSection from "@/components/StaticPageSection";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import { getNewsletterIssueImageUrl } from "@/utils/storage";
-import { getTranslations } from "next-intl/server";
+import TranslationNotice from "@/components/TranslationNotice";
+import { getLocale, getTranslations } from "next-intl/server";
+import { getLocaleFromSearchParams } from "@/utils/authRedirects";
+import { defaultLocale } from "@/i18n/config";
 
 type NewsletterIssuePageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ locale?: string | string[] | undefined }>;
+};
+
+const resolveNewsletterIssueLocale = async (
+  searchParams: NewsletterIssuePageProps["searchParams"]
+) => {
+  const requestedLocale = getLocaleFromSearchParams(await searchParams);
+
+  return requestedLocale ?? (await getLocale());
 };
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: NewsletterIssuePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { metadata, customMetadata } = await getNewsletterIssueMetadata(slug);
+  const locale = await resolveNewsletterIssueLocale(searchParams);
+  const { metadata, customMetadata } = await getNewsletterIssueMetadata(
+    slug,
+    locale
+  );
 
   if (metadata) {
     return {
@@ -53,27 +72,28 @@ export async function generateStaticParams() {
 
 export default async function NewsletterIssuePage({
   params,
+  searchParams,
 }: NewsletterIssuePageProps) {
   const { slug } = await params;
-  const t = await getTranslations("Newsletter");
+  const locale = await resolveNewsletterIssueLocale(searchParams);
+  const t = await getTranslations({ locale, namespace: "Newsletter" });
+  const rssHref =
+    locale === defaultLocale
+      ? "/newsletter/feed.xml"
+      : `/newsletter/feed.xml?locale=${locale}`;
   const { metadata, customMetadata, formattedDate } =
-    await getNewsletterIssueMetadata(slug);
+    await getNewsletterIssueMetadata(slug, locale);
   const title = customMetadata.verboseTitle
     ? customMetadata.verboseTitle
     : metadata.title;
-  // const authors = `${metadata.authors ?? ""}`;
   const issueNumber = customMetadata.issueNumber;
-
-  //  Dynamically import MDX files
-  const NewsletterIssueMarkdown = dynamic(
-    () => import(`@/content/newsletter/${slug}.mdx`)
-  );
-  //   console.log(authors); // TODO: Open Graph authors
+  const {
+    file: { default: NewsletterIssueMarkdown },
+    isFallback,
+  } = await getNewsletterIssueModule(slug, locale);
 
   return (
-    // Largely matches (legal) page.tsx, with some additions below the textual content
     <StaticPageMain>
-      {/* Nest header and main content together so they visually hug */}
       <section>
         <StaticPageHeader
           title={title}
@@ -84,6 +104,12 @@ export default async function NewsletterIssuePage({
           parent={t("parent")}
         />
         <LongformTextContainer>
+          {isFallback && (
+            <TranslationNotice
+              title={t("fallbackTitle")}
+              body={t("fallbackBody")}
+            />
+          )}
           <NewsletterIssueMarkdown />
         </LongformTextContainer>
       </section>
@@ -91,15 +117,13 @@ export default async function NewsletterIssuePage({
       <StaticPageSection>
         <HeaderBlock>
           <h2>{t("inboxTitle")}</h2>
-          <p>{siteConfig.newsletter.description}</p>
+          <p>{t("description")}</p>
         </HeaderBlock>
         <NewsletterCallout />
         <FooterBlock>
           <p>
             {t.rich("rss", {
-              link: (chunks) => (
-                <Link href="/newsletter/feed.xml">{chunks}</Link>
-              ),
+              link: (chunks) => <Link href={rssHref}>{chunks}</Link>,
             })}
           </p>
         </FooterBlock>

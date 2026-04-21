@@ -3,15 +3,24 @@ import ProfileHeader from "@/components/ProfileHeader";
 import ProfileAccountSettings from "@/components/ProfileAccountSettings";
 import ProfileListings from "@/components/ProfileListings";
 import ProfileActions from "@/components/ProfileActions";
-import LegalFooter from "@/components/LegalFooter";
+import SiteFooter from "@/components/SiteFooter";
 import { styled } from "@pigment-css/react";
 import { Suspense } from "react";
 import Toast from "@/components/Toast";
 import { getTranslations } from "next-intl/server";
+import { siteConfig } from "@/config/site";
+import { defaultLocale, normaliseLocale } from "@/i18n/config";
 
-export const metadata = {
-  title: "Profile",
-};
+export async function generateMetadata() {
+  const t = await getTranslations("Profile.sections");
+
+  return {
+    title: t("account"),
+    openGraph: {
+      title: `${t("account")} · ${siteConfig.name}`,
+    },
+  };
+}
 
 // Keep URL-based feedback in a client leaf so server rendering is driven by auth/data only.
 export default async function ProfilePage() {
@@ -33,6 +42,14 @@ export default async function ProfilePage() {
     supabase.from("profiles").select().eq("id", user.id).single(),
   ]);
 
+  const userMetadataPreferredLocale = user?.user_metadata?.preferred_locale;
+  const preferredLocale =
+    normaliseLocale(profile?.preferred_locale) ??
+    (typeof userMetadataPreferredLocale === "string"
+      ? normaliseLocale(userMetadataPreferredLocale)
+      : undefined) ??
+    defaultLocale;
+
   return (
     <>
       <Suspense>
@@ -50,7 +67,13 @@ export default async function ProfilePage() {
 
       <Section>
         <h2>{t("account")}</h2>
-        <ProfileAccountSettings user={user} profile={profile} />
+        <ProfileAccountSettings
+          user={user}
+          profile={{
+            ...(profile ?? {}),
+            preferred_locale: preferredLocale,
+          }}
+        />
       </Section>
 
       <Section>
@@ -58,7 +81,7 @@ export default async function ProfilePage() {
         <ProfileActions listings={listings} />
       </Section>
 
-      <LegalFooter />
+      <SiteFooter />
     </>
   );
 }

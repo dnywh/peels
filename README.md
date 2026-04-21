@@ -216,6 +216,43 @@ npm run dev
 - Heavy commenting is encouraged to make the codebase accessible to others
 - Code formatting is handled by Prettier. Please ensure your code is formatted according to `.prettierrc` before submitting a pull request
 
+### Languages and Localised Content
+
+Peels now keeps its product translations fully in-repo with `next-intl`. English lives in `messages/en.json` and is the source catalogue. Whenever you add or change user-facing UI copy, update `en` first and keep `es` and `de` complete alongside it. `fr` and `pt-BR` are also supported locales and should be updated when the change affects translated surfaces that already exist.
+
+For app UI and metadata:
+
+- Put translatable UI copy in `messages/*.json`
+- Run `npm run i18n:check` after editing message files
+- Run `npm run check` before handing work back
+- Do not put internal enum values, route constants, analytics identifiers, or user-generated content into message files
+
+For newsletter issues:
+
+- The English source issue lives at `src/content/newsletter/<slug>.mdx`
+- Locale-specific issue wrappers or translations live at `src/content/newsletter/<locale>/<slug>.mdx`
+- A locale-specific issue file can either contain a full translation or a lighter wrapper with translated metadata plus an explicit fallback notice before the English body
+- `metadata` and `customMetadata` still need to be present for each locale-specific issue file so the newsletter index, issue page, and RSS feed can show the correct localised title and description
+- RSS is generated from `/newsletter/feed.xml?locale=<locale>`, so locale-specific metadata will flow through to the feed automatically
+
+For legal and reference pages:
+
+- The English source page lives at `src/content/legal/<slug>.mdx`
+- Locale-specific versions live at `src/content/legal/<locale>/<slug>.mdx`
+- Legal translations should be treated as reviewed content, not casual copy changes
+- If a locale-specific file does not exist yet, Peels falls back to English and shows a translation notice on the page
+
+For newsletter issue emails:
+
+- The current issue email config lives in `supabase/functions/_shared/newsletter.ts`
+- When sending a new issue, update the current issue slug, issue number, and per-locale title/description there
+- The transactional/broadcast email body is now a locale-aware issue announcement in `supabase/functions/_templates/newsletter-issue-email.tsx`, which links people to the web version of the issue
+- Signed-in members receive the newsletter email in their saved locale where available, with auth metadata and English fallback covering older environments
+- External broadcast audiences can be split by locale with `NEWSLETTER_AUDIENCE_ID_EN`, `NEWSLETTER_AUDIENCE_ID_ES`, `NEWSLETTER_AUDIENCE_ID_DE`, `NEWSLETTER_AUDIENCE_ID_PT_BR`, and `NEWSLETTER_AUDIENCE_ID_FR`
+- If only the English Resend audience is configured, only the English broadcast will send
+
+In plain English: new UI strings belong in `messages/`, longform newsletter and legal content belongs in locale-aware MDX files under `src/content/`, and newsletter emails need the current issue config updated in `supabase/functions/_shared/newsletter.ts` before sending.
+
 ### Testing
 
 Peels keeps testing intentionally small:
@@ -284,7 +321,7 @@ Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/sup
 
 - Built with [Next.js](https://nextjs.org)
 - Authentication and database by [Supabase](https://supabase.com)
-- Translations powered by [next-intl](https://next-intl.dev/) and [Crowdin](https://crowdin.com/)
+- Translations powered by [next-intl](https://next-intl.dev/) with in-repo message catalogues under `messages/`
 - Maps powered by [MapTiler](https://www.maptiler.com) and [Protomaps](https://protomaps.com)
 - Styled components built with [Pigment CSS](https://github.com/mui/pigment-css)
 

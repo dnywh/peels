@@ -1,3 +1,5 @@
+import { defaultLocale, type Locale, normaliseLocale } from "@/i18n/config";
+
 export const SUPABASE_EMAIL_AUTH_TYPES = new Set([
   "signup",
   "invite",
@@ -54,3 +56,29 @@ export const appendSuccessParam = (path: string, successValue: string) => {
   url.searchParams.set("success", successValue);
   return `${url.pathname}${url.search}${url.hash}`;
 };
+
+export const getLocaleFromSearchParams = (
+  searchParams: URLSearchParams | Record<string, string | string[] | undefined>
+) => {
+  if (searchParams instanceof URLSearchParams) {
+    return normaliseLocale(searchParams.get("locale"));
+  }
+
+  const rawLocale = searchParams.locale;
+  if (Array.isArray(rawLocale)) {
+    return normaliseLocale(rawLocale[0]);
+  }
+
+  return normaliseLocale(rawLocale ?? null);
+};
+
+export const appendLocaleParam = (path: string, locale: Locale) => {
+  const normalisedPath = normaliseNextPath(path, "/profile");
+  const url = new URL(normalisedPath, "https://www.peels.app");
+  url.searchParams.set("locale", locale);
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+
+export const resolveAuthLocale = (
+  requestedLocale: string | null | undefined
+): Locale => normaliseLocale(requestedLocale) ?? defaultLocale;

@@ -185,12 +185,10 @@ const Body = styled("body")(({ theme }) => ({
 }));
 
 export const metadata: Metadata = {
-  // Force the Peels URL (siteConfig.url) instead of what might render as a preview deployment URL (VERCEL_URL)
-  // Might be related to local-only build issue: metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "https://www.peels.app". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,
-    template: `%s · ${siteConfig.name}`, // E.g. "Page title here · Peels"
+    template: `%s · ${siteConfig.name}`,
   },
   description: siteConfig.description,
   keywords: [...siteConfig.meta.keywords],
@@ -199,15 +197,12 @@ export const metadata: Metadata = {
     type: "website",
     description: siteConfig.description,
     siteName: siteConfig.name,
-    // url: siteConfig.url, // Should be the canonical URL of your object, not site root URL
   },
-  // RSS feed for newsletter
-  // https://didoesdigital.com/blog/nextjs-blog-09-rss/
   alternates: {
     types: {
       "application/rss+xml": [
         {
-          title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches route.ts)
+          title: `${siteConfig.name}: Newsletter`,
           url: `${siteConfig.url}/newsletter/feed.xml`,
         },
       ],

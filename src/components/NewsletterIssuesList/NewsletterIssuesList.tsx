@@ -3,7 +3,7 @@ import NewsletterIssueTile from "@/components/NewsletterIssueTile";
 import StyledList from "@/components/StyledList";
 import PastIssuesList from "@/components/PastIssuesList";
 import EmptyIssueSlot from "@/components/EmptyIssueSlot";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export default async function NewsletterIssuesList({
   showPastIssues = true,
@@ -11,7 +11,12 @@ export default async function NewsletterIssuesList({
   showPastIssues?: boolean;
 }) {
   const t = await getTranslations("Newsletter");
-  const newsletterIssues = await getAllNewsletterIssues();
+  const locale = await getLocale();
+  const newsletterIssues = await getAllNewsletterIssues(locale);
+
+  if (newsletterIssues.length === 0) {
+    return null;
+  }
 
   // Only show an empty issue slot if the number of issues is even
   // ...meaning the list of *past issues* is odd, and needs a spare tile
@@ -31,7 +36,10 @@ export default async function NewsletterIssuesList({
               newsletterIssues[0].metadata.title
             }
             issueNumber={newsletterIssues[0].customMetadata.issueNumber}
-            date={newsletterIssues[0].formattedDate}
+            subtitle={t("issueTile", {
+              number: newsletterIssues[0].customMetadata.issueNumber,
+              date: newsletterIssues[0].formattedDate,
+            })}
             previewImages={newsletterIssues[0].customMetadata.previewImages}
           />
         </section>
@@ -59,7 +67,10 @@ export default async function NewsletterIssuesList({
                       slug={slug}
                       title={verboseTitle ?? title}
                       issueNumber={issueNumber}
-                      date={formattedDate}
+                      subtitle={t("issueTile", {
+                        number: issueNumber,
+                        date: formattedDate,
+                      })}
                       previewImages={previewImages}
                     />
                   )
