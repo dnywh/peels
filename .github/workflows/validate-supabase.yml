@@ -43,4 +43,8 @@ jobs:
 
       - name: Replay migrations and seed data
         if: steps.changes.outputs.supabase == 'true'
-        run: supabase db reset
+        run: |
+          supabase db reset || {
+            echo "supabase db reset failed once; retrying after transient restart error..."
+            supabase db reset --debug
+          }

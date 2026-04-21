@@ -373,27 +373,33 @@ export const updatePreferredLocaleAction = async (formData: FormData) => {
     return { error: t("generic") };
   }
 
-  const [{ error: profileError }, { error: authError }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .update({
-        preferred_locale: nextLocale,
-      })
-      .eq("id", user.id),
-    supabase.auth.updateUser({
-      data: {
-        preferred_locale: nextLocale,
-      },
-    }),
-  ]);
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      preferred_locale: nextLocale,
+    })
+    .eq("id", user.id);
 
-  if (authError) {
-    console.error("Error updating preferred locale:", authError);
-    return { error: t("genericLater") };
-  }
+  const profileUpdated =
+    !profileError || isMissingPreferredLocaleColumn(profileError);
 
   if (profileError && !isMissingPreferredLocaleColumn(profileError)) {
-    console.error("Error updating preferred locale:", profileError);
+    console.error("Error updating preferred locale profile:", profileError);
+  }
+
+  const { error: authError } = await supabase.auth.updateUser({
+    data: {
+      preferred_locale: nextLocale,
+    },
+  });
+
+  const authUpdated = !authError;
+
+  if (authError) {
+    console.error("Error updating preferred locale auth metadata:", authError);
+  }
+
+  if (!profileUpdated && !authUpdated) {
     return { error: t("genericLater") };
   }
 

@@ -11,6 +11,13 @@ const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const resend = new Resend(RESEND_API_KEY);
 
+const isMissingPreferredLocaleColumn = (error: {
+  code?: string | null;
+  message?: string | null;
+}) =>
+  error.code === "PGRST204" &&
+  (error.message ?? "").toLowerCase().includes("preferred_locale");
+
 const handler = async (_request: Request): Promise<Response> => {
   try {
     // Prepare data
@@ -142,11 +149,22 @@ const handler = async (_request: Request): Promise<Response> => {
       throw new Error(`No email found for recipient ${recipientId}`);
     }
 
-    const { data: recipientProfile } = await supabase
-      .from("profiles")
-      .select("preferred_locale")
-      .eq("id", recipientId)
-      .single();
+    const { data: recipientProfile, error: recipientProfileError } =
+      await supabase
+        .from("profiles")
+        .select("preferred_locale")
+        .eq("id", recipientId)
+        .single();
+
+    if (
+      recipientProfileError &&
+      !isMissingPreferredLocaleColumn(recipientProfileError)
+    ) {
+      console.error(
+        "Error loading recipient preferred locale:",
+        recipientProfileError
+      );
+    }
 
     const locale = resolveEmailLocale({
       preferredLocale: recipientProfile?.preferred_locale,
