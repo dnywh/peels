@@ -45,14 +45,7 @@ const handler = async (_request: Request): Promise<Response> => {
           from: `Danny from Peels <${newsletterEmailAddress}>`,
           subject: getNewsletterEmailSubject(locale),
           react: email,
-          text: await render(
-            NewsletterIssueEmail({
-              locale,
-              recipientName: "there",
-              externalAudience: true,
-            }),
-            { plainText: true }
-          ),
+          text: await render(email, { plainText: true }),
           headers: {
             "List-Unsubscribe": "{{{RESEND_UNSUBSCRIBE_URL}}}",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

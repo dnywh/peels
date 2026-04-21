@@ -10,23 +10,32 @@ export const revalidate = 3600;
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
-  const locale =
-    normaliseLocale(requestUrl.searchParams.get("locale")) ?? defaultLocale;
+  const requestedLocale = requestUrl.searchParams.get("locale");
+  const locale = normaliseLocale(requestedLocale) ?? defaultLocale;
   const t = await getTranslations({ locale, namespace: "Newsletter" });
   const newsletterIssues = await getAllNewsletterIssues(locale);
-  const feedUrl = `${siteConfig.url}/newsletter/feed.xml?locale=${locale}`;
+  const feedUrl = new URL("/newsletter/feed.xml", siteConfig.url);
+
+  if (requestedLocale && locale !== defaultLocale) {
+    feedUrl.searchParams.set("locale", locale);
+  }
+
   const feed = new Feed({
     title: `${siteConfig.name}: ${t("title")}`,
     description: t("description"),
-    id: feedUrl,
-    link: feedUrl,
+    id: feedUrl.toString(),
+    link: feedUrl.toString(),
     favicon: `${siteConfig.url}/favicon.ico`,
     language: locale,
     copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.name}`,
   });
 
   newsletterIssues.forEach((issue) => {
-    const issueLink = `${siteConfig.url}/newsletter/${issue.slug}?locale=${locale}`;
+    const issueUrl = new URL(`/newsletter/${issue.slug}`, siteConfig.url);
+    if (locale !== defaultLocale) {
+      issueUrl.searchParams.set("locale", locale);
+    }
+    const issueLink = issueUrl.toString();
     const issueImage = new URL(
       getNewsletterIssueImageUrl(
         issue.customMetadata.issueNumber,
