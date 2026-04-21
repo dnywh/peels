@@ -8,27 +8,31 @@ import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import StaticPageMain from "@/components/StaticPageMain";
 import { styled } from "@pigment-css/react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
-export const metadata = {
-  title: "Newsletter",
-  description: siteConfig.newsletter.description,
-  openGraph: {
-    title: `Newsletter · ${siteConfig.name}`,
-    description: siteConfig.newsletter.description,
-  },
-};
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: "Newsletter" });
+  const description = t("description");
+
+  return {
+    title: t("title"),
+    description,
+    openGraph: {
+      title: `${t("title")} · ${siteConfig.name}`,
+      description,
+    },
+  };
+}
 
 export default async function NewsletterPage() {
-  const t = await getTranslations("Newsletter");
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: "Newsletter" });
 
   return (
     <StaticPageMain>
       <AboveTheFoldSection>
-        <StaticPageHeader
-          title={t("title")}
-          subtitle={siteConfig.newsletter.description}
-        />
+        <StaticPageHeader title={t("title")} subtitle={t("description")} />
         <NewsletterIssuesList />
       </AboveTheFoldSection>
 
@@ -42,7 +46,9 @@ export default async function NewsletterPage() {
           <p>
             {t.rich("rss", {
               link: (chunks) => (
-                <Link href="/newsletter/feed.xml">{chunks}</Link>
+                <Link href={`/newsletter/feed.xml?locale=${locale}`}>
+                  {chunks}
+                </Link>
               ),
             })}
           </p>

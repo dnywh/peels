@@ -1,6 +1,7 @@
 // Shared types between all Markdown collections, like newsletter issues and legal pages
 // https://www.notion.so/peels/Markdown-Pages-20bb37e1678f806a9649c3c658ab6258?source=copy_link
 
+import type { Locale } from "@/i18n/config";
 import type { Metadata } from "next/types";
 
 // Base metadata that all content types share
@@ -31,6 +32,8 @@ export type NewsletterIssueData = {
   metadata: NewsletterMetadata;
   customMetadata: NewsletterCustomMetadata;
   formattedDate: string;
+  locale: Locale;
+  isFallback: boolean;
 };
 
 // Legal-specific types
@@ -44,4 +47,6 @@ export type LegalPageData = {
   metadata: BaseMetadata;
   customMetadata?: LegalCustomMetadata;
   formattedDate?: string;
+  locale: Locale;
+  isFallback: boolean;
 };

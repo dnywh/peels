@@ -1,11 +1,16 @@
 import EmailBody from "./components/EmailBody.tsx";
 import EmailButton from "./components/EmailButton.tsx";
 import EmailParagraph from "./components/EmailParagraph.tsx";
-import EmailLink from "./components/EmailLink.tsx";
 import { buildAuthConfirmUrl } from "./build-auth-confirm-url.ts";
+import {
+  getAuthEmailCopy,
+  getAuthEmailSharedCopy,
+  type SupportedLocale,
+} from "../_shared/i18n.ts";
 import * as React from "npm:react";
 
 interface InviteEmailProps {
+  locale: SupportedLocale;
   //   username: string;
   //   lang: string;
   //   token: string;
@@ -19,6 +24,7 @@ interface InviteEmailProps {
 // https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/auth-hook-react-email-resend/_templates/sign-up.tsx
 
 export const InviteEmail = ({
+  locale,
   //   username,
   //   lang,
   //   token,
@@ -27,34 +33,31 @@ export const InviteEmail = ({
   redirect_to,
   token_hash,
 }: InviteEmailProps) => {
-  const siteUrl = "https://www.peels.app";
+  const copy = getAuthEmailCopy(locale, "invite");
+  const sharedCopy = getAuthEmailSharedCopy(locale);
   const confirmUrl = buildAuthConfirmUrl({
     emailActionType: email_action_type,
+    locale,
     redirectTo: redirect_to,
     tokenHash: token_hash,
   });
 
   return (
     <EmailBody
-      previewText="Lucky you! You’re invited to try out Peels."
-      headingText="You’re invited"
-      footerText="You’re receiving this email because someone at Peels invited you to join."
+      previewText={copy.preview}
+      headingText={copy.heading}
+      footerText={copy.footer}
     >
-      <EmailParagraph>
-        Someone at <EmailLink href={siteUrl}>Peels</EmailLink> has invited you
-        to try it out. Follow this link to accept the invite:
-      </EmailParagraph>
+      <EmailParagraph>{copy.body}</EmailParagraph>
 
-      <EmailButton href={confirmUrl}>Accept invite</EmailButton>
+      <EmailButton href={confirmUrl}>{copy.button}</EmailButton>
 
-      <EmailParagraph>
-        Just hit ‘reply’ if you run into any issues or have questions.
-      </EmailParagraph>
+      <EmailParagraph>{sharedCopy.replyHelp}</EmailParagraph>
 
       <EmailParagraph>
-        Best,
+        {sharedCopy.signOff},
         <br />
-        Peels team
+        {sharedCopy.team}
       </EmailParagraph>
     </EmailBody>
   );

@@ -4,8 +4,7 @@
 import { readdir } from "fs/promises";
 import type { Dirent } from "fs";
 import { join } from "path";
-import { siteConfig } from "@/config/site";
-import { formatPublishDate } from "@/utils/dateUtils";
+import { defaultLocale, type Locale, normaliseLocale } from "@/i18n/config";
 
 // Common file utilities
 export const isMDXFile = (dirent: Dirent) =>
@@ -13,6 +12,48 @@ export const isMDXFile = (dirent: Dirent) =>
 
 export const getSlugFromFilename = (dirent: Dirent) =>
   dirent.name.substring(0, dirent.name.lastIndexOf("."));
+
+export function resolveContentLocale(
+  locale: string | null | undefined
+): Locale {
+  return normaliseLocale(locale) ?? defaultLocale;
+}
+
+export function formatContentDate(dateString: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(dateString));
+}
+
+export async function importLocalizedContentModule(
+  contentType: "newsletter" | "legal",
+  slug: string,
+  locale: Locale
+) {
+  if (locale !== defaultLocale) {
+    try {
+      const file = await import(
+        `@/content/${contentType}/${locale}/${slug}.mdx`
+      );
+      return {
+        file,
+        locale,
+        isFallback: false,
+      };
+    } catch (_error) {
+      // Fall through to the default English content.
+    }
+  }
+
+  const file = await import(`@/content/${contentType}/${slug}.mdx`);
+  return {
+    file,
+    locale: defaultLocale,
+    isFallback: locale !== defaultLocale,
+  };
+}
 
 // Common content loading utilities
 export async function getAllContentSlugs(
@@ -86,6 +127,7 @@ export function formatContentData<
   },
 >(
   data: T,
+  locale: Locale,
   dateField: string = "publishDate",
   isDateRequired: boolean = true
 ): T & { formattedDate: string } {
@@ -103,7 +145,7 @@ export function formatContentData<
   // Add OpenGraph metadata
   const metadata = {
     ...data,
-    formattedDate: formatPublishDate(data.customMetadata[dateField]),
+    formattedDate: formatContentDate(data.customMetadata[dateField], locale),
     openGraph: {
       title: data.metadata.title,
       description: data.metadata.description,

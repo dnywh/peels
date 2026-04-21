@@ -2,9 +2,11 @@ import { createClient } from "@/utils/supabase/server";
 import {
   appendSuccessParam,
   getDefaultNextPathByType,
+  getLocaleFromSearchParams,
   isSupportedEmailAuthType,
   normaliseNextPath,
 } from "@/utils/authRedirects";
+import { setUserLocale } from "@/i18n/services/locale";
 import { NextResponse } from "next/server";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
@@ -22,6 +24,7 @@ export async function POST(request: Request) {
         access_token?: unknown;
         refresh_token?: unknown;
         next?: unknown;
+        locale?: unknown;
         type?: unknown;
       }
     | undefined;
@@ -58,6 +61,9 @@ export async function POST(request: Request) {
     typeof body?.next === "string" ? body.next : null,
     defaultNextPath
   );
+  const locale = getLocaleFromSearchParams({
+    locale: typeof body?.locale === "string" ? body.locale : undefined,
+  });
 
   try {
     const supabase = await createClient();
@@ -82,6 +88,10 @@ export async function POST(request: Request) {
       type === "email_change"
         ? appendSuccessParam(nextPath, "email_change")
         : nextPath;
+
+    if (locale) {
+      await setUserLocale(locale);
+    }
 
     debugAuth("set-session-success", { type, nextPath: resolvedNextPath });
     return NextResponse.json({ ok: true, next: resolvedNextPath });

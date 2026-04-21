@@ -1,0 +1,514 @@
+{
+  "App": {
+    "map": "Carte",
+    "chats": "Messages",
+    "profile": "Profil",
+    "about": "À propos"
+  },
+  "Actions": {
+    "add": "Ajouter",
+    "addListing": "Ajouter une annonce",
+    "addMorePhotos": "Ajouter d’autres photos",
+    "addPhotos": "Ajouter des photos",
+    "backToPeels": "Retour à Peels",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "continue": "Continuer",
+    "delete": "Supprimer",
+    "deleteListing": "Supprimer l’annonce",
+    "done": "Terminé",
+    "edit": "Modifier",
+    "emailLink": "M’envoyer le lien par e-mail",
+    "exportData": "Exporter les données",
+    "home": "Accueil",
+    "joinPeels": "Rejoindre Peels",
+    "noCancel": "Non, annuler",
+    "openInAppleMaps": "Ouvrir dans Apple Maps",
+    "openInGoogleMaps": "Ouvrir dans Google Maps",
+    "replace": "Remplacer",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "saveChanges": "Enregistrer les modifications",
+    "seeNearbyListings": "Voir les annonces à proximité",
+    "sendLink": "Envoyer le lien",
+    "signIn": "Se connecter",
+    "signInToContact": "Se connecter pour contacter",
+    "signOut": "Se déconnecter",
+    "signUp": "S’inscrire",
+    "update": "Mettre à jour",
+    "viewFullListing": "Voir l’annonce complète",
+    "viewListing": "Voir l’annonce"
+  },
+  "Common": {
+    "account": "Compte",
+    "actions": "Actions",
+    "admin": "Administration",
+    "email": "E-mail",
+    "hidden": "Masqué",
+    "language": "Langue",
+    "languageHint": "Les personnes qui visitent Peels peuvent changer la langue ici. Les membres connectés peuvent aussi enregistrer une langue par défaut dans les paramètres du compte.",
+    "links": "Liens",
+    "listings": "Annonces",
+    "loading": "Chargement...",
+    "newsletter": "Infolettre",
+    "notSubscribed": "Non abonné",
+    "optional": "optionnel",
+    "password": "Mot de passe",
+    "photos": "Photos",
+    "source": "Origine",
+    "stub": "Brouillon",
+    "subscribed": "Abonné"
+  },
+  "Status": {
+    "adding": "Ajout en cours...",
+    "copying": "Copie en cours...",
+    "deleting": "Suppression en cours...",
+    "emailing": "Envoi de l’e-mail...",
+    "resetting": "Réinitialisation...",
+    "saving": "Enregistrement...",
+    "sending": "Envoi...",
+    "signingIn": "Connexion...",
+    "signingOut": "Déconnexion...",
+    "signingUp": "Inscription...",
+    "updating": "Mise à jour...",
+    "uploading": "Téléversement...",
+    "verifying": "Vérification...",
+    "working": "Traitement..."
+  },
+  "Errors": {
+    "alreadyYourEmail": "C’est déjà votre adresse e-mail.",
+    "emptyListingName": "{type, select, business {Le nom du commerce ne peut pas être vide.} community {Le nom de la communauté ne peut pas être vide.} other {Le nom de l’annonce ne peut pas être vide.}}",
+    "emptyName": "Le nom ne peut pas être vide.",
+    "accountDeleted": "Votre compte a été supprimé. C’est dommage de vous voir partir.",
+    "accountExists": "Un compte existe déjà avec cette adresse e-mail. Connectez-vous à la place.",
+    "deleteAccountFailed": "Erreur lors de la suppression du compte",
+    "duplicateListing": "Une annonce identique existe déjà.",
+    "emailRequired": "L’adresse e-mail est obligatoire",
+    "failedDeleteListing": "Impossible de supprimer l’annonce.",
+    "failedDeletePhoto": "Impossible de supprimer la photo. Veuillez réessayer.",
+    "generic": "Hum, quelque chose ne va pas. Pouvez-vous réessayer ?",
+    "genericLater": "Une erreur s’est produite. Veuillez réessayer plus tard.",
+    "missingLocation": "Veuillez sélectionner un emplacement.",
+    "missingSignUpFields": "Un prénom, une adresse e-mail et un mot de passe sont requis.",
+    "passwordMismatch": "Ces mots de passe ne correspondent pas.",
+    "photoUploadFailed": "Une erreur s’est produite lors de l’envoi de vos photos. Veuillez réessayer.",
+    "avatarUploadFailed": "Une erreur s’est produite lors de l’envoi de votre photo. Veuillez réessayer.",
+    "requiredPasswordFields": "Ces deux champs sont obligatoires.",
+    "resetPasswordDenied": "Hum, quelque chose ne va pas. Vous n’avez peut-être pas l’autorisation de réinitialiser ce mot de passe ou vous avez tenté de réutiliser un mot de passe récent.",
+    "resetPasswordSuccess": "Votre mot de passe a été mis à jour. Retour au compostage !",
+    "savePhotosFailed": "L’annonce a été créée, mais les photos n’ont pas pu être enregistrées.",
+    "signUpFailed": "Échec de l’inscription",
+    "tooManyListings": "Vous avez atteint le nombre maximal d’annonces autorisées. Supprimez-en une parmi vos trois annonces actuelles pour en créer une nouvelle.",
+    "tooManyMessages": "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
+    "tooManyThreads": "Vous avez lancé trop de nouvelles conversations au cours de la dernière heure. Veuillez réessayer plus tard.",
+    "firstNameTooShort": "Veuillez utiliser au moins 2 caractères pour votre prénom.",
+    "firstNameTooLong": "Les prénoms peuvent comporter au maximum 24 caractères.",
+    "firstNameNotAllowed": "Ce prénom n’est pas autorisé sur Peels.",
+    "firstNameInvalidChars": "Les prénoms ne peuvent contenir que des lettres, des espaces, des traits d’union et des apostrophes.",
+    "disposableEmailNotAllowed": "Veuillez utiliser une adresse e-mail durable plutôt qu’une boîte jetable.",
+    "updateEmailFailed": "Hum, quelque chose ne va pas. Vérifiez votre e-mail ou réessayez.",
+    "updateFirstNameFailed": "Désolé, nous n’avons pas pu mettre à jour votre prénom.",
+    "updateNewsletterFailed": "Désolé, nous n’avons pas pu mettre à jour votre préférence d’infolettre.",
+    "unexpected": "Une erreur inattendue s’est produite. Veuillez réessayer plus tard.",
+    "validationSummary": "Veuillez corriger {count, plural, one {l’erreur ci-dessus} other {les erreurs ci-dessus}} puis réessayer.",
+    "verificationChallenge": "Veuillez terminer la vérification de sécurité.",
+    "verificationFailed": "La vérification a échoué. Veuillez réessayer.",
+    "forgotPasswordSuccess": "Vérifiez votre boîte de réception (et vos spams) pour trouver un lien de réinitialisation du mot de passe, si cette adresse e-mail est bien liée à un compte Peels."
+  },
+  "Index": {
+    "title": "Trouvez une destination pour vos restes alimentaires, où que vous soyez",
+    "subtitle": "Peels met en relation des personnes qui ont des restes alimentaires avec celles qui compostent. C’est un projet communautaire gratuit et non commercial.",
+    "hostAvatarAlt": "L’avatar d’une personne hôte sur Peels",
+    "buttons": {
+      "browseMap": "Parcourir la carte",
+      "signUp": "S’inscrire sur Peels",
+      "addListing": "Ajouter une annonce"
+    },
+    "howItWorks": {
+      "title": "Voici comment ça marche",
+      "subtitle": "Partager des restes alimentaires avec des voisin·es, des jardins partagés ou même des commerces locaux, c’est simple. Voici comment.",
+      "footer": "C’est tout ! <page>Lancez-vous</page> et allez rencontrer votre voisinage.",
+      "findAHost": {
+        "title": "Trouver un hôte",
+        "subtitle": "Sélectionnez un repère sur la carte pour voir qui se trouve à proximité."
+      },
+      "contact": {
+        "title": "Contacter",
+        "subtitle": "Organisez le dépôt ou la collecte de vos restes par messagerie."
+      },
+      "dropOff": {
+        "title": "Déposer",
+        "subtitle": "Ou récupérer, si vous avez contacté un commerce local qui souhaite donner ses restes."
+      }
+    },
+    "newsletter": {
+      "title": "Quoi de neuf",
+      "subtitle": "Des nouvelles occasionnelles sur la façon dont Peels soutient le compostage communautaire dans différents endroits du monde.",
+      "footer": "Consultez notre page <page>Infolettre</page> pour voir les anciens numéros et savoir comment vous abonner."
+    },
+    "faq": {
+      "title": "Vous vous demandez peut-être...",
+      "subtitle": "Ça n’existe pas déjà ? Quelle est votre mission ? Vous avez des questions, nous avons, espérons-le, des réponses.",
+      "footer": "Rendez-vous sur notre page <page>Support</page> si vous avez d’autres questions."
+    }
+  },
+  "SignUp": {
+    "header": {
+      "signUpTo": "S’inscrire pour",
+      "contactHosts": "contacter des hôtes",
+      "startComposting": "commencer à composter",
+      "checkYourEmail": "Vérifiez votre e-mail"
+    },
+    "body": {
+      "thanks": "Merci pour votre inscription{name, select, empty {} other {, {name}}} ! Vérifiez votre boîte de réception et vos spams pour trouver le lien de vérification. Ce lien expirera dans une heure."
+    },
+    "footer": {
+      "nextSteps": "Vérifiez votre boîte de réception ainsi que vos spams pour retrouver le lien de vérification. Ce lien expirera dans une heure.",
+      "neverGotEmail": "Vous n’avez jamais reçu l’e-mail ? Vérifiez votre dossier spam.",
+      "reachOut": "Contactez-nous",
+      "stillNeedHelp": "si vous avez encore besoin d’aide.",
+      "haveAccount": "Vous avez déjà un compte ?"
+    }
+  },
+  "Profile": {
+    "addListing": "Ajouter une annonce",
+    "addAnotherListing": "Ajouter une autre annonce",
+    "listingCardAlt": "{type, select, residential {Votre avatar pour cette annonce résidentielle} community {Votre avatar pour cette annonce communautaire} business {Votre avatar pour cette annonce professionnelle} other {Votre avatar pour cette annonce}}",
+    "listingCardType": "{type, select, residential {Annonce résidentielle} community {Annonce communautaire} business {Annonce professionnelle} other {Annonce}}",
+    "listingPrompt": "Ajoutez-vous, votre lieu communautaire ou votre entreprise sur la carte",
+    "sections": {
+      "listings": "Annonces",
+      "account": "Compte",
+      "actions": "Actions"
+    },
+    "account": {
+      "firstName": "Prénom",
+      "firstNameHint": "Utilisez votre prénom ou un surnom.",
+      "emailSuccess": "Vérifiez votre e-mail pour retrouver le lien de vérification.",
+      "emailHint": "Nous enverrons un lien de vérification à cette adresse.",
+      "languageHint": "Choisissez la langue par défaut que Peels et les e-mails de votre compte doivent utiliser.",
+      "newsletterSubscribedHint": "Nous vous enverrons des nouvelles occasionnelles de Peels par e-mail.",
+      "newsletterNotSubscribedHint": "Nous vous enverrons uniquement les e-mails nécessaires liés à votre compte ou à vos annonces."
+    },
+    "actions": {
+      "signOutTitle": "Se déconnecter",
+      "signOutDescription": "À bientôt !",
+      "exportTitle": "Exporter les données",
+      "exportDescription": "Obtenez une copie de vos données Peels",
+      "exportDialogTitle": "Bientôt disponible",
+      "exportDialog": "Nous travaillons encore sur cette fonctionnalité. En attendant, <link>contactez-nous</link> et demandez-nous d’exporter vos données manuellement.",
+      "deleteTitle": "Supprimer le compte",
+      "deleteDescription": "Supprimez votre compte{count, plural, =0 {} one {, annonce,} other {, annonces,}} et toutes vos données",
+      "deleteConfirm": "{count, plural, =0 {Oui, supprimer mon compte} one {Oui, supprimer mon compte et mon annonce} other {Oui, supprimer mon compte et mes annonces}}",
+      "deleteDialog": "Êtes-vous sûr de vouloir supprimer votre compte ?{count, plural, =0 {} one { Votre annonce sera aussi supprimée.} other { Vos annonces seront aussi supprimées.}}"
+    }
+  },
+  "Auth": {
+    "complete": {
+      "title": "Connexion en cours...",
+      "body": "Nous confirmons votre lien de manière sécurisée. Vous serez redirigé dans un instant."
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "sentTitle": "E-mail envoyé",
+      "body": "Cela arrive à tout le monde. Saisissez votre adresse e-mail ci-dessous pour recevoir un lien de réinitialisation du mot de passe."
+    },
+    "resetPassword": {
+      "title": "Réinitialiser le mot de passe",
+      "successTitle": "Mot de passe mis à jour",
+      "body": "Veuillez saisir votre nouveau mot de passe ci-dessous.",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe"
+    },
+    "signIn": {
+      "title": "Se connecter à Peels",
+      "firstTime": "Première visite ici ? <link>Inscrivez-vous</link>",
+      "forgotPassword": "Mot de passe oublié ?"
+    },
+    "signUp": {
+      "firstName": "Prénom",
+      "newPassword": "Votre nouveau mot de passe",
+      "newsletterOptIn": "Envoyez-moi l’infolettre occasionnelle de Peels par e-mail",
+      "errorWithSupport": "{error} Si vous pensez qu’il s’agit d’une erreur, <link>envoyez-nous un e-mail</link>."
+    },
+    "turnstile": {
+      "expired": "La vérification a expiré. Veuillez la terminer de nouveau.",
+      "timeout": "Le contrôle de sécurité ne s’est pas terminé. Essayez de désactiver les bloqueurs de publicité puis réessayez. Si cela échoue encore, essayez un autre navigateur ou un autre réseau.",
+      "unsupported": "Ce navigateur ne peut pas effectuer le contrôle de sécurité. Veuillez essayer un autre navigateur ou un autre réseau.",
+      "failed": "La vérification de sécurité a échoué avec l’erreur n°{code}. Veuillez réessayer ou utiliser un autre navigateur."
+    }
+  },
+  "Listings": {
+    "new": {
+      "listingTypeTitle": "Quel type d’annonce ?",
+      "hostTypeTitle": "Où acceptez-vous des restes alimentaires ?",
+      "listingTypeLabel": "Type d’annonce",
+      "hostTypeLabel": "Type d’hôte",
+      "options": {
+        "host": {
+          "title": "J’accepte des restes alimentaires",
+          "description": "Les autres peuvent organiser un dépôt de restes à votre domicile ou dans votre jardin partagé"
+        },
+        "business": {
+          "title": "Mon entreprise donne des restes",
+          "description": "Les autres peuvent récupérer du marc de café de votre café, du houblon de votre brasserie, ou quelque chose de semblable"
+        },
+        "residential": {
+          "title": "Chez moi",
+          "description": "J’accepte des restes à une adresse résidentielle"
+        },
+        "community": {
+          "title": "Dans un lieu communautaire",
+          "description": "Je gère un jardin partagé ou un lieu similaire"
+        }
+      }
+    },
+    "edit": {
+      "title": "Modifier l’annonce",
+      "notFound": "Annonce introuvable"
+    },
+    "form": {
+      "basics": "Informations de base",
+      "placeName": "Nom du lieu",
+      "placeNamePlaceholder": "{type, select, business {Nom de votre commerce} community {Nom de votre communauté} other {Nom de votre lieu}}",
+      "yourFirstName": "Votre prénom",
+      "location": "Emplacement",
+      "selectCountry": "Sélectionner un pays",
+      "locationPlaceholder": "Le nom de votre rue ou un endroit proche",
+      "customLocation": "Emplacement personnalisé",
+      "locationHint": "{type, select, residential {Commencez à taper, puis sélectionnez une des options proposées dans la liste.} other {Commencez à taper, puis sélectionnez une des adresses proposées dans la liste.}}",
+      "dragPinHint": "Faites glisser le repère pour affiner{obscure, select, true { ou brouiller} other {}} votre emplacement.",
+      "businessAddress": "Adresse de votre commerce",
+      "communityAddress": "Adresse de votre communauté",
+      "residentialAddress": "Votre rue ou votre quartier",
+      "donationDetails": "Détails du don",
+      "donationDetailsPlaceholder": "Les détails de votre don",
+      "donationDetailsHint": "Quel type de restes vous avez à donner et comment se passe la collecte. Enregistrez les liens dans la section dédiée ci-dessous.",
+      "descriptionLabel": "Courte description ou consignes",
+      "descriptionPlaceholder": "{type, select, residential {À propos de votre annonce} community {À propos de votre communauté} business {À propos de votre commerce} other {À propos de votre annonce}}",
+      "communityDescriptionHint": "Horaires d’ouverture et installations de compostage. Enregistrez les restes acceptés et les liens dans les sections dédiées ci-dessous.",
+      "residentialDescriptionHint": "Votre installation de compostage et vos disponibilités générales. Enregistrez les restes acceptés dans la section dédiée ci-dessous.",
+      "compostingDetails": "Détails du compostage",
+      "compostingDetailsHint": "Soyez précis pour que les gens sachent exactement ce qu’il faut éviter. Saisissez chaque élément séparément pour faciliter la lecture.",
+      "acceptedLabel": "Quels restes acceptez-vous ?",
+      "rejectedLabel": "Quels restes n’acceptez-vous pas ?",
+      "addItem": "Ajouter un élément",
+      "addAnotherItem": "Ajouter un autre élément",
+      "acceptedPlaceholder": "Un élément que vous acceptez (ex. ‘pelures de fruits’)",
+      "acceptedSecondaryPlaceholder": "Un autre élément que vous acceptez",
+      "rejectedPlaceholder": "Un élément que vous n’acceptez pas (ex. ‘viande’)",
+      "rejectedSecondaryPlaceholder": "Un autre élément que vous n’acceptez pas",
+      "media": "Médias",
+      "mediaHint": "Montrez éventuellement {subject} aux membres de Peels.",
+      "mediaResidential": "un peu plus de votre annonce",
+      "mediaCommunity": "un peu plus de votre projet communautaire",
+      "mediaBusiness": "votre commerce sous un autre angle",
+      "externalLinks": "Liens externes",
+      "addLink": "Ajouter un lien",
+      "linkPlaceholder": "Votre site web ou réseau social",
+      "visibility": "Visibilité",
+      "visibilityHint": "Besoin d’une pause avec Peels ? Cachez temporairement cette annonce de la carte.",
+      "mapVisibility": "Visibilité sur la carte",
+      "showOnMap": "Afficher cette annonce sur la carte",
+      "hideFromMap": "Masquer cette annonce de la carte",
+      "adminHint": "Contrôles réservés à l’administration pour cette annonce.",
+      "stubSettings": "Paramètres du brouillon",
+      "regularListing": "Ceci est une annonce normale créée par vous",
+      "stubListing": "Cette annonce est un brouillon que d’autres personnes peuvent revendiquer",
+      "stubActiveHint": "Cette annonce ne contiendra pas vos coordonnées. D’autres personnes pourront la revendiquer et la reprendre.",
+      "stubInactiveHint": "Cette annonce sera présentée comme n’importe quelle autre."
+    },
+    "read": {
+      "contact": "Contacter {name}",
+      "about": "À propos",
+      "donationDetails": "Détails du don",
+      "accepted": "Ce qui est accepté",
+      "rejected": "Ce qui n’est pas accepté",
+      "location": "Emplacement",
+      "residentialLocation": "{name} habite à {area}. Demandez l’emplacement exact quand vous organisez un dépôt de restes alimentaires.",
+      "nonResidentialLocation": "{name} est {type} situé à {area}.",
+      "thisArea": "cette zone",
+      "businessType": "un commerce",
+      "communityType": "un lieu communautaire",
+      "signInForPhotos": "<link>Connectez-vous</link> pour voir les photos de cette personne hôte.",
+      "ownerNote": "C’est votre propre annonce{stub, select, true {, marquée comme brouillon} other {}}. {visibility, select, true {Tout va bien !} other {Vous l’avez masquée de la carte, donc vous seul pouvez la voir pour le moment.}}",
+      "stubNote": "Ceci est un brouillon créé par l’équipe Peels. Vérifiez bien les informations avant de vous déplacer.",
+      "stubClaim": "Vous êtes la personne responsable ? <link>Contactez-nous</link> pour revendiquer cette annonce ou demander des modifications.",
+      "firstTime": "Première visite ici ? <link>Inscrivez-vous</link>",
+      "residentOf": "Habite à {area}",
+      "localResident": "Personne du voisinage",
+      "communityIn": "Communauté à {area}",
+      "localCommunity": "Communauté locale",
+      "businessIn": "Commerce à {area}",
+      "localBusiness": "Commerce local",
+      "avatarAlt": "L’avatar de cette annonce"
+    },
+    "delete": {
+      "confirm": "Oui, supprimer l’annonce",
+      "dialog": "Êtes-vous sûr de vouloir supprimer votre annonce ? Cette action est irréversible.",
+      "success": "Votre annonce a été supprimée."
+    },
+    "photos": {
+      "alt": "Photo n°{number}",
+      "dropHere": "Déposez les photos ici",
+      "tooMany": "Vous pouvez téléverser au maximum {max} photos",
+      "tooLargeOne": "Votre photo est trop volumineuse. La taille maximale est de {max} Mo.",
+      "tooLargeMany": "Une ou plusieurs photos sont trop volumineuses. La taille maximale est de {max} Mo par photo."
+    }
+  },
+  "Upload": {
+    "avatarAlt": "Votre avatar",
+    "avatarHint": "Pensez à téléverser une photo afin que les membres sachent à qui ils s’adressent."
+  },
+  "Legal": {
+    "agreement": "J’ai lu et j’accepte les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy> de Peels",
+    "fallbackTitle": "Cette page n’est disponible qu’en anglais pour le moment",
+    "fallbackBody": "Nous sommes encore en train de traduire certaines pages juridiques et de référence. Pour l’instant, la page complète ci-dessous est en anglais.",
+    "lastUpdated": "Dernière mise à jour le {date}",
+    "privacy": "Confidentialité",
+    "terms": "Conditions"
+  },
+  "Chat": {
+    "send": "Envoyer",
+    "placeholder": "Envoyer un message{name, select, empty {} other { à {name}}}...",
+    "empty": "Aucun message pour le moment",
+    "threadsTitle": "Messages",
+    "noChats": "Aucune conversation pour le moment",
+    "youReachedOut": "Vous avez contacté {name}",
+    "personReachedOut": "{name} vous a contacté",
+    "personReachedOutAbout": "{name} vous a contacté au sujet de {listing}",
+    "drawerTitle": "Panneau de discussion",
+    "drawerDescription": "Conversation liée à cette annonce.",
+    "report": "Signaler ou bloquer",
+    "reportTitle": "Mettons cela au clair",
+    "reportBody": "Désolé d’apprendre que vous avez des difficultés avec {name}. Veuillez <link>nous contacter</link> pour signaler le problème ou pour empêcher cette personne de vous contacter à nouveau."
+  },
+  "Map": {
+    "drawerTitle": "Détails de l’annonce",
+    "drawerDescription": "Détails de l’annonce sélectionnée.",
+    "emptyTitle": "Rien à l’horizon",
+    "emptyBody": "L’annonce que vous cherchez n’existe pas ou a été supprimée. Désolé pour la déception.",
+    "searchPlaceholder": "Rechercher",
+    "searchError": "Quelque chose s’est mal passé. Réessayer ?",
+    "searchNoResults": "Aucun résultat. Continuez à taper ou affinez votre recherche",
+    "returnToListing": "Revenir à l’annonce",
+    "loadingListing": "Chargement de l’annonce…",
+    "loadingPins": "Chargement…",
+    "didYouKnow": "Le saviez-vous ?",
+    "steps": {
+      "find": {
+        "title": "Trouver un hôte",
+        "description": "Sélectionnez un repère sur la carte."
+      },
+      "contact": {
+        "title": "Contacter",
+        "description": "Organisez un dépôt par messagerie."
+      },
+      "dropOff": {
+        "title": "Déposer",
+        "description": "Allez rencontrer votre voisinage !"
+      }
+    }
+  },
+  "Newsletter": {
+    "title": "Infolettre",
+    "description": "Des nouvelles occasionnelles sur la façon dont Peels soutient le compostage communautaire dans différents endroits du monde.",
+    "inboxTitle": "Recevez-la dans votre boîte mail",
+    "inboxDescription": "Activez cette option pour recevoir les prochains numéros de l’infolettre par e-mail.",
+    "rss": "Ou abonnez-vous au <link>flux RSS</link>.",
+    "latestIssue": "Dernier numéro",
+    "pastIssues": "Anciens numéros",
+    "issueSubtitle": "Numéro #{number} · Publié le {date}",
+    "issueTile": "Numéro #{number} · {date}",
+    "parent": "Infolettre",
+    "fallbackTitle": "Ce numéro n’est disponible qu’en anglais pour le moment",
+    "fallbackBody": "Nous sommes encore en train de traduire les numéros de l’infolettre. Pour l’instant, la version complète ci-dessous est en anglais.",
+    "readFullIssue": "Lire ce numéro complet sur Peels",
+    "stampAlt": "Un timbre-poste",
+    "aside": {
+      "title": "À propos de cette infolettre",
+      "bodyGuest": "Voici la version web de l’infolettre envoyée par e-mail aux personnes abonnées. <link>Rejoignez Peels</link> pour recevoir les prochains numéros.",
+      "bodySubscribed": "Voici la version web de l’infolettre envoyée par e-mail aux personnes abonnées. N’hésitez pas à la partager largement.",
+      "bodyMember": "Voici la version web de l’infolettre envoyée par e-mail aux personnes abonnées. <link>Modifiez vos préférences</link> pour recevoir les prochains numéros."
+    },
+    "callout": {
+      "guestTitle": "Rejoignez Peels pour recevoir l’infolettre",
+      "guestBody": "Vous devez être membre de Peels pour recevoir l’infolettre par e-mail. L’inscription est gratuite et ne prend que quelques secondes.",
+      "alreadySubscribedTitle": "Vous êtes déjà abonné",
+      "alreadySubscribedBody": "Vous devriez voir apparaître le prochain numéro dans votre boîte mail. En attendant, n’hésitez pas à partager cette page avec quelqu’un.",
+      "notSubscribedTitle": "Vous n’êtes pas abonné",
+      "notSubscribedBody": "Modifiez votre préférence d’infolettre sur votre page Profil.",
+      "editPreference": "Modifier la préférence d’infolettre"
+    }
+  },
+  "NotFound": {
+    "body": "Désolé, nous n’avons pas trouvé la page que vous cherchiez."
+  },
+  "Support": {
+    "title": "Aide",
+    "subtitle": "Nous mettons cette page à jour régulièrement avec des réponses aux questions fréquentes. N’hésitez pas à <link>nous contacter</link> pour toute autre chose.",
+    "peelsFaq": {
+      "title": "À propos de Peels",
+      "whosBehind": {
+        "question": "Qui est derrière Peels ?",
+        "answer": "<p>Peels est un projet mené par <danny>Danny White</danny>, designer produit avec 10 ans d’expérience sur des produits tels qu’Airbnb, ChatGPT, Kickstarter et Facebook. Il a contribué au lancement du programme de compostage de Pocket City Farms et a auparavant créé un guide de voyage sur la réduction du gaspillage alimentaire.</p><p>Nous voulons que Peels existe sur le long terme, c’est pourquoi le projet est <opensource>open source</opensource> et accueille volontiers vos contributions.</p>"
+      },
+      "howDifferent": {
+        "question": "En quoi Peels est-il différent de ShareWaste ?",
+        "answer": "<p>ShareWaste était un précurseur de Peels avec une idée similaire : relier localement des personnes afin de détourner la matière organique de l’enfouissement. Malheureusement, ShareWaste a fermé fin 2024.</p><p>Pour l’instant, nous essayons surtout de combler le vide laissé par ShareWaste. Vous pouvez considérer Peels comme un remplaçant direct.</p><p>Nous avons aussi d’autres idées en préparation, notamment des guides locaux autour du compostage. Restez à l’écoute.</p>"
+      },
+      "financialModel": {
+        "question": "Quel est le modèle économique ? Êtes-vous à but non lucratif ?",
+        "answer": "Peels est un projet non commercial, porté par la communauté. À l’avenir, nous pourrions nous structurer comme organisme à but non lucratif et accepter des subventions ou des partenariats pour poursuivre le développement, mais nous n’avons jamais l’intention de faire payer le service."
+      },
+      "fogo": {
+        "question": "J’ai déjà une collecte municipale des déchets alimentaires. Le compostage communautaire reste-t-il pertinent ?",
+        "answer": "Absolument. Beaucoup de personnes n’ont toujours pas accès à une collecte fiable des déchets alimentaires, et le compostage communautaire peut aussi être plus local, plus social et plus pédagogique qu’un service municipal ou à l’échelle d’une ville. Peels est conçu pour soutenir à la fois les endroits qui disposent déjà d’une collecte et ceux qui sont encore en train de la mettre en place."
+      },
+      "mapPrivacy": {
+        "question": "Je ne suis pas à l’aise à l’idée de mettre mon adresse sur une carte. Puis-je quand même participer ?",
+        "answer": "<p>Oui ! Nous encourageons les personnes avec une annonce résidentielle à rendre leur emplacement plus approximatif, par exemple à une rue voisine ou un coin de rue, et à utiliser un pseudonyme si cela leur convient mieux.</p><p>Même si vous choisissez d’utiliser votre vrai nom et de téléverser une photo, seuls les membres de Peels connectés pourront voir ces détails.</p>"
+      },
+      "getInvolved": {
+        "question": "J’aimerais aider à construire Peels. Comment puis-je m’impliquer ?",
+        "answer": "<p>C’est formidable, merci.</p><p>Si vous avez envie d’aider sur le plan technique, consultez notre <repo>dépôt GitHub</repo>. Vous y trouverez des informations pour contribuer ainsi que des sujets ouverts qui pourraient bénéficier de votre regard.</p><p>L’organisation communautaire joue aussi un rôle important dans le développement de Peels. N’hésitez pas à <email>nous écrire</email> si vous pouvez aider sur ce plan.</p>"
+      },
+      "promotion": {
+        "question": "Comment puis-je faire connaître Peels dans ma communauté ?",
+        "answer": "<p>Merci d’abord ! Peels ne fonctionne qu’avec une carte vivante pleine d’annonces, donc faire passer le mot est essentiel.</p><p>Consultez notre <promoKit>kit promo</promoKit>, qui comprend des visuels pour les réseaux sociaux et des affiches imprimables aux formats US letter et A4. N’hésitez pas à <email>nous écrire</email> si vous avez besoin de quelque chose de plus spécifique pour votre communauté.</p>"
+      },
+      "government": {
+        "question": "Je représente une collectivité locale ou régionale. Comment puis-je participer ?",
+        "answer": "<p>Nous souhaitons travailler avec des équipes du secteur public, des organisations communautaires et des personnes du monde éducatif partout où Peels peut aider davantage de personnes à détourner les restes alimentaires de l’enfouissement. Merci de <email>nous écrire</email>.</p>"
+      }
+    },
+    "supportFaq": {
+      "title": "Utiliser Peels",
+      "manageEmails": {
+        "question": "Comment gérer les e-mails que je reçois ?",
+        "answer": "<p>Nous n’envoyons que les e-mails nécessaires au bon fonctionnement de Peels. Cela comprend un ou deux e-mails liés au compte et des notifications quand un autre membre de Peels vous envoie un message.</p><p>Les notifications par e-mail sont obligatoires pour les personnes qui hébergent une annonce, car cela signifie qu’une personne intéressée souhaite organiser un dépôt de restes (ou récupérer quelque chose). Les personnes qui ne souhaitent plus recevoir d’e-mails peuvent soit masquer leur annonce de la carte, soit la supprimer entièrement.</p><p>Les personnes sans annonce ne peuvent pas recevoir de messages, et donc pas d’e-mails, à moins d’avoir initié le contact avec une personne hôte.</p><p>Tout le monde peut signaler ou bloquer d’autres membres de Peels via la messagerie. Bloquer quelqu’un l’empêche de vous envoyer d’autres messages ou e-mails.</p>"
+      }
+    }
+  },
+  "Contact": {
+    "title": "Nous contacter",
+    "subtitle": "Voici comment joindre l’équipe Peels.",
+    "via": {
+      "therot": "Bonjour, personne lectrice de The Rot ! Merci d’être passée par ici. Voici un contact direct pour joindre Danny.",
+      "general": "Bonjour ! Voici quelques adresses e-mail pour nous contacter."
+    },
+    "contactLabel": "Si vous voulez",
+    "contactOptions": {
+      "general": "Poser une question générale",
+      "support": "Obtenir de l’aide",
+      "dw": "Parler à Danny",
+      "newsletter": "Parler de l’infolettre"
+    },
+    "emailLabel": "Le mieux est d’écrire à",
+    "copyButton": {
+      "copied": "Copié !",
+      "copying": "Copie en cours...",
+      "copyFailed": "Échec de la copie",
+      "copyAddress": "Copier l’adresse"
+    }
+  }
+}

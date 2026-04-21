@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
 import { NewChatMessageEmail } from "../_templates/new-chat-message-email.tsx";
+import { getChatEmailCopy, resolveEmailLocale } from "../_shared/i18n.ts";
 // Temporarily required, see below PR comment
 import { render } from "npm:@react-email/render";
 
@@ -137,12 +138,24 @@ const handler = async (_request: Request): Promise<Response> => {
     const recipientEmail = recipientData?.user?.email;
     console.log("Recipient Email:", recipientEmail);
 
+    const { data: recipientProfile } = await supabase
+      .from("profiles")
+      .select("preferred_locale")
+      .eq("id", recipientId)
+      .single();
+
+    const locale = resolveEmailLocale({
+      preferredLocale: recipientProfile?.preferred_locale,
+    });
+    const copy = getChatEmailCopy(locale);
+
     // Prepare and send Resend email via React Email
     const { data, error } = await resend.emails.send({
       from: `Peels <${generalEmailAddress}>`,
       to: [recipientEmail],
-      subject: `${senderName} just messaged you`,
+      subject: copy.subject.replace("{senderName}", senderName),
       react: NewChatMessageEmail({
+        locale,
         senderName,
         recipientName,
         // messageContent: record.content,
@@ -162,6 +175,7 @@ const handler = async (_request: Request): Promise<Response> => {
       // https://github.com/resend/resend-node/pull/469#issue-2871291956
       text: await render(
         NewChatMessageEmail({
+          locale,
           senderName,
           recipientName,
           // messageContent: record.content,

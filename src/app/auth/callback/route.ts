@@ -1,5 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
-import { appendSuccessParam, normaliseNextPath } from "@/utils/authRedirects";
+import {
+  appendSuccessParam,
+  getLocaleFromSearchParams,
+  normaliseNextPath,
+} from "@/utils/authRedirects";
+import { setUserLocale } from "@/i18n/services/locale";
 import { NextResponse } from "next/server";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
@@ -23,6 +28,7 @@ export async function GET(request: Request) {
   const requestedNextPath =
     requestUrl.searchParams.get("next") ??
     requestUrl.searchParams.get("redirect_to");
+  const locale = getLocaleFromSearchParams(requestUrl.searchParams);
   const nextPath = normaliseNextPath(requestedNextPath, "/profile");
 
   if (code) {
@@ -44,6 +50,10 @@ export async function GET(request: Request) {
       authType === "email_change"
         ? appendSuccessParam(nextPath, "email_change")
         : nextPath;
+
+    if (locale) {
+      await setUserLocale(locale);
+    }
 
     debugAuth("code-exchange-success", {
       nextPath: resolvedNextPath,
@@ -68,6 +78,9 @@ export async function GET(request: Request) {
   completeUrl.searchParams.set("next", nextPath);
   if (authType) {
     completeUrl.searchParams.set("type", authType);
+  }
+  if (locale) {
+    completeUrl.searchParams.set("locale", locale);
   }
   return NextResponse.redirect(completeUrl);
 }

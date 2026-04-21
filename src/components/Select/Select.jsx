@@ -24,7 +24,7 @@ const StyledSelect = styled(HeadlessSelect)(({ theme }) => ({
 
   fontSize: "1rem",
   minHeight: "3.5rem",
-  padding: "0.375rem 0.75rem",
+  padding: "0.375rem 2.5rem 0.375rem 0.75rem",
 
   outline: "none", // Reset browser-specific outline
   "&:focus, &[data-active]": {
@@ -34,13 +34,26 @@ const StyledSelect = styled(HeadlessSelect)(({ theme }) => ({
   "& *": {
     color: "black", // Apparently needed for Windows? See code example in https://headlessui.com/react/select
   },
+
+  variants: [
+    {
+      props: { variant: "compact" },
+      style: {
+        fontSize: "0.9375rem",
+        minHeight: "2.5rem",
+        padding: "0.25rem 2rem 0.25rem 0.625rem",
+      },
+    },
+  ],
 }));
 
-export default function Select({ children, ...props }) {
+export default function Select({ children, variant = "default", ...props }) {
   return (
     <SilentContainer>
-      <StyledSelect {...props}>{children}</StyledSelect>
-      <DropdownIcon />
+      <StyledSelect variant={variant} {...props}>
+        {children}
+      </StyledSelect>
+      <DropdownIcon variant={variant} />
     </SilentContainer>
   );
 }

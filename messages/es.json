@@ -44,6 +44,8 @@
     "admin": "Administración",
     "email": "Correo electrónico",
     "hidden": "Oculto",
+    "language": "Idioma",
+    "languageHint": "Aquí las personas que visitan Peels pueden cambiar el idioma. Quienes inician sesión también pueden guardar un idioma predeterminado en su cuenta.",
     "links": "Enlaces",
     "listings": "Anuncios",
     "loading": "Cargando...",
@@ -183,6 +185,7 @@
       "firstNameHint": "Usa tu nombre o un apodo.",
       "emailSuccess": "Revisa tu correo para ver el enlace de verificación.",
       "emailHint": "Enviaremos un enlace de verificación a este correo.",
+      "languageHint": "Elige el idioma predeterminado que quieres que usen Peels y los correos de tu cuenta.",
       "newsletterSubscribedHint": "Te enviaremos actualizaciones ocasionales por correo sobre Peels.",
       "newsletterNotSubscribedHint": "Solo te enviaremos correos necesarios relacionados con tu cuenta o tus anuncios."
     },
@@ -358,6 +361,9 @@
   },
   "Legal": {
     "agreement": "He leído y acepto los <terms>términos de uso</terms> y la <privacy>política de privacidad</privacy> de Peels",
+    "fallbackTitle": "Esta página solo está disponible en inglés por ahora",
+    "fallbackBody": "Todavía estamos traduciendo algunas de nuestras páginas legales y de referencia. Por ahora, la página completa de abajo está en inglés.",
+    "lastUpdated": "Última actualización: {date}",
     "privacy": "Privacidad",
     "terms": "Términos"
   },
@@ -405,13 +411,18 @@
   },
   "Newsletter": {
     "title": "Boletín",
+    "description": "Actualizaciones ocasionales sobre cómo Peels impulsa el compostaje comunitario en distintos lugares del mundo.",
     "inboxTitle": "Recíbelo en tu correo",
     "inboxDescription": "Activa la opción para recibir futuros números del boletín por correo.",
     "rss": "O suscríbete al <link>feed RSS</link>.",
     "latestIssue": "Último número",
     "pastIssues": "Números anteriores",
     "issueSubtitle": "Número #{number} · Publicado el {date}",
+    "issueTile": "Número #{number} · {date}",
     "parent": "Boletín",
+    "fallbackTitle": "Este número solo está disponible en inglés por ahora",
+    "fallbackBody": "Todavía estamos traduciendo los números del boletín. Por ahora, la edición completa que aparece abajo está en inglés.",
+    "readFullIssue": "Leer este número completo en Peels",
     "stampAlt": "Un sello postal",
     "aside": {
       "title": "Acerca de este boletín",
@@ -450,8 +461,8 @@
         "answer": "Peels es un proyecto no comercial dirigido por la comunidad. Podemos incorporar como una organización sin ánimo de lucro en el futuro y aceptar subvenciones o patrocinios para futuros desarrollos pero nunca pretendemos empezar a cobrar por el servicio."
       },
       "fogo": {
-        "question": "Tengo una papelera de FOGO, ¿sigue siendo relevante la composición de la comunidad?",
-        "answer": "¡Suerte! Desafortunadamente, eres una minoría. La mayoría de la gente todavía no tiene acceso a la colección de compost bordado. Mientras sea así, se necesitarán recursos comunitarios de composición."
+        "question": "Ya tengo recogida municipal de restos de comida. ¿Sigue siendo relevante el compostaje comunitario?",
+        "answer": "Sí. Mucha gente todavía no tiene acceso a un servicio fiable de recogida de restos de comida, y el compostaje comunitario también puede ser más local, social y educativo que un servicio municipal o de ciudad. Peels está pensado para apoyar tanto a los lugares que ya cuentan con recogida como a los que todavía la están construyendo."
       },
       "mapPrivacy": {
         "question": "No me siento cómodo poniendo mi dirección en un mapa. ¿Puedo participar todavía?",
@@ -463,11 +474,11 @@
       },
       "promotion": {
         "question": "¿Cómo puedo promocionar Peels a mi comunidad?",
-        "answer": "<p>¡Primero que nada, gracias! Peels solo trabaja con un impresionante mapa de listados, así que sacar la palabra es crucial.</p><p>Echa un vistazo a nuestro <promoKit>kit promocional</promoKit> que incluye baldosas de redes sociales y un póster imprimible en tamaños A4 y ambos. No dudes en <email>alcanzar</email> para algo más específico para tu comunidad.</p>"
+        "answer": "<p>Antes que nada, ¡gracias! Peels solo funciona con un mapa vivo de anuncios, así que correr la voz es fundamental.</p><p>Echa un vistazo a nuestro <promoKit>kit promocional</promoKit>, que incluye piezas para redes sociales y pósteres imprimibles en tamaños A4 y US letter. No dudes en <email>escribirnos</email> si necesitas algo más específico para tu comunidad.</p>"
       },
       "government": {
-        "question": "Yo represento al gobierno local o estatal, ¿cómo puedo deshacerme?",
-        "answer": "<p>We’ve already partnered with councils from all over Australia, and are always keen to work with more (around the world, too!). Please <email>email us</email>.</p>"
+        "question": "Represento a un gobierno local o regional. ¿Cómo puedo participar?",
+        "answer": "<p>Nos interesa colaborar con equipos del sector público, organizaciones comunitarias y personas dedicadas a la educación ambiental allí donde Peels pueda ayudar a desviar más restos de comida del vertedero. <email>Escríbenos</email>.</p>"
       }
     },
     "supportFaq": {

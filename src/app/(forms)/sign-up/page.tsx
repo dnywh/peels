@@ -6,13 +6,18 @@ import FormFooter from "@/components/FormFooter";
 import StrongLink from "@/components/StrongLink";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
 import SignUpForm from "@/components/SignUpForm";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Sign Up",
-  openGraph: {
-    title: `Sign Up · ${siteConfig.name}`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations();
+
+  return {
+    title: t("Actions.signUp"),
+    openGraph: {
+      title: `${t("Actions.signUp")} · ${siteConfig.name}`,
+    },
+  };
+}
 
 export default async function SignUp(props: {
   searchParams: Promise<{

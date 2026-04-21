@@ -12,8 +12,10 @@ import InputHint from "@/components/InputHint";
 import {
   updateFirstNameAction,
   updateNewsletterPreferenceAction,
+  updatePreferredLocaleAction,
   sendEmailChangeEmailAction,
 } from "@/app/actions";
+import { localeLabels, locales, type Locale } from "@/i18n/config";
 
 import { styled } from "@pigment-css/react";
 import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
@@ -113,6 +115,7 @@ type ProfileAccountSettingsProps = {
   profile: {
     first_name?: string;
     is_newsletter_subscribed?: boolean;
+    preferred_locale?: Locale | null;
   };
 };
 
@@ -125,10 +128,14 @@ function ProfileAccountSettings({
   const firstName = useEditableField();
   const email = useEditableField();
   const newsletterPreference = useEditableField();
+  const preferredLocale = useEditableField();
 
   const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
   const [tempNewsletterPreference, setTempNewsletterPreference] = useState(
     profile?.is_newsletter_subscribed
+  );
+  const [tempPreferredLocale, setTempPreferredLocale] = useState<Locale>(
+    profile?.preferred_locale ?? "en"
   );
 
   // const handlePasswordUpdate = async (formData) => {
@@ -161,6 +168,7 @@ function ProfileAccountSettings({
 
     email.setIsUpdating(true);
     email.setError(null);
+    formData.set("locale", tempPreferredLocale);
 
     try {
       const result = await sendEmailChangeEmailAction(formData);
@@ -253,6 +261,30 @@ function ProfileAccountSettings({
   const handleNewsletterPreferenceCancel = () => {
     setTempNewsletterPreference(profile?.is_newsletter_subscribed);
     newsletterPreference.reset();
+  };
+
+  const handlePreferredLocaleUpdate = async (formData: FormData) => {
+    preferredLocale.setIsUpdating(true);
+    preferredLocale.setError(null);
+
+    try {
+      const result = await updatePreferredLocaleAction(formData);
+      if (result?.error) {
+        preferredLocale.setError(result.error);
+      } else {
+        preferredLocale.setIsEditing(false);
+      }
+    } catch (error) {
+      console.error("Error updating preferred locale:", error);
+      preferredLocale.setError(t("Errors.genericLater"));
+    } finally {
+      preferredLocale.setIsUpdating(false);
+    }
+  };
+
+  const handlePreferredLocaleCancel = () => {
+    setTempPreferredLocale(profile?.preferred_locale ?? "en");
+    preferredLocale.reset();
   };
 
   return (
@@ -421,6 +453,65 @@ function ProfileAccountSettings({
             <Button
               variant="secondary"
               onClick={() => newsletterPreference.setIsEditing(true)}
+            >
+              {t("Actions.edit")}
+            </Button>
+          </>
+        )}
+      </ListItem>
+
+      <ListItem editing={preferredLocale.isEditing}>
+        {preferredLocale.isEditing ? (
+          <Form nested={true} action={handlePreferredLocaleUpdate}>
+            <Field>
+              <Label>{t("Common.language")}</Label>
+              <Select
+                name="preferred_locale"
+                value={tempPreferredLocale}
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                  setTempPreferredLocale(event.target.value as Locale)
+                }
+                required={true}
+              >
+                {locales.map((locale) => (
+                  <option key={locale} value={locale}>
+                    {localeLabels[locale]}
+                  </option>
+                ))}
+              </Select>
+              <InputHint variant={preferredLocale.error ? "error" : "default"}>
+                {preferredLocale.error
+                  ? preferredLocale.error
+                  : t("Profile.account.languageHint")}
+              </InputHint>
+            </Field>
+
+            <ButtonGroup>
+              <SubmitButton
+                disabled={preferredLocale.isUpdating}
+                loading={preferredLocale.isUpdating}
+                pendingText={t("Status.updating")}
+              >
+                {t("Actions.update")}
+              </SubmitButton>
+              <Button
+                variant="secondary"
+                onClick={handlePreferredLocaleCancel}
+                disabled={preferredLocale.isUpdating}
+              >
+                {t("Actions.cancel")}
+              </Button>
+            </ButtonGroup>
+          </Form>
+        ) : (
+          <>
+            <ListItemReadField>
+              <Label>{t("Common.language")}</Label>
+              <p>{localeLabels[tempPreferredLocale]}</p>
+            </ListItemReadField>
+            <Button
+              variant="secondary"
+              onClick={() => preferredLocale.setIsEditing(true)}
             >
               {t("Actions.edit")}
             </Button>

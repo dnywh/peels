@@ -1,16 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
+import { NewsletterIssueEmail } from "../_templates/newsletter-issue-email.tsx";
+import {
+  getNewsletterEmailSubject,
+  resolveNewsletterLocale,
+} from "../_shared/newsletter.ts";
 // Temporarily required for rendering a text version
 // The `react` email sending method does not yet supports text version
 // https://github.com/resend/resend-node/pull/469
 import { render } from "npm:@react-email/render";
-
-// Update this to the newsletter issue you want to send
-import { NewsletterIssueTwoEmail } from "../_templates/newsletter-issue-two-email.tsx";
-
-// Update this to the newsletter issue you want to send
-const subject = "A small year-end update";
 
 // Look up required API keys from Supabase secrets
 const newsletterEmailAddress = Deno.env.get("NEWSLETTER_EMAIL_ADDRESS");
@@ -20,6 +19,15 @@ const resend = new Resend(RESEND_API_KEY);
 // TEST MODE: Set to true to send emails to test address and skip database updates
 const TEST_MODE = false;
 const TEST_EMAIL = "test@example.com";
+
+function isMissingPreferredLocaleColumn(error: {
+  code?: string | null;
+  message?: string | null;
+}) {
+  return (
+    error.code === "PGRST204" && /preferred_locale/i.test(error.message ?? "")
+  );
+}
 
 // This edge function handles the sending of newsletter issues to Peels users
 // who opted-in to the newsletter after sign-up or later on in their profile
@@ -41,22 +49,51 @@ const handler = async (_request: Request): Promise<Response> => {
     // First, get all profiles that are opted-in to the newsletter
     // And have not yet been emailed this issue
     // In TEST_MODE, only get 1 profile to send a single test email
-    const { data: profiles, error: profilesError } = await supabase
+    let profiles: Array<{
+      id: string;
+      first_name: string | null;
+      preferred_locale?: string | null;
+    }> | null = null;
+    let profilesError: {
+      message: string;
+    } | null = null;
+
+    const profilesWithLocaleResult = await supabase
       .from("profiles")
-      .select("id, first_name")
+      .select("id, first_name, preferred_locale")
       .eq("is_newsletter_subscribed", true)
       .eq("emailed_latest_issue", false)
-      .limit(TEST_MODE ? 1 : 30); // Limit to 1 in test mode, 30 in production
+      .limit(TEST_MODE ? 1 : 30);
+
+    if (
+      profilesWithLocaleResult.error &&
+      isMissingPreferredLocaleColumn(profilesWithLocaleResult.error)
+    ) {
+      const fallbackProfilesResult = await supabase
+        .from("profiles")
+        .select("id, first_name")
+        .eq("is_newsletter_subscribed", true)
+        .eq("emailed_latest_issue", false)
+        .limit(TEST_MODE ? 1 : 30);
+
+      profiles = fallbackProfilesResult.data;
+      profilesError = fallbackProfilesResult.error;
+    } else {
+      profiles = profilesWithLocaleResult.data;
+      profilesError = profilesWithLocaleResult.error;
+    }
 
     if (profilesError) {
       throw new Error(`Failed to fetch profiles: ${profilesError.message}`);
     }
 
-    console.log(`Found ${profiles.length} profiles to process`);
+    const profilesToProcess = profiles ?? [];
+
+    console.log(`Found ${profilesToProcess.length} profiles to process`);
 
     // Process each profile
     const results = [];
-    for (const profile of profiles) {
+    for (const profile of profilesToProcess) {
       try {
         // Get user email from auth
         const { data: userData, error: userError } =
@@ -88,6 +125,18 @@ const handler = async (_request: Request): Promise<Response> => {
 
         console.log(`Processing: ${profile.first_name} (${userEmail})`);
 
+        const locale = resolveNewsletterLocale(
+          profile.preferred_locale ??
+            (typeof userData?.user?.user_metadata?.preferred_locale === "string"
+              ? userData.user.user_metadata.preferred_locale
+              : null)
+        );
+        const email = NewsletterIssueEmail({
+          locale,
+          recipientName: profile.first_name || "there",
+          externalAudience: false,
+        });
+
         // Add delay to respect rate limit (at most 2 per second)
         await new Promise((resolve) => setTimeout(resolve, 750));
 
@@ -102,20 +151,11 @@ const handler = async (_request: Request): Promise<Response> => {
         const { data: _data, error } = await resend.emails.send({
           from: `Danny from Peels <${newsletterEmailAddress}>`,
           to: [recipientEmail],
-          subject,
-          react: NewsletterIssueTwoEmail({
-            recipientName: profile.first_name || "there",
-            externalAudience: false,
+          subject: getNewsletterEmailSubject(locale),
+          react: email,
+          text: await render(email, {
+            plainText: true,
           }),
-          text: await render(
-            NewsletterIssueTwoEmail({
-              recipientName: profile.first_name || "there",
-              externalAudience: false,
-            }),
-            {
-              plainText: true,
-            }
-          ),
           headers: {
             "List-Unsubscribe": "<https://www.peels.app/profile>",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click", // Required for deliverability, even if irrelevant

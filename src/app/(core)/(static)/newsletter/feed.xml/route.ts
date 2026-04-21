@@ -3,21 +3,26 @@ import { Feed } from "feed";
 import { getAllNewsletterIssues } from "@/lib/content/handlers/newsletter";
 import { siteConfig } from "@/config/site";
 import { getNewsletterIssueImageUrl } from "@/utils/storage";
+import { defaultLocale, normaliseLocale } from "@/i18n/config";
+import { getTranslations } from "next-intl/server";
 
-export const dynamic = "force-static"; // Force as prerendered static content on build, not dynamic (otherwise issues don't populate)
+export const dynamic = "force-dynamic";
 
-const feed = new Feed({
-  title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches layout.tsx)
-  description: siteConfig.newsletter.description,
-  id: `${siteConfig.url}/newsletter`,
-  link: `${siteConfig.url}/newsletter/feed.xml`,
-  favicon: `${siteConfig.url}/favicon.ico`,
-  language: "en",
-  copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.name}`,
-});
-
-export async function GET() {
-  const newsletterIssues = await getAllNewsletterIssues();
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const locale =
+    normaliseLocale(requestUrl.searchParams.get("locale")) ?? defaultLocale;
+  const t = await getTranslations({ locale, namespace: "Newsletter" });
+  const newsletterIssues = await getAllNewsletterIssues(locale);
+  const feed = new Feed({
+    title: `${siteConfig.name}: ${t("title")}`,
+    description: t("description"),
+    id: `${siteConfig.url}/newsletter`,
+    link: `${siteConfig.url}/newsletter/feed.xml?locale=${locale}`,
+    favicon: `${siteConfig.url}/favicon.ico`,
+    language: locale,
+    copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.name}`,
+  });
 
   newsletterIssues.forEach((issue) => {
     const issueLink = `${siteConfig.url}/newsletter/${issue.slug}`;
@@ -38,7 +43,7 @@ export async function GET() {
       image: issueImage,
       content: `${
         issue.metadata.description ? `<p>${issue.metadata.description}</p>` : ""
-      }<p><a href="${issueLink}">Read this full issue on Peels</a></p>`,
+      }<p><a href="${issueLink}">${t("readFullIssue")}</a></p>`,
       date: new Date(issue.customMetadata.publishDate),
     });
   });

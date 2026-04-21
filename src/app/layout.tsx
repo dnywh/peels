@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { getStaticFontUrl, usesHostedStaticAssets } from "@/utils/storage";
@@ -184,36 +184,37 @@ const Body = styled("body")(({ theme }) => ({
   backgroundColor: theme.colors.background.sunk,
 }));
 
-export const metadata: Metadata = {
-  // Force the Peels URL (siteConfig.url) instead of what might render as a preview deployment URL (VERCEL_URL)
-  // Might be related to local-only build issue: metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "https://www.peels.app". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.name,
-    template: `%s · ${siteConfig.name}`, // E.g. "Page title here · Peels"
-  },
-  description: siteConfig.description,
-  keywords: [...siteConfig.meta.keywords],
-  openGraph: {
-    title: siteConfig.name,
-    type: "website",
-    description: siteConfig.description,
-    siteName: siteConfig.name,
-    // url: siteConfig.url, // Should be the canonical URL of your object, not site root URL
-  },
-  // RSS feed for newsletter
-  // https://didoesdigital.com/blog/nextjs-blog-09-rss/
-  alternates: {
-    types: {
-      "application/rss+xml": [
-        {
-          title: `${siteConfig.name}: Newsletter`, // Peels: Newsletter (matches route.ts)
-          url: `${siteConfig.url}/newsletter/feed.xml`,
-        },
-      ],
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations();
+  const description = t("Index.subtitle");
+
+  return {
+    metadataBase: new URL(siteConfig.url),
+    title: {
+      default: siteConfig.name,
+      template: `%s · ${siteConfig.name}`,
     },
-  },
-};
+    description,
+    keywords: [...siteConfig.meta.keywords],
+    openGraph: {
+      title: siteConfig.name,
+      type: "website",
+      description,
+      siteName: siteConfig.name,
+    },
+    alternates: {
+      types: {
+        "application/rss+xml": [
+          {
+            title: `${siteConfig.name}: ${t("Newsletter.title")}`,
+            url: `${siteConfig.url}/newsletter/feed.xml?locale=${locale}`,
+          },
+        ],
+      },
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

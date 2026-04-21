@@ -3,15 +3,24 @@ import { cache } from "react";
 import type { LegalPageData } from "../types";
 import {
   formatContentData,
+  importLocalizedContentModule,
+  resolveContentLocale,
   validateBaseCustomMetadata,
   validateBaseMetadata,
 } from "../utils";
 
 export const getLegalPageMetadata = cache(async function getLegalPageMetadata(
-  slug: string
+  slug: string,
+  locale: string | null | undefined = null
 ): Promise<LegalPageData> {
   try {
-    const file = await import(`@/content/legal/${slug}.mdx`);
+    const resolvedLocale = resolveContentLocale(locale);
+    const content = await importLocalizedContentModule(
+      "legal",
+      slug,
+      resolvedLocale
+    );
+    const file = content.file;
 
     if (file?.metadata) {
       validateBaseMetadata(file.metadata, slug);
@@ -26,7 +35,10 @@ export const getLegalPageMetadata = cache(async function getLegalPageMetadata(
           slug,
           metadata: file.metadata,
           customMetadata: file.customMetadata,
+          locale: content.locale,
+          isFallback: content.isFallback,
         },
+        resolvedLocale,
         "updatedDate",
         false // updatedDate is optional for legal pages
       );
@@ -37,4 +49,12 @@ export const getLegalPageMetadata = cache(async function getLegalPageMetadata(
     console.error(error?.message);
     return notFound();
   }
+});
+
+export const getLegalPageModule = cache(async function getLegalPageModule(
+  slug: string,
+  locale: string | null | undefined = null
+) {
+  const resolvedLocale = resolveContentLocale(locale);
+  return importLocalizedContentModule("legal", slug, resolvedLocale);
 });

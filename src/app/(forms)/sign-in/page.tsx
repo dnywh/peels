@@ -4,13 +4,18 @@ import StrongLink from "@/components/StrongLink";
 import SignInForm from "@/components/SignInForm";
 import FormFooter from "@/components/FormFooter";
 import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Sign In",
-  openGraph: {
-    title: `Sign In · ${siteConfig.name}`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Auth.signIn");
+
+  return {
+    title: t("title"),
+    openGraph: {
+      title: `${t("title")} · ${siteConfig.name}`,
+    },
+  };
+}
 
 export default async function SignIn(props: {
   searchParams: Promise<{

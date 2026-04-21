@@ -2,9 +2,11 @@ import { createClient } from "@/utils/supabase/server";
 import {
   appendSuccessParam,
   getDefaultNextPathByType,
+  getLocaleFromSearchParams,
   isSupportedEmailAuthType,
   normaliseNextPath,
 } from "@/utils/authRedirects";
+import { setUserLocale } from "@/i18n/services/locale";
 import { NextResponse } from "next/server";
 
 const INVALID_LINK_MESSAGE =
@@ -34,6 +36,7 @@ export async function GET(request: Request) {
   const requestedNextPath =
     requestUrl.searchParams.get("next") ??
     requestUrl.searchParams.get("redirect_to");
+  const locale = getLocaleFromSearchParams(requestUrl.searchParams);
   const defaultNextPath = getDefaultNextPathByType(authType);
   const nextPath = normaliseNextPath(requestedNextPath, defaultNextPath);
 
@@ -68,6 +71,10 @@ export async function GET(request: Request) {
     authType === "email_change"
       ? appendSuccessParam(nextPath, "email_change")
       : nextPath;
+
+  if (locale) {
+    await setUserLocale(locale);
+  }
 
   debugAuth("verify-otp-success", {
     authType,

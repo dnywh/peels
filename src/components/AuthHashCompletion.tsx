@@ -35,6 +35,7 @@ export default function AuthHashCompletion() {
     const hashType = hashParams.get("type");
     const preferredNextPath =
       queryParams.get("next") ?? queryParams.get("redirect_to");
+    const preferredLocale = queryParams.get("locale");
     const requestedType = queryParams.get("type") ?? hashType;
     const defaultNextPath = getDefaultNextPathByType(requestedType);
     const nextPath = normaliseNextPath(preferredNextPath, defaultNextPath);
@@ -62,6 +63,9 @@ export default function AuthHashCompletion() {
       if (!completeParams.get("type") && requestedType) {
         completeParams.set("type", requestedType);
       }
+      if (!completeParams.get("locale") && preferredLocale) {
+        completeParams.set("locale", preferredLocale);
+      }
       completeUrl.search = completeParams.toString();
       completeUrl.hash = window.location.hash;
 
@@ -83,6 +87,9 @@ export default function AuthHashCompletion() {
       callbackUrl.searchParams.set("next", nextPath);
       if (requestedType) {
         callbackUrl.searchParams.set("type", requestedType);
+      }
+      if (preferredLocale) {
+        callbackUrl.searchParams.set("locale", preferredLocale);
       }
       window.location.assign(callbackUrl.toString());
       return;
@@ -157,6 +164,7 @@ export default function AuthHashCompletion() {
             refresh_token: refreshToken,
             type,
             next: typedNextPath,
+            locale: preferredLocale,
           }),
         });
 
