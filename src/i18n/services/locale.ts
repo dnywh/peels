@@ -3,6 +3,7 @@
 import { cookies, headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
+import { hasSupabaseAuthCookie } from "@/utils/supabase/authCookies";
 import {
   defaultLocale,
   type Locale,
@@ -13,6 +14,24 @@ import {
 } from "@/i18n/config";
 
 export async function getUserLocale() {
+  const cookieStore = await cookies();
+  const cookieLocale = normaliseLocale(
+    cookieStore.get(localeCookieName)?.value ?? null
+  );
+
+  if (cookieLocale) {
+    return cookieLocale;
+  }
+
+  const headersList = await headers();
+  const acceptedLocales = parseAcceptLanguageHeader(
+    headersList.get("accept-language")
+  );
+
+  if (!hasSupabaseAuthCookie(cookieStore.getAll())) {
+    return acceptedLocales[0] ?? defaultLocale;
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -47,24 +66,10 @@ export async function getUserLocale() {
     }
   }
 
-  const cookieStore = await cookies();
-  const cookieLocale = normaliseLocale(
-    cookieStore.get(localeCookieName)?.value ?? null
-  );
-  if (cookieLocale) {
-    return cookieLocale;
-  }
-
-  const headersList = await headers();
-  const acceptedLocales = parseAcceptLanguageHeader(
-    headersList.get("accept-language")
-  );
-
   if (acceptedLocales.length > 0) {
     return acceptedLocales[0];
   }
 
-  // Always return defaultLocale if no other locale is found
   return defaultLocale;
 }
 
