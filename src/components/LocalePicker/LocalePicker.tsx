@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { localeLabels, locales, type Locale } from "@/i18n/config";
@@ -36,13 +36,29 @@ export default function LocalePicker({
   const locale = useLocale() as Locale;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (nextLocale: Locale) => {
-    startTransition(async () => {
-      const formData = new FormData();
-      formData.set("locale", nextLocale);
-      await setDisplayLocaleAction(formData);
-      router.refresh();
+    startTransition(() => {
+      void (async () => {
+        setError(null);
+
+        try {
+          const formData = new FormData();
+          formData.set("locale", nextLocale);
+          const result = await setDisplayLocaleAction(formData);
+
+          if (result?.error) {
+            setError(t("Errors.genericLater"));
+            return;
+          }
+
+          router.refresh();
+        } catch (error) {
+          console.error("Error updating display locale:", error);
+          setError(t("Errors.genericLater"));
+        }
+      })();
     });
   };
 
@@ -65,9 +81,11 @@ export default function LocalePicker({
             </option>
           ))}
         </Select>
-        {showHint && (
+        {error ? (
+          <InputHint variant="error">{error}</InputHint>
+        ) : showHint ? (
           <InputHint variant="default">{t("Common.languageHint")}</InputHint>
-        )}
+        ) : null}
       </Field>
     </Container>
   );
