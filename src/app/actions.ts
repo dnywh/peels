@@ -16,20 +16,12 @@ import {
 } from "@/utils/utils";
 import { getUserLocale, setUserLocale } from "@/i18n/services/locale";
 import { resolveAuthLocale } from "@/utils/authRedirects";
+import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
 import { normaliseLocale } from "@/i18n/config";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-function isMissingPreferredLocaleColumn(error: {
-  code?: string | null;
-  message?: string | null;
-}) {
-  return (
-    error.code === "PGRST204" && /preferred_locale/i.test(error.message ?? "")
-  );
-}
 
 function translateFirstNameFieldError(
   t: Awaited<ReturnType<typeof getTranslations>>,

@@ -2,6 +2,7 @@
 
 import { cookies, headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
+import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
 import {
   defaultLocale,
   type Locale,
@@ -10,15 +11,6 @@ import {
   normaliseLocale,
   parseAcceptLanguageHeader,
 } from "@/i18n/config";
-
-function isMissingPreferredLocaleColumn(error: {
-  code?: string | null;
-  message?: string | null;
-}) {
-  return (
-    error.code === "PGRST204" && /preferred_locale/i.test(error.message ?? "")
-  );
-}
 
 export async function getUserLocale() {
   const supabase = await createClient();

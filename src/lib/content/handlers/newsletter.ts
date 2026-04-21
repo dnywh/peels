@@ -39,7 +39,7 @@ export const getNewsletterIssueMetadata = cache(
           },
           resolvedLocale,
           "publishDate",
-          true // publishDate is required for legal pages
+          true // publishDate is required for newsletter issues
         );
       }
 

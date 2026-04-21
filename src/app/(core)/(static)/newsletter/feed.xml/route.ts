@@ -6,7 +6,7 @@ import { getNewsletterIssueImageUrl } from "@/utils/storage";
 import { defaultLocale, normaliseLocale } from "@/i18n/config";
 import { getTranslations } from "next-intl/server";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -51,6 +51,7 @@ export async function GET(request: Request) {
   return new Response(feed.rss2(), {
     headers: {
       "Content-Type": "application/rss+xml",
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
 }

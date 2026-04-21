@@ -1,7 +1,7 @@
 // Shared utils between all Markdown collections, like newsletter issues and legal pages
 // https://www.notion.so/peels/Markdown-Pages-20bb37e1678f806a9649c3c658ab6258?source=copy_link
 
-import { readdir } from "fs/promises";
+import { access, readdir } from "fs/promises";
 import type { Dirent } from "fs";
 import { join } from "path";
 import { defaultLocale, type Locale, normaliseLocale } from "@/i18n/config";
@@ -27,13 +27,31 @@ export function formatContentDate(dateString: string, locale: Locale) {
   }).format(new Date(dateString));
 }
 
+async function doesContentFileExist(contentPath: string) {
+  try {
+    await access(contentPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function importLocalizedContentModule(
   contentType: "newsletter" | "legal",
   slug: string,
   locale: Locale
 ) {
   if (locale !== defaultLocale) {
-    try {
+    const localisedContentPath = join(
+      process.cwd(),
+      "src",
+      "content",
+      contentType,
+      locale,
+      `${slug}.mdx`
+    );
+
+    if (await doesContentFileExist(localisedContentPath)) {
       const file = await import(
         `@/content/${contentType}/${locale}/${slug}.mdx`
       );
@@ -42,8 +60,6 @@ export async function importLocalizedContentModule(
         locale,
         isFallback: false,
       };
-    } catch (_error) {
-      // Fall through to the default English content.
     }
   }
 

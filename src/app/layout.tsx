@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { getStaticFontUrl, usesHostedStaticAssets } from "@/utils/storage";
@@ -184,37 +184,31 @@ const Body = styled("body")(({ theme }) => ({
   backgroundColor: theme.colors.background.sunk,
 }));
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations();
-  const description = t("Index.subtitle");
-
-  return {
-    metadataBase: new URL(siteConfig.url),
-    title: {
-      default: siteConfig.name,
-      template: `%s · ${siteConfig.name}`,
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s · ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: [...siteConfig.meta.keywords],
+  openGraph: {
+    title: siteConfig.name,
+    type: "website",
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+  },
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        {
+          title: `${siteConfig.name}: Newsletter`,
+          url: `${siteConfig.url}/newsletter/feed.xml`,
+        },
+      ],
     },
-    description,
-    keywords: [...siteConfig.meta.keywords],
-    openGraph: {
-      title: siteConfig.name,
-      type: "website",
-      description,
-      siteName: siteConfig.name,
-    },
-    alternates: {
-      types: {
-        "application/rss+xml": [
-          {
-            title: `${siteConfig.name}: ${t("Newsletter.title")}`,
-            url: `${siteConfig.url}/newsletter/feed.xml?locale=${locale}`,
-          },
-        ],
-      },
-    },
-  };
-}
+  },
+};
 
 export default async function RootLayout({
   children,
