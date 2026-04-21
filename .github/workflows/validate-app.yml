@@ -78,9 +78,6 @@ jobs:
       - name: Seed local demo media
         run: npm run seed:local-media
 
-      - name: Build app for production-mode smoke test
-        run: npm run build
-
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 

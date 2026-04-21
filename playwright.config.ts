@@ -12,9 +12,8 @@ export default defineConfig({
     baseURL,
     headless: true,
     locale: "en-AU",
-    launchOptions: {
-      chromiumSandbox: process.platform === "darwin",
-    },
+    launchOptions:
+      process.platform === "darwin" ? { chromiumSandbox: true } : undefined,
     extraHTTPHeaders: {
       "Accept-Language": "en-AU,en;q=0.9",
     },
