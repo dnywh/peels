@@ -85,18 +85,21 @@ export function parseAcceptLanguageHeader(
       const qualityParam = params.find((param) =>
         param.trim().startsWith("q=")
       );
-      const quality = Number.parseFloat(
+      const parsedQuality = Number.parseFloat(
         qualityParam?.trim().replace("q=", "") ?? "1"
       );
+      const quality = Number.isFinite(parsedQuality)
+        ? Math.min(Math.max(parsedQuality, 0), 1)
+        : 0;
 
       return {
-        quality: Number.isFinite(quality) ? quality : 0,
+        quality,
         locale: normaliseLocale(languageTag),
       };
     })
     .filter(
       (entry): entry is { quality: number; locale: Locale } =>
-        entry.locale !== null
+        entry.locale !== null && entry.quality > 0
     )
     .sort((left, right) => right.quality - left.quality)
     .map((entry) => entry.locale);

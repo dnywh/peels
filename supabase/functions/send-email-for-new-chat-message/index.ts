@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
 import { NewChatMessageEmail } from "../_templates/new-chat-message-email.tsx";
 import { getChatEmailCopy, resolveEmailLocale } from "../_shared/i18n.ts";
+import { isMissingPreferredLocaleColumn } from "../_shared/postgrest.ts";
 // Temporarily required, see below PR comment
 import { render } from "npm:@react-email/render";
 
@@ -10,13 +11,6 @@ import { render } from "npm:@react-email/render";
 const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const resend = new Resend(RESEND_API_KEY);
-
-const isMissingPreferredLocaleColumn = (error: {
-  code?: string | null;
-  message?: string | null;
-}) =>
-  error.code === "PGRST204" &&
-  (error.message ?? "").toLowerCase().includes("preferred_locale");
 
 const handler = async (_request: Request): Promise<Response> => {
   try {

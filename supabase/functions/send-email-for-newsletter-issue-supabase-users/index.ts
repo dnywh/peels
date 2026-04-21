@@ -6,6 +6,7 @@ import {
   getNewsletterEmailSubject,
   resolveNewsletterLocale,
 } from "../_shared/newsletter.ts";
+import { isMissingPreferredLocaleColumn } from "../_shared/postgrest.ts";
 // Temporarily required for rendering a text version
 // The `react` email sending method does not yet supports text version
 // https://github.com/resend/resend-node/pull/469
@@ -19,15 +20,6 @@ const resend = new Resend(RESEND_API_KEY);
 // TEST MODE: Set to true to send emails to test address and skip database updates
 const TEST_MODE = false;
 const TEST_EMAIL = "test@example.com";
-
-function isMissingPreferredLocaleColumn(error: {
-  code?: string | null;
-  message?: string | null;
-}) {
-  return (
-    error.code === "PGRST204" && /preferred_locale/i.test(error.message ?? "")
-  );
-}
 
 // This edge function handles the sending of newsletter issues to Peels users
 // who opted-in to the newsletter after sign-up or later on in their profile
