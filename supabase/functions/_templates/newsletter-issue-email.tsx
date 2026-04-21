@@ -39,7 +39,7 @@ export const NewsletterIssueEmail = ({
 }: NewsletterIssueEmailProps) => {
   const copy = getNewsletterEmailCopy(locale);
   const issue = getCurrentNewsletterIssue(locale);
-  const issueUrl = getNewsletterIssueUrl();
+  const issueUrl = getNewsletterIssueUrl(locale);
   const profileUrl = "https://www.peels.app/profile";
 
   return (

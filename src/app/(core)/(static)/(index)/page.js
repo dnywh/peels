@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import IntroHeader from "@/components/IntroHeader";
@@ -13,11 +14,30 @@ import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import { styled } from "@pigment-css/react";
 
-export const metadata = {
-  title: {
-    absolute: `${siteConfig.name}: ${siteConfig.description}`,
-  },
-};
+export async function generateMetadata() {
+  const t = await getTranslations("Index");
+  const description = t("metaDescription");
+  const keywords = t("metaKeywords")
+    .split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+
+  return {
+    title: {
+      absolute: `${siteConfig.name}: ${t("title")}`,
+    },
+    description,
+    keywords,
+    openGraph: {
+      title: `${siteConfig.name}: ${t("title")}`,
+      description,
+    },
+    twitter: {
+      title: `${siteConfig.name}: ${t("title")}`,
+      description,
+    },
+  };
+}
 
 export default function Index() {
   const t = useTranslations("Index");

@@ -211,8 +211,17 @@ export const getNewsletterEmailSubject = (locale: SupportedLocale) => {
   return `${copy.subjectPrefix}: ${issue.title}`;
 };
 
-export const getNewsletterIssueUrl = () =>
-  `https://www.peels.app/newsletter/${currentIssue.slug}`;
+export const getNewsletterIssueUrl = (locale?: SupportedLocale) => {
+  const issueUrl = new URL(
+    `https://www.peels.app/newsletter/${currentIssue.slug}`
+  );
+
+  if (locale && locale !== defaultEmailLocale) {
+    issueUrl.searchParams.set("locale", locale);
+  }
+
+  return issueUrl.toString();
+};
 
 export const getNewsletterAudienceConfigs = (): Array<{
   locale: SupportedLocale;

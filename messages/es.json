@@ -117,6 +117,8 @@
   "Index": {
     "title": "Encuentra un hogar para tus restos de comida, estés donde estés",
     "subtitle": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
+    "metaDescription": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
+    "metaKeywords": "desperdicio alimentario, restos de comida, compost, compost cerca de mí, punto de compostaje, entrega de restos de comida",
     "hostAvatarAlt": "El avatar de un anfitrión de Peels",
     "buttons": {
       "browseMap": "Explorar el mapa",

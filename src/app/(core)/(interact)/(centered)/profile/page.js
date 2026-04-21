@@ -42,9 +42,12 @@ export default async function ProfilePage() {
     supabase.from("profiles").select().eq("id", user.id).single(),
   ]);
 
+  const userMetadataPreferredLocale = user?.user_metadata?.preferred_locale;
   const preferredLocale =
     normaliseLocale(profile?.preferred_locale) ??
-    normaliseLocale(user?.user_metadata?.preferred_locale) ??
+    (typeof userMetadataPreferredLocale === "string"
+      ? normaliseLocale(userMetadataPreferredLocale)
+      : undefined) ??
     "en";
 
   return (

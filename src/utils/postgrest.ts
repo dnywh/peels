@@ -9,7 +9,7 @@ export function isMissingPostgrestColumn(
 ) {
   return (
     error.code === "PGRST204" &&
-    new RegExp(columnName, "i").test(error.message ?? "")
+    (error.message ?? "").toLowerCase().includes(columnName.toLowerCase())
   );
 }
 

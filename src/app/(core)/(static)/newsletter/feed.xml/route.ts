@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   });
 
   newsletterIssues.forEach((issue) => {
-    const issueLink = `${siteConfig.url}/newsletter/${issue.slug}`;
+    const issueLink = `${siteConfig.url}/newsletter/${issue.slug}?locale=${locale}`;
     const issueImage = new URL(
       getNewsletterIssueImageUrl(
         issue.customMetadata.issueNumber,
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     ).toString();
     feed.addItem({
       title: issue.metadata.title,
-      link: `${siteConfig.url}/newsletter/${issue.slug}`,
+      link: issueLink,
       description: issue.metadata.description,
       author: issue.metadata.authors.map((author) => ({
         name: author,

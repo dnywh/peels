@@ -117,6 +117,8 @@
   "Index": {
     "title": "Encontre um destino para os seus restos de comida, esteja onde estiver",
     "subtitle": "O Peels liga pessoas com restos de comida a quem faz compostagem. É um projeto comunitário, gratuito e sem fins comerciais.",
+    "metaDescription": "O Peels liga pessoas com restos de comida a quem faz compostagem. É um projeto comunitário, gratuito e sem fins comerciais.",
+    "metaKeywords": "desperdício de alimentos, restos de comida, compostagem, compostagem perto de mim, ponto de entrega para compostagem, entrega de restos de comida",
     "hostAvatarAlt": "O avatar de uma pessoa anfitriã do Peels",
     "buttons": {
       "browseMap": "Explorar o mapa",

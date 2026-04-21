@@ -117,6 +117,8 @@
   "Index": {
     "title": "Trouvez une destination pour vos restes alimentaires, où que vous soyez",
     "subtitle": "Peels met en relation des personnes qui ont des restes alimentaires avec celles qui compostent. C’est un projet communautaire gratuit et non commercial.",
+    "metaDescription": "Peels met en relation des personnes qui ont des restes alimentaires avec celles qui compostent. C’est un projet communautaire gratuit et non commercial.",
+    "metaKeywords": "gaspillage alimentaire, restes alimentaires, compost, compost près de chez moi, point de dépôt compost, dépôt de restes alimentaires",
     "hostAvatarAlt": "L’avatar d’une personne hôte sur Peels",
     "buttons": {
       "browseMap": "Parcourir la carte",

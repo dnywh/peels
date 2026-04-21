@@ -117,6 +117,8 @@
   "Index": {
     "title": "Find a home for your food scraps, wherever you are",
     "subtitle": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
+    "metaDescription": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
+    "metaKeywords": "food waste, food scraps, share waste, sharewaste, makesoil, compost near me, compost drop-off, food scrap drop-off",
     "hostAvatarAlt": "The avatar for a Peels host",
     "buttons": {
       "browseMap": "Browse the map",
