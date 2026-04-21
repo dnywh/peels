@@ -1,4 +1,4 @@
-// For documentation, see analagous setup for newsletter issues
+// For documentation, see analogous setup for newsletter issues
 import type { Metadata } from "next/types";
 import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";

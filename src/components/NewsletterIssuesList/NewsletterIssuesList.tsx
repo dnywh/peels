@@ -14,6 +14,10 @@ export default async function NewsletterIssuesList({
   const locale = await getLocale();
   const newsletterIssues = await getAllNewsletterIssues(locale);
 
+  if (newsletterIssues.length === 0) {
+    return null;
+  }
+
   // Only show an empty issue slot if the number of issues is even
   // ...meaning the list of *past issues* is odd, and needs a spare tile
   const needsEmptyIssueSlot = newsletterIssues.length % 2 === 0;
