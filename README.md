@@ -222,9 +222,12 @@ Peels keeps testing intentionally small:
 
 - `npm run check` for i18n and formatting checks
 - `npm run build` for the production build
-- `npm run test:e2e` for the headless Playwright smoke suite
+- `npm run test:e2e` for the local headless Playwright smoke suite
+- `npm run test:e2e:prod` for the production-like Playwright smoke suite
 
 The smoke suite covers seeded sign-in, public listing, profile, and chat flows against local Supabase data. It is designed to stay small and high-signal rather than grow into a broad frontend testing matrix.
+
+In CI, pull requests run `npm run check` and `npm run build`. Pushes to `main` also run the production-like Playwright smoke suite.
 
 For the first local Playwright run, install the browser once with:
 
