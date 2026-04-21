@@ -29,9 +29,14 @@ const handler = async (_request: Request): Promise<Response> => {
     const broadcasts = [];
 
     for (const { locale, audienceId } of audienceConfigs) {
-      const email = NewsletterIssueEmail({
+      const reactEmail = NewsletterIssueEmail({
         locale,
         recipientName: "{{{FIRST_NAME|there}}}",
+        externalAudience: true,
+      });
+      const textEmail = NewsletterIssueEmail({
+        locale,
+        recipientName: "there",
         externalAudience: true,
       });
 
@@ -40,8 +45,8 @@ const handler = async (_request: Request): Promise<Response> => {
           audienceId,
           from: `Danny from Peels <${newsletterEmailAddress}>`,
           subject: getNewsletterEmailSubject(locale),
-          react: email,
-          text: await render(email, { plainText: true }),
+          react: reactEmail,
+          text: await render(textEmail, { plainText: true }),
           headers: {
             "List-Unsubscribe": "{{{RESEND_UNSUBSCRIBE_URL}}}",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

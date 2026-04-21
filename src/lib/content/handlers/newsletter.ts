@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import type { Locale } from "@/i18n/config";
 import type { NewsletterIssueData } from "../types";
 import {
   formatContentData,
