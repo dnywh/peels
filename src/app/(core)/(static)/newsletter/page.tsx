@@ -9,6 +9,7 @@ import FooterBlock from "@/components/FooterBlock";
 import StaticPageMain from "@/components/StaticPageMain";
 import { styled } from "@pigment-css/react";
 import { getLocale, getTranslations } from "next-intl/server";
+import { defaultLocale } from "@/i18n/config";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -28,6 +29,10 @@ export async function generateMetadata() {
 export default async function NewsletterPage() {
   const locale = await getLocale();
   const t = await getTranslations({ locale, namespace: "Newsletter" });
+  const rssHref =
+    locale === defaultLocale
+      ? "/newsletter/feed.xml"
+      : `/newsletter/feed.xml?locale=${locale}`;
 
   return (
     <StaticPageMain>
@@ -45,11 +50,7 @@ export default async function NewsletterPage() {
         <FooterBlock>
           <p>
             {t.rich("rss", {
-              link: (chunks) => (
-                <Link href={`/newsletter/feed.xml?locale=${locale}`}>
-                  {chunks}
-                </Link>
-              ),
+              link: (chunks) => <Link href={rssHref}>{chunks}</Link>,
             })}
           </p>
         </FooterBlock>

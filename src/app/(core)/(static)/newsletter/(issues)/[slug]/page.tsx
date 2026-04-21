@@ -17,6 +17,7 @@ import { getNewsletterIssueImageUrl } from "@/utils/storage";
 import TranslationNotice from "@/components/TranslationNotice";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getLocaleFromSearchParams } from "@/utils/authRedirects";
+import { defaultLocale } from "@/i18n/config";
 
 type NewsletterIssuePageProps = {
   params: Promise<{ slug: string }>;
@@ -76,6 +77,10 @@ export default async function NewsletterIssuePage({
   const { slug } = await params;
   const locale = await resolveNewsletterIssueLocale(searchParams);
   const t = await getTranslations({ locale, namespace: "Newsletter" });
+  const rssHref =
+    locale === defaultLocale
+      ? "/newsletter/feed.xml"
+      : `/newsletter/feed.xml?locale=${locale}`;
   const { metadata, customMetadata, formattedDate } =
     await getNewsletterIssueMetadata(slug, locale);
   const title = customMetadata.verboseTitle
@@ -118,11 +123,7 @@ export default async function NewsletterIssuePage({
         <FooterBlock>
           <p>
             {t.rich("rss", {
-              link: (chunks) => (
-                <Link href={`/newsletter/feed.xml?locale=${locale}`}>
-                  {chunks}
-                </Link>
-              ),
+              link: (chunks) => <Link href={rssHref}>{chunks}</Link>,
             })}
           </p>
         </FooterBlock>

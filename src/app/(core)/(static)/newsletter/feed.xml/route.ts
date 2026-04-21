@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const newsletterIssues = await getAllNewsletterIssues(locale);
   const feedUrl = new URL("/newsletter/feed.xml", siteConfig.url);
 
-  if (requestedLocale && locale !== defaultLocale) {
+  if (requestedLocale) {
     feedUrl.searchParams.set("locale", locale);
   }
 
