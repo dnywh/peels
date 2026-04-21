@@ -12,9 +12,6 @@ export default defineConfig({
     baseURL,
     headless: true,
     locale: "en-AU",
-    launchOptions: {
-      chromiumSandbox: process.platform === "darwin",
-    },
     extraHTTPHeaders: {
       "Accept-Language": "en-AU,en;q=0.9",
     },
@@ -27,7 +24,7 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1 --port 3000",
+    command: "npm run start -- --hostname 127.0.0.1 --port 3000",
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
