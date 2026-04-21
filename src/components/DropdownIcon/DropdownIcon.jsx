@@ -3,7 +3,9 @@ import { styled } from "@pigment-css/react";
 
 // See ChevronRightIcon too, which was a fork of this (and more basic primitive)
 // In fact, perhaps this should have a ChevronDownIcon embedded
-const StyledIconWrapper = styled(IconWrapper)(({ theme }) => ({
+const StyledIconWrapper = styled(IconWrapper, {
+  shouldForwardProp: (prop) => prop !== "variant",
+})(({ theme }) => ({
   pointerEvents: "none",
   position: "absolute",
   right: "0.75rem",

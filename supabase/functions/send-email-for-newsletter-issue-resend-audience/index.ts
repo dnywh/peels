@@ -26,10 +26,6 @@ const handler = async (_request: Request): Promise<Response> => {
 
     const audienceConfigs = getNewsletterAudienceConfigs();
 
-    if (audienceConfigs.length === 0) {
-      throw new Error("No newsletter audiences configured");
-    }
-
     const broadcasts = [];
 
     for (const { locale, audienceId } of audienceConfigs) {

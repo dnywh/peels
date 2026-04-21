@@ -7,7 +7,9 @@ const SilentContainer = styled("div")(({ theme }) => ({
   position: "relative",
 }));
 
-const StyledSelect = styled(HeadlessSelect)(({ theme }) => ({
+const StyledSelect = styled(HeadlessSelect, {
+  shouldForwardProp: (prop) => prop !== "variant",
+})(({ theme }) => ({
   width: "100%",
   appearance: "none", // Reset browser-specific styles
   color: theme.colors.text.ui.primary,

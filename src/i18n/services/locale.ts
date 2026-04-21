@@ -38,6 +38,15 @@ export async function getUserLocale() {
   } = await supabase.auth.getUser();
 
   if (user?.id) {
+    const metadataLocale = normaliseLocale(
+      typeof user.user_metadata?.preferred_locale === "string"
+        ? user.user_metadata.preferred_locale
+        : null
+    );
+    if (metadataLocale) {
+      return metadataLocale;
+    }
+
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("preferred_locale")
@@ -54,15 +63,6 @@ export async function getUserLocale() {
     const profileLocale = normaliseLocale(profile?.preferred_locale ?? null);
     if (profileLocale) {
       return profileLocale;
-    }
-
-    const metadataLocale = normaliseLocale(
-      typeof user.user_metadata?.preferred_locale === "string"
-        ? user.user_metadata.preferred_locale
-        : null
-    );
-    if (metadataLocale) {
-      return metadataLocale;
     }
   }
 
