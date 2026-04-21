@@ -138,6 +138,10 @@ const handler = async (_request: Request): Promise<Response> => {
     const recipientEmail = recipientData?.user?.email;
     console.log("Recipient Email:", recipientEmail);
 
+    if (!recipientEmail) {
+      throw new Error(`No email found for recipient ${recipientId}`);
+    }
+
     const { data: recipientProfile } = await supabase
       .from("profiles")
       .select("preferred_locale")

@@ -1,8 +1,8 @@
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import PeelsLogo from "@/components/PeelsLogo";
 import LocalePicker from "@/components/LocalePicker";
-import { createClient } from "@/utils/supabase/server";
 import { styled } from "@pigment-css/react";
 import { getTranslations } from "next-intl/server";
 
@@ -10,10 +10,10 @@ const currentYear = new Date().getFullYear();
 
 export default async function LegalFooter() {
   const t = await getTranslations();
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const cookieStore = await cookies();
+  const hasSupabaseAuthCookie = cookieStore
+    .getAll()
+    .some(({ name }) => name.includes("auth-token"));
 
   return (
     <StyledFooter>
@@ -22,7 +22,7 @@ export default async function LegalFooter() {
         © {currentYear} {siteConfig.name}
       </p>
 
-      {!user && <LocalePicker compact={true} />}
+      {!hasSupabaseAuthCookie && <LocalePicker compact={true} />}
 
       <StyledNav>
         <Link href={siteConfig.links.about}>{t("App.about")}</Link>
