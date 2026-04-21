@@ -29,6 +29,7 @@ jobs:
         run: npm run check
 
       - name: Build app
+        if: github.event_name == 'pull_request'
         run: npm run build
 
   e2e-prod:
