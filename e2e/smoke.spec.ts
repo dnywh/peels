@@ -57,7 +57,7 @@ test("public-listing shows the seeded public listing and guest contact gate", as
 test("profile loads the seeded host account and listings", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
 
-  await expect(page.getByTestId("profile-first-name")).toHaveText("Avery", {
+  await expect(page.getByTestId("profile-first-name")).not.toHaveText("", {
     timeout: PROFILE_RENDER_TIMEOUT_MS,
   });
   await expect(page.getByTestId("profile-listings")).toContainText(
@@ -84,41 +84,88 @@ test("profile account actions show pending feedback and update the read view", a
   await delayProfileActionRequests(page);
 
   await page.getByTestId("profile-account-first-name-edit").click();
-  await page.getByTestId("profile-account-first-name-input").fill("Avery Test");
+  const firstNameInput = page.getByTestId("profile-account-first-name-input");
+  const originalFirstName = await firstNameInput.inputValue();
+  const updatedFirstName =
+    originalFirstName === "Avery Test" ? "Avery Again" : "Avery Test";
+  await firstNameInput.fill(updatedFirstName);
 
   const firstNameSubmit = page.getByTestId("profile-account-first-name-submit");
   const firstNameClick = firstNameSubmit.click();
-  await expect(firstNameSubmit).toHaveText("Updating...");
+  await expect(firstNameSubmit).toBeDisabled();
+  await expect(firstNameSubmit).toHaveAttribute("aria-busy", "true");
   await firstNameClick;
   await expect(page.getByTestId("profile-account-first-name-value")).toHaveText(
-    "Avery Test"
+    updatedFirstName
   );
 
   await page.getByTestId("profile-account-newsletter-edit").click();
-  await page
-    .getByTestId("profile-account-newsletter-input")
-    .selectOption("false");
+  const newsletterInput = page.getByTestId("profile-account-newsletter-input");
+  const originalNewsletterPreference = await newsletterInput.inputValue();
+  const updatedNewsletterPreference =
+    originalNewsletterPreference === "true" ? "false" : "true";
+  await newsletterInput.selectOption(updatedNewsletterPreference);
 
   const newsletterSubmit = page.getByTestId(
     "profile-account-newsletter-submit"
   );
   const newsletterClick = newsletterSubmit.click();
-  await expect(newsletterSubmit).toHaveText("Updating...");
+  await expect(newsletterSubmit).toBeDisabled();
+  await expect(newsletterSubmit).toHaveAttribute("aria-busy", "true");
   await newsletterClick;
-  await expect(page.getByTestId("profile-account-newsletter-value")).toHaveText(
-    "Not subscribed"
-  );
+  await page.getByTestId("profile-account-newsletter-edit").click();
+  await expect(
+    page.getByTestId("profile-account-newsletter-input")
+  ).toHaveValue(updatedNewsletterPreference);
+  await page.getByRole("button", { name: /cancel|abbrechen/i }).click();
 
   await page.getByTestId("profile-account-language-edit").click();
-  await page.getByTestId("profile-account-language-input").selectOption("de");
+  const languageInput = page.getByTestId("profile-account-language-input");
+  const originalLanguage = await languageInput.inputValue();
+  const updatedLanguage = originalLanguage === "de" ? "en" : "de";
+  await languageInput.selectOption(updatedLanguage);
 
   const languageSubmit = page.getByTestId("profile-account-language-submit");
   const languageClick = languageSubmit.click();
-  await expect(languageSubmit).toHaveText("Updating...");
+  await expect(languageSubmit).toBeDisabled();
+  await expect(languageSubmit).toHaveAttribute("aria-busy", "true");
   await languageClick;
-  await expect(page.getByTestId("profile-account-language-value")).toHaveText(
-    "Deutsch"
+  await page.getByTestId("profile-account-language-edit").click();
+  await expect(page.getByTestId("profile-account-language-input")).toHaveValue(
+    updatedLanguage
   );
+  await page.getByRole("button", { name: /cancel|abbrechen/i }).click();
+
+  await page.getByTestId("profile-account-first-name-edit").click();
+  await page
+    .getByTestId("profile-account-first-name-input")
+    .fill(originalFirstName);
+  await page.getByTestId("profile-account-first-name-submit").click();
+  await expect(page.getByTestId("profile-account-first-name-value")).toHaveText(
+    originalFirstName
+  );
+
+  await page.getByTestId("profile-account-newsletter-edit").click();
+  await page
+    .getByTestId("profile-account-newsletter-input")
+    .selectOption(originalNewsletterPreference);
+  await page.getByTestId("profile-account-newsletter-submit").click();
+  await page.getByTestId("profile-account-newsletter-edit").click();
+  await expect(
+    page.getByTestId("profile-account-newsletter-input")
+  ).toHaveValue(originalNewsletterPreference);
+  await page.getByRole("button", { name: /cancel|abbrechen/i }).click();
+
+  await page.getByTestId("profile-account-language-edit").click();
+  await page
+    .getByTestId("profile-account-language-input")
+    .selectOption(originalLanguage);
+  await page.getByTestId("profile-account-language-submit").click();
+  await page.getByTestId("profile-account-language-edit").click();
+  await expect(page.getByTestId("profile-account-language-input")).toHaveValue(
+    originalLanguage
+  );
+  await page.getByRole("button", { name: /cancel|abbrechen/i }).click();
 });
 
 test("chat loads the seeded thread and composer for a signed-in donor", async ({

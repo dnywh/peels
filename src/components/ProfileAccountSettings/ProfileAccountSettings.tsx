@@ -203,11 +203,7 @@ function FirstNameEditor({
   }, [onSaved, state.data?.firstName, state.success]);
 
   return (
-    <form
-      action={formAction}
-      style={nestedFormStyle}
-      data-testid="profile-account-first-name-form"
-    >
+    <form style={nestedFormStyle} data-testid="profile-account-first-name-form">
       <Field>
         <Label>{t("Profile.account.firstName")}</Label>
         <InputComponent
@@ -222,6 +218,7 @@ function FirstNameEditor({
 
       <ButtonGroup>
         <SubmitButton
+          formAction={formAction}
           pending={isPending}
           pendingText={t("Status.updating")}
           data-testid="profile-account-first-name-submit"
@@ -249,11 +246,7 @@ function EmailEditor({
   );
 
   return (
-    <form
-      action={formAction}
-      style={nestedFormStyle}
-      data-testid="profile-account-email-form"
-    >
+    <form style={nestedFormStyle} data-testid="profile-account-email-form">
       <input type="hidden" name="locale" value={currentLocale} />
       <Field>
         <Label>{t("Common.email")}</Label>
@@ -279,6 +272,7 @@ function EmailEditor({
       <ButtonGroup>
         {!state.success && (
           <SubmitButton
+            formAction={formAction}
             pending={isPending}
             pendingText={t("Status.sending")}
             data-testid="profile-account-email-submit"
@@ -314,11 +308,7 @@ function NewsletterPreferenceEditor({
   }, [onSaved, state.data?.newsletterPreference, state.success]);
 
   return (
-    <form
-      action={formAction}
-      style={nestedFormStyle}
-      data-testid="profile-account-newsletter-form"
-    >
+    <form style={nestedFormStyle} data-testid="profile-account-newsletter-form">
       <Field>
         <Label>{t("Common.newsletter")}</Label>
         <Select
@@ -345,6 +335,7 @@ function NewsletterPreferenceEditor({
 
       <ButtonGroup>
         <SubmitButton
+          formAction={formAction}
           pending={isPending}
           pendingText={t("Status.updating")}
           data-testid="profile-account-newsletter-submit"
@@ -379,11 +370,7 @@ function PreferredLocaleEditor({
   }, [onSaved, state.data?.preferredLocale, state.success]);
 
   return (
-    <form
-      action={formAction}
-      style={nestedFormStyle}
-      data-testid="profile-account-language-form"
-    >
+    <form style={nestedFormStyle} data-testid="profile-account-language-form">
       <Field>
         <Label>{t("Common.language")}</Label>
         <Select
@@ -409,6 +396,7 @@ function PreferredLocaleEditor({
 
       <ButtonGroup>
         <SubmitButton
+          formAction={formAction}
           pending={isPending}
           pendingText={t("Status.updating")}
           data-testid="profile-account-language-submit"

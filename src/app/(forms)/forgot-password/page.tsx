@@ -35,7 +35,7 @@ export default async function ForgotPassword(props: {
         <h1>{t("Auth.forgotPassword.title")}</h1>
         <p>{t("Auth.forgotPassword.body")}</p>
       </FormHeader>
-      <Form>
+      <Form action={forgotPasswordAction}>
         <Field>
           <Label htmlFor="email">{t("Common.email")}</Label>
           <Input
@@ -49,10 +49,7 @@ export default async function ForgotPassword(props: {
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}
-        <SubmitButton
-          formAction={forgotPasswordAction}
-          pendingText={t("Status.emailing")}
-        >
+        <SubmitButton pendingText={t("Status.emailing")}>
           {t("Actions.emailLink")}
         </SubmitButton>
       </Form>
