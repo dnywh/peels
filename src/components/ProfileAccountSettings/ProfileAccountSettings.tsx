@@ -1,7 +1,7 @@
 "use client";
-import { useState, useCallback } from "react";
+
+import { useActionState, useCallback, useEffect, useState } from "react";
 import Button from "@/components/Button";
-import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Select from "@/components/Select";
 import Label from "@/components/Label";
@@ -10,37 +10,29 @@ import SubmitButton from "@/components/SubmitButton";
 import InputHint from "@/components/InputHint";
 
 import {
-  updateFirstNameAction,
-  updateNewsletterPreferenceAction,
-  updatePreferredLocaleAction,
-  sendEmailChangeEmailAction,
-} from "@/app/actions";
-import {
   defaultLocale,
   localeLabels,
   locales,
   type Locale,
 } from "@/i18n/config";
+import type { InlineActionResult } from "@/types/actionResult";
 
 import { styled } from "@pigment-css/react";
-import { validateFirstName, FIELD_CONFIGS } from "@/lib/formValidation";
+import { FIELD_CONFIGS } from "@/lib/formValidation";
 import { useTranslations } from "next-intl";
 
 const List = styled("ul")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  padding: ` 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // Visually match parent padding
-  // gap: `calc(${theme.spacing.unit} * 1)`,
+  padding: ` 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`,
 }));
 
 const ListItem = styled("li")<{ editing?: boolean }>(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-
   borderStyle: "solid",
   borderColor: "transparent",
   transition: "border-color 25ms linear",
-  // Assume middle row by default
   borderWidth: "1px 0",
   padding: "1rem 0",
   margin: "-0.5px 0",
@@ -67,7 +59,7 @@ const ListItem = styled("li")<{ editing?: boolean }>(({ theme }) => ({
   ],
 }));
 
-const ListItemReadField = styled(Field)(({ theme }) => ({
+const ListItemReadField = styled(Field)(() => ({
   flex: 1,
 }));
 
@@ -83,32 +75,66 @@ const PasswordPreview = styled("p")(({ theme }) => ({
 }));
 
 const InputComponent = Input as React.ComponentType<any>;
+const nestedFormStyle = {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+} as const;
 
-// New custom hook for managing edit states
+type FirstNameActionData = {
+  firstName: string;
+};
+
+type EmailActionData = {
+  email: string;
+};
+
+type NewsletterPreferenceActionData = {
+  newsletterPreference: boolean;
+};
+
+type PreferredLocaleActionData = {
+  preferredLocale: Locale;
+};
+
+type UpdateFirstNameFormAction = (
+  previousState: InlineActionResult<FirstNameActionData>,
+  formData: FormData
+) => Promise<InlineActionResult<FirstNameActionData>>;
+
+type SendEmailChangeFormAction = (
+  previousState: InlineActionResult<EmailActionData>,
+  formData: FormData
+) => Promise<InlineActionResult<EmailActionData>>;
+
+type UpdateNewsletterPreferenceFormAction = (
+  previousState: InlineActionResult<NewsletterPreferenceActionData>,
+  formData: FormData
+) => Promise<InlineActionResult<NewsletterPreferenceActionData>>;
+
+type UpdatePreferredLocaleFormAction = (
+  previousState: InlineActionResult<PreferredLocaleActionData>,
+  formData: FormData
+) => Promise<InlineActionResult<PreferredLocaleActionData>>;
+
+function getInitialInlineActionState<T>(): InlineActionResult<T> {
+  return {
+    success: false,
+    error: null,
+  };
+}
+
 function useEditableField(initialState = false) {
   const [isEditing, setIsEditing] = useState(initialState);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [lastSentAt, setLastSentAt] = useState(0);
 
   const reset = useCallback(() => {
     setIsEditing(false);
-    setError(null);
-    setSuccess(false);
   }, []);
 
   return {
     isEditing,
     setIsEditing,
-    isUpdating,
-    setIsUpdating,
-    error,
-    setError,
-    success,
-    setSuccess,
-    lastSentAt,
-    setLastSentAt,
     reset,
   };
 }
@@ -122,14 +148,278 @@ type ProfileAccountSettingsProps = {
     is_newsletter_subscribed?: boolean;
     preferred_locale?: Locale | null;
   };
+  updateFirstNameAction: UpdateFirstNameFormAction;
+  sendEmailChangeEmailAction: SendEmailChangeFormAction;
+  updateNewsletterPreferenceAction: UpdateNewsletterPreferenceFormAction;
+  updatePreferredLocaleAction: UpdatePreferredLocaleFormAction;
 };
+
+type FirstNameEditorProps = {
+  currentFirstName?: string;
+  action: UpdateFirstNameFormAction;
+  onCancel: () => void;
+  onSaved: (firstName: string) => void;
+};
+
+type EmailEditorProps = {
+  action: SendEmailChangeFormAction;
+  currentEmail: string;
+  currentLocale: Locale;
+  onCancel: () => void;
+};
+
+type NewsletterPreferenceEditorProps = {
+  action: UpdateNewsletterPreferenceFormAction;
+  currentPreference: boolean;
+  onCancel: () => void;
+  onPreferenceChange: (newsletterPreference: boolean) => void;
+  onSaved: (newsletterPreference: boolean) => void;
+};
+
+type PreferredLocaleEditorProps = {
+  action: UpdatePreferredLocaleFormAction;
+  currentLocale: Locale;
+  onCancel: () => void;
+  onLocaleChange: (locale: Locale) => void;
+  onSaved: (locale: Locale) => void;
+};
+
+function FirstNameEditor({
+  action,
+  currentFirstName,
+  onCancel,
+  onSaved,
+}: FirstNameEditorProps) {
+  const t = useTranslations();
+  const [state, formAction, isPending] = useActionState(
+    action,
+    getInitialInlineActionState<FirstNameActionData>()
+  );
+
+  useEffect(() => {
+    if (state.success && state.data?.firstName !== undefined) {
+      onSaved(state.data.firstName);
+    }
+  }, [onSaved, state.data?.firstName, state.success]);
+
+  return (
+    <form style={nestedFormStyle} data-testid="profile-account-first-name-form">
+      <Field>
+        <Label>{t("Profile.account.firstName")}</Label>
+        <InputComponent
+          name="first_name"
+          {...FIELD_CONFIGS.firstName}
+          defaultValue={currentFirstName}
+          error={state.error}
+          data-testid="profile-account-first-name-input"
+        />
+        {state.error && <InputHint variant="error">{state.error}</InputHint>}
+      </Field>
+
+      <ButtonGroup>
+        <SubmitButton
+          formAction={formAction}
+          pending={isPending}
+          pendingText={t("Status.updating")}
+          data-testid="profile-account-first-name-submit"
+        >
+          {t("Actions.update")}
+        </SubmitButton>
+        <Button variant="secondary" onClick={onCancel} disabled={isPending}>
+          {t("Actions.cancel")}
+        </Button>
+      </ButtonGroup>
+    </form>
+  );
+}
+
+function EmailEditor({
+  action,
+  currentEmail,
+  currentLocale,
+  onCancel,
+}: EmailEditorProps) {
+  const t = useTranslations();
+  const [state, formAction, isPending] = useActionState(
+    action,
+    getInitialInlineActionState<EmailActionData>()
+  );
+
+  return (
+    <form style={nestedFormStyle} data-testid="profile-account-email-form">
+      <input type="hidden" name="locale" value={currentLocale} />
+      <Field>
+        <Label>{t("Common.email")}</Label>
+        <InputComponent
+          name="email"
+          defaultValue={currentEmail}
+          {...FIELD_CONFIGS.email}
+          error={state.error}
+          data-testid="profile-account-email-input"
+        />
+        <InputHint
+          variant={
+            state.error ? "error" : state.success ? "success" : "default"
+          }
+        >
+          {state.error
+            ? state.error
+            : state.success
+              ? t("Profile.account.emailSuccess")
+              : t("Profile.account.emailHint")}
+        </InputHint>
+      </Field>
+      <ButtonGroup>
+        {!state.success && (
+          <SubmitButton
+            formAction={formAction}
+            pending={isPending}
+            pendingText={t("Status.sending")}
+            data-testid="profile-account-email-submit"
+          >
+            {t("Actions.sendLink")}
+          </SubmitButton>
+        )}
+        <Button variant="secondary" onClick={onCancel} disabled={isPending}>
+          {state.success ? t("Actions.close") : t("Actions.cancel")}
+        </Button>
+      </ButtonGroup>
+    </form>
+  );
+}
+
+function NewsletterPreferenceEditor({
+  action,
+  currentPreference,
+  onCancel,
+  onPreferenceChange,
+  onSaved,
+}: NewsletterPreferenceEditorProps) {
+  const t = useTranslations();
+  const [state, formAction, isPending] = useActionState(
+    action,
+    getInitialInlineActionState<NewsletterPreferenceActionData>()
+  );
+
+  useEffect(() => {
+    if (state.success && state.data?.newsletterPreference !== undefined) {
+      onSaved(state.data.newsletterPreference);
+    }
+  }, [onSaved, state.data?.newsletterPreference, state.success]);
+
+  return (
+    <form style={nestedFormStyle} data-testid="profile-account-newsletter-form">
+      <Field>
+        <Label>{t("Common.newsletter")}</Label>
+        <Select
+          name="newsletter_preference"
+          value={String(currentPreference)}
+          onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+            onPreferenceChange(event.target.value === "true")
+          }
+          disabled={isPending}
+          required={true}
+          data-testid="profile-account-newsletter-input"
+        >
+          <option value="false">{t("Common.notSubscribed")}</option>
+          <option value="true">{t("Common.subscribed")}</option>
+        </Select>
+        <InputHint variant={state.error ? "error" : "default"}>
+          {state.error
+            ? state.error
+            : currentPreference
+              ? t("Profile.account.newsletterSubscribedHint")
+              : t("Profile.account.newsletterNotSubscribedHint")}
+        </InputHint>
+      </Field>
+
+      <ButtonGroup>
+        <SubmitButton
+          formAction={formAction}
+          pending={isPending}
+          pendingText={t("Status.updating")}
+          data-testid="profile-account-newsletter-submit"
+        >
+          {t("Actions.update")}
+        </SubmitButton>
+        <Button variant="secondary" onClick={onCancel} disabled={isPending}>
+          {t("Actions.cancel")}
+        </Button>
+      </ButtonGroup>
+    </form>
+  );
+}
+
+function PreferredLocaleEditor({
+  action,
+  currentLocale,
+  onCancel,
+  onLocaleChange,
+  onSaved,
+}: PreferredLocaleEditorProps) {
+  const t = useTranslations();
+  const [state, formAction, isPending] = useActionState(
+    action,
+    getInitialInlineActionState<PreferredLocaleActionData>()
+  );
+
+  useEffect(() => {
+    if (state.success && state.data?.preferredLocale !== undefined) {
+      onSaved(state.data.preferredLocale);
+    }
+  }, [onSaved, state.data?.preferredLocale, state.success]);
+
+  return (
+    <form style={nestedFormStyle} data-testid="profile-account-language-form">
+      <Field>
+        <Label>{t("Common.language")}</Label>
+        <Select
+          name="preferred_locale"
+          value={currentLocale}
+          onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+            onLocaleChange(event.target.value as Locale)
+          }
+          disabled={isPending}
+          required={true}
+          data-testid="profile-account-language-input"
+        >
+          {locales.map((locale) => (
+            <option key={locale} value={locale}>
+              {localeLabels[locale]}
+            </option>
+          ))}
+        </Select>
+        <InputHint variant={state.error ? "error" : "default"}>
+          {state.error ? state.error : t("Profile.account.languageHint")}
+        </InputHint>
+      </Field>
+
+      <ButtonGroup>
+        <SubmitButton
+          formAction={formAction}
+          pending={isPending}
+          pendingText={t("Status.updating")}
+          data-testid="profile-account-language-submit"
+        >
+          {t("Actions.update")}
+        </SubmitButton>
+        <Button variant="secondary" onClick={onCancel} disabled={isPending}>
+          {t("Actions.cancel")}
+        </Button>
+      </ButtonGroup>
+    </form>
+  );
+}
 
 function ProfileAccountSettings({
   user,
   profile,
+  updateFirstNameAction,
+  sendEmailChangeEmailAction,
+  updateNewsletterPreferenceAction,
+  updatePreferredLocaleAction,
 }: ProfileAccountSettingsProps) {
   const t = useTranslations();
-  // Use our custom hook for each editable field
   const firstName = useEditableField();
   const email = useEditableField();
   const newsletterPreference = useEditableField();
@@ -137,205 +427,76 @@ function ProfileAccountSettings({
 
   const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
   const [tempNewsletterPreference, setTempNewsletterPreference] = useState(
-    profile?.is_newsletter_subscribed
+    profile?.is_newsletter_subscribed ?? false
   );
   const [tempPreferredLocale, setTempPreferredLocale] = useState<Locale>(
     profile?.preferred_locale ?? defaultLocale
   );
 
-  // const handlePasswordUpdate = async (formData) => {
-  //   password.setIsUpdating(true);
-  //   password.setError(null);
-  //   try {
-  //     const result = await sendPasswordResetEmailAction(formData);
-  //     if (result?.error) {
-  //       password.setError(result.error);
-  //     } else {
-  //       password.setSuccess(true);
-  //       password.setLastSentAt(Date.now());
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating password:", error);
-  //     password.setError("Sorry, something’s gone wrong. Please try again.");
-  //   } finally {
-  //     password.setIsUpdating(false);
-  //   }
-  // };
-
-  const handleEmailUpdate = async (formData: FormData) => {
-    const newEmail = formData.get("email")?.toString();
-
-    // Client-side validation for unchanged email
-    if (newEmail === user.email) {
-      email.setError(t("Errors.alreadyYourEmail"));
-      return;
-    }
-
-    email.setIsUpdating(true);
-    email.setError(null);
-    formData.set("locale", tempPreferredLocale);
-
-    try {
-      const result = await sendEmailChangeEmailAction(formData);
-      if (result?.error) {
-        email.setError(result.error);
-      } else {
-        email.setSuccess(true);
-      }
-    } catch (error) {
-      console.error("Error updating email:", error);
-      email.setError(t("Errors.genericLater"));
-    } finally {
-      email.setIsUpdating(false);
-    }
-  };
-
-  const handleFirstNameUpdate = async (formData: FormData) => {
-    const validation = validateFirstName(formData.get("first_name"));
-    if (!validation.isValid) {
-      switch (validation.error) {
-        case "empty":
-          firstName.setError(t("Errors.emptyName"));
-          break;
-        case "tooShort":
-          firstName.setError(t("Errors.firstNameTooShort"));
-          break;
-        case "tooLong":
-          firstName.setError(t("Errors.firstNameTooLong"));
-          break;
-        case "invalidChars":
-          firstName.setError(t("Errors.firstNameInvalidChars"));
-          break;
-        case "forbiddenContent":
-        case "reserved":
-          firstName.setError(t("Errors.firstNameNotAllowed"));
-          break;
-        default:
-          firstName.setError(t("Errors.generic"));
-      }
-      return;
-    }
-
-    firstName.setIsUpdating(true);
-    firstName.setError(null);
-
-    try {
-      const result = await updateFirstNameAction(formData);
-      if (result?.error) {
-        firstName.setError(result.error);
-      } else {
-        setTempFirstName(validation.value ?? "");
-        firstName.setIsEditing(false);
-      }
-    } catch (error) {
-      console.error("Error updating first name:", error);
-      firstName.setError(t("Errors.genericLater"));
-    } finally {
-      firstName.setIsUpdating(false);
-    }
-  };
-
-  const handleFirstNameCancel = () => {
+  const handleFirstNameCancel = useCallback(() => {
     firstName.reset();
-  };
+  }, [firstName.reset]);
 
-  const handleNewsletterPreferenceUpdate = async (formData: FormData) => {
-    const nextNewsletterPreference =
-      formData.get("newsletter_preference") === "true";
-    console.log("Updating newsletter preference to", nextNewsletterPreference);
+  const handleFirstNameSaved = useCallback(
+    (nextFirstName: string) => {
+      setTempFirstName(nextFirstName);
+      firstName.reset();
+    },
+    [firstName.reset]
+  );
 
-    newsletterPreference.setIsUpdating(true);
-    newsletterPreference.setError(null);
+  const handleEmailCancel = useCallback(() => {
+    email.reset();
+  }, [email.reset]);
 
-    try {
-      const result = await updateNewsletterPreferenceAction(formData);
-      if (result?.error) {
-        newsletterPreference.setError(result.error);
-      } else {
-        setTempNewsletterPreference(nextNewsletterPreference);
-        newsletterPreference.setIsEditing(false);
-      }
-    } catch (error) {
-      console.error("Error updating newsletter preference:", error);
-      newsletterPreference.setError(t("Errors.genericLater"));
-    } finally {
-      newsletterPreference.setIsUpdating(false);
-    }
-  };
-
-  const handleNewsletterPreferenceCancel = () => {
-    setTempNewsletterPreference(profile?.is_newsletter_subscribed);
+  const handleNewsletterPreferenceCancel = useCallback(() => {
+    setTempNewsletterPreference(profile?.is_newsletter_subscribed ?? false);
     newsletterPreference.reset();
-  };
+  }, [newsletterPreference.reset, profile?.is_newsletter_subscribed]);
 
-  const handlePreferredLocaleUpdate = async (formData: FormData) => {
-    preferredLocale.setIsUpdating(true);
-    preferredLocale.setError(null);
+  const handleNewsletterPreferenceSaved = useCallback(
+    (nextNewsletterPreference: boolean) => {
+      setTempNewsletterPreference(nextNewsletterPreference);
+      newsletterPreference.reset();
+    },
+    [newsletterPreference.reset]
+  );
 
-    try {
-      const result = await updatePreferredLocaleAction(formData);
-      if (result?.error) {
-        preferredLocale.setError(result.error);
-      } else {
-        preferredLocale.setIsEditing(false);
-      }
-    } catch (error) {
-      console.error("Error updating preferred locale:", error);
-      preferredLocale.setError(t("Errors.genericLater"));
-    } finally {
-      preferredLocale.setIsUpdating(false);
-    }
-  };
-
-  const handlePreferredLocaleCancel = () => {
+  const handlePreferredLocaleCancel = useCallback(() => {
     setTempPreferredLocale(profile?.preferred_locale ?? defaultLocale);
     preferredLocale.reset();
-  };
+  }, [preferredLocale.reset, profile?.preferred_locale]);
+
+  const handlePreferredLocaleSaved = useCallback(
+    (nextLocale: Locale) => {
+      setTempPreferredLocale(nextLocale);
+      preferredLocale.reset();
+    },
+    [preferredLocale.reset]
+  );
 
   return (
     <List>
       <ListItem editing={firstName.isEditing}>
         {firstName.isEditing ? (
-          <Form nested={true} action={handleFirstNameUpdate}>
-            <Field>
-              <Label>{t("Profile.account.firstName")}</Label>
-              <InputComponent
-                name="first_name"
-                {...FIELD_CONFIGS.firstName}
-                defaultValue={tempFirstName}
-                error={firstName.error}
-              />
-              {firstName.error && (
-                <InputHint variant="error">{firstName.error}</InputHint>
-              )}
-            </Field>
-
-            <ButtonGroup>
-              <SubmitButton
-                disabled={firstName.isUpdating}
-                loading={firstName.isUpdating}
-                pendingText={t("Status.updating")}
-              >
-                {t("Actions.update")}
-              </SubmitButton>
-              <Button
-                variant="secondary"
-                onClick={handleFirstNameCancel}
-                disabled={firstName.isUpdating}
-              >
-                {t("Actions.cancel")}
-              </Button>
-            </ButtonGroup>
-          </Form>
+          <FirstNameEditor
+            action={updateFirstNameAction}
+            currentFirstName={tempFirstName}
+            onCancel={handleFirstNameCancel}
+            onSaved={handleFirstNameSaved}
+          />
         ) : (
           <>
             <ListItemReadField>
               <Label>{t("Profile.account.firstName")}</Label>
-              <p>{tempFirstName}</p>
+              <p data-testid="profile-account-first-name-value">
+                {tempFirstName}
+              </p>
             </ListItemReadField>
             <Button
               variant="secondary"
               onClick={() => firstName.setIsEditing(true)}
+              data-testid="profile-account-first-name-edit"
             >
               {t("Actions.edit")}
             </Button>
@@ -345,46 +506,12 @@ function ProfileAccountSettings({
 
       <ListItem editing={email.isEditing}>
         {email.isEditing ? (
-          <Form nested={true} action={handleEmailUpdate}>
-            <Field>
-              <Label>{t("Common.email")}</Label>
-              <InputComponent
-                name="email"
-                defaultValue={user.email}
-                {...FIELD_CONFIGS.email}
-                error={email.error}
-              />
-              <InputHint
-                variant={
-                  email.error ? "error" : email.success ? "success" : "default"
-                }
-              >
-                {email.error
-                  ? email.error
-                  : email.success
-                    ? t("Profile.account.emailSuccess")
-                    : t("Profile.account.emailHint")}
-              </InputHint>
-            </Field>
-            <ButtonGroup>
-              {!email.success && (
-                <SubmitButton
-                  disabled={email.isUpdating}
-                  loading={email.isUpdating}
-                  pendingText={t("Status.sending")}
-                >
-                  {t("Actions.sendLink")}
-                </SubmitButton>
-              )}
-              <Button
-                variant="secondary"
-                onClick={() => email.reset()}
-                disabled={email.isUpdating}
-              >
-                {email.success ? t("Actions.close") : t("Actions.cancel")}
-              </Button>
-            </ButtonGroup>
-          </Form>
+          <EmailEditor
+            action={sendEmailChangeEmailAction}
+            currentEmail={user.email}
+            currentLocale={tempPreferredLocale}
+            onCancel={handleEmailCancel}
+          />
         ) : (
           <>
             <ListItemReadField>
@@ -394,6 +521,7 @@ function ProfileAccountSettings({
             <Button
               variant="secondary"
               onClick={() => email.setIsEditing(true)}
+              data-testid="profile-account-email-edit"
             >
               {t("Actions.edit")}
             </Button>
@@ -403,54 +531,19 @@ function ProfileAccountSettings({
 
       <ListItem editing={newsletterPreference.isEditing}>
         {newsletterPreference.isEditing ? (
-          <Form nested={true} action={handleNewsletterPreferenceUpdate}>
-            <Field>
-              <Label>{t("Common.newsletter")}</Label>
-              <Select
-                name="newsletter_preference"
-                value={String(tempNewsletterPreference)}
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                  setTempNewsletterPreference(event.target.value === "true")
-                }
-                required={true}
-              >
-                <option value="false">{t("Common.notSubscribed")}</option>
-                <option value="true">{t("Common.subscribed")}</option>
-              </Select>
-              <InputHint
-                variant={newsletterPreference.error ? "error" : "default"}
-              >
-                {newsletterPreference.error
-                  ? newsletterPreference.error
-                  : tempNewsletterPreference
-                    ? t("Profile.account.newsletterSubscribedHint")
-                    : t("Profile.account.newsletterNotSubscribedHint")}
-              </InputHint>
-            </Field>
-
-            <ButtonGroup>
-              <SubmitButton
-                disabled={newsletterPreference.isUpdating}
-                loading={newsletterPreference.isUpdating}
-                pendingText={t("Status.updating")}
-              >
-                {t("Actions.update")}
-              </SubmitButton>
-              <Button
-                variant="secondary"
-                onClick={handleNewsletterPreferenceCancel}
-                disabled={newsletterPreference.isUpdating}
-              >
-                {t("Actions.cancel")}
-              </Button>
-            </ButtonGroup>
-          </Form>
+          <NewsletterPreferenceEditor
+            action={updateNewsletterPreferenceAction}
+            currentPreference={tempNewsletterPreference}
+            onCancel={handleNewsletterPreferenceCancel}
+            onPreferenceChange={setTempNewsletterPreference}
+            onSaved={handleNewsletterPreferenceSaved}
+          />
         ) : (
           <>
             <ListItemReadField>
               <Label>{t("Common.newsletter")}</Label>
-              <p>
-                {tempNewsletterPreference === true
+              <p data-testid="profile-account-newsletter-value">
+                {tempNewsletterPreference
                   ? t("Common.subscribed")
                   : t("Common.notSubscribed")}
               </p>
@@ -458,6 +551,7 @@ function ProfileAccountSettings({
             <Button
               variant="secondary"
               onClick={() => newsletterPreference.setIsEditing(true)}
+              data-testid="profile-account-newsletter-edit"
             >
               {t("Actions.edit")}
             </Button>
@@ -467,56 +561,25 @@ function ProfileAccountSettings({
 
       <ListItem editing={preferredLocale.isEditing}>
         {preferredLocale.isEditing ? (
-          <Form nested={true} action={handlePreferredLocaleUpdate}>
-            <Field>
-              <Label>{t("Common.language")}</Label>
-              <Select
-                name="preferred_locale"
-                value={tempPreferredLocale}
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                  setTempPreferredLocale(event.target.value as Locale)
-                }
-                required={true}
-              >
-                {locales.map((locale) => (
-                  <option key={locale} value={locale}>
-                    {localeLabels[locale]}
-                  </option>
-                ))}
-              </Select>
-              <InputHint variant={preferredLocale.error ? "error" : "default"}>
-                {preferredLocale.error
-                  ? preferredLocale.error
-                  : t("Profile.account.languageHint")}
-              </InputHint>
-            </Field>
-
-            <ButtonGroup>
-              <SubmitButton
-                disabled={preferredLocale.isUpdating}
-                loading={preferredLocale.isUpdating}
-                pendingText={t("Status.updating")}
-              >
-                {t("Actions.update")}
-              </SubmitButton>
-              <Button
-                variant="secondary"
-                onClick={handlePreferredLocaleCancel}
-                disabled={preferredLocale.isUpdating}
-              >
-                {t("Actions.cancel")}
-              </Button>
-            </ButtonGroup>
-          </Form>
+          <PreferredLocaleEditor
+            action={updatePreferredLocaleAction}
+            currentLocale={tempPreferredLocale}
+            onCancel={handlePreferredLocaleCancel}
+            onLocaleChange={setTempPreferredLocale}
+            onSaved={handlePreferredLocaleSaved}
+          />
         ) : (
           <>
             <ListItemReadField>
               <Label>{t("Common.language")}</Label>
-              <p>{localeLabels[tempPreferredLocale]}</p>
+              <p data-testid="profile-account-language-value">
+                {localeLabels[tempPreferredLocale]}
+              </p>
             </ListItemReadField>
             <Button
               variant="secondary"
               onClick={() => preferredLocale.setIsEditing(true)}
+              data-testid="profile-account-language-edit"
             >
               {t("Actions.edit")}
             </Button>

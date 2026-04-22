@@ -44,7 +44,7 @@ export default async function ResetPassword(props: {
         <h1>{t("Auth.resetPassword.title")}</h1>
         <p>{t("Auth.resetPassword.body")}</p>
       </FormHeader>
-      <Form>
+      <Form action={resetPasswordAction}>
         <Field>
           <Label htmlFor="password">
             {t("Auth.resetPassword.newPassword")}
@@ -73,10 +73,7 @@ export default async function ResetPassword(props: {
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}
-        <SubmitButton
-          formAction={resetPasswordAction}
-          pendingText={t("Status.resetting")}
-        >
+        <SubmitButton pendingText={t("Status.resetting")}>
           {t("Actions.resetPassword")}
         </SubmitButton>
       </Form>

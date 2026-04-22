@@ -110,20 +110,32 @@ function ButtonToDialog({
           <Dialog.Description>{children}</Dialog.Description>
         </Text>
         <Buttons>
-          {(action || onSubmit) && (
-            <form action={action} onSubmit={handleSubmit}>
+          {action ? (
+            <form action={action}>
+              <SubmitButton
+                variant={variant !== "danger" ? "primary" : "danger"}
+                width="contained"
+                pendingText={resolvedConfirmLoadingText}
+                // tabIndex={undefined} // Doesn't work. See below.
+                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
+              >
+                {confirmButtonText}
+              </SubmitButton>
+            </form>
+          ) : onSubmit ? (
+            <form onSubmit={handleSubmit}>
               <SubmitButton
                 variant={variant !== "danger" ? "primary" : "danger"}
                 width="contained"
                 loading={isSubmitting}
                 loadingText={resolvedConfirmLoadingText}
                 // tabIndex={undefined} // Doesn't work. See below.
-                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibilty)
+                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
               >
                 {confirmButtonText}
               </SubmitButton>
             </form>
-          )}
+          ) : null}
           <Dialog.Close asChild>
             <Button variant="secondary" width="contained">
               {resolvedCancelButtonText}

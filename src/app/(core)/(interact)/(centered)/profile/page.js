@@ -1,4 +1,12 @@
 import { createClient } from "@/utils/supabase/server";
+import {
+  deleteAccountAction,
+  sendEmailChangeEmailAction,
+  signOutAction,
+  updateFirstNameAction,
+  updateNewsletterPreferenceAction,
+  updatePreferredLocaleAction,
+} from "@/app/actions";
 import ProfileHeader from "@/components/ProfileHeader";
 import ProfileAccountSettings from "@/components/ProfileAccountSettings";
 import ProfileListings from "@/components/ProfileListings";
@@ -73,12 +81,20 @@ export default async function ProfilePage() {
             ...(profile ?? {}),
             preferred_locale: preferredLocale,
           }}
+          updateFirstNameAction={updateFirstNameAction}
+          sendEmailChangeEmailAction={sendEmailChangeEmailAction}
+          updateNewsletterPreferenceAction={updateNewsletterPreferenceAction}
+          updatePreferredLocaleAction={updatePreferredLocaleAction}
         />
       </Section>
 
       <Section>
         <h2>{t("actions")}</h2>
-        <ProfileActions listings={listings} />
+        <ProfileActions
+          listings={listings}
+          signOutAction={signOutAction}
+          deleteAccountAction={deleteAccountAction}
+        />
       </Section>
 
       <SiteFooter />
