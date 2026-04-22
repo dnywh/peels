@@ -447,6 +447,7 @@
   },
   "Support": {
     "title": "Aide",
+    "metaDescription": "Réponses aux questions fréquentes sur Peels.",
     "subtitle": "Nous mettons cette page à jour régulièrement avec des réponses aux questions fréquentes. N’hésitez pas à <link>nous contacter</link> pour toute autre chose.",
     "peelsFaq": {
       "title": "À propos de Peels",

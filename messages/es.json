@@ -139,7 +139,7 @@
       },
       "dropOff": {
         "title": "Soltar",
-        "subtitle": " O recolecta, si has llegado a un negocio local con chatarras para regalar."
+        "subtitle": " O recógelos, si has contactado con un negocio local que tiene restos de comida para regalar."
       }
     },
     "newsletter": {
@@ -447,6 +447,7 @@
   },
   "Support": {
     "title": "Soporte",
+    "metaDescription": "Respuestas a preguntas frecuentes sobre Peels.",
     "subtitle": "Actualizamos esta página periódicamente con respuestas a preguntas comunes. Si necesitas algo más, puedes <link>contactarnos</link>.",
     "peelsFaq": {
       "title": "Acerca de Peels",
@@ -468,11 +469,11 @@
       },
       "mapPrivacy": {
         "question": "No me siento cómodo poniendo mi dirección en un mapa. ¿Puedo participar todavía?",
-        "answer": "<p>Yes! We encourage folks with residential listings to ‘roughen’ their location to a nearby street corner or similar, and use a pseudonym if they feel more comfortable doing so.</p><p>Even if you choose to use your real name and upload a photo, only signed in Peels members can see those details.</p>"
+        "answer": "<p>¡Sí! Recomendamos a quienes tienen anuncios residenciales que hagan su ubicación más aproximada, por ejemplo moviéndola a una esquina cercana o a un punto similar, y que usen un seudónimo si así se sienten más cómodos.</p><p>Incluso si decides usar tu nombre real y subir una foto, solo los miembros de Peels que hayan iniciado sesión podrán ver esos detalles.</p>"
       },
       "getInvolved": {
         "question": "Me gustaría ayudar a construir Peels. ¿Cómo me desentiendo?",
-        "answer": "<p>You’re awesome. Thank you.</p><p>If you’re inclined to help on the technical side, check out our <repo>GitHub repo</repo>. It has information on how to contribute, plus some existing issues that could do with your eyes.</p> <p>Community organising is also a big part of getting Peels off the ground. Please don’t hesistate to <email>email us</email> if that’s something you could help with.</p>"
+        "answer": "<p>Eres genial. Gracias.</p><p>Si te apetece ayudar en el lado técnico, echa un vistazo a nuestro <repo>repositorio en GitHub</repo>. Allí encontrarás información sobre cómo contribuir y también algunos asuntos abiertos a los que les vendría bien tu mirada.</p><p>La organización comunitaria también es una parte importante de hacer crecer Peels. No dudes en <email>escribirnos</email> si crees que podrías ayudar con eso.</p>"
       },
       "promotion": {
         "question": "¿Cómo puedo promocionar Peels a mi comunidad?",
@@ -487,7 +488,7 @@
       "title": "Usando Peels",
       "manageEmails": {
         "question": "¿Cómo puedo administrar qué correos electrónicos recibo?",
-        "answer": "<p>We only send emails that are necessary to keep Peels working. That includes one or two account-related emails, and emails to notify you whenever a fellow Peels member has sent you message.</p><p>Email notifications are required for listing hosts, as it means a prospective donor has enquired about dropping off scraps (or picking something up). Hosts who longer wish to receive emails can either hide their listing from the map (making it impossible for new donors to reach out) or delete their listing entirely (meaning previous donors can no longer message, either).</p><p>People without listings cannot be messaged (and thus emailed) unless they initiate contact with a host first.</p><p>Anyone can report or block individual Peels members via our messaging system. Blocking someone means they can no longer message or email you.</p>"
+        "answer": "<p>Solo enviamos los correos necesarios para que Peels funcione. Eso incluye uno o dos correos relacionados con la cuenta y avisos cuando otro miembro de Peels te ha enviado un mensaje.</p><p>Las notificaciones por correo son obligatorias para quienes alojan anuncios, ya que significan que una persona interesada ha preguntado por dejar restos o por recoger algo. Si una persona anfitriona ya no quiere recibir correos, puede ocultar su anuncio del mapa o eliminarlo por completo.</p><p>Las personas sin anuncios no pueden recibir mensajes, y por tanto tampoco correos, a menos que inicien el contacto con una persona anfitriona primero.</p><p>Cualquier persona puede denunciar o bloquear a otros miembros de Peels mediante nuestro sistema de mensajería. Bloquear a alguien significa que ya no podrá enviarte mensajes ni correos.</p>"
       }
     }
   },
