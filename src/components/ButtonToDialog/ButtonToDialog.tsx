@@ -117,7 +117,7 @@ function ButtonToDialog({
                 width="contained"
                 pendingText={resolvedConfirmLoadingText}
                 // tabIndex={undefined} // Doesn't work. See below.
-                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibilty)
+                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
               >
                 {confirmButtonText}
               </SubmitButton>
@@ -130,7 +130,7 @@ function ButtonToDialog({
                 loading={isSubmitting}
                 loadingText={resolvedConfirmLoadingText}
                 // tabIndex={undefined} // Doesn't work. See below.
-                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibilty)
+                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
               >
                 {confirmButtonText}
               </SubmitButton>

@@ -30,7 +30,7 @@ async function signIn(
 }
 
 async function delayProfileActionRequests(page: Page, delayMs = 500) {
-  await page.route("**/profile", async (route) => {
+  await page.route(/\/profile(?:\/|\?|$)/, async (route) => {
     if (route.request().method() === "POST") {
       await page.waitForTimeout(delayMs);
     }
@@ -57,7 +57,7 @@ test("public-listing shows the seeded public listing and guest contact gate", as
 test("profile loads the seeded host account and listings", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
 
-  await expect(page.getByTestId("profile-first-name")).not.toHaveText("", {
+  await expect(page.getByTestId("profile-first-name")).toHaveText(/\S+/, {
     timeout: PROFILE_RENDER_TIMEOUT_MS,
   });
   await expect(page.getByTestId("profile-listings")).toContainText(

@@ -322,6 +322,10 @@ export async function updateFirstNameAction(
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user?.id) {
+    return actionError<UpdateFirstNameActionData>(t("generic"));
+  }
+
   const firstNameValidation = validateFirstName(formData.get("first_name"));
   if (!firstNameValidation.isValid) {
     return actionError<UpdateFirstNameActionData>(
@@ -420,6 +424,10 @@ export async function updateNewsletterPreferenceAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user?.id) {
+    return actionError<UpdateNewsletterPreferenceActionData>(t("generic"));
+  }
 
   const newsletterPreference = formData.get("newsletter_preference") === "true";
 
