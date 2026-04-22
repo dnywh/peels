@@ -135,10 +135,10 @@
       },
       "contact": {
         "title": "Contacto",
-        "subtitle": "Organiza para desplegar o recoger tus restos a través del chat."
+        "subtitle": "Organiza la entrega o la recogida de tus restos por chat."
       },
       "dropOff": {
-        "title": "Soltar",
+        "title": "Entregar",
         "subtitle": " O recógelos, si has contactado con un negocio local que tiene restos de comida para regalar."
       }
     },
