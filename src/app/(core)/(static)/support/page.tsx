@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
 import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageHeader from "@/components/StaticPageHeader";
@@ -8,14 +9,19 @@ import SupportFaq from "@/components/SupportFaq";
 import PeelsFaq from "@/components/PeelsFaq";
 import HeaderBlock from "@/components/HeaderBlock";
 
-export const metadata = {
-  title: "Support",
-  description: "Answers to common questions about Peels.",
-  openGraph: {
-    title: `Support · ${siteConfig.name}`,
-    description: "Answers to common questions about Peels.",
-  },
-};
+export async function generateMetadata() {
+  const t = await getTranslations("Support");
+  const description = t("metaDescription");
+
+  return {
+    title: t("title"),
+    description,
+    openGraph: {
+      title: `${t("title")} · ${siteConfig.name}`,
+      description,
+    },
+  };
+}
 
 export default function Support() {
   const t = useTranslations("Support");
