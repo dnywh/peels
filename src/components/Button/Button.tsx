@@ -153,8 +153,9 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
   justifyContent: "center", // Added to help with alignment
   textDecoration: "none",
   padding: `0 calc(${theme.spacing.unit} * 2)`,
+  transform: "translateY(0)",
   transition:
-    "background 100ms ease-in-out, color 75ms ease-in-out, box-shadow 100ms ease-in-out",
+    "background 100ms ease-in-out, color 75ms ease-in-out, box-shadow 100ms ease-in-out, transform 50ms ease-out",
 
   // Ellipsize text
   "& span": {
@@ -175,6 +176,9 @@ const buttonStyles = ({ theme }: { theme: any }): any => ({
     cursor: "default",
     background: theme.colors.button.disabled.background,
     color: theme.colors.button.disabled.text,
+  },
+  '&:active:not([disabled]):not([aria-disabled="true"])': {
+    transform: "translateY(1px)",
   },
 
   variants: [

@@ -17,7 +17,8 @@ import {
 import { getUserLocale, setUserLocale } from "@/i18n/services/locale";
 import { resolveAuthLocale } from "@/utils/authRedirects";
 import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
-import { normaliseLocale } from "@/i18n/config";
+import { normaliseLocale, type Locale } from "@/i18n/config";
+import type { InlineActionResult } from "@/types/actionResult";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -42,6 +43,43 @@ function translateFirstNameFieldError(
     default:
       return t("generic");
   }
+}
+
+type UpdateFirstNameActionData = {
+  firstName: string;
+};
+
+type SendEmailChangeActionData = {
+  email: string;
+};
+
+type UpdateNewsletterPreferenceActionData = {
+  newsletterPreference: boolean;
+};
+
+type UpdatePreferredLocaleActionData = {
+  preferredLocale: Locale;
+};
+
+function getActionFormData<T>(
+  previousStateOrFormData: FormData | InlineActionResult<T>,
+  maybeFormData?: FormData
+) {
+  return previousStateOrFormData instanceof FormData
+    ? previousStateOrFormData
+    : (maybeFormData as FormData);
+}
+
+function actionError<T>(error: string): InlineActionResult<T> {
+  return { success: false, error };
+}
+
+function actionSuccess<T>(data?: T): InlineActionResult<T> {
+  if (data === undefined) {
+    return { success: true, error: null };
+  }
+
+  return { success: true, error: null, data };
 }
 
 export const signUpAction = async (formData: FormData, request?: Request) => {
@@ -211,7 +249,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
   return redirect(redirectUrl.toString());
 };
 
-export const signInAction = async (formData: FormData, request: Request) => {
+export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const redirectTo = formData.get("redirect_to") as string;
@@ -264,7 +302,20 @@ export const forgotPasswordAction = async (formData: FormData) => {
   );
 };
 
-export const updateFirstNameAction = async (formData: FormData) => {
+export async function updateFirstNameAction(
+  previousState: InlineActionResult<UpdateFirstNameActionData>,
+  formData: FormData
+): Promise<InlineActionResult<UpdateFirstNameActionData>>;
+export async function updateFirstNameAction(
+  formData: FormData
+): Promise<InlineActionResult<UpdateFirstNameActionData>>;
+export async function updateFirstNameAction(
+  previousStateOrFormData:
+    | FormData
+    | InlineActionResult<UpdateFirstNameActionData>,
+  maybeFormData?: FormData
+) {
+  const formData = getActionFormData(previousStateOrFormData, maybeFormData);
   const t = await getTranslations("Errors");
   const supabase = await createClient();
   const {
@@ -273,9 +324,9 @@ export const updateFirstNameAction = async (formData: FormData) => {
 
   const firstNameValidation = validateFirstName(formData.get("first_name"));
   if (!firstNameValidation.isValid) {
-    return {
-      error: translateFirstNameFieldError(t, firstNameValidation.error),
-    };
+    return actionError<UpdateFirstNameActionData>(
+      translateFirstNameFieldError(t, firstNameValidation.error)
+    );
   }
 
   const { error } = await supabase
@@ -288,24 +339,54 @@ export const updateFirstNameAction = async (formData: FormData) => {
   if (error) {
     console.error("Error updating first name:", error);
     if (error.code === "23514" || /first name/i.test(error.message ?? "")) {
-      return { error: t("firstNameNotAllowed") };
+      return actionError<UpdateFirstNameActionData>(t("firstNameNotAllowed"));
     }
-    return { error: t("updateFirstNameFailed") };
+    return actionError<UpdateFirstNameActionData>(t("updateFirstNameFailed"));
   }
 
-  return { success: true };
-};
+  revalidatePath("/profile");
 
-export const sendEmailChangeEmailAction = async (formData: FormData) => {
+  return actionSuccess<UpdateFirstNameActionData>({
+    firstName: firstNameValidation.value ?? "",
+  });
+}
+
+export async function sendEmailChangeEmailAction(
+  previousState: InlineActionResult<SendEmailChangeActionData>,
+  formData: FormData
+): Promise<InlineActionResult<SendEmailChangeActionData>>;
+export async function sendEmailChangeEmailAction(
+  formData: FormData
+): Promise<InlineActionResult<SendEmailChangeActionData>>;
+export async function sendEmailChangeEmailAction(
+  previousStateOrFormData:
+    | FormData
+    | InlineActionResult<SendEmailChangeActionData>,
+  maybeFormData?: FormData
+) {
+  const formData = getActionFormData(previousStateOrFormData, maybeFormData);
   const t = await getTranslations("Errors");
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const nextEmail = formData.get("email")?.toString()?.trim();
   const locale = resolveAuthLocale(
     formData.get("locale")?.toString() ?? (await getUserLocale())
   );
+
+  if (!nextEmail) {
+    return actionError<SendEmailChangeActionData>(t("emailRequired"));
+  }
+
+  if (nextEmail === user?.email) {
+    return actionError<SendEmailChangeActionData>(t("alreadyYourEmail"));
+  }
+
   const { error } = await supabase.auth.updateUser(
     {
-      email: formData.get("email") as string,
+      email: nextEmail,
     },
     {
       emailRedirectTo: `${origin || getBaseUrl()}/auth/complete?next=/profile&locale=${locale}`,
@@ -314,15 +395,26 @@ export const sendEmailChangeEmailAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error sending email change email:", error);
-    return {
-      error: t("updateEmailFailed"),
-    };
+    return actionError<SendEmailChangeActionData>(t("updateEmailFailed"));
   }
 
-  return { success: true };
-};
+  return actionSuccess<SendEmailChangeActionData>({ email: nextEmail });
+}
 
-export const updateNewsletterPreferenceAction = async (formData: FormData) => {
+export async function updateNewsletterPreferenceAction(
+  previousState: InlineActionResult<UpdateNewsletterPreferenceActionData>,
+  formData: FormData
+): Promise<InlineActionResult<UpdateNewsletterPreferenceActionData>>;
+export async function updateNewsletterPreferenceAction(
+  formData: FormData
+): Promise<InlineActionResult<UpdateNewsletterPreferenceActionData>>;
+export async function updateNewsletterPreferenceAction(
+  previousStateOrFormData:
+    | FormData
+    | InlineActionResult<UpdateNewsletterPreferenceActionData>,
+  maybeFormData?: FormData
+) {
+  const formData = getActionFormData(previousStateOrFormData, maybeFormData);
   const t = await getTranslations("Errors");
   const supabase = await createClient();
   const {
@@ -340,11 +432,17 @@ export const updateNewsletterPreferenceAction = async (formData: FormData) => {
 
   if (error) {
     console.error("Error updating newsletter preference:", error);
-    return { error: t("updateNewsletterFailed") };
+    return actionError<UpdateNewsletterPreferenceActionData>(
+      t("updateNewsletterFailed")
+    );
   }
 
-  return { success: true };
-};
+  revalidatePath("/profile");
+
+  return actionSuccess<UpdateNewsletterPreferenceActionData>({
+    newsletterPreference,
+  });
+}
 
 export const setDisplayLocaleAction = async (formData: FormData) => {
   const nextLocale = normaliseLocale(formData.get("locale")?.toString());
@@ -359,7 +457,20 @@ export const setDisplayLocaleAction = async (formData: FormData) => {
   return { success: true };
 };
 
-export const updatePreferredLocaleAction = async (formData: FormData) => {
+export async function updatePreferredLocaleAction(
+  previousState: InlineActionResult<UpdatePreferredLocaleActionData>,
+  formData: FormData
+): Promise<InlineActionResult<UpdatePreferredLocaleActionData>>;
+export async function updatePreferredLocaleAction(
+  formData: FormData
+): Promise<InlineActionResult<UpdatePreferredLocaleActionData>>;
+export async function updatePreferredLocaleAction(
+  previousStateOrFormData:
+    | FormData
+    | InlineActionResult<UpdatePreferredLocaleActionData>,
+  maybeFormData?: FormData
+) {
+  const formData = getActionFormData(previousStateOrFormData, maybeFormData);
   const t = await getTranslations("Errors");
   const supabase = await createClient();
   const nextLocale = normaliseLocale(
@@ -370,7 +481,7 @@ export const updatePreferredLocaleAction = async (formData: FormData) => {
   } = await supabase.auth.getUser();
 
   if (!user?.id || !nextLocale) {
-    return { error: t("generic") };
+    return actionError<UpdatePreferredLocaleActionData>(t("generic"));
   }
 
   const { error: profileError } = await supabase
@@ -400,15 +511,17 @@ export const updatePreferredLocaleAction = async (formData: FormData) => {
   }
 
   if (!profileUpdated && !authUpdated) {
-    return { error: t("genericLater") };
+    return actionError<UpdatePreferredLocaleActionData>(t("genericLater"));
   }
 
   await setUserLocale(nextLocale);
   revalidatePath("/profile");
   revalidatePath("/", "layout");
 
-  return { success: true };
-};
+  return actionSuccess<UpdatePreferredLocaleActionData>({
+    preferredLocale: nextLocale,
+  });
+}
 
 // This action triggers the password reset email to be sent to the user, called from the ProfileAccountSettings component
 // See also the very similar forgotPasswordAction which this is based on

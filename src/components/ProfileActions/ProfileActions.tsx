@@ -1,6 +1,5 @@
 "use client";
 
-import { signOutAction, deleteAccountAction } from "@/app/actions";
 import { siteConfig } from "@/config/site";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
@@ -42,9 +41,15 @@ const ActionForm = styled("form")({
 
 type ProfileActionsProps = {
   listings?: unknown[];
+  signOutAction: React.FormHTMLAttributes<HTMLFormElement>["action"];
+  deleteAccountAction: React.FormHTMLAttributes<HTMLFormElement>["action"];
 };
 
-export default function ProfileActions({ listings = [] }: ProfileActionsProps) {
+export default function ProfileActions({
+  listings = [],
+  signOutAction,
+  deleteAccountAction,
+}: ProfileActionsProps) {
   const t = useTranslations();
 
   return (
@@ -57,7 +62,7 @@ export default function ProfileActions({ listings = [] }: ProfileActionsProps) {
         <ActionForm action={signOutAction}>
           <SubmitButton
             variant="secondary"
-            loadingText={t("Status.signingOut")}
+            pendingText={t("Status.signingOut")}
           >
             {t("Actions.signOut")}
           </SubmitButton>
