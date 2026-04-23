@@ -47,6 +47,7 @@ import {
 import type {
   DeleteListingResult,
   Listing,
+  ListingSubmitFailureData,
   ListingSubmitResult,
   ListingType,
   ListingWriteFieldErrors,
@@ -107,7 +108,9 @@ export default function ListingWrite({
   const [isHydrated, setIsHydrated] = useState(false);
   const listingType =
     initialListing?.type || initialListingType || "residential";
-  const submitMutation = useInlineMutation<ListingSubmitResult>();
+  const submitMutation = useInlineMutation<
+    ListingSubmitResult | ListingSubmitFailureData
+  >();
   const deleteMutation = useInlineMutation<DeleteListingResult>();
 
   useEffect(() => {
@@ -183,7 +186,12 @@ export default function ListingWrite({
       }
     );
 
-    if (result?.success && result.data?.redirectTo) {
+    if (
+      result?.success &&
+      result.data &&
+      "redirectTo" in result.data &&
+      result.data.redirectTo
+    ) {
       router.push(result.data.redirectTo);
     }
   }
@@ -251,13 +259,23 @@ export default function ListingWrite({
           listingType,
           profile,
           validatedName: validation.validatedName,
+          t,
         }),
       {
         fallbackError: t("Errors.unexpected"),
       }
     );
 
-    if (result?.success && result.data?.redirectTo) {
+    if (!result?.success && result?.data && "errors" in result.data) {
+      setErrors(result.data.errors);
+    }
+
+    if (
+      result?.success &&
+      result.data &&
+      "redirectTo" in result.data &&
+      typeof result.data.redirectTo === "string"
+    ) {
       router.push(result.data.redirectTo);
     }
   }

@@ -11,11 +11,13 @@ type BrowserSupabaseClient = ReturnType<typeof createClient>;
 
 export function getThreadMessages(
   existingThread?: {
+    messages?: ChatMessageRecord[] | null;
     chat_messages?: ChatMessageRecord[] | null;
     chat_messages_with_senders?: ChatMessageRecord[] | null;
   } | null
 ) {
   return (
+    existingThread?.messages ??
     existingThread?.chat_messages_with_senders ??
     existingThread?.chat_messages ??
     []
@@ -120,24 +122,46 @@ export async function ensureChatThread({
       },
       {
         onConflict: "listing_id,initiator_id,owner_id",
-        ignoreDuplicates: true,
       }
     )
     .select("id")
     .maybeSingle();
 
-  if (createError || !newThread?.id) {
+  if (createError) {
     return {
       success: false,
-      error: createError?.message ?? "Unable to create chat thread.",
+      error: createError.message,
     };
+  }
+
+  let threadId = newThread?.id ?? null;
+
+  if (!threadId) {
+    const { data: existingThread, error: existingThreadError } = await supabase
+      .from("chat_threads")
+      .select("id")
+      .match({
+        listing_id: listing.id,
+        initiator_id: userId,
+        owner_id: listing.owner_id,
+      })
+      .maybeSingle();
+
+    if (existingThreadError || !existingThread?.id) {
+      return {
+        success: false,
+        error: existingThreadError?.message ?? "Unable to create chat thread.",
+      };
+    }
+
+    threadId = existingThread.id;
   }
 
   return {
     success: true,
     error: null,
     data: {
-      threadId: newThread.id,
+      threadId,
       messages: [],
     },
   };

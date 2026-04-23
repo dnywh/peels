@@ -45,6 +45,10 @@ export type ListingSubmitResult = {
   type: ListingType;
 };
 
+export type ListingSubmitFailureData = {
+  errors: ListingWriteFieldErrors;
+};
+
 export type DeleteListingResult = {
   message: string;
   redirectTo: string;

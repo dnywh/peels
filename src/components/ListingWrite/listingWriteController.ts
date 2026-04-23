@@ -3,7 +3,11 @@ import {
   deleteListingAction,
   updateFirstNameAction,
 } from "@/app/actions";
-import { validateName } from "@/lib/formValidation";
+import {
+  validateFirstName,
+  validateName,
+  type FirstNameErrorCode,
+} from "@/lib/formValidation";
 import type { Dispatch, SetStateAction } from "react";
 import type { InlineActionResult } from "@/types/actionResult";
 import type {
@@ -11,6 +15,7 @@ import type {
   Listing,
   ListingCoordinates,
   ListingDraftInput,
+  ListingSubmitFailureData,
   ListingSubmitResult,
   ListingType,
   ListingWriteFieldErrors,
@@ -50,6 +55,24 @@ export type LocationSelectProps = {
   error?: string;
 };
 
+function translateFirstNameFieldError(t: Translate, code?: FirstNameErrorCode) {
+  switch (code) {
+    case "empty":
+      return t("Errors.emptyName");
+    case "tooShort":
+      return t("Errors.firstNameTooShort");
+    case "tooLong":
+      return t("Errors.firstNameTooLong");
+    case "forbiddenContent":
+    case "reserved":
+      return t("Errors.firstNameNotAllowed");
+    case "invalidChars":
+      return t("Errors.firstNameInvalidChars");
+    default:
+      return t("Errors.generic");
+  }
+}
+
 export function validateListingWriteForm({
   coordinates,
   listingType,
@@ -71,10 +94,10 @@ export function validateListingWriteForm({
 
   if (listingType === "residential") {
     if (name !== profile?.first_name) {
-      const validation = validateName(name);
+      const validation = validateFirstName(name);
 
       if (!validation.isValid) {
-        errors.name = validation.error;
+        errors.name = translateFirstNameFieldError(t, validation.error);
       } else {
         validatedName = validation.value ?? "";
       }
@@ -144,13 +167,17 @@ export async function submitListingWrite({
   listingType,
   profile,
   validatedName,
+  t,
 }: {
   draft: ListingDraftInput | null;
   fallbackError: string;
   listingType: ListingType;
   profile: ListingWriteProfile | null;
   validatedName: string;
-}): Promise<InlineActionResult<ListingSubmitResult>> {
+  t: Translate;
+}): Promise<
+  InlineActionResult<ListingSubmitResult | ListingSubmitFailureData>
+> {
   if (!draft) {
     return {
       success: false,
@@ -165,9 +192,16 @@ export async function submitListingWrite({
     const result = await updateFirstNameAction(formData);
 
     if (result?.error) {
+      const nameError = String(result.error);
+
       return {
         success: false,
-        error: String(result.error),
+        error: nameError,
+        data: {
+          errors: {
+            name: nameError,
+          },
+        },
       };
     }
   }
