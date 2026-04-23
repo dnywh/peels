@@ -1,7 +1,7 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 import { useTabBar } from "@/contexts/TabBarContext";
 
@@ -10,6 +10,8 @@ import ChatWindow from "@/components/ChatWindow";
 import PeelsLogo from "@/components/PeelsLogo";
 
 import { styled } from "next-yak";
+import type { User } from "@supabase/supabase-js";
+import type { ChatThreadRecord } from "@/types/chat";
 
 const ChatPageLayout = styled.main`
   display: flex;
@@ -63,38 +65,26 @@ export default function ChatPageClient({
   user,
   initialThreads,
   initialThreadId,
-  unreadCount,
+  selectedThread,
 }: {
-  user: any;
-  initialThreads: any[];
+  user: User;
+  initialThreads: ChatThreadRecord[];
   initialThreadId?: string | null;
-  unreadCount?: number;
+  selectedThread?: ChatThreadRecord | null;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const t = useTranslations("Chat");
   const { setTabBarProps } = useTabBar();
-
-  const threads = useMemo(() => initialThreads, [initialThreads]);
-  const currentThreadId = useMemo(() => initialThreadId, [initialThreadId]);
-
-  const selectedThread = useMemo(
-    () =>
-      currentThreadId
-        ? threads?.find((t: any) => t.id === currentThreadId)
-        : null,
-    [currentThreadId, threads]
-  );
 
   // Hide TabBar when thread is selected
   useEffect(() => {
-    setTabBarProps((prev: any) => ({
+    setTabBarProps((prev) => ({
       ...prev,
       visible: !initialThreadId,
     }));
 
     // Restore visibility on unmount
     return () => {
-      setTabBarProps((prev: any) => ({
+      setTabBarProps((prev) => ({
         ...prev,
         visible: true,
       }));
@@ -105,27 +95,33 @@ export default function ChatPageClient({
     <ChatPageLayout data-thread-selected={!!initialThreadId}>
       <ThreadsList
         user={user}
-        threads={threads}
-        currentThreadId={currentThreadId}
+        threads={initialThreads}
+        currentThreadId={initialThreadId}
       />
 
       <ChatWindowWrapper>
-        {initialThreadId ? (
+        {initialThreadId && selectedThread?.listing ? (
           <ChatWindow
             user={user}
-            listing={selectedThread?.listing}
-            existingThread={{
-              ...selectedThread,
-              chat_messages: selectedThread?.chat_messages_with_senders,
-            }}
+            listing={selectedThread.listing}
+            existingThread={
+              selectedThread
+                ? {
+                    ...selectedThread,
+                    chat_messages: selectedThread.chat_messages_with_senders,
+                  }
+                : null
+            }
           />
         ) : (
           <ChatWindowEmptyState>
             <PeelsLogo size={64} color="emptyState" />
             <p>
-              {initialThreads?.length === 0
-                ? "Try contacting your first host"
-                : "Select a chat from the left"}
+              {initialThreadId
+                ? t("emptyStateUnavailable")
+                : initialThreads.length === 0
+                  ? t("emptyStateFirstHost")
+                  : t("emptyStateSelectThread")}
             </p>
           </ChatWindowEmptyState>
         )}

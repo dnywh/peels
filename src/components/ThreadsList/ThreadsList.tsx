@@ -7,35 +7,11 @@ import AvatarPair from "@/components/AvatarPair";
 import { css, styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 import { useTranslations } from "next-intl";
-
-type ThreadUser = {
-  id: string;
-};
-
-type ThreadRecord = {
-  id: string;
-  initiator_id?: string;
-  initiator_first_name?: string;
-  initiator_avatar?: string | null;
-  owner_id?: string;
-  owner_first_name?: string;
-  listing?: {
-    id?: string;
-    type?: string;
-    name?: string;
-    avatar?: string | null;
-    owner_avatar?: string | null;
-  };
-  chat_messages_with_senders?: Array<{
-    content?: string;
-    read_at?: string | null;
-    sender_id?: string;
-  }>;
-};
+import type { ChatThreadRecord, ChatUser } from "@/types/chat";
 
 type ThreadsListProps = {
-  user: ThreadUser;
-  threads?: ThreadRecord[] | null;
+  user: ChatUser;
+  threads?: ChatThreadRecord[] | null;
   currentThreadId?: string | null;
 };
 
@@ -224,7 +200,15 @@ function ThreadsList({ user, threads, currentThreadId }: ThreadsListProps) {
                   }}
                 >
                   <AvatarPair
-                    listing={role === "initiator" ? thread.listing : undefined}
+                    listing={
+                      role === "initiator" && thread.listing
+                        ? {
+                            type: thread.listing.type ?? undefined,
+                            avatar: thread.listing.avatar,
+                            owner_avatar: thread.listing.owner_avatar,
+                          }
+                        : undefined
+                    }
                     profile={
                       role === "owner"
                         ? { avatar: thread.initiator_avatar }

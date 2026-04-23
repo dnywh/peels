@@ -421,6 +421,7 @@ function ProfileAccountSettings({
   const email = useEditableField();
   const newsletterPreference = useEditableField();
   const preferredLocale = useEditableField();
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const [tempFirstName, setTempFirstName] = useState(profile?.first_name);
   const [tempNewsletterPreference, setTempNewsletterPreference] = useState(
@@ -472,8 +473,15 @@ function ProfileAccountSettings({
     [preferredLocale.reset]
   );
 
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   return (
-    <List>
+    <List
+      data-testid="profile-account-settings"
+      data-hydrated={isHydrated ? "true" : "false"}
+    >
       <ListItem $editing={firstName.isEditing}>
         {firstName.isEditing ? (
           <FirstNameEditor

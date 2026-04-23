@@ -1,15 +1,13 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
 import {
   updateFirstNameAction,
   deleteListingAction,
   createOrUpdateListingAction,
 } from "@/app/actions";
-import { useParams } from "next/navigation";
 import LocationSelect from "@/components/LocationSelect";
 import CheckboxCluster from "@/components/CheckboxCluster";
 import LegalAgreement from "@/components/LegalAgreement";
@@ -32,6 +30,8 @@ import Lozenge from "@/components/Lozenge";
 import FormMessage from "@/components/FormMessage";
 import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
+import type { User } from "@supabase/supabase-js";
+import type { Listing, ListingType } from "@/types/listing";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
@@ -68,23 +68,36 @@ type Coordinates = {
 
 type ListingErrors = Partial<Record<"name" | "location", string>>;
 
+type ListingWriteProfile = {
+  first_name?: string | null;
+  avatar?: string | null;
+  is_admin?: boolean | null;
+};
+
 type ListingWriteProps = {
-  initialListing?: any;
-  user: any;
-  profile: any;
+  initialListing?: Listing | null;
+  listingType?: ListingType;
+  user: User | null;
+  profile: ListingWriteProfile | null;
 };
 
 // Component
 export default function ListingWrite({
   initialListing,
+  listingType: initialListingType,
   user,
   profile,
 }: ListingWriteProps) {
   const t = useTranslations();
-  const { type } = useParams<{ type?: string }>();
   const router = useRouter();
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  const listingType = initialListing?.type || type || "residential";
+  const listingType =
+    initialListing?.type || initialListingType || "residential";
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Update error state to handle both field and global errors
   const [errors, setErrors] = useState<ListingErrors>({});
@@ -99,7 +112,7 @@ export default function ListingWrite({
   );
   const [name, setName] = useState<string>(
     listingType === "residential"
-      ? profile.first_name || "" // Use profile.first_name for residential listings
+      ? profile?.first_name || "" // Use profile.first_name for residential listings
       : initialListing
         ? initialListing.name || ""
         : "" // Use listing name for others
@@ -138,11 +151,11 @@ export default function ListingWrite({
     initialListing ? initialListing.links || [] : []
   );
   const [visibility, setVisibility] = useState<boolean>(
-    initialListing ? initialListing.visibility : true
+    initialListing?.visibility ?? true
   );
 
   const [isStub, setIsStub] = useState<boolean>(
-    initialListing ? initialListing.is_stub : false
+    initialListing?.is_stub ?? false
   );
 
   // Other states
@@ -151,6 +164,10 @@ export default function ListingWrite({
 
   async function handleDeleteListing(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!initialListing) {
+      return;
+    }
 
     setFeedbackMessage("");
     try {
@@ -182,7 +199,7 @@ export default function ListingWrite({
 
     if (listingType === "residential") {
       // Only validate and update first name if it was changed
-      if (name !== profile.first_name) {
+      if (name !== profile?.first_name) {
         const validation = validateName(name);
         if (!validation.isValid) {
           nextErrors.name = validation.error;
@@ -221,11 +238,11 @@ export default function ListingWrite({
       // For residential listings, update the profile first name if changed
       if (
         listingType === "residential" &&
-        profile.first_name !== validatedName
+        profile?.first_name !== validatedName
       ) {
         console.log(
           "Updating first name from",
-          profile.first_name,
+          profile?.first_name,
           "to",
           validatedName
         );
@@ -238,12 +255,7 @@ export default function ListingWrite({
         }
       }
 
-      const supabase = createClient();
-      const {
-        data: { user: activeUser },
-      } = await supabase.auth.getUser();
-
-      if (!activeUser) {
+      if (!user?.id) {
         setGlobalError(t("Errors.generic"));
         return;
       }
@@ -252,7 +264,7 @@ export default function ListingWrite({
       const listingData = {
         // Add the id if it's an existing listing, so we know which to update
         ...(initialListing && { id: initialListing.id }),
-        owner_id: activeUser.id,
+        owner_id: user.id,
         type: listingType,
         ...(listingType !== "residential" && avatar && { avatar }),
         // Only include name for non-residential listings
@@ -266,7 +278,7 @@ export default function ListingWrite({
         photos: initialListing ? photos : pendingPhotos,
         links: links.filter((link) => link.trim() !== ""),
         // Only include is_stub if the user is an admin
-        ...(profile.is_admin && { is_stub: isStub }),
+        ...(profile?.is_admin && { is_stub: isStub }),
         visibility,
       };
 
@@ -338,12 +350,16 @@ export default function ListingWrite({
       {initialListing && initialListing.is_stub && (
         <Lozenge>{t("Common.stub")}</Lozenge>
       )}
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={handleSubmit}
+        data-testid="listing-write-form"
+        data-hydrated={isHydrated ? "true" : "false"}
+      >
         {listingType === "residential" ? (
           <AvatarUploadManagerComponent
             initialAvatar={profile?.avatar || ""}
             bucket="avatars"
-            entityId={user.id}
+            entityId={user?.id ?? ""}
             onAvatarChange={setAvatar}
             inputHintShown={profile?.avatar ? undefined : true}
             listingType={listingType}
@@ -372,7 +388,7 @@ export default function ListingWrite({
                 id="first_name"
                 name="first_name"
                 {...FIELD_CONFIGS.firstName}
-                defaultValue={profile.first_name}
+                defaultValue={profile?.first_name ?? ""}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                   setName(event.target.value)
                 }
@@ -648,6 +664,7 @@ export default function ListingWrite({
           />
         )}
         <Button
+          data-testid="listing-write-submit"
           type="submit"
           variant="primary"
           loading={isSubmitting}

@@ -1,12 +1,25 @@
-"use client";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
+import type { Listing, ListingType } from "@/types/listing";
 
-const AvatarComponent = Avatar as any;
+type ProfileListingProfile = {
+  first_name?: string | null;
+  is_admin?: boolean | null;
+  avatar?: string | null;
+};
+
+type ProfileListingsCopy = {
+  listingCardAlt: Record<ListingType, string>;
+  listingCardType: Record<ListingType, string>;
+  hidden: string;
+  stub: string;
+  addListing: string;
+  listingPrompt: string;
+  addAnotherListing: string;
+};
 
 const MAX_LISTINGS = 12; // TODO: Store this value on Supabase and use in the related RLS policy, so they are always in sync
 
@@ -117,45 +130,49 @@ const SpecialText = styled.div`
 `;
 
 type ProfileListingsProps = {
-  user: any;
-  profile: any;
-  listings?: any[] | null;
+  profile: ProfileListingProfile | null;
+  listings?: Listing[] | null;
+  copy: ProfileListingsCopy;
 };
 
 export default function ProfileListings({
-  user,
   profile,
   listings,
+  copy,
 }: ProfileListingsProps) {
-  const t = useTranslations();
   if (!listings) return null;
 
   return (
     <ListingsList data-testid="profile-listings">
       {listings.map((listing) => {
+        const listingType = listing.type ?? "residential";
+        const isResidential = listingType === "residential";
+
         return (
           <li key={listing.id}>
             <ExistingListingLink href={`/profile/listings/${listing.slug}`}>
-              <AvatarComponent
+              <Avatar
                 size="small"
-                profile={listing.type === "residential" ? profile : undefined}
-                listing={listing.type !== "residential" ? listing : undefined}
-                alt={t("Profile.listingCardAlt", { type: listing.type })}
+                profile={isResidential ? (profile ?? undefined) : undefined}
+                listing={
+                  !isResidential
+                    ? {
+                        type: listingType,
+                        avatar: listing.avatar,
+                        owner_avatar: listing.owner_avatar,
+                      }
+                    : undefined
+                }
+                alt={copy.listingCardAlt[listingType]}
               />
               <Text>
-                <h3>
-                  {listing.type === "residential"
-                    ? profile.first_name
-                    : listing.name}
-                </h3>
-                <p>{t("Profile.listingCardType", { type: listing.type })}</p>
+                <h3>{isResidential ? profile?.first_name : listing.name}</h3>
+                <p>{copy.listingCardType[listingType]}</p>
               </Text>
               {!listing.visibility || listing.is_stub ? (
                 <LozengeContainer>
-                  {!listing.visibility && (
-                    <Lozenge>{t("Common.hidden")}</Lozenge>
-                  )}
-                  {listing.is_stub && <Lozenge>{t("Common.stub")}</Lozenge>}
+                  {!listing.visibility && <Lozenge>{copy.hidden}</Lozenge>}
+                  {listing.is_stub && <Lozenge>{copy.stub}</Lozenge>}
                 </LozengeContainer>
               ) : null}
             </ExistingListingLink>
@@ -163,7 +180,7 @@ export default function ProfileListings({
         );
       })}
       {/* Only show the "add a/another listing" link if there are less than the maximum amount of allowed listings OR the user is an admin*/}
-      {listings.length < MAX_LISTINGS || profile.is_admin ? (
+      {listings.length < MAX_LISTINGS || profile?.is_admin ? (
         <li>
           {listings.length === 0 ? (
             <AddYourFirstListingLink href="/profile/listings/new">
@@ -171,8 +188,8 @@ export default function ProfileListings({
                 <NewListingAvatarGlyph>+</NewListingAvatarGlyph>
               </NewListingAvatar>
               <SpecialText>
-                <h3>{t("Profile.addListing")}</h3>
-                <p>{t("Profile.listingPrompt")}</p>
+                <h3>{copy.addListing}</h3>
+                <p>{copy.listingPrompt}</p>
               </SpecialText>
             </AddYourFirstListingLink>
           ) : (
@@ -181,7 +198,7 @@ export default function ProfileListings({
                 <NewListingAvatarGlyph>+</NewListingAvatarGlyph>
               </NewListingAvatar>
               <Text>
-                <h3>{t("Profile.addAnotherListing")}</h3>
+                <h3>{copy.addAnotherListing}</h3>
               </Text>
             </AddAnotherListingLink>
           )}

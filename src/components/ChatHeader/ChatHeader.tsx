@@ -13,6 +13,8 @@ import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import type { ChatListing, ChatThreadRecord, ChatUser } from "@/types/chat";
+import type { DemoListing } from "@/types/listing";
 
 const StyledChatHeader = styled.header`
   display: flex;
@@ -102,22 +104,65 @@ const MainContents = styled.div<{ $isDrawer?: boolean }>`
 `;
 
 type ChatHeaderProps = {
-  thread?: {
-    initiator_id?: string;
-    initiator_first_name?: string;
-    initiator_avatar?: string | null;
-  } | null;
-  listing: {
-    owner_first_name?: string;
-    type?: string;
-    area_name?: string;
-    name?: string;
-    slug?: string;
-  };
-  user?: { id?: string } | null;
+  thread?: ChatThreadRecord | null;
+  listing: ChatListing | DemoListing;
+  user?: ChatUser | null;
   isDrawer?: boolean;
   isDemo?: boolean;
 };
+
+type ChatRole = "initiator" | "owner";
+
+function isChatListing(
+  listing: ChatListing | DemoListing
+): listing is ChatListing {
+  return (
+    "slug" in listing || "owner_id" in listing || "owner_avatar" in listing
+  );
+}
+
+function getChatRole(
+  thread: ChatThreadRecord | null | undefined,
+  user: ChatUser | null | undefined,
+  listing: ChatListing | DemoListing,
+  isDemo: boolean
+): ChatRole {
+  if (isDemo) {
+    return "initiator";
+  }
+
+  if (thread?.initiator_id && thread.initiator_id === user?.id) {
+    return "initiator";
+  }
+
+  if (!thread) {
+    if (isChatListing(listing) && listing.owner_id === user?.id) {
+      return "owner";
+    }
+
+    return "initiator";
+  }
+
+  return "owner";
+}
+
+function getListingSummary(
+  listing: ChatListing | DemoListing,
+  role: ChatRole,
+  t: ReturnType<typeof useTranslations>
+) {
+  if (role !== "initiator") {
+    return null;
+  }
+
+  if (listing.type === "residential") {
+    return listing.area_name
+      ? t("Listings.read.residentOf", { area: listing.area_name })
+      : t("Listings.read.localResident");
+  }
+
+  return listing.name ?? null;
+}
 
 function ChatHeader({
   thread,
@@ -129,21 +174,14 @@ function ChatHeader({
   const t = useTranslations();
   const router = useRouter();
 
-  // TODO: Consolidate with other role, naming logic elsewhere
-  // Tricky because this ChatHeader component is used for both the existing threads and the new threads, i.e. on the map
-  // So we can't always look up details based on thread.
-  const role = isDemo
-    ? "initiator"
-    : thread
-      ? thread.initiator_id === user?.id
-        ? "initiator"
-        : "owner"
-      : "initiator";
+  const role = getChatRole(thread, user, listing, isDemo);
+  const chatListing = isChatListing(listing) ? listing : null;
 
   const otherPersonName =
     role === "initiator"
       ? listing.owner_first_name || ""
       : thread?.initiator_first_name || "";
+  const listingSummary = getListingSummary(listing, role, t);
 
   return (
     <StyledChatHeader>
@@ -166,11 +204,18 @@ function ChatHeader({
       )}
 
       <MainContents $isDrawer={isDrawer}>
-        {/* TODO: Handle breakpoint directly on/in component, not on wrapper div */}
         {/* Handle either listing avatar and owner avatar combo OR initiator's avatar */}
         <AvatarContainer>
           <AvatarPair
-            listing={role === "initiator" ? listing : undefined}
+            listing={
+              role === "initiator"
+                ? {
+                    type: listing.type ?? undefined,
+                    avatar: listing.avatar,
+                    owner_avatar: chatListing?.owner_avatar,
+                  }
+                : undefined
+            }
             profile={
               role === "owner"
                 ? { avatar: thread?.initiator_avatar }
@@ -183,16 +228,8 @@ function ChatHeader({
         </AvatarContainer>
 
         <TitleBlock>
-          {/* TODO: the below should  be flexible enough to show 'Mary, Ferndale Community Garden' (community or business listing), 'Mary' (residential listing)  */}
-          {/* TODO: Extract and have a 'otherPersonName' const and a more malleable 'recipient and their listing name' as per above */}
           <h1>{otherPersonName}</h1>
-          {role === "initiator" && (
-            <p>
-              {listing.type === "residential"
-                ? `Resident of ${listing.area_name}`
-                : listing.name}
-            </p>
-          )}
+          {listingSummary && <p>{listingSummary}</p>}
         </TitleBlock>
       </MainContents>
 
@@ -204,9 +241,13 @@ function ChatHeader({
             {role === "initiator" && (
               <DropdownMenu.Item>
                 <Button
-                  onClick={() => router.push(`/listings/${listing.slug}`)}
+                  onClick={() => {
+                    if (!chatListing?.slug) return;
+                    router.push(`/listings/${chatListing.slug}`);
+                  }}
                   variant="secondary"
                   size="small"
+                  disabled={!chatListing?.slug}
                 >
                   {t("Actions.viewListing")}
                 </Button>

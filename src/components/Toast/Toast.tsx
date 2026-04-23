@@ -50,16 +50,6 @@ function Toast({ variant: propVariant, children: propChildren }: ToastProps) {
   return (
     <StyledToast data-variant={variant}>
       <p>{children}</p>
-      {/* <Button
-        variant="secondary"
-        size="small"
-        onClick={() => {
-          // TODO: Close the toast
-          setIsOpen(false);
-        }}
-      >
-        Close
-      </Button> */}
     </StyledToast>
   );
 }

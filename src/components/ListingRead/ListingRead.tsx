@@ -21,6 +21,7 @@ import { theme } from "@/styles/theme.yak";
 import { useTranslations } from "next-intl";
 
 import type { DemoListing, Listing } from "@/types/listing";
+import type { ChatThreadRecord } from "@/types/chat";
 
 type Presentation = "full" | "drawer" | "demo";
 
@@ -47,7 +48,9 @@ const ListingRead = memo(function Listing({
   // Hooks must be called unconditionally; router is unused in demo mode.
   const router = useRouter();
 
-  const [existingThread, setExistingThread] = useState<unknown>(null);
+  const [existingThread, setExistingThread] = useState<ChatThreadRecord | null>(
+    null
+  );
   // Chat drawer state is owned here so that each selected listing gets a
   // fresh drawer. The parent resets this by remounting with `key`.
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);

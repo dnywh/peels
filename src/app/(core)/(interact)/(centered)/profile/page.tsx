@@ -20,6 +20,7 @@ import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
 import { defaultLocale, normaliseLocale } from "@/i18n/config";
 import { redirect } from "next/navigation";
+import type { ListingType } from "@/types/listing";
 import {
   sharedSectionHeadingStyles,
   sharedSurfaceSectionStyles,
@@ -38,7 +39,7 @@ export async function generateMetadata() {
 
 // Keep URL-based feedback in a client leaf so server rendering is driven by auth/data only.
 export default async function ProfilePage() {
-  const t = await getTranslations("Profile.sections");
+  const t = await getTranslations();
   const supabase = await createClient();
   // Get the authenticated user first, then fetch profile data in parallel.
   const {
@@ -79,12 +80,44 @@ export default async function ProfilePage() {
       </NakedSection>
 
       <Section>
-        <h2>{t("listings")}</h2>
-        <ProfileListings user={user} profile={profile} listings={listings} />
+        <h2>{t("Profile.sections.listings")}</h2>
+        <ProfileListings
+          profile={profile}
+          listings={listings}
+          copy={{
+            listingCardAlt: {
+              residential: t("Profile.listingCardAlt", {
+                type: "residential" satisfies ListingType,
+              }),
+              community: t("Profile.listingCardAlt", {
+                type: "community" satisfies ListingType,
+              }),
+              business: t("Profile.listingCardAlt", {
+                type: "business" satisfies ListingType,
+              }),
+            },
+            listingCardType: {
+              residential: t("Profile.listingCardType", {
+                type: "residential" satisfies ListingType,
+              }),
+              community: t("Profile.listingCardType", {
+                type: "community" satisfies ListingType,
+              }),
+              business: t("Profile.listingCardType", {
+                type: "business" satisfies ListingType,
+              }),
+            },
+            hidden: t("Common.hidden"),
+            stub: t("Common.stub"),
+            addListing: t("Profile.addListing"),
+            listingPrompt: t("Profile.listingPrompt"),
+            addAnotherListing: t("Profile.addAnotherListing"),
+          }}
+        />
       </Section>
 
       <Section>
-        <h2>{t("account")}</h2>
+        <h2>{t("Profile.sections.account")}</h2>
         <ProfileAccountSettings
           user={{ email: user.email ?? "" }}
           profile={{
@@ -99,7 +132,7 @@ export default async function ProfilePage() {
       </Section>
 
       <Section>
-        <h2>{t("actions")}</h2>
+        <h2>{t("Profile.sections.actions")}</h2>
         <ProfileActions
           listings={listings ?? undefined}
           signOutAction={signOutAction}

@@ -1,7 +1,7 @@
 import {
   getListingAvatar,
   getListingOwnerAvatar,
-  getProfileAvatar,
+  getProfileAvatarSource,
 } from "@/utils/listingUtils";
 
 import Avatar from "@/components/Avatar";
@@ -107,7 +107,7 @@ export default function AvatarPair({
 }: AvatarPairProps) {
   const avatarSource =
     role === "owner"
-      ? (getProfileAvatar(profile?.avatar) as AvatarSource)
+      ? (getProfileAvatarSource(profile?.avatar) as AvatarSource)
       : (getListingAvatar(listing, user) as AvatarSource);
 
   const primaryAvatarProps = toAvatarComponentProps(avatarSource);

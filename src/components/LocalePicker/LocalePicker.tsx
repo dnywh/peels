@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { localeLabels, locales, type Locale } from "@/i18n/config";
 import { setDisplayLocaleAction } from "@/app/actions";
 import Select from "@/components/Select";
@@ -33,7 +32,6 @@ export default function LocalePicker({
 }: LocalePickerProps) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +50,7 @@ export default function LocalePicker({
             return;
           }
 
-          router.refresh();
+          window.location.reload();
         } catch (error) {
           console.error("Error updating display locale:", error);
           setError(t("Errors.genericLater"));
@@ -72,7 +70,9 @@ export default function LocalePicker({
             handleChange(event.target.value as Locale)
           }
           disabled={isPending}
+          aria-busy={isPending || undefined}
           aria-label={t("Common.language")}
+          data-testid="locale-picker-select"
         >
           {locales.map((optionLocale) => (
             <option key={optionLocale} value={optionLocale}>
