@@ -98,10 +98,10 @@ export default function ChatPageClient({
       />
 
       <ChatWindowWrapper>
-        {initialThreadId ? (
+        {initialThreadId && selectedThread?.listing ? (
           <ChatWindow
             user={user}
-            listing={selectedThread?.listing ?? {}}
+            listing={selectedThread.listing}
             existingThread={
               selectedThread
                 ? {
@@ -115,9 +115,11 @@ export default function ChatPageClient({
           <ChatWindowEmptyState>
             <PeelsLogo size={64} color="emptyState" />
             <p>
-              {initialThreads.length === 0
-                ? "Try contacting your first host"
-                : "Select a chat from the left"}
+              {initialThreadId
+                ? "This chat is no longer available"
+                : initialThreads.length === 0
+                  ? "Try contacting your first host"
+                  : "Select a chat from the left"}
             </p>
           </ChatWindowEmptyState>
         )}

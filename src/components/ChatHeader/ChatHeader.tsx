@@ -14,6 +14,7 @@ import { theme } from "@/styles/theme.yak";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import type { ChatListing, ChatThreadRecord, ChatUser } from "@/types/chat";
+import type { DemoListing } from "@/types/listing";
 
 const StyledChatHeader = styled.header`
   display: flex;
@@ -104,7 +105,7 @@ const MainContents = styled.div<{ $isDrawer?: boolean }>`
 
 type ChatHeaderProps = {
   thread?: ChatThreadRecord | null;
-  listing: ChatListing;
+  listing: ChatListing | DemoListing;
   user?: ChatUser | null;
   isDrawer?: boolean;
   isDemo?: boolean;
@@ -112,10 +113,18 @@ type ChatHeaderProps = {
 
 type ChatRole = "initiator" | "owner";
 
+function isChatListing(
+  listing: ChatListing | DemoListing
+): listing is ChatListing {
+  return (
+    "slug" in listing || "owner_id" in listing || "owner_avatar" in listing
+  );
+}
+
 function getChatRole(
   thread: ChatThreadRecord | null | undefined,
   user: ChatUser | null | undefined,
-  listing: ChatListing,
+  listing: ChatListing | DemoListing,
   isDemo: boolean
 ): ChatRole {
   if (isDemo) {
@@ -127,7 +136,7 @@ function getChatRole(
   }
 
   if (!thread) {
-    if (listing.owner_id && listing.owner_id === user?.id) {
+    if (isChatListing(listing) && listing.owner_id === user?.id) {
       return "owner";
     }
 
@@ -138,7 +147,7 @@ function getChatRole(
 }
 
 function getListingSummary(
-  listing: ChatListing,
+  listing: ChatListing | DemoListing,
   role: ChatRole,
   t: ReturnType<typeof useTranslations>
 ) {
@@ -166,6 +175,7 @@ function ChatHeader({
   const router = useRouter();
 
   const role = getChatRole(thread, user, listing, isDemo);
+  const chatListing = isChatListing(listing) ? listing : null;
 
   const otherPersonName =
     role === "initiator"
@@ -202,7 +212,7 @@ function ChatHeader({
                 ? {
                     type: listing.type ?? undefined,
                     avatar: listing.avatar,
-                    owner_avatar: listing.owner_avatar,
+                    owner_avatar: chatListing?.owner_avatar,
                   }
                 : undefined
             }
@@ -231,9 +241,13 @@ function ChatHeader({
             {role === "initiator" && (
               <DropdownMenu.Item>
                 <Button
-                  onClick={() => router.push(`/listings/${listing.slug}`)}
+                  onClick={() => {
+                    if (!chatListing?.slug) return;
+                    router.push(`/listings/${chatListing.slug}`);
+                  }}
                   variant="secondary"
                   size="small"
+                  disabled={!chatListing?.slug}
                 >
                   {t("Actions.viewListing")}
                 </Button>
