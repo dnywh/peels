@@ -10,6 +10,7 @@ import ListingCta from "@/components/ListingCta";
 import { styled } from "next-yak";
 
 import type { Listing } from "@/types/listing";
+import type { ChatThreadRecord } from "@/types/chat";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 
@@ -60,7 +61,7 @@ type ListingChatDrawerProps = {
   listing: Listing;
   isChatDrawerOpen: boolean;
   setIsChatDrawerOpen: (open: boolean) => void;
-  existingThread: unknown;
+  existingThread: ChatThreadRecord | null;
 };
 
 type SharedDrawerProps = {

@@ -15,7 +15,7 @@ import {
   validateTurnstileToken,
 } from "@/utils/utils";
 import { getUserLocale, setUserLocale } from "@/i18n/services/locale";
-import { resolveAuthLocale } from "@/utils/authRedirects";
+import { normaliseNextPath, resolveAuthLocale } from "@/utils/authRedirects";
 import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
 import { normaliseLocale, type Locale } from "@/i18n/config";
 import type { InlineActionResult } from "@/types/actionResult";
@@ -264,7 +264,7 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  return redirect(redirectTo || "/map");
+  return redirect(normaliseNextPath(redirectTo, "/map"));
 };
 
 // Very similar to the sendPasswordResetEmailAction

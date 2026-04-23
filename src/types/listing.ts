@@ -21,6 +21,7 @@ export interface Listing {
   description: string | null;
   accepted_items: string[] | null;
   rejected_items: string[] | null;
+  donated_items?: string[] | null;
   photos: string[] | null;
   links: string[] | null;
   type: ListingType | null;

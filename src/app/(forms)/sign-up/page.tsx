@@ -34,8 +34,6 @@ export default async function SignUp(props: {
   // Ideally this Actions translation(s) part is extracted into its own component
   const t = await getTranslations();
 
-  // TODO: How are these searchParams working without special Next.js magic?
-  // I could simplify my server -> client set up elsewhere if I just use this more seemingly 'native' way
   const searchParams = await props.searchParams;
 
   // Handle success state

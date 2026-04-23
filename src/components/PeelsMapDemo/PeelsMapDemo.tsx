@@ -182,13 +182,12 @@ export default function PeelsMapDemo({
         {stepHeader}
         <MapContainer>
           {demoListings.map((listing, index) => {
+            const mapPosition = listing.map_position ?? { x: 0, y: 0 };
             // Convert percentage to pixels based on container dimensions
             const containerWidth = 512; // maxWidth of MapContainer
             const containerHeight = 200; // height of MapContainer
-            const xPixels =
-              (listing.map_position.x / 100) * (containerWidth / 2);
-            const yPixels =
-              (listing.map_position.y / 100) * (containerHeight / 2);
+            const xPixels = (mapPosition.x / 100) * (containerWidth / 2);
+            const yPixels = (mapPosition.y / 100) * (containerHeight / 2);
 
             return (
               <MarkerDemo

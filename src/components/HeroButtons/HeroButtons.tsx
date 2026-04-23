@@ -1,27 +1,13 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
-import { useEffect, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
 import { useTranslations } from "next-intl";
 import Button from "@/components/Button";
 import { styled } from "next-yak";
-import type { User } from "@supabase/supabase-js";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function HeroButtons() {
   const t = useTranslations("Index.buttons");
-  const [user, setUser] = useState<User | null>(null);
-  const supabase = createClient();
-
-  useEffect(() => {
-    async function loadUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    }
-
-    loadUser();
-  }, []);
+  const { user } = useAuthUser();
 
   return (
     <ButtonContainer>

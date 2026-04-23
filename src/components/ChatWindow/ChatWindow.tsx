@@ -2,6 +2,7 @@
 import { theme } from "@/styles/theme.yak";
 
 import { useState, useEffect, memo, useMemo } from "react";
+import type { User } from "@supabase/supabase-js";
 
 import { createClient } from "@/utils/supabase/client";
 
@@ -14,16 +15,20 @@ import { formatWeekday } from "@/utils/dateUtils";
 import { styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 import { useTranslations } from "next-intl";
+import type {
+  ChatListing,
+  ChatMessageRecord,
+  ChatThreadRecord,
+} from "@/types/chat";
+import type { DemoListing } from "@/types/listing";
 
 type ChatWindowProps = {
   isDrawer?: boolean;
-  user: any;
-  listing: any;
-  existingThread?: any;
+  user: User | null;
+  listing: ChatListing | DemoListing;
+  existingThread?: ChatThreadRecord | null;
   isDemo?: boolean;
 };
-
-type ChatMessageRecord = any;
 
 const StyledChatWindow = styled.div`
   height: 100%;
@@ -102,6 +107,7 @@ const ChatWindow = memo(function ChatWindow({
   // Move Supabase client creation outside of render
   const supabase = useMemo(() => (isDemo ? null : createClient()), [isDemo]);
   const { setUnreadCount, markThreadAsRead } = useUnreadMessages();
+  const realListing = isDemo ? null : (listing as ChatListing);
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState<string | null>(
@@ -212,16 +218,20 @@ const ChatWindow = memo(function ChatWindow({
   ]);
 
   async function initializeChat() {
-    if (isDemo || !supabase) return null;
+    if (isDemo || !supabase || !user?.id) return null;
+
+    if (!realListing?.id || !realListing.owner_id) {
+      return null;
+    }
 
     try {
       const { data: thread, error } = await supabase
         .from("chat_threads")
         .select("id")
         .match({
-          listing_id: listing.id,
+          listing_id: realListing.id,
           initiator_id: user.id,
-          owner_id: listing.owner_id,
+          owner_id: realListing.owner_id,
         })
         .maybeSingle();
 
@@ -240,9 +250,9 @@ const ChatWindow = memo(function ChatWindow({
         .from("chat_threads")
         .upsert(
           {
-            listing_id: listing.id,
+            listing_id: realListing.id,
             initiator_id: user.id,
-            owner_id: listing.owner_id,
+            owner_id: realListing.owner_id,
           },
           {
             onConflict: "listing_id,initiator_id,owner_id",
@@ -310,7 +320,7 @@ const ChatWindow = memo(function ChatWindow({
   }
 
   async function sendMessage(threadId: string, content: string) {
-    if (isDemo || !supabase) return;
+    if (isDemo || !supabase || !user?.id) return;
 
     const { error } = await supabase
       .from("chat_messages")
@@ -341,20 +351,20 @@ const ChatWindow = memo(function ChatWindow({
   const role = isDemo
     ? "initiator"
     : existingThread
-      ? existingThread.initiator_id === user.id
+      ? existingThread.initiator_id === user?.id
         ? "initiator"
         : "owner"
       : "initiator";
 
   const otherPersonName =
     role === "initiator"
-      ? listing.owner_first_name
-      : existingThread.initiator_first_name;
+      ? (listing.owner_first_name ?? "")
+      : (existingThread?.initiator_first_name ?? "");
 
   return (
     <StyledChatWindow data-testid="chat-window">
       <ChatHeader
-        thread={existingThread ? existingThread : undefined}
+        thread={existingThread ?? undefined}
         listing={listing}
         user={user}
         isDemo={isDemo}
@@ -389,11 +399,11 @@ const ChatWindow = memo(function ChatWindow({
                       <p>
                         {isDemo || message.sender_id === user?.id
                           ? t("Chat.youReachedOut", { name: otherPersonName })
-                          : listing?.owner_has_multiple_non_residential_listings &&
-                              listing?.name
+                          : realListing?.owner_has_multiple_non_residential_listings &&
+                              realListing.name
                             ? t("Chat.personReachedOutAbout", {
                                 name: otherPersonName,
-                                listing: listing.name,
+                                listing: realListing.name,
                               })
                             : t("Chat.personReachedOut", {
                                 name: otherPersonName,
@@ -406,7 +416,7 @@ const ChatWindow = memo(function ChatWindow({
                   direction={
                     isDemo
                       ? directionsForDemo[index % 2]
-                      : message.sender_id === user.id
+                      : message.sender_id === user?.id
                         ? "sent"
                         : "received"
                   }

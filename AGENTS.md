@@ -13,6 +13,12 @@ These instructions apply to the whole repository.
 - Keep shared presentational components server-safe where possible. For translated labels or suffixes, prefer passing translated text from the caller instead of adding `useTranslations` to a shared component.
 - In MDX prose, if an inline component inside a Markdown list item is formatted onto multiple lines and changes rendered spacing, use a targeted `{/* prettier-ignore */}` before that list rather than disabling formatting for the whole file.
 
+## Testing
+
+- Add or update Playwright e2e coverage when changing important user flows such as auth, listings, locale switching, chat, or other multi-step interactions.
+- Prefer resilient, locale-safe selectors in e2e tests. Use stable `data-testid` hooks for interactive controls when role-, text-, or structure-based selectors would be brittle across locales or UI refactors.
+- When verifying end-to-end behaviour locally, prefer the production Playwright path (`npm run test:e2e:prod`) for app-flow confidence; dev-server runs are still useful, but can produce noise from HMR or other development-only behaviour.
+
 ## Internationalisation
 
 - Put user-facing app UI copy in `next-intl` message files under `messages/`.
