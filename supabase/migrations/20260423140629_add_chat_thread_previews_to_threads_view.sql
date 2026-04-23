@@ -15,17 +15,17 @@ select
   listings.area_name as listing_area_name,
   owner.avatar as owner_avatar,
   initiator.avatar as initiator_avatar,
-  latest_message.id as latest_message_id,
-  latest_message.content as latest_message_content,
-  latest_message.created_at as latest_message_created_at,
-  latest_message.read_at as latest_message_read_at,
-  latest_message.sender_id as latest_message_sender_id,
   (
     select count(*) >= 2
     from public.listings as owner_listings
     where owner_listings.owner_id = chat_threads.owner_id
       and owner_listings.type in ('community', 'business')
-  ) as owner_has_multiple_non_residential_listings
+  ) as owner_has_multiple_non_residential_listings,
+  latest_message.id as latest_message_id,
+  latest_message.content as latest_message_content,
+  latest_message.created_at as latest_message_created_at,
+  latest_message.read_at as latest_message_read_at,
+  latest_message.sender_id as latest_message_sender_id
 from public.chat_threads
 join public.profiles as initiator on chat_threads.initiator_id = initiator.id
 join public.profiles as owner on chat_threads.owner_id = owner.id
@@ -42,6 +42,9 @@ left join lateral (
   order by chat_messages.created_at desc
   limit 1
 ) as latest_message on true;
+
+create index if not exists chat_messages_thread_id_created_at_idx
+  on public.chat_messages (thread_id, created_at desc);
 
 alter view public.chat_threads_with_participants owner to postgres;
 

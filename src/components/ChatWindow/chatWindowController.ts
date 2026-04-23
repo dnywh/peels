@@ -121,6 +121,7 @@ export async function ensureChatThread({
         owner_id: listing.owner_id,
       },
       {
+        ignoreDuplicates: true,
         onConflict: "listing_id,initiator_id,owner_id",
       }
     )

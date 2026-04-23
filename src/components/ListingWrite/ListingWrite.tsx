@@ -204,6 +204,7 @@ export default function ListingWrite({
     }
 
     setErrors({});
+    submitMutation.reset();
     deleteMutation.reset();
 
     const validation = validateListingWriteForm({
