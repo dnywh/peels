@@ -271,6 +271,22 @@ Before `npm run test:e2e:prod`, make sure you are using the local seeded app sta
 - Make sure `.env.local` uses `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
 - Copy the local `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
+If your `.env.local` was previously set up for the hosted Peels project, update it before running Playwright. A working local test setup looks like:
+
+```bash
+NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<paste the ANON_KEY from npm run supabase:env>
+```
+
+Then run:
+
+```bash
+npm run test:e2e:prod
+```
+
+Use the local anon key that matches the running local Supabase stack. Do not mix the hosted project URL with the local anon key, or the local URL with a hosted anon key.
+
 The production-like Playwright config starts its own `next start` server so it does not accidentally reuse a stray `next dev` process on port `3000`.
 
 In CI, pull requests run `npm run check` and `npm run build`. Pushes to `main` also run the production-like Playwright smoke suite.
