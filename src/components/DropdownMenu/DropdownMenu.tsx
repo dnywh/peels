@@ -4,7 +4,6 @@ import { theme } from "@/styles/theme.yak";
 
 const StyledMenuItems = styled(MenuItems)`
   width: auto;
-  origin: top center;
   background: ${theme.colors.background.top};
   padding: 0.5rem;
   border-radius: ${theme.corners.base};

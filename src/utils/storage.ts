@@ -48,7 +48,9 @@ export function getStaticAssetUrl(assetPath: string) {
 }
 
 export function getStaticFontUrl(assetPath: string) {
-  return getHostedStaticPublicUrl(`fonts/${assetPath}`);
+  return getHostedStaticPublicUrl(
+    `fonts/${normaliseAssetPath(assetPath).replace(/^fonts\//, "")}`
+  );
 }
 
 export function getPromoKitUrl() {

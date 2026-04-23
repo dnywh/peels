@@ -1,13 +1,8 @@
 import { theme } from "@/styles/theme.yak";
 /**
- * A styled unordered list component that exists as a separate file to avoid
- * server/client component boundary issues with Pigment CSS in Next.js.
- *
- * This separation is necessary because Pigment CSS's styled components
- * can cause issues when defined directly within server components that
- * use Node.js APIs (like fs). By isolating the styled component in its
- * own file, we maintain a clean boundary between server-side data fetching
- * and client-side styling concerns.
+ * A shared styled unordered list wrapper kept in its own file so newsletter
+ * pages and other server-safe routes can reuse the same layout without
+ * repeating the styling inline at each call site.
  *
  * @see NewsletterIssuesList.jsx for the primary usage
  */

@@ -6,7 +6,7 @@ import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import type { ReactNode } from "react";
 
-// TODO:  Use ::marker method with SVG inline, once Data URI is supported in Pigment
+// TODO: Consider switching to ::marker with inline SVG/data URI bullets.
 // https://www.svgbackgrounds.com/custom-css-bullets-with-marker/
 // FROM
 // "& li::marker": {
