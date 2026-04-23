@@ -5,6 +5,7 @@ import AvatarUploadView from "@/components/AvatarUploadView";
 import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/mediaUtils";
 import Compressor from "compressorjs";
 import { useTranslations } from "next-intl";
+import type { AvatarBucket } from "@/utils/mediaUtils";
 
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
@@ -12,7 +13,7 @@ const MAX_DIMENSION = 1024; // Consider going down to 512 for avatars
 
 type AvatarUploadManagerProps = {
   initialAvatar?: string;
-  bucket: string;
+  bucket: AvatarBucket;
   entityId: string;
   onAvatarChange?: (filename: string) => void;
   inputHintShown?: boolean;

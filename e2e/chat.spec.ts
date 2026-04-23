@@ -8,7 +8,6 @@ test("chat loads the seeded thread and composer for a signed-in donor", async ({
     email: DONOR_EMAIL,
     redirectTo: `/chats/${SEEDED_THREAD_ID}`,
   });
-  await page.waitForTimeout(1_000);
 
   await expect(page).toHaveURL(new RegExp(`/chats/${SEEDED_THREAD_ID}$`));
   await expect(page.getByTestId("chat-window")).toBeVisible();

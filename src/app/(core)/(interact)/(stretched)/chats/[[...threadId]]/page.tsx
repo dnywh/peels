@@ -49,15 +49,6 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
     redirect("/chats");
   }
 
-  const totalUnreadMessages = typedThreads.reduce((count, thread) => {
-    const unreadMessages =
-      thread.chat_messages_with_senders?.filter(
-        (message) => !message.read_at && message.sender_id !== user.id
-      ).length ?? 0;
-
-    return count + unreadMessages;
-  }, 0);
-
   return (
     <ChatPageClient
       user={user}

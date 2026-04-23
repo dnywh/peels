@@ -6,7 +6,10 @@ test("profile account actions show pending feedback and update the read view", a
 }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
   await delayProfileActionRequests(page);
-  await page.waitForTimeout(3_000);
+
+  const profileAccountSettings = page.getByTestId("profile-account-settings");
+  await expect(profileAccountSettings).toBeVisible();
+  await expect(profileAccountSettings).toHaveAttribute("data-hydrated", "true");
 
   await page.getByTestId("profile-account-first-name-edit").click();
   const firstNameInput = page.getByTestId("profile-account-first-name-input");

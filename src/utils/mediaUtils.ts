@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { getStoragePublicUrl } from "@/utils/storage";
 
-type AvatarBucket = string;
+export type AvatarBucket = "avatars" | "listing_avatars";
 
 type ListingPhotoRecord = {
   photos: string[] | null;
@@ -37,7 +37,9 @@ export async function uploadAvatar(
       .eq("id", id);
 
     if (updateError) throw updateError;
-  } else {
+  }
+
+  if (bucket === "listing_avatars" && id) {
     const { error: updateError } = await supabase
       .from("listings")
       .update({ avatar: fileName })
@@ -65,7 +67,9 @@ export async function deleteAvatar(
       .eq("id", id);
 
     if (updateError) throw updateError;
-  } else {
+  }
+
+  if (bucket === "listing_avatars" && id) {
     const { error: updateError } = await supabase
       .from("listings")
       .update({ avatar: null })

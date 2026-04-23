@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import ListingWrite from "@/components/ListingWrite";
 import FormHeader from "@/components/FormHeader";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 type ListingType = "residential" | "community" | "business";
@@ -49,10 +50,14 @@ export default async function NewListingFormContent({
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect(`/sign-in?redirect_to=/profile/listings/new/${type}`);
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select()
-    .eq("id", user?.id ?? "")
+    .eq("id", user.id)
     .single();
 
   return (
