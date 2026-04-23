@@ -48,9 +48,12 @@ const ThumbnailContainer = styled.div`
 const StyledRemoteImage = styled(RemoteImage)<{ $border?: boolean }>`
   width: 100%;
   object-fit: cover;
-  mix-blend-mode: multiply;
   background-color: ${theme.colors.background.sunk};
   border-radius: ${theme.corners.thumbnail};
+
+  @media (prefers-color-scheme: light) {
+    mix-blend-mode: multiply;
+  }
 
   ${({ $border }) =>
     $border && `border: 1px solid ${theme.colors.border.base};`}

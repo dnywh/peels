@@ -114,7 +114,6 @@ const StyledDrawerHeaderInner = styled.div`
 const StyledHeaderText = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
   width: 100%;
   padding: 0 2.5rem;
 

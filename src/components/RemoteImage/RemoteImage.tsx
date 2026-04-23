@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getStoragePublicUrl } from "@/utils/storage";
+import { getHostedStaticPublicUrl, getStoragePublicUrl } from "@/utils/storage";
 import type { CSSProperties, ComponentProps } from "react";
 
 export type RemoteImageProps = Omit<
@@ -70,7 +70,16 @@ export default function RemoteImage({
   }
 
   // Handle Supabase storage images
-  const storageUrl = bucket ? getStoragePublicUrl(bucket, filename) : null;
+  const storageUrl =
+    bucket && filename
+      ? bucket === "static"
+        ? getHostedStaticPublicUrl(filename)
+        : bucket.startsWith("static/")
+          ? getHostedStaticPublicUrl(
+              `${bucket.slice("static/".length)}/${filename}`
+            )
+          : getStoragePublicUrl(bucket, filename)
+      : null;
 
   if (!storageUrl) {
     return (

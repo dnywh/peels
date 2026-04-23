@@ -384,6 +384,9 @@ const fullSectionStyles = css`
 `;
 
 const fullOverflowVisibleStyles = css`
+  background-color: ${theme.colors.background.top};
+  border: 1px solid ${theme.colors.border.base};
+  border-radius: ${theme.corners.base};
   padding: 1rem 0 1.5rem;
 
   @media (min-width: 768px) {

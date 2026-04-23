@@ -162,7 +162,7 @@ const SubSectionBottom = styled.div`
   }
   @media (min-width: 768px) {
     flex-direction: row;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
     & a {

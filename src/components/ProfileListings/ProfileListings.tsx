@@ -52,6 +52,7 @@ const NewListingAvatarGlyph = styled.span`
 `;
 
 const sharedLinkStyles = css`
+  width: 100%;
   padding: 0.75rem 1rem;
   display: flex;
   flex-direction: row;

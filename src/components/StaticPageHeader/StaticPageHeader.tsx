@@ -55,7 +55,16 @@ const Header = styled.header`
   }
 
   & p a {
-    ${sharedAnchorTagStyles}
+    color: inherit;
+    transition: ${theme.transitions.textColor};
+  }
+
+  & p a:visited {
+    color: inherit;
+  }
+
+  & p a:hover {
+    color: ${theme.colors.text.primary};
   }
 `;
 

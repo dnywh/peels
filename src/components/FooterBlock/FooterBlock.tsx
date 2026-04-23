@@ -1,7 +1,4 @@
-import {
-  sharedAnchorTagStyles,
-  sharedSectionTextBlockStyles,
-} from "@/styles/commonStyles";
+import { sharedSectionTextBlockStyles } from "@/styles/commonStyles";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import type { PropsWithChildren } from "react";
@@ -21,6 +18,15 @@ const StyledFooterBlock = styled.footer`
   }
 
   & a {
-    ${sharedAnchorTagStyles}
+    color: inherit;
+    transition: ${theme.transitions.textColor};
+  }
+
+  & a:visited {
+    color: inherit;
+  }
+
+  & a:hover {
+    color: ${theme.colors.text.primary};
   }
 `;

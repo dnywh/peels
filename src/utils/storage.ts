@@ -27,6 +27,10 @@ function getHostedStaticOrigin() {
   return PRODUCTION_SUPABASE_ORIGIN;
 }
 
+function getStaticObjectPath(assetPath: string) {
+  return `${STORAGE_PUBLIC_PATH}/static/${normaliseAssetPath(assetPath)}`;
+}
+
 export function getStoragePublicUrl(bucket: string, assetPath: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
@@ -35,15 +39,19 @@ export function getStoragePublicUrl(bucket: string, assetPath: string) {
   return `${supabaseUrl.replace(/\/$/, "")}${STORAGE_PUBLIC_PATH}/${bucket}/${normaliseAssetPath(assetPath)}`;
 }
 
+export function getHostedStaticPublicUrl(assetPath: string) {
+  return `${getHostedStaticOrigin()}${getStaticObjectPath(assetPath)}`;
+}
+
 export function getStaticAssetUrl(
   assetPath: string,
   _localFallbackPath: string
 ) {
-  return `${getHostedStaticOrigin()}${STORAGE_PUBLIC_PATH}/static/${normaliseAssetPath(assetPath)}`;
+  return getHostedStaticPublicUrl(assetPath);
 }
 
 export function getStaticFontUrl(assetPath: string) {
-  return `${getHostedStaticOrigin()}${STORAGE_PUBLIC_PATH}/static/fonts/${normaliseAssetPath(assetPath)}`;
+  return getHostedStaticPublicUrl(`fonts/${assetPath}`);
 }
 
 export function getPromoKitUrl() {

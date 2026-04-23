@@ -20,7 +20,7 @@ import type { ReactNode } from "react";
 // Perhaps via encodeURIComponent?
 
 const sharedTypeStyles = css`
-  color: ${theme.colors.text.primary};
+  color: ${theme.colors.text.ui.primary};
 `;
 
 type ListingItemListType = "accepted" | "rejected" | "links";

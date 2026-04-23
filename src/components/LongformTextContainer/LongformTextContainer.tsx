@@ -56,7 +56,7 @@ const StyledLongformTextContent = styled.div`
 
   & p a,
   & li a {
-    color: ${theme.colors.text.link};
+    color: ${theme.colors.text.brand.primary};
     text-decoration: underline;
     text-decoration-thickness: 0.08em;
     text-underline-offset: 0.14em;
@@ -65,7 +65,7 @@ const StyledLongformTextContent = styled.div`
 
   & p a:visited,
   & li a:visited {
-    color: ${theme.colors.text.link};
+    color: ${theme.colors.text.brand.primary};
   }
 
   & p a:hover,

@@ -189,6 +189,10 @@ const primaryVariantStyles = css`
   background: ${theme.colors.button.primary.background};
   color: ${theme.colors.button.primary.text};
 
+  &:visited {
+    color: ${theme.colors.button.primary.text};
+  }
+
   &:not([disabled]):not([aria-disabled="true"]) {
     box-shadow: 0px 0px 0px 2px ${theme.colors.button.primary.background};
   }
@@ -215,6 +219,10 @@ const secondaryVariantStyles = css`
   color: ${theme.colors.button.secondary.text};
   box-shadow: 0px 0px 0px 2px ${theme.colors.border.base};
 
+  &:visited {
+    color: ${theme.colors.button.secondary.text};
+  }
+
   &:hover:not([disabled]):not([aria-disabled="true"]) {
     color: color-mix(
       in srgb,
@@ -229,6 +237,10 @@ const dangerVariantStyles = css`
   background: ${theme.colors.button.danger.background};
   color: ${theme.colors.button.danger.text};
   box-shadow: 0px 0px 0px 2px ${theme.colors.border.base};
+
+  &:visited {
+    color: ${theme.colors.button.danger.text};
+  }
 
   &:hover:not([disabled]):not([aria-disabled="true"]) {
     color: color-mix(
@@ -245,6 +257,10 @@ const sendVariantStyles = css`
   border: none;
   color: ${theme.colors.button.send.text};
 
+  &:visited {
+    color: ${theme.colors.button.send.text};
+  }
+
   &:hover:not([disabled]):not([aria-disabled="true"]) {
     background-color: color-mix(
       in srgb,
@@ -260,6 +276,10 @@ const subtleVariantStyles = css`
   color: ${theme.colors.button.secondary.text};
   border: 1px solid ${theme.colors.border.base};
 
+  &:visited {
+    color: ${theme.colors.button.secondary.text};
+  }
+
   &:hover:not([disabled]):not([aria-disabled="true"]) {
     background-color: ${theme.colors.background.sunk};
   }
@@ -270,6 +290,10 @@ const disabledVariantStyles = css`
   background: ${theme.colors.button.disabled.background};
   color: ${theme.colors.button.disabled.text};
   box-shadow: none;
+
+  &:visited {
+    color: ${theme.colors.button.disabled.text};
+  }
 `;
 
 const sharedButtonStyles = css<StyledButtonStyleProps>`

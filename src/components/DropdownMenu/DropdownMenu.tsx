@@ -22,10 +22,15 @@ const StyledMenuItems = styled(MenuItems)`
   }
 `;
 
+const StyledMenuItem = styled(MenuItem)`
+  display: flex;
+  width: 100%;
+`;
+
 // Re-export the base components, either from their styled components or from the headless components
 const Root = Menu;
 const Button = MenuButton;
-const Item = MenuItem;
+const Item = StyledMenuItem;
 const Items = StyledMenuItems;
 
 // Create a compound component by adding the sub-components as properties

@@ -363,6 +363,7 @@ export default function SignUpForm({
       <Button
         type="submit"
         variant="primary"
+        width="full"
         loading={isSubmitting || isWaitingForToken}
         loadingText={
           isWaitingForToken ? t("Status.verifying") : t("Status.signingUp")

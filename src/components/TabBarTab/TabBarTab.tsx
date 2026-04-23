@@ -17,6 +17,13 @@ const activeTabStyles = css`
   }
 `;
 
+const brandTabStyles = css`
+  &,
+  &:visited {
+    color: ${theme.colors.logo.primary};
+  }
+`;
+
 const UnreadDot = styled.div`
   position: absolute;
   top: 0px;
@@ -37,15 +44,17 @@ export default function TabBarTab({
   icon = "Icon",
   active = false,
   unreadDot = false,
+  tone = "default",
 }: {
   title?: ReactNode;
   href?: string;
   icon?: ReactNode;
   active?: boolean;
   unreadDot?: boolean;
+  tone?: "default" | "brand";
 }) {
   return (
-    <StyledTabBarTab href={href} $active={active}>
+    <StyledTabBarTab href={href} $active={active} $tone={tone}>
       <StyledTabBarTabIcon>
         {icon}
         {unreadDot && <UnreadDot />}
@@ -55,7 +64,10 @@ export default function TabBarTab({
   );
 }
 
-const StyledTabBarTab = styled(Link)<{ $active?: boolean }>`
+const StyledTabBarTab = styled(Link)<{
+  $active?: boolean;
+  $tone?: "default" | "brand";
+}>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -67,7 +79,10 @@ const StyledTabBarTab = styled(Link)<{ $active?: boolean }>`
     opacity 150ms ease-in-out,
     transform 35ms ease-in-out;
 
-  ${({ $active }) => ($active ? activeTabStyles : inactiveTabStyles)}
+  ${({ $tone, $active }) => {
+    if ($tone === "brand") return brandTabStyles;
+    return $active ? activeTabStyles : inactiveTabStyles;
+  }}
 
   &:hover {
     opacity: 0.8;

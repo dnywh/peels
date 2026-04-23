@@ -32,7 +32,7 @@ const Figcaption = styled.figcaption<{ $margin?: boolean }>`
   ${({ $margin = true }) => ($margin ? marginTrueStyles : marginFalseStyles)}
 
   & a {
-    color: ${theme.colors.text.link};
+    color: ${theme.colors.text.brand.primary};
     text-decoration: underline;
     text-decoration-thickness: 0.08em;
     text-underline-offset: 0.14em;
@@ -40,7 +40,7 @@ const Figcaption = styled.figcaption<{ $margin?: boolean }>`
   }
 
   & a:visited {
-    color: ${theme.colors.text.link};
+    color: ${theme.colors.text.brand.primary};
   }
 
   & a:hover {

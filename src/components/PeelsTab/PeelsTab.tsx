@@ -6,7 +6,7 @@ type PeelsTabProps = {
 };
 
 function PeelsTab({ size }: PeelsTabProps) {
-  return <TabBarTab icon={<PeelsLogo size={size} />} href="/" />;
+  return <TabBarTab icon={<PeelsLogo size={size} />} href="/" tone="brand" />;
 }
 
 export default PeelsTab;

@@ -6,10 +6,14 @@ import { resolveExternalRel } from "@/utils/linkRel";
 import { theme } from "@/styles/theme.yak";
 
 const sharedStyles = css`
-  color: ${theme.colors.text.primary};
+  color: ${theme.colors.text.brand.primary};
   font-weight: 500;
   text-decoration: underline;
   transition: opacity 150ms ease-in-out;
+
+  &:visited {
+    color: ${theme.colors.text.brand.primary};
+  }
 
   &:hover {
     opacity: 0.65;

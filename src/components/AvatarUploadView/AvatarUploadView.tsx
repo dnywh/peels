@@ -177,6 +177,7 @@ function AvatarUploadView({
                         onClick={handleFileSelect}
                         variant="secondary"
                         size="small"
+                        width="full"
                         disabled={isBusy}
                       >
                         {t("Actions.replace")}
@@ -187,6 +188,7 @@ function AvatarUploadView({
                         onClick={handleDelete}
                         variant="danger"
                         size="small"
+                        width="full"
                         loading={isDeleting}
                         loadingText={t("Status.deleting")}
                         disabled={isBusy}

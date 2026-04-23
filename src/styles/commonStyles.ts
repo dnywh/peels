@@ -50,6 +50,10 @@ export const sharedAnchorTagStyles = css`
   color: inherit;
   transition: ${theme.transitions.textColor};
 
+  &:visited {
+    color: inherit;
+  }
+
   &:hover {
     color: ${theme.colors.text.primary};
   }

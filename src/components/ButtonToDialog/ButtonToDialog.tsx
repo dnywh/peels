@@ -10,7 +10,10 @@ import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 const DialogContent = styled(Dialog.Content)`
-  background: white;
+  background: ${theme.colors.background.top};
+  color: ${theme.colors.text.primary};
+  border: 1px solid ${theme.colors.border.base};
+  box-shadow: 0 0 0 1px ${theme.colors.border.light};
   position: fixed;
   top: 50%;
   left: 50%;
@@ -30,6 +33,16 @@ const Text = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+
+  & h2 {
+    color: ${theme.colors.text.primary};
+    line-height: 115%;
+  }
+
+  & p {
+    color: ${theme.colors.text.secondary};
+    line-height: 145%;
+  }
 `;
 
 const Buttons = styled.div`
