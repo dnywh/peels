@@ -262,6 +262,17 @@ Peels keeps testing intentionally small:
 
 The smoke suite covers seeded sign-in, public listing, profile, and chat flows against local Supabase data. It is designed to stay small and high-signal rather than grow into a broad frontend testing matrix.
 
+Before `npm run test:e2e:prod`, make sure you are using the local seeded app stack, not hosted Supabase:
+
+- Run `npm run supabase:start`
+- Run `npm run supabase:reset`
+- Run `npm run seed:local-media`
+- Run `npm run supabase:env`
+- Make sure `.env.local` uses `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
+- Copy the local `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+The production-like Playwright config starts its own `next start` server so it does not accidentally reuse a stray `next dev` process on port `3000`.
+
 In CI, pull requests run `npm run check` and `npm run build`. Pushes to `main` also run the production-like Playwright smoke suite.
 
 For the first local Playwright run, install the browser once with:

@@ -18,12 +18,12 @@ export type ChatListing = {
 };
 
 export type ChatMessageRecord = {
-  id?: string;
+  id: string;
   content: string;
   created_at: string;
-  read_at?: string | null;
-  sender_id?: string | null;
-  thread_id?: string | null;
+  read_at: string | null;
+  sender_id: string | null;
+  thread_id: string | null;
 };
 
 export type ChatThreadRecord = {
@@ -36,4 +36,20 @@ export type ChatThreadRecord = {
   listing?: ChatListing | null;
   chat_messages_with_senders?: ChatMessageRecord[] | null;
   chat_messages?: ChatMessageRecord[] | null;
+};
+
+export type ChatThreadView = ChatThreadRecord & {
+  listing: ChatListing | null;
+  messages: ChatMessageRecord[];
+};
+
+export type ChatSendResult = {
+  message: ChatMessageRecord;
+  threadId: string;
+};
+
+export type ChatReadResult = {
+  readAt: string;
+  readMessageIds: string[];
+  threadId: string;
 };

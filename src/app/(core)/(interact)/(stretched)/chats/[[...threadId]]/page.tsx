@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import ChatPageClient from "@/components/ChatPageClient";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import type { ChatThreadRecord } from "@/types/chat";
+import type { ChatThreadRecord, ChatThreadView } from "@/types/chat";
 
 type ChatsPageProps = {
   params: Promise<{
@@ -13,6 +13,14 @@ type ChatsPageProps = {
 export const metadata: Metadata = {
   title: "Chats",
 };
+
+function toChatThreadView(thread: ChatThreadRecord): ChatThreadView {
+  return {
+    ...thread,
+    listing: thread.listing ?? null,
+    messages: thread.chat_messages_with_senders ?? thread.chat_messages ?? [],
+  };
+}
 
 export default async function ChatsPage({ params }: ChatsPageProps) {
   const { threadId: threadIdSegments } = await params;
@@ -41,10 +49,11 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
     .order("created_at", { ascending: false });
 
   const typedThreads = (threads ?? []) as ChatThreadRecord[];
-  const selectedThread =
+  const matchedThread =
     threadId && typedThreads.length > 0
       ? (typedThreads.find((thread) => thread.id === threadId) ?? null)
       : null;
+  const selectedThread = matchedThread ? toChatThreadView(matchedThread) : null;
 
   if (threadId && !selectedThread) {
     redirect("/chats");

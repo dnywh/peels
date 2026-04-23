@@ -6,5 +6,6 @@ export default defineConfig({
   webServer: {
     ...sharedWebServer,
     command: "npm run start -- --hostname 127.0.0.1 --port 3000",
+    reuseExistingServer: false,
   },
 });

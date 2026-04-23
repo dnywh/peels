@@ -1,13 +1,16 @@
 "use client";
+
 import { theme } from "@/styles/theme.yak";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { validateName, FIELD_CONFIGS } from "@/lib/formValidation";
 import {
-  updateFirstNameAction,
-  deleteListingAction,
-  createOrUpdateListingAction,
-} from "@/app/actions";
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type ComponentType,
+  type FormEvent,
+  type InputHTMLAttributes,
+} from "react";
+import { useRouter } from "next/navigation";
+import { FIELD_CONFIGS } from "@/lib/formValidation";
 import LocationSelect from "@/components/LocationSelect";
 import CheckboxCluster from "@/components/CheckboxCluster";
 import LegalAgreement from "@/components/LegalAgreement";
@@ -28,10 +31,27 @@ import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
 import FormMessage from "@/components/FormMessage";
+import SubmitButton from "@/components/SubmitButton";
 import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 import type { User } from "@supabase/supabase-js";
-import type { Listing, ListingType } from "@/types/listing";
+import { useInlineMutation } from "@/hooks/useInlineMutation";
+import {
+  buildListingDraft,
+  submitListingDelete,
+  submitListingWrite,
+  type ListingWriteFormValues,
+  type LocationSelectProps,
+  validateListingWriteForm,
+} from "@/components/ListingWrite/listingWriteController";
+import type {
+  DeleteListingResult,
+  Listing,
+  ListingSubmitResult,
+  ListingType,
+  ListingWriteFieldErrors,
+  ListingWriteProfile,
+} from "@/types/listing";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
@@ -50,29 +70,24 @@ const AdditionalSettings = styled.footer`
   gap: calc(${theme.spacing.unit} * 1.5);
 `;
 
-const AvatarUploadManagerComponent =
-  AvatarUploadManager as React.ComponentType<any>;
-const InputComponent = Input as React.ComponentType<any>;
-const InputHintComponent = InputHint as React.ComponentType<any>;
-const ListingPhotosManagerComponent =
-  ListingPhotosManager as React.ComponentType<any>;
-const LocationSelectComponent = LocationSelect as React.ComponentType<any>;
-const MultiInputComponent = MultiInput as React.ComponentType<any>;
-const SelectComponent = Select as React.ComponentType<any>;
-const TextareaComponent = Textarea as React.ComponentType<any>;
+const DisabledFieldset = styled.fieldset`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+`;
 
-type Coordinates = {
-  latitude: number;
-  longitude: number;
-};
-
-type ListingErrors = Partial<Record<"name" | "location", string>>;
-
-type ListingWriteProfile = {
-  first_name?: string | null;
-  avatar?: string | null;
-  is_admin?: boolean | null;
-};
+const LocationSelectComponent =
+  LocationSelect as ComponentType<LocationSelectProps>;
+const InputComponent = Input as ComponentType<
+  InputHTMLAttributes<HTMLInputElement> & {
+    error?: string | null;
+  }
+>;
 
 type ListingWriteProps = {
   initialListing?: Listing | null;
@@ -81,7 +96,6 @@ type ListingWriteProps = {
   profile: ListingWriteProfile | null;
 };
 
-// Component
 export default function ListingWrite({
   initialListing,
   listingType: initialListingType,
@@ -91,596 +105,521 @@ export default function ListingWrite({
   const t = useTranslations();
   const router = useRouter();
   const [isHydrated, setIsHydrated] = useState(false);
-
   const listingType =
     initialListing?.type || initialListingType || "residential";
+  const submitMutation = useInlineMutation<ListingSubmitResult>();
+  const deleteMutation = useInlineMutation<DeleteListingResult>();
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  // Update error state to handle both field and global errors
-  const [errors, setErrors] = useState<ListingErrors>({});
-  const [globalError, setGlobalError] = useState("");
-
-  // Handle form submission state
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Populate editable fields
+  const [errors, setErrors] = useState<ListingWriteFieldErrors>({});
   const [avatar, setAvatar] = useState<string>(
     initialListing ? initialListing.avatar || "" : ""
   );
   const [name, setName] = useState<string>(
     listingType === "residential"
-      ? profile?.first_name || "" // Use profile.first_name for residential listings
-      : initialListing
-        ? initialListing.name || ""
-        : "" // Use listing name for others
+      ? profile?.first_name || ""
+      : initialListing?.name || ""
   );
-
   const [description, setDescription] = useState<string>(
-    initialListing ? initialListing.description || "" : ""
+    initialListing?.description || ""
   );
-
   const [countryCode, setCountryCode] = useState<string>(
-    initialListing ? initialListing.country_code || "" : ""
+    initialListing?.country_code || ""
   );
-
-  const [coordinates, setCoordinates] = useState<Coordinates | null>(
+  const [coordinates, setCoordinates] = useState(
     initialListing?.coordinates ?? null
   );
-
   const [areaName, setAreaName] = useState<string>(
-    initialListing ? initialListing.area_name || "" : ""
+    initialListing?.area_name || ""
   );
-
   const [acceptedItems, setAcceptedItems] = useState<string[]>(
-    initialListing ? initialListing.accepted_items || [""] : [""]
+    initialListing?.accepted_items || [""]
   );
   const [rejectedItems, setRejectedItems] = useState<string[]>(
-    initialListing ? initialListing.rejected_items || [] : []
+    initialListing?.rejected_items || []
   );
-  const [donatedItems, setDonatedItems] = useState<string[]>(
-    initialListing ? initialListing.donated_items || [""] : [""]
-  );
-
-  const [photos, setPhotos] = useState<string[]>(
-    initialListing ? initialListing.photos || [] : []
-  );
-  const [links, setLinks] = useState<string[]>(
-    initialListing ? initialListing.links || [] : []
-  );
+  const [photos, setPhotos] = useState<string[]>(initialListing?.photos || []);
+  const [links, setLinks] = useState<string[]>(initialListing?.links || []);
   const [visibility, setVisibility] = useState<boolean>(
     initialListing?.visibility ?? true
   );
-
   const [isStub, setIsStub] = useState<boolean>(
     initialListing?.is_stub ?? false
   );
-
-  // Other states
-  const [feedbackMessage, setFeedbackMessage] = useState("");
   const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
 
-  async function handleDeleteListing(event: React.FormEvent<HTMLFormElement>) {
+  const isMutating = submitMutation.isPending || deleteMutation.isPending;
+  const errorCount = Object.keys(errors).length;
+  const feedbackError =
+    deleteMutation.result.error || submitMutation.result.error;
+  const feedbackMessage =
+    feedbackError ||
+    (errorCount > 0
+      ? t("Errors.validationSummary", {
+          count: errorCount,
+        })
+      : null);
+
+  async function handleDeleteListing(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!initialListing) {
+    if (!initialListing || isMutating) {
       return;
     }
 
-    setFeedbackMessage("");
-    try {
-      const response = await deleteListingAction(initialListing.slug);
-      if (response.success) {
-        router.push(`/profile/?message=${response.message}`);
-      } else {
-        setFeedbackMessage(response.message);
-      }
-    } catch (error) {
-      console.error("Error deleting listing:", error);
-      setFeedbackMessage(t("Errors.generic"));
-    }
-  }
-
-  // Form handling logic here
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (isSubmitting) return;
-
-    // Reset all errors
     setErrors({});
-    setGlobalError("");
+    submitMutation.reset();
 
-    // Validate required fields
-    const nextErrors: ListingErrors = {};
-    let validatedName = name; // Store the validated name
-
-    if (listingType === "residential") {
-      // Only validate and update first name if it was changed
-      if (name !== profile?.first_name) {
-        const validation = validateName(name);
-        if (!validation.isValid) {
-          nextErrors.name = validation.error;
-        } else {
-          validatedName = validation.value ?? ""; // Store the trimmed value
-        }
+    const result = await deleteMutation.run(
+      () =>
+        submitListingDelete({
+          slug: initialListing.slug,
+        }),
+      {
+        fallbackError: t("Errors.generic"),
       }
-    } else {
-      // For business/community listings, validate the name field
-      const validation = validateName(name);
-      if (!validation.isValid) {
-        nextErrors.name = t("Errors.emptyListingName", { type: listingType });
-      } else {
-        validatedName = validation.value ?? ""; // Store the trimmed value
-      }
-    }
+    );
 
-    const selectedCoordinates = coordinates;
-
-    if (!selectedCoordinates) {
-      nextErrors.location = t("Errors.missingLocation");
-    }
-
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      console.log("Validation errors:", nextErrors);
-      return;
-    }
-
-    if (!selectedCoordinates) return;
-
-    setIsSubmitting(true);
-    let shouldResetSubmitting = true;
-
-    try {
-      // For residential listings, update the profile first name if changed
-      if (
-        listingType === "residential" &&
-        profile?.first_name !== validatedName
-      ) {
-        console.log(
-          "Updating first name from",
-          profile?.first_name,
-          "to",
-          validatedName
-        );
-        const formData = new FormData();
-        formData.append("first_name", validatedName);
-        const result = await updateFirstNameAction(formData);
-        if (result?.error) {
-          setErrors({ name: String(result.error) });
-          return;
-        }
-      }
-
-      if (!user?.id) {
-        setGlobalError(t("Errors.generic"));
-        return;
-      }
-
-      // Prepare the listing data
-      const listingData = {
-        // Add the id if it's an existing listing, so we know which to update
-        ...(initialListing && { id: initialListing.id }),
-        owner_id: user.id,
-        type: listingType,
-        ...(listingType !== "residential" && avatar && { avatar }),
-        // Only include name for non-residential listings
-        ...(listingType !== "residential" && { name: validatedName }),
-        description,
-        location: `POINT(${selectedCoordinates.longitude} ${selectedCoordinates.latitude})`,
-        area_name: areaName,
-        country_code: countryCode,
-        accepted_items: acceptedItems.filter((item) => item.trim() !== ""),
-        rejected_items: rejectedItems.filter((item) => item.trim() !== ""),
-        photos: initialListing ? photos : pendingPhotos,
-        links: links.filter((link) => link.trim() !== ""),
-        // Only include is_stub if the user is an admin
-        ...(profile?.is_admin && { is_stub: isStub }),
-        visibility,
-      };
-
-      console.log("Submitting listing data:", listingData);
-
-      const { data, error } = await createOrUpdateListingAction(listingData);
-
-      if (error) {
-        setGlobalError(String(error));
-        return;
-      }
-
-      if (!data?.slug) {
-        setGlobalError(t("Errors.genericLater"));
-        return;
-      }
-
-      // Redirect to the new/updated listing
-      shouldResetSubmitting = false;
-      router.push(
-        `/listings/${data.slug}?status=${initialListing ? "updated" : "created"}`
-      );
-    } catch (error) {
-      console.error("Error in handleSubmit:", error);
-      setGlobalError(t("Errors.unexpected"));
-    } finally {
-      if (shouldResetSubmitting) {
-        setIsSubmitting(false);
-      }
+    if (result?.success && result.data?.redirectTo) {
+      router.push(result.data.redirectTo);
     }
   }
 
-  //   Functions for adding and removing items
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (isMutating) {
+      return;
+    }
+
+    setErrors({});
+    deleteMutation.reset();
+
+    const validation = validateListingWriteForm({
+      coordinates,
+      listingType,
+      name,
+      profile,
+      t,
+    });
+
+    if (Object.keys(validation.errors).length > 0) {
+      setErrors(validation.errors);
+      return;
+    }
+
+    if (!user?.id) {
+      submitMutation.setResult({
+        success: false,
+        error: t("Errors.generic"),
+      });
+      return;
+    }
+
+    const formValues: ListingWriteFormValues = {
+      acceptedItems,
+      areaName,
+      avatar,
+      coordinates,
+      countryCode,
+      description,
+      isStub,
+      links,
+      name,
+      pendingPhotos,
+      photos,
+      rejectedItems,
+      visibility,
+    };
+    const draft = buildListingDraft({
+      initialListing,
+      listingType,
+      profile,
+      userId: user.id,
+      validatedName: validation.validatedName,
+      values: formValues,
+    });
+
+    const result = await submitMutation.run(
+      () =>
+        submitListingWrite({
+          draft,
+          fallbackError: t("Errors.genericLater"),
+          listingType,
+          profile,
+          validatedName: validation.validatedName,
+        }),
+      {
+        fallbackError: t("Errors.unexpected"),
+      }
+    );
+
+    if (result?.success && result.data?.redirectTo) {
+      router.push(result.data.redirectTo);
+    }
+  }
+
   const addAcceptedItem = () => {
-    // if (acceptedItems.length < 10) {
     setAcceptedItems([...acceptedItems, ""]);
-    // }
   };
+
   const addRejectedItem = () => {
-    // if (rejectedItems.length < 10) {
     setRejectedItems([...rejectedItems, ""]);
-    // }
   };
+
   const addLink = () => {
-    // if (links.length < 3) {
     setLinks([...links, ""]);
-    // }
   };
+
   const handleAcceptedItemChange = (index: number, value: string) => {
-    const newItems = [...acceptedItems];
-    newItems[index] = value;
-    setAcceptedItems(newItems);
+    const nextItems = [...acceptedItems];
+    nextItems[index] = value;
+    setAcceptedItems(nextItems);
   };
 
   const handleRejectedItemChange = (index: number, value: string) => {
-    const newItems = [...rejectedItems];
-    newItems[index] = value;
-    setRejectedItems(newItems);
+    const nextItems = [...rejectedItems];
+    nextItems[index] = value;
+    setRejectedItems(nextItems);
   };
 
   const handleLinksChange = (index: number, value: string) => {
-    const newLinks = [...links];
-    newLinks[index] = value;
-    setLinks(newLinks);
+    const nextLinks = [...links];
+    nextLinks[index] = value;
+    setLinks(nextLinks);
   };
 
   return (
     <>
-      {initialListing && initialListing.is_stub && (
-        <Lozenge>{t("Common.stub")}</Lozenge>
-      )}
+      {initialListing?.is_stub && <Lozenge>{t("Common.stub")}</Lozenge>}
+
       <Form
         onSubmit={handleSubmit}
         data-testid="listing-write-form"
         data-hydrated={isHydrated ? "true" : "false"}
       >
-        {listingType === "residential" ? (
-          <AvatarUploadManagerComponent
-            initialAvatar={profile?.avatar || ""}
-            bucket="avatars"
-            entityId={user?.id ?? ""}
-            onAvatarChange={setAvatar}
-            inputHintShown={profile?.avatar ? undefined : true}
-            listingType={listingType}
-          />
-        ) : (
-          <AvatarUploadManagerComponent
-            initialAvatar={avatar}
-            bucket="listing_avatars"
-            entityId={initialListing?.slug}
-            onAvatarChange={setAvatar}
-            listingType={listingType}
-          />
-        )}
-
-        <FormSection>
-          <FormSectionHeader>
-            <h2>{t("Listings.form.basics")}</h2>
-          </FormSectionHeader>
-
+        <DisabledFieldset disabled={isMutating}>
           {listingType === "residential" ? (
-            <Field>
-              <Label htmlFor="first_name">
-                {t("Listings.form.yourFirstName")}
-              </Label>
-              <InputComponent
-                id="first_name"
-                name="first_name"
-                {...FIELD_CONFIGS.firstName}
-                defaultValue={profile?.first_name ?? ""}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  setName(event.target.value)
-                }
-                error={errors.name}
-              />
-              <InputHintComponent>
-                {errors.name || t("Profile.account.firstNameHint")}
-              </InputHintComponent>
-            </Field>
+            <AvatarUploadManager
+              initialAvatar={profile?.avatar || ""}
+              bucket="avatars"
+              entityId={user?.id ?? ""}
+              onAvatarChange={setAvatar}
+              inputHintShown={profile?.avatar ? undefined : true}
+              listingType={listingType}
+            />
           ) : (
-            <Field>
-              <Label htmlFor="name">{t("Listings.form.placeName")}</Label>
-              <InputComponent
-                id="name"
-                name="name"
-                required={true}
-                type="text"
-                minLength={FIELD_CONFIGS.firstName.minLength}
-                placeholder={t("Listings.form.placeNamePlaceholder", {
-                  type: listingType,
-                })}
-                value={name}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  setName(event.target.value)
-                }
-                error={errors.name}
-              />
-              {errors.name && (
-                <InputHintComponent variant="error">
-                  {errors.name}
-                </InputHintComponent>
-              )}
-            </Field>
+            <AvatarUploadManager
+              initialAvatar={avatar}
+              bucket="listing_avatars"
+              entityId={initialListing?.slug ?? ""}
+              onAvatarChange={setAvatar}
+              listingType={listingType}
+            />
           )}
 
-          <LocationSelectComponent
-            listingType={listingType}
-            initialPlaceholderText={
-              initialListing
-                ? areaName
-                : listingType === "business"
-                  ? t("Listings.form.businessAddress")
-                  : listingType === "community"
-                    ? t("Listings.form.communityAddress")
-                    : t("Listings.form.residentialAddress")
-            }
-            coordinates={coordinates}
-            setCoordinates={setCoordinates}
-            countryCode={countryCode}
-            setCountryCode={setCountryCode}
-            areaName={areaName}
-            setAreaName={setAreaName}
-            error={errors.location}
-          />
+          <FormSection>
+            <FormSectionHeader>
+              <h2>{t("Listings.form.basics")}</h2>
+            </FormSectionHeader>
 
-          {listingType === "business" ? (
-            <Field>
-              <Label htmlFor="description">
-                {t("Listings.form.donationDetails")}
-              </Label>
-              <TextareaComponent
-                id="description"
-                rows={6}
-                maxLength={DESCRIPTION_MAX_CHARACTERS}
-                required={true}
-                resize="vertical"
-                placeholder={t("Listings.form.donationDetailsPlaceholder")}
-                value={description}
-                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setDescription(event.target.value)
-                }
+            {listingType === "residential" ? (
+              <Field>
+                <Label htmlFor="first_name">
+                  {t("Listings.form.yourFirstName")}
+                </Label>
+                <InputComponent
+                  id="first_name"
+                  name="first_name"
+                  {...FIELD_CONFIGS.firstName}
+                  value={name}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                    setName(event.target.value)
+                  }
+                  error={errors.name ?? null}
+                />
+                <InputHint variant={errors.name ? "error" : "default"}>
+                  {errors.name || t("Profile.account.firstNameHint")}
+                </InputHint>
+              </Field>
+            ) : (
+              <Field>
+                <Label htmlFor="name">{t("Listings.form.placeName")}</Label>
+                <InputComponent
+                  id="name"
+                  name="name"
+                  required={true}
+                  type="text"
+                  minLength={FIELD_CONFIGS.firstName.minLength}
+                  placeholder={t("Listings.form.placeNamePlaceholder", {
+                    type: listingType,
+                  })}
+                  value={name}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                    setName(event.target.value)
+                  }
+                  error={errors.name ?? null}
+                />
+                {errors.name && (
+                  <InputHint variant="error">{errors.name}</InputHint>
+                )}
+              </Field>
+            )}
+
+            <LocationSelectComponent
+              listingType={listingType}
+              initialPlaceholderText={
+                initialListing
+                  ? areaName
+                  : listingType === "business"
+                    ? t("Listings.form.businessAddress")
+                    : listingType === "community"
+                      ? t("Listings.form.communityAddress")
+                      : t("Listings.form.residentialAddress")
+              }
+              coordinates={coordinates}
+              setCoordinates={setCoordinates}
+              countryCode={countryCode}
+              setCountryCode={setCountryCode}
+              areaName={areaName}
+              setAreaName={setAreaName}
+              error={errors.location}
+            />
+
+            {listingType === "business" ? (
+              <Field>
+                <Label htmlFor="description">
+                  {t("Listings.form.donationDetails")}
+                </Label>
+                <Textarea
+                  id="description"
+                  rows={6}
+                  maxLength={DESCRIPTION_MAX_CHARACTERS}
+                  required={true}
+                  resize="vertical"
+                  placeholder={t("Listings.form.donationDetailsPlaceholder")}
+                  value={description}
+                  onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
+                    setDescription(event.target.value)
+                  }
+                />
+                <InputHint>{t("Listings.form.donationDetailsHint")}</InputHint>
+              </Field>
+            ) : (
+              <Field>
+                <Label
+                  htmlFor="description"
+                  required={false}
+                  optionalText={t("Common.optional")}
+                >
+                  {t("Listings.form.descriptionLabel")}
+                </Label>
+                <Textarea
+                  id="description"
+                  rows={listingType === "residential" ? 4 : 5}
+                  maxLength={DESCRIPTION_MAX_CHARACTERS}
+                  required={false}
+                  resize="vertical"
+                  placeholder={t("Listings.form.descriptionPlaceholder", {
+                    type: listingType,
+                  })}
+                  value={description}
+                  onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
+                    setDescription(event.target.value)
+                  }
+                />
+                <InputHint>
+                  {listingType === "community"
+                    ? t("Listings.form.communityDescriptionHint")
+                    : t("Listings.form.residentialDescriptionHint")}
+                </InputHint>
+              </Field>
+            )}
+          </FormSection>
+
+          {(listingType === "residential" || listingType === "community") && (
+            <FormSection>
+              <FormSectionHeader>
+                <h2>{t("Listings.form.compostingDetails")}</h2>
+                <p>{t("Listings.form.compostingDetailsHint")}</p>
+              </FormSectionHeader>
+
+              <MultiInput
+                label={t("Listings.form.acceptedLabel")}
+                addButtonText={t("Listings.form.addItem")}
+                addAnotherButtonText={t("Listings.form.addAnotherItem")}
+                optionalText={t("Common.optional")}
+                placeholder={t("Listings.form.acceptedPlaceholder")}
+                secondaryPlaceholder={t(
+                  "Listings.form.acceptedSecondaryPlaceholder"
+                )}
+                items={acceptedItems}
+                minRequired={1}
+                handleItemChange={handleAcceptedItemChange}
+                onClick={addAcceptedItem}
+                limit={12}
               />
-              <InputHintComponent>
-                {t("Listings.form.donationDetailsHint")}
-              </InputHintComponent>
-            </Field>
-          ) : (
-            <Field>
+
+              <MultiInput
+                label={t("Listings.form.rejectedLabel")}
+                addButtonText={t("Listings.form.addItem")}
+                addAnotherButtonText={t("Listings.form.addAnotherItem")}
+                optionalText={t("Common.optional")}
+                placeholder={t("Listings.form.rejectedPlaceholder")}
+                secondaryPlaceholder={t(
+                  "Listings.form.rejectedSecondaryPlaceholder"
+                )}
+                items={rejectedItems}
+                handleItemChange={handleRejectedItemChange}
+                onClick={addRejectedItem}
+                limit={16}
+              />
+            </FormSection>
+          )}
+
+          <FormSection>
+            <FormSectionHeader>
+              <h2>{t("Listings.form.media")}</h2>
+              <p>
+                {t("Listings.form.mediaHint", {
+                  subject:
+                    listingType === "residential"
+                      ? t("Listings.form.mediaResidential")
+                      : listingType === "community"
+                        ? t("Listings.form.mediaCommunity")
+                        : t("Listings.form.mediaBusiness"),
+                })}
+              </p>
+            </FormSectionHeader>
+
+            <FieldsetWithGap>
               <Label
-                htmlFor="description"
+                htmlFor="photo-upload-button"
                 required={false}
                 optionalText={t("Common.optional")}
               >
-                {t("Listings.form.descriptionLabel")}
+                {t("Common.photos")}
               </Label>
-              <TextareaComponent
-                id="description"
-                rows={listingType === "residential" ? 4 : 5}
-                maxLength={DESCRIPTION_MAX_CHARACTERS}
-                required={false}
-                resize="vertical"
-                placeholder={t("Listings.form.descriptionPlaceholder", {
-                  type: listingType,
-                })}
-                value={description}
-                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setDescription(event.target.value)
-                }
+              <ListingPhotosManager
+                initialPhotos={initialListing ? photos : pendingPhotos}
+                listingSlug={initialListing?.slug}
+                onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
+                isNewListing={!initialListing}
               />
-              <InputHintComponent>
-                {listingType === "community"
-                  ? t("Listings.form.communityDescriptionHint")
-                  : t("Listings.form.residentialDescriptionHint")}
-              </InputHintComponent>
-            </Field>
+            </FieldsetWithGap>
+
+            {listingType !== "residential" && (
+              <MultiInput
+                label={t("Listings.form.externalLinks")}
+                addButtonText={t("Listings.form.addLink")}
+                optionalText={t("Common.optional")}
+                placeholder={t("Listings.form.linkPlaceholder")}
+                items={links}
+                handleItemChange={handleLinksChange}
+                onClick={addLink}
+                limit={3}
+                type="url"
+                pattern="https?://.+"
+              />
+            )}
+          </FormSection>
+
+          {initialListing && (
+            <FormSection>
+              <FormSectionHeader>
+                <h2>{t("Listings.form.visibility")}</h2>
+                <p>{t("Listings.form.visibilityHint")}</p>
+              </FormSectionHeader>
+
+              <Field>
+                <Label htmlFor="visibility">
+                  {t("Listings.form.mapVisibility")}
+                </Label>
+                <Select
+                  id="visibility"
+                  value={String(visibility)}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                    setVisibility(event.target.value === "true")
+                  }
+                  required={true}
+                >
+                  <option value="true">{t("Listings.form.showOnMap")}</option>
+                  <option value="false">
+                    {t("Listings.form.hideFromMap")}
+                  </option>
+                </Select>
+              </Field>
+            </FormSection>
           )}
-        </FormSection>
 
-        {(listingType === "residential" || listingType === "community") && (
-          <FormSection>
-            <FormSectionHeader>
-              <h2>{t("Listings.form.compostingDetails")}</h2>
-              <p>{t("Listings.form.compostingDetailsHint")}</p>
-            </FormSectionHeader>
+          {profile?.is_admin && (
+            <FormSection>
+              <FormSectionHeader>
+                <h2>{t("Common.admin")}</h2>
+                <p>{t("Listings.form.adminHint")}</p>
+              </FormSectionHeader>
 
-            <MultiInputComponent
-              label={t("Listings.form.acceptedLabel")}
-              addButtonText={t("Listings.form.addItem")}
-              addAnotherButtonText={t("Listings.form.addAnotherItem")}
-              optionalText={t("Common.optional")}
-              placeholder={t("Listings.form.acceptedPlaceholder")}
-              secondaryPlaceholder={t(
-                "Listings.form.acceptedSecondaryPlaceholder"
-              )}
-              items={acceptedItems}
-              minRequired={1}
-              handleItemChange={handleAcceptedItemChange}
-              onClick={addAcceptedItem}
-              limit={12}
-            />
-
-            <MultiInputComponent
-              label={t("Listings.form.rejectedLabel")}
-              addButtonText={t("Listings.form.addItem")}
-              addAnotherButtonText={t("Listings.form.addAnotherItem")}
-              optionalText={t("Common.optional")}
-              placeholder={t("Listings.form.rejectedPlaceholder")}
-              secondaryPlaceholder={t(
-                "Listings.form.rejectedSecondaryPlaceholder"
-              )}
-              items={rejectedItems}
-              handleItemChange={handleRejectedItemChange}
-              onClick={addRejectedItem}
-              limit={16}
-            />
-          </FormSection>
-        )}
-
-        <FormSection>
-          <FormSectionHeader>
-            <h2>{t("Listings.form.media")}</h2>
-            <p>
-              {t("Listings.form.mediaHint", {
-                subject:
-                  listingType === "residential"
-                    ? t("Listings.form.mediaResidential")
-                    : listingType === "community"
-                      ? t("Listings.form.mediaCommunity")
-                      : t("Listings.form.mediaBusiness"),
-              })}
-            </p>
-          </FormSectionHeader>
-
-          <FieldsetWithGap>
-            <Label
-              htmlFor="photo-upload-button"
-              required={false}
-              optionalText={t("Common.optional")}
-            >
-              {t("Common.photos")}
-            </Label>
-            <ListingPhotosManagerComponent
-              initialPhotos={initialListing ? photos : pendingPhotos}
-              listingSlug={initialListing?.slug}
-              onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
-              isNewListing={!initialListing}
-            />
-          </FieldsetWithGap>
-
-          {/* TODO: Selecting field should highlight button, just like every other input */}
-          {listingType !== "residential" && (
-            <MultiInputComponent
-              label={t("Listings.form.externalLinks")}
-              required={false}
-              addButtonText={t("Listings.form.addLink")}
-              optionalText={t("Common.optional")}
-              placeholder={t("Listings.form.linkPlaceholder")}
-              items={links}
-              handleItemChange={handleLinksChange}
-              onClick={addLink}
-              limit={3}
-              type="url"
-              pattern="https?://.+"
-            />
+              <Field>
+                <Label htmlFor="stub">{t("Listings.form.stubSettings")}</Label>
+                <Select
+                  id="stub"
+                  value={String(isStub)}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                    setIsStub(event.target.value === "true")
+                  }
+                  required={true}
+                >
+                  <option value="false">
+                    {t("Listings.form.regularListing")}
+                  </option>
+                  <option value="true">{t("Listings.form.stubListing")}</option>
+                </Select>
+                <InputHint>
+                  {isStub
+                    ? t("Listings.form.stubActiveHint")
+                    : t("Listings.form.stubInactiveHint")}
+                </InputHint>
+              </Field>
+            </FormSection>
           )}
-        </FormSection>
 
-        {initialListing && (
           <FormSection>
-            <FormSectionHeader>
-              <h2>{t("Listings.form.visibility")}</h2>
-              <p>{t("Listings.form.visibilityHint")}</p>
-            </FormSectionHeader>
-
-            <Field>
-              <Label htmlFor="visibility">
-                {t("Listings.form.mapVisibility")}
-              </Label>
-              <SelectComponent
-                id="visibility"
-                value={String(initialListing ? visibility : true)}
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                  setVisibility(event.target.value === "true")
-                }
+            <CheckboxCluster>
+              <LegalAgreement
                 required={true}
-              >
-                <option value="true">{t("Listings.form.showOnMap")}</option>
-                <option value="false">{t("Listings.form.hideFromMap")}</option>
-              </SelectComponent>
-            </Field>
+                defaultChecked={initialListing ? true : undefined}
+              />
+            </CheckboxCluster>
           </FormSection>
-        )}
 
-        {profile?.is_admin && (
-          <FormSection>
-            <FormSectionHeader>
-              <h2>{t("Common.admin")}</h2>
-              <p>{t("Listings.form.adminHint")}</p>
-            </FormSectionHeader>
-
-            <Field>
-              <Label htmlFor="stub">{t("Listings.form.stubSettings")}</Label>
-              <SelectComponent
-                id="stub"
-                value={String(isStub)}
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                  setIsStub(event.target.value === "true")
-                }
-                required={true}
-              >
-                <option value="false">
-                  {t("Listings.form.regularListing")}
-                </option>
-                <option value="true">{t("Listings.form.stubListing")}</option>
-              </SelectComponent>
-              <InputHintComponent>
-                {isStub
-                  ? t("Listings.form.stubActiveHint")
-                  : t("Listings.form.stubInactiveHint")}
-              </InputHintComponent>
-            </Field>
-          </FormSection>
-        )}
-
-        <FormSection>
-          <CheckboxCluster>
-            <LegalAgreement
-              required={true}
-              defaultChecked={initialListing ? true : undefined}
-            />
-          </CheckboxCluster>
-        </FormSection>
-
-        {(Object.keys(errors).length > 0 || globalError) && (
-          <FormMessage
-            message={{
-              error:
-                globalError ||
-                t("Errors.validationSummary", {
-                  count: Object.keys(errors).length,
-                }),
-            }}
-          />
-        )}
-        <Button
-          data-testid="listing-write-submit"
-          type="submit"
-          variant="primary"
-          loading={isSubmitting}
-          loadingText={initialListing ? t("Status.saving") : t("Status.adding")}
-        >
-          {initialListing ? t("Actions.saveChanges") : t("Actions.addListing")}
-        </Button>
+          <SubmitButton
+            data-testid="listing-write-submit"
+            variant="primary"
+            pending={submitMutation.isPending}
+            pendingText={
+              initialListing ? t("Status.saving") : t("Status.adding")
+            }
+            disabled={deleteMutation.isPending}
+          >
+            {initialListing
+              ? t("Actions.saveChanges")
+              : t("Actions.addListing")}
+          </SubmitButton>
+        </DisabledFieldset>
       </Form>
 
-      {/* TODO: Fix styling but do not move into above form, as that means nested forms (and an error) */}
+      {feedbackMessage && <FormMessage message={{ error: feedbackMessage }} />}
+
       {initialListing && (
         <AdditionalSettings>
           <Button
             variant="secondary"
             width="contained"
             href={`/listings/${initialListing.slug}`}
+            disabled={isMutating}
           >
             {t("Actions.viewListing")}
           </Button>
@@ -691,14 +630,14 @@ export default function ListingWrite({
             dialogTitle={t("Actions.deleteListing")}
             confirmButtonText={t("Listings.delete.confirm")}
             confirmLoadingText={t("Status.deleting")}
+            disabled={submitMutation.isPending}
             onSubmit={handleDeleteListing}
+            pending={deleteMutation.isPending}
           >
             {t("Listings.delete.dialog")}
           </ButtonToDialog>
         </AdditionalSettings>
       )}
-
-      {feedbackMessage && <p>{feedbackMessage}</p>}
     </>
   );
 }

@@ -37,10 +37,47 @@ export async function signIn(
   ]);
 }
 
+export async function delayServerActionRequests(page: Page, delayMs = 500) {
+  await page.route("**/*", async (route) => {
+    const request = route.request();
+
+    if (
+      request.method() === "POST" &&
+      request.headers()["next-action"] !== undefined
+    ) {
+      await page.waitForTimeout(delayMs);
+    }
+
+    await route.continue();
+  });
+}
+
 export async function delayProfileActionRequests(page: Page, delayMs = 500) {
-  await page.route(/\/profile(?:\/|\?|$)/, async (route) => {
+  await delayServerActionRequests(page, delayMs);
+}
+
+export async function delayChatSendRequests(page: Page, delayMs = 500) {
+  await page.route(/\/rest\/v1\/chat_messages(?:\?|$)/, async (route) => {
     if (route.request().method() === "POST") {
       await page.waitForTimeout(delayMs);
+    }
+
+    await route.continue();
+  });
+}
+
+export async function failChatSendRequests(
+  page: Page,
+  message = "Synthetic chat failure"
+) {
+  await page.route(/\/rest\/v1\/chat_messages(?:\?|$)/, async (route) => {
+    if (route.request().method() === "POST") {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ message }),
+      });
+      return;
     }
 
     await route.continue();

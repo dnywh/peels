@@ -9,6 +9,48 @@ export type ListingCoordinates = {
   longitude: number;
 };
 
+export type ListingWriteFieldErrors = Partial<
+  Record<"name" | "location", string>
+>;
+
+export type ListingWriteProfile = {
+  first_name?: string | null;
+  avatar?: string | null;
+  is_admin?: boolean | null;
+};
+
+export type ListingDraftInput = {
+  id?: number;
+  owner_id: string;
+  type: ListingType;
+  avatar?: string;
+  name?: string;
+  description: string;
+  location: string;
+  area_name: string;
+  country_code: string;
+  accepted_items: string[];
+  rejected_items: string[];
+  photos: string[];
+  links: string[];
+  is_stub?: boolean;
+  visibility: boolean;
+};
+
+export type ListingSubmitResult = {
+  created: boolean;
+  id: number;
+  redirectTo: string;
+  slug: string;
+  type: ListingType;
+};
+
+export type DeleteListingResult = {
+  message: string;
+  redirectTo: string;
+  slug: string;
+};
+
 /**
  * Shape of a row from `listings_public_data` (anonymous readers) and
  * `listings_private_data` (authenticated readers). Owner-scoped fields are

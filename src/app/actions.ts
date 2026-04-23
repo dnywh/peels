@@ -19,6 +19,12 @@ import { normaliseNextPath, resolveAuthLocale } from "@/utils/authRedirects";
 import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
 import { normaliseLocale, type Locale } from "@/i18n/config";
 import type { InlineActionResult } from "@/types/actionResult";
+import type {
+  DeleteListingResult,
+  ListingDraftInput,
+  ListingSubmitResult,
+  ListingType,
+} from "@/types/listing";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -609,7 +615,9 @@ export const signOutAction = async () => {
   return redirect("/");
 };
 
-export const deleteListingAction = async (slug: string) => {
+export const deleteListingAction = async (
+  slug: string
+): Promise<InlineActionResult<DeleteListingResult>> => {
   const t = await getTranslations();
   // Check if user is logged in first
   const supabase = await createClient();
@@ -641,17 +649,26 @@ export const deleteListingAction = async (slug: string) => {
 
     if (!response.ok) {
       console.error("Error deleting listing:", data.message);
-      return { success: false, message: t("Errors.failedDeleteListing") };
-    } else {
-      console.log("Listing successfully deleted:", slug);
-      return { success: true, message: t("Listings.delete.success") };
+      return actionError(t("Errors.failedDeleteListing"));
     }
+
+    console.log("Listing successfully deleted:", slug);
+    const message = t("Listings.delete.success");
+
+    revalidatePath("/map");
+    revalidatePath("/listings");
+    revalidatePath("/profile");
+    revalidatePath("/profile/listings");
+    revalidatePath(`/listings/${slug}`);
+
+    return actionSuccess({
+      slug,
+      message,
+      redirectTo: `/profile/?message=${encodeURIComponent(message)}`,
+    });
   } catch (error) {
     console.error("Error deleting listing:", error);
-    return {
-      success: false,
-      message: t("Errors.generic"),
-    };
+    return actionError(t("Errors.generic"));
   }
 };
 
@@ -760,7 +777,9 @@ export async function fetchListingsInView(
   }
 }
 
-export const createOrUpdateListingAction = async (listingData: any) => {
+export const createOrUpdateListingAction = async (
+  listingData: ListingDraftInput
+): Promise<InlineActionResult<ListingSubmitResult>> => {
   const t = await getTranslations("Errors");
   const supabase = await createClient();
 
@@ -772,14 +791,14 @@ export const createOrUpdateListingAction = async (listingData: any) => {
       listingData.type !== "community" &&
       listingData.type !== "residential"
     ) {
-      return { error: t("unexpected") };
+      return actionError(t("unexpected"));
     }
 
     // Check name validation
     if (listingData.type !== "residential" && listingData.name) {
       const nameValidation = validateName(listingData.name);
       if (!nameValidation.isValid) {
-        return { error: t("emptyName") };
+        return actionError(t("emptyName"));
       }
       // Use the validated value
       listingData.name = nameValidation.value;
@@ -797,13 +816,14 @@ export const createOrUpdateListingAction = async (listingData: any) => {
 
       // Return specific error messages based on error codes
       if (error.code === "42501") {
-        return {
-          error: t("tooManyListings"),
-        };
-      } else if (error.code === "23505") {
-        return { error: t("duplicateListing") };
+        return actionError(t("tooManyListings"));
       }
-      return { error: t("genericLater") };
+
+      if (error.code === "23505") {
+        return actionError(t("duplicateListing"));
+      }
+
+      return actionError(t("genericLater"));
     }
 
     // If this was a new listing with pending photos, update them
@@ -815,7 +835,7 @@ export const createOrUpdateListingAction = async (listingData: any) => {
 
       if (updateError) {
         console.error("Error updating photos:", updateError);
-        return { error: t("savePhotosFailed") };
+        return actionError(t("savePhotosFailed"));
       }
     }
 
@@ -825,10 +845,22 @@ export const createOrUpdateListingAction = async (listingData: any) => {
     if (data?.slug) {
       revalidatePath(`/listings/${data.slug}`);
     }
+    revalidatePath("/profile");
+    revalidatePath("/profile/listings");
 
-    return { data };
+    if (!data?.slug || !data?.id) {
+      return actionError(t("genericLater"));
+    }
+
+    return actionSuccess({
+      created: !listingData.id,
+      id: data.id,
+      redirectTo: `/listings/${data.slug}?status=${listingData.id ? "updated" : "created"}`,
+      slug: data.slug,
+      type: listingData.type as ListingType,
+    });
   } catch (error) {
     console.error("Unexpected error in createOrUpdateListingAction:", error);
-    return { error: t("unexpected") };
+    return actionError(t("unexpected"));
   }
 };
