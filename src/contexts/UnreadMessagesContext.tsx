@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { usePathname } from "next/navigation";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 
 type ThreadReadStatus = Record<string, boolean>;
@@ -40,6 +41,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   );
   const [hasViewedChats, setHasViewedChats] = useState(false);
   const supabase = useMemo(() => createClient(), []);
+  const pathname = usePathname();
 
   useEffect(() => {
     let isActive = true;
@@ -80,22 +82,10 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   }, [supabase]);
 
   useEffect(() => {
-    function handleRouteChange() {
-      if (window.location.pathname === "/chats") {
-        setHasViewedChats(true);
-      }
+    if (pathname === "/chats") {
+      setHasViewedChats(true);
     }
-
-    handleRouteChange();
-
-    const observer = new MutationObserver(handleRouteChange);
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (isAuthDebugEnabled) {

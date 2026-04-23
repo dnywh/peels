@@ -131,12 +131,14 @@ export function getListingOwnerAvatar(
   };
 }
 
-export function getProfileAvatar(profileId: string | null | undefined) {
-  if (!profileId) return null;
+export function getProfileAvatarSource(
+  avatarFilename: string | null | undefined
+) {
+  if (!avatarFilename) return null;
 
   return {
     bucket: "avatars",
-    filename: profileId,
+    filename: avatarFilename,
     alt: "The avatar for this profile",
   };
 }

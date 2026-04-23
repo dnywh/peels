@@ -115,6 +115,7 @@ type ChatRole = "initiator" | "owner";
 function getChatRole(
   thread: ChatThreadRecord | null | undefined,
   user: ChatUser | null | undefined,
+  listing: ChatListing,
   isDemo: boolean
 ): ChatRole {
   if (isDemo) {
@@ -122,6 +123,14 @@ function getChatRole(
   }
 
   if (thread?.initiator_id && thread.initiator_id === user?.id) {
+    return "initiator";
+  }
+
+  if (!thread) {
+    if (listing.owner_id && listing.owner_id === user?.id) {
+      return "owner";
+    }
+
     return "initiator";
   }
 
@@ -156,7 +165,7 @@ function ChatHeader({
   const t = useTranslations();
   const router = useRouter();
 
-  const role = getChatRole(thread, user, isDemo);
+  const role = getChatRole(thread, user, listing, isDemo);
 
   const otherPersonName =
     role === "initiator"
