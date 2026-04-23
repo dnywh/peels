@@ -20,6 +20,10 @@ import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
 import { defaultLocale, normaliseLocale } from "@/i18n/config";
 import { redirect } from "next/navigation";
+import {
+  sharedSectionHeadingStyles,
+  sharedSurfaceSectionStyles,
+} from "@/styles/commonStyles";
 
 export async function generateMetadata() {
   const t = await getTranslations("Profile.sections");
@@ -114,16 +118,10 @@ const NakedSection = styled.section`
 `;
 
 const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  background-color: ${theme.colors.background.top};
-  border: 1px solid ${theme.colors.border.base};
-  border-radius: ${theme.corners.base};
-  padding: calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 1.5)
-    calc(${theme.spacing.unit} * 1.5);
+  ${sharedSurfaceSectionStyles};
+
   & > h2 {
-    font-size: 1.5rem;
+    ${sharedSectionHeadingStyles};
     margin-left: calc(${theme.spacing.unit} * 1.5);
   }
 `;

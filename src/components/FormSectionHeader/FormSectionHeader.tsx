@@ -1,5 +1,6 @@
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
+import { sharedSectionHeadingStyles } from "@/styles/commonStyles";
 import type { PropsWithChildren } from "react";
 
 const StyledSectionHeader = styled.header`
@@ -7,10 +8,11 @@ const StyledSectionHeader = styled.header`
   & h3 {
     color: ${theme.colors.text.ui.primary};
   }
+
   & h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
+    ${sharedSectionHeadingStyles};
   }
+
   & p {
     color: ${theme.colors.text.ui.secondary};
   }

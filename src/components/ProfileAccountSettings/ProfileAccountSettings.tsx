@@ -19,6 +19,7 @@ import type { InlineActionResult } from "@/types/actionResult";
 
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
+import { sharedInsetListStyles } from "@/styles/commonStyles";
 import { FIELD_CONFIGS } from "@/lib/formValidation";
 import { useTranslations } from "next-intl";
 
@@ -29,9 +30,7 @@ const editingListItemStyles = css`
 `;
 
 const List = styled.ul`
-  display: flex;
-  flex-direction: column;
-  padding: 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5);
+  ${sharedInsetListStyles};
 `;
 
 const ListItem = styled.li<{ $editing?: boolean }>`

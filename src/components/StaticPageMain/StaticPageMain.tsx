@@ -1,5 +1,6 @@
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
+import { sharedCenteredPageStackStyles } from "@/styles/commonStyles";
 import type { ReactNode } from "react";
 
 type StaticPageMainProps = {
@@ -23,10 +24,7 @@ const widePaddingStyles = css`
 `;
 
 const StyledMain = styled.main<{ $padding?: "wide" | null }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  ${sharedCenteredPageStackStyles};
   gap: ${theme.spacing.gap.page.md};
 
   @media (min-width: 768px) {

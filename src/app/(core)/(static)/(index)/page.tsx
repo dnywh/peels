@@ -14,6 +14,7 @@ import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
+import { sharedCenteredPageStackStyles } from "@/styles/commonStyles";
 
 export async function generateMetadata() {
   const t = await getTranslations("Index");
@@ -99,24 +100,20 @@ export default function Index() {
 }
 
 const StyledMain = styled.main`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  ${sharedCenteredPageStackStyles};
   padding-top: 10vh;
   gap: ${theme.spacing.gap.page.md};
+
   @media (min-width: 768px) {
     gap: ${theme.spacing.gap.page.lg};
   }
 `;
 
 const Intro = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  ${sharedCenteredPageStackStyles};
   text-align: center;
   gap: 1.5rem;
+
   & > h1 {
     max-width: 24ch;
     font-size: 2.75rem;

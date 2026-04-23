@@ -1,5 +1,6 @@
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
+import { sharedSurfaceStyles } from "@/styles/commonStyles";
 import type { HTMLAttributes, FormHTMLAttributes, ReactNode } from "react";
 
 const nestedFormStyles = css`
@@ -8,9 +9,7 @@ const nestedFormStyles = css`
 
 const outerFormStyles = css`
   gap: 2rem;
-  background: ${theme.colors.background.top};
-  border: 1px solid ${theme.colors.border.base};
-  border-radius: ${theme.corners.base};
+  ${sharedSurfaceStyles};
   padding: 1.5rem;
 
   @media (min-width: 768px) {

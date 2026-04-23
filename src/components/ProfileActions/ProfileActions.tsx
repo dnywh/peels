@@ -8,11 +8,10 @@ import SubmitButton from "@/components/SubmitButton";
 
 import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
+import { sharedInsetListStyles } from "@/styles/commonStyles";
 
 const List = styled.ul`
-  display: flex;
-  flex-direction: column;
-  padding: 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5);
+  ${sharedInsetListStyles};
   gap: calc(${theme.spacing.unit} * 5);
 `;
 
