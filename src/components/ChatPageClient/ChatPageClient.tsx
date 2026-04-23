@@ -1,6 +1,7 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 import { useTabBar } from "@/contexts/TabBarContext";
 
@@ -71,6 +72,7 @@ export default function ChatPageClient({
   initialThreadId?: string | null;
   selectedThread?: ChatThreadRecord | null;
 }) {
+  const t = useTranslations("Chat");
   const { setTabBarProps } = useTabBar();
 
   // Hide TabBar when thread is selected
@@ -116,10 +118,10 @@ export default function ChatPageClient({
             <PeelsLogo size={64} color="emptyState" />
             <p>
               {initialThreadId
-                ? "This chat is no longer available"
+                ? t("emptyStateUnavailable")
                 : initialThreads.length === 0
-                  ? "Try contacting your first host"
-                  : "Select a chat from the left"}
+                  ? t("emptyStateFirstHost")
+                  : t("emptyStateSelectThread")}
             </p>
           </ChatWindowEmptyState>
         )}

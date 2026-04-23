@@ -7,13 +7,34 @@ type ListingPhotoRecord = {
   photos: string[] | null;
 };
 
+const MIME_TYPE_EXTENSIONS: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+  "image/avif": "avif",
+  "image/heic": "heic",
+  "image/heif": "heif",
+};
+
+function getFileExtension(file: File) {
+  const fileNameExtension = file.name.split(".").pop()?.trim().toLowerCase();
+
+  if (fileNameExtension && /^[a-z0-9]+$/.test(fileNameExtension)) {
+    return fileNameExtension;
+  }
+
+  return MIME_TYPE_EXTENSIONS[file.type] ?? "bin";
+}
+
 export async function uploadAvatar(
   file: File,
   bucket: AvatarBucket,
   id: string
 ) {
   const supabase = createClient();
-  const fileExt = file.name.split(".").pop();
+  const fileExt = getFileExtension(file);
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
   const { data, error } = await supabase.storage
@@ -85,7 +106,7 @@ export async function uploadListingPhoto(
   listingSlug: string | null = null
 ) {
   const supabase = createClient();
-  const fileExt = file.name.split(".").pop();
+  const fileExt = getFileExtension(file);
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
   const { data, error } = await supabase.storage

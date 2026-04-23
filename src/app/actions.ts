@@ -767,6 +767,14 @@ export const createOrUpdateListingAction = async (listingData: any) => {
   try {
     console.log("Server action: Creating/updating listing");
 
+    if (
+      listingData.type !== "business" &&
+      listingData.type !== "community" &&
+      listingData.type !== "residential"
+    ) {
+      return { error: t("unexpected") };
+    }
+
     // Check name validation
     if (listingData.type !== "residential" && listingData.name) {
       const nameValidation = validateName(listingData.name);

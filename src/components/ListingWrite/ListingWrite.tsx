@@ -8,7 +8,6 @@ import {
   deleteListingAction,
   createOrUpdateListingAction,
 } from "@/app/actions";
-import { useParams } from "next/navigation";
 import LocationSelect from "@/components/LocationSelect";
 import CheckboxCluster from "@/components/CheckboxCluster";
 import LegalAgreement from "@/components/LegalAgreement";
@@ -32,7 +31,7 @@ import FormMessage from "@/components/FormMessage";
 import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 import type { User } from "@supabase/supabase-js";
-import type { Listing } from "@/types/listing";
+import type { Listing, ListingType } from "@/types/listing";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
@@ -77,6 +76,7 @@ type ListingWriteProfile = {
 
 type ListingWriteProps = {
   initialListing?: Listing | null;
+  listingType?: ListingType;
   user: User | null;
   profile: ListingWriteProfile | null;
 };
@@ -84,15 +84,16 @@ type ListingWriteProps = {
 // Component
 export default function ListingWrite({
   initialListing,
+  listingType: initialListingType,
   user,
   profile,
 }: ListingWriteProps) {
   const t = useTranslations();
-  const { type } = useParams<{ type?: string }>();
   const router = useRouter();
   const [isHydrated, setIsHydrated] = useState(false);
 
-  const listingType = initialListing?.type || type || "residential";
+  const listingType =
+    initialListing?.type || initialListingType || "residential";
 
   useEffect(() => {
     setIsHydrated(true);

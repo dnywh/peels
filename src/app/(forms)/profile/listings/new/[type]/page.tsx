@@ -1,14 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
 import ListingWrite from "@/components/ListingWrite";
 import FormHeader from "@/components/FormHeader";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-
-type ListingType = "residential" | "community" | "business";
+import type { ListingType } from "@/types/listing";
 
 type NewListingFormContentProps = {
   params: Promise<{
-    type: ListingType;
+    type: string;
   }>;
 };
 
@@ -39,11 +38,20 @@ export const metadata: Metadata = {
   title: "Add Listing",
 };
 
+function isListingType(type: string): type is ListingType {
+  return type === "residential" || type === "community" || type === "business";
+}
+
 export default async function NewListingFormContent({
   params,
 }: NewListingFormContentProps) {
   const { type } = await params;
-  const config = typeConfig[type] ?? typeConfig.residential;
+
+  if (!isListingType(type)) {
+    notFound();
+  }
+
+  const config = typeConfig[type];
 
   const supabase = await createClient();
   const {
@@ -67,10 +75,12 @@ export default async function NewListingFormContent({
         <p>{config.description}</p>
       </FormHeader>
 
-      <ListingWrite user={user} profile={profile} />
+      <ListingWrite listingType={type} user={user} profile={profile} />
     </>
   );
 }
+
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   return [{ type: "residential" }, { type: "community" }, { type: "business" }];
