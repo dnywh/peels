@@ -43,10 +43,7 @@ export function getHostedStaticPublicUrl(assetPath: string) {
   return `${getHostedStaticOrigin()}${getStaticObjectPath(assetPath)}`;
 }
 
-export function getStaticAssetUrl(
-  assetPath: string,
-  _localFallbackPath: string
-) {
+export function getStaticAssetUrl(assetPath: string) {
   return getHostedStaticPublicUrl(assetPath);
 }
 
@@ -55,15 +52,12 @@ export function getStaticFontUrl(assetPath: string) {
 }
 
 export function getPromoKitUrl() {
-  return getStaticAssetUrl("promo-kit.zip", "/fallbacks/promo-kit.txt");
+  return getStaticAssetUrl("promo-kit.zip");
 }
 
 export function getNewsletterIssueImageUrl(
   issueNumber: number | string,
   assetFile: string
 ) {
-  return getStaticAssetUrl(
-    `newsletter/${issueNumber}/${assetFile}`,
-    "/map-tiles/hero.jpg"
-  );
+  return getStaticAssetUrl(`newsletter/${issueNumber}/${assetFile}`);
 }

@@ -15,10 +15,8 @@ const StyledInput = styled(HeadlessInput)`
     color: ${theme.colors.input.placeholder.text};
   }
   &:focus {
-    outline: none;
-    outline-width: 20px;
+    outline: 2px solid ${theme.colors.border.focus};
     outline-offset: 2px;
-    outline-color: ${theme.colors.border.focus};
   }
   &[data-invalid] {
     border-color: ${theme.colors.input.invalid.border};

@@ -38,6 +38,8 @@ function MapIconWrapper({
   label?: string;
   size?: MapIconSize;
 }) {
+  const accessibleLabel = label || props["aria-label"];
+
   return (
     <StyledMapIcon
       xmlns="http://www.w3.org/2000/svg"
@@ -45,13 +47,14 @@ function MapIconWrapper({
       width={width}
       height={height}
       fill={fill}
-      aria-hidden="true"
-      aria-label={label}
+      aria-hidden={accessibleLabel ? undefined : true}
+      aria-label={accessibleLabel || undefined}
       role="img"
       $size={size}
       overflow="visible"
       {...props}
     >
+      {accessibleLabel && <title>{accessibleLabel}</title>}
       {children}
     </StyledMapIcon>
   );

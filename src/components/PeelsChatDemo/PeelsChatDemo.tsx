@@ -9,7 +9,6 @@ const ChatDemoContainer = styled.div`
   max-width: 400px;
   transform: scale(0.88) rotate(-2deg);
   background-color: ${theme.colors.background.top};
-  padding: 2.5rem 1rem;
   border: 1px solid ${theme.colors.border.base};
   border-radius: ${theme.corners.base};
   padding: 0;

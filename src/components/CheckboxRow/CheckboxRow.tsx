@@ -113,7 +113,10 @@ function CheckboxRow({
 
   return (
     <StyledField>
-      <StyledLabel htmlFor={checkboxId} passive={passiveLabel}>
+      <StyledLabel
+        htmlFor={checkboxId}
+        data-passive={passiveLabel ? "true" : undefined}
+      >
         {children}
       </StyledLabel>
 

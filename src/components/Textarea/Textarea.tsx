@@ -39,10 +39,8 @@ const StyledTextarea = styled(HeadlessTextarea)<{
 
   &:focus,
   &[data-focus] {
-    outline: none;
-    outline-width: 20px;
+    outline: 2px solid ${theme.colors.border.focus};
     outline-offset: 2px;
-    outline-color: ${theme.colors.border.focus};
   }
 
   ${({ $variant }) => $variant === "chat" && chatTextareaStyles}

@@ -32,6 +32,8 @@ function ListItemIconWrapper({
   label?: string;
   type?: ListItemTone;
 }) {
+  const accessibleLabel = label || props["aria-label"];
+
   return (
     <StyledListItemIconWrapper
       xmlns="http://www.w3.org/2000/svg"
@@ -39,12 +41,13 @@ function ListItemIconWrapper({
       height={size}
       viewBox="0 0 20 21"
       fill={fill}
-      aria-hidden="true"
-      aria-label={label}
+      aria-hidden={accessibleLabel ? undefined : true}
+      aria-label={accessibleLabel || undefined}
       role="img"
       $tone={type}
       {...props}
     >
+      {accessibleLabel && <title>{accessibleLabel}</title>}
       {children}
     </StyledListItemIconWrapper>
   );
