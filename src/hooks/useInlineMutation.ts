@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { InlineActionResult } from "@/types/actionResult";
 
 export function getInitialInlineActionResult<T>(): InlineActionResult<T> {
@@ -19,6 +19,7 @@ export function useInlineMutation<T>() {
     getInitialInlineActionResult<T>()
   );
   const [isPending, setIsPending] = useState(false);
+  const isPendingRef = useRef(false);
 
   const reset = useCallback(() => {
     setResult(getInitialInlineActionResult<T>());
@@ -29,10 +30,11 @@ export function useInlineMutation<T>() {
       mutation: () => Promise<InlineActionResult<T>>,
       options: InlineMutationOptions = {}
     ) => {
-      if (isPending) {
+      if (isPendingRef.current) {
         return null;
       }
 
+      isPendingRef.current = true;
       setIsPending(true);
       setResult(getInitialInlineActionResult<T>());
 
@@ -51,10 +53,11 @@ export function useInlineMutation<T>() {
         setResult(fallbackResult);
         return fallbackResult;
       } finally {
+        isPendingRef.current = false;
         setIsPending(false);
       }
     },
-    [isPending]
+    []
   );
 
   return {
