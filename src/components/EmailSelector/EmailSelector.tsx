@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
@@ -10,7 +11,7 @@ import Field from "@/components/Field";
 import Label from "@/components/Label";
 import Select from "@/components/Select";
 import PostageStamp from "@/components/PostageStamp";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 
 type EmailType = "support" | "dw" | "general" | "newsletter";
@@ -128,51 +129,44 @@ export default function EmailSelector() {
   );
 }
 
-const FormSection = styled(Form)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "2.5rem",
-  padding: "2rem",
-  borderRadius: theme.corners.base,
-  background: theme.colors.background.top,
-  border: `1px solid ${theme.colors.border.base}`,
-  // For PostageStamp
-  overflow: "hidden",
-  position: "relative",
-}));
+const FormSection = styled(Form)`
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: 2rem;
+  border-radius: ${theme.corners.base};
+  background: ${theme.colors.background.top};
+  border: 1px solid ${theme.colors.border.base};
+  overflow: hidden;
+  position: relative;
+`;
 
-const SubSectionTop = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1.5rem",
-  // For PostageStamp
-  "& > p": {
-    marginRight: "8.5rem",
-    textWrap: "balance",
-  },
-}));
+const SubSectionTop = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  & > p {
+    margin-right: 8.5rem;
+    text-wrap: balance;
+  }
+`;
 
-const SubSectionBottom = styled("div")(({ theme }) => ({
-  // borderTop: `1px solid ${theme.colors.border.base}`,
-  // paddingTop: "2.5rem", // Match gap on parent
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  gap: "1rem",
-
-  "& a": {
-    fontWeight: "600",
-    fontSize: "1.5rem",
-  },
-
-  "@media (min-width: 768px)": {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    gap: "1.5rem",
-
-    "& a": {
-      fontSize: "1.75rem",
-    },
-  },
-}));
+const SubSectionBottom = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  & a {
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    & a {
+      font-size: 1.75rem;
+    }
+  }
+`;

@@ -1,8 +1,9 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 
 import { facts } from "@/data/facts";
@@ -21,111 +22,100 @@ type Fact = {
   source?: string;
 };
 
-const StyledSidebar = styled("div")(({ theme }) => ({
-  backgroundColor: theme.colors.background.pit,
-  color: theme.colors.text.secondary,
-  borderRadius: theme.corners.base,
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  padding: "1.5rem",
-  alignItems: "center",
-  justifyContent: "center",
-  textAlign: "center",
-  width: SIDEBAR_WIDTH,
-  height: "100%",
-  wordWrap: "anywhere", // for source URLs on facts, remove when those go
-  border: `2px dashed ${theme.colors.border.base}`,
+const StyledSidebar = styled.div`
+  background-color: ${theme.colors.background.pit};
+  color: ${theme.colors.text.secondary};
+  border-radius: ${theme.corners.base};
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: ${SIDEBAR_WIDTH};
+  height: 100%;
+  word-wrap: anywhere;
+  border: 2px dashed ${theme.colors.border.base};
+  overflow-y: hidden;
+`;
 
-  overflowY: "hidden",
-}));
+const FactBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: ${theme.colors.text.ui.emptyState};
+  & h3 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 100%;
+    text-transform: uppercase;
+  }
+  & p:first-of-type {
+    font-size: 1.35rem;
+    font-weight: 500;
+    line-height: 120%;
+    text-wrap: balance;
+  }
+  & p > small {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 100%;
+    & a {
+      color: inherit;
+      transition: opacity 150ms ease-in-out;
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+  }
+`;
 
-const FactBlock = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  color: theme.colors.text.ui.emptyState,
-
-  "& h3": {
-    fontSize: "0.75rem",
-    fontWeight: "600",
-    letterSpacing: "0.05em",
-    lineHeight: "100%",
-    textTransform: "uppercase",
-  },
-
-  "& p:first-of-type": {
-    fontSize: "1.35rem",
-    fontWeight: "500",
-    lineHeight: "120%",
-    textWrap: "balance",
-  },
-
-  "& p > small": {
-    fontSize: "0.75rem",
-    fontWeight: "500",
-    lineHeight: "100%",
-
-    "& a": {
-      color: "inherit",
-      transition: "opacity 150ms ease-in-out",
-      "&:hover": {
-        opacity: 0.75,
-      },
-    },
-  },
-}));
-
-const StepList = styled("ol")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "clamp(1rem, 6rem, 9vh)",
-  listStyle: "none",
-  padding: 0,
-  counterReset: "steps",
-
-  "& li": {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "0.35rem",
-    position: "relative",
-    paddingTop: "2.25rem", // Make room for the number above
-
-    "& h3": {
-      fontSize: "1.5em",
-      fontWeight: "500",
-      lineHeight: "100%",
-    },
-
-    "& p": {
-      fontSize: "1em",
-      fontWeight: "400",
-      lineHeight: "100%",
-    },
-
-    "&::before": {
-      content: "counter(steps)",
-      counterIncrement: "steps",
-      position: "absolute",
-      top: 0,
-      width: "1.5rem",
-      height: "1.5rem",
-      backgroundColor: theme.colors.text.counter,
-      color: theme.colors.background.pit,
-      borderRadius: "50%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      leadingTrim: "both",
-      fontSize: "1em",
-      fontWeight: "700",
-      // Override the oldstyle numbers just in this case, since that was
-      // affecting optical alignment
-      fontVariantNumeric: "lining-nums",
-    },
-  },
-}));
+const StepList = styled.ol`
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 6rem, 9vh);
+  list-style: none;
+  padding: 0;
+  counter-reset: steps;
+  & li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    position: relative;
+    padding-top: 2.25rem;
+    & h3 {
+      font-size: 1.5em;
+      font-weight: 500;
+      line-height: 100%;
+    }
+    & p {
+      font-size: 1em;
+      font-weight: 400;
+      line-height: 100%;
+    }
+    &::before {
+      content: counter(steps);
+      counter-increment: steps;
+      position: absolute;
+      top: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      background-color: ${theme.colors.text.counter};
+      color: ${theme.colors.background.pit};
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      leading-trim: both;
+      font-size: 1em;
+      font-weight: 700;
+      font-variant-numeric: lining-nums;
+    }
+  }
+`;
 
 export default function MapSidebar({ user, covered }: MapSidebarProps) {
   const t = useTranslations();

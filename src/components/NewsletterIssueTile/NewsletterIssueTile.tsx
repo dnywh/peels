@@ -1,7 +1,8 @@
 import Link from "next/link";
 import StrongLink from "@/components/StrongLink";
 import NewsletterImage from "@/components/NewsletterImage";
-import { styled } from "@pigment-css/react";
+import { css, styled } from "next-yak";
+import { theme } from "@/styles/theme.yak";
 
 const imageWidth = 192;
 const imageHeight = imageWidth * 0.667;
@@ -26,11 +27,11 @@ export default function NewsletterIssueTile({
   return (
     <ListItem key={slug}>
       <LinkedRow
-        featured={featured ? "true" : "false"} // Required because Link component forwards all props to the underlying DOM element
+        $featured={featured}
         prefetch={false}
         href={`/newsletter/${slug}`}
       >
-        <Text featured={featured}>
+        <Text $featured={featured}>
           <h3>{title}</h3>
           <p>{subtitle}</p>
         </Text>
@@ -56,130 +57,100 @@ export default function NewsletterIssueTile({
   );
 }
 
-const ListItem = styled("li")(({ theme }) => ({
-  backgroundColor: theme.colors.background.top,
-  borderRadius: theme.corners.base,
-  border: `1px solid ${theme.colors.border.base}`,
-  overflow: "clip",
-}));
+const featuredRowStyles = css`
+  display: grid;
+  grid-template-rows: 1fr 1fr;
 
-const LinkedRow = styled(Link)<{
-  featured?: "true" | "false";
-}>(({ theme }) => ({
-  color: "inherit",
-  padding: "2rem",
-  display: "flex",
-  gap: "2rem",
-  // containerType: "inline-size",
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+    grid-template-columns: 8fr 6fr;
+    grid-template-rows: 1fr;
+  }
+`;
 
-  variants: [
-    {
-      props: { featured: "true" },
-      style: {
-        display: "grid",
-        gridTemplateRows: "1fr 1fr",
-        "@media (min-width: 768px)": {
-          padding: "3rem 2rem",
-          gridTemplateColumns: "8fr 6fr",
-          gridTemplateRows: "1fr",
-        },
-      },
-    },
-  ],
+const featuredTextStyles = css`
+  & h3 {
+    font-size: 1.75rem;
+  }
+`;
 
-  transition: "opacity 150ms ease-in-out",
+const ListItem = styled.li`
+  background-color: ${theme.colors.background.top};
+  border-radius: ${theme.corners.base};
+  border: 1px solid ${theme.colors.border.base};
+  overflow: clip;
+`;
 
-  "&:hover": {
-    opacity: 0.5,
-  },
-}));
+const LinkedRow = styled(Link)<{ $featured?: boolean }>`
+  color: inherit;
+  padding: 2rem;
+  display: flex;
+  gap: 2rem;
+  transition: opacity 150ms ease-in-out;
 
-const Text = styled("div")<{
-  featured?: boolean;
-}>(({ theme }) => ({
-  // TODO: The children of this div aren't wrapping properly
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
+  &:hover {
+    opacity: 0.5;
+  }
 
-  "& h3": {
-    fontSize: "1.5rem",
-    lineHeight: "115%",
-    textWrap: "balance",
-    color: theme.colors.text.brand.primary,
-  },
+  ${({ $featured }) => $featured && featuredRowStyles}
+`;
 
-  "& p": {
-    color: theme.colors.text.ui.quaternary,
-    lineHeight: "115%",
-  },
+const Text = styled.div<{ $featured?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
-  variants: [
-    {
-      props: { featured: true },
-      style: {
-        "& h3": {
-          fontSize: "1.75rem",
-        },
-      },
-    },
-  ],
-}));
+  & h3 {
+    font-size: 1.5rem;
+    line-height: 115%;
+    text-wrap: balance;
+    color: ${theme.colors.text.brand.primary};
+  }
 
-const Images = styled("div")(({ theme }) => ({
-  // flexGrow: 1,
-  // position: "relative",
+  & p {
+    color: ${theme.colors.text.ui.quaternary};
+    line-height: 115%;
+  }
 
-  display: "flex",
-  flexDirection: "row-reverse",
-  // "@container (max-width: 512px)": {
-  "@media (min-width: 768px)": {
-    display: "unset",
-  },
+  ${({ $featured }) => $featured && featuredTextStyles}
+`;
 
-  "& > figure": {
-    // transform: "rotate(8deg)",
-    position: "relative",
-    width: `${imageWidth}px`,
-    // height: `${imageHeight}px`,
+const Images = styled.div`
+  display: flex;
+  flex-direction: row-reverse;
 
-    // ThumbnailContainer
-    "& div": {
-      position: "absolute",
+  @media (min-width: 768px) {
+    display: unset;
+  }
 
-      // Address Next Image requirements:
-      // ... has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
-      // "& > img": {
-      //   width: "auto",
-      //   height: "auto",
-      // },
-    },
-    // Bottom image
-    "&:nth-child(1)": {
-      "& div": {
-        transform: "rotate(6deg)",
-        top: "1rem",
+  & > figure {
+    position: relative;
+    width: ${imageWidth}px;
+  }
 
-        "@media (min-width: 768px)": {
-          transform: "rotate(-6deg)",
-          top: "1.5rem",
-        },
-      },
-    },
-    // Top image
-    "&:nth-child(2)": {
-      "& div": {
-        // ThumbnailContainer
-        transform: "rotate(-10deg)",
-        top: "0.75rem",
-        right: "-4rem", // Affects width, maybe due to flex behavior
+  & > figure div {
+    position: absolute;
+  }
 
-        "@media (min-width: 768px)": {
-          transform: "rotate(10deg)",
-          top: "3rem",
-          right: "-7rem",
-        },
-      },
-    },
-  },
-}));
+  & > figure:nth-child(1) div {
+    transform: rotate(6deg);
+    top: 1rem;
+
+    @media (min-width: 768px) {
+      transform: rotate(-6deg);
+      top: 1.5rem;
+    }
+  }
+
+  & > figure:nth-child(2) div {
+    transform: rotate(-10deg);
+    top: 0.75rem;
+    right: -4rem;
+
+    @media (min-width: 768px) {
+      transform: rotate(10deg);
+      top: 3rem;
+      right: -7rem;
+    }
+  }
+`;

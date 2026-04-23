@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import { useState, useRef } from "react";
 
@@ -9,38 +10,51 @@ import Field from "@/components/Field";
 import Button from "@/components/Button";
 import InputHint from "@/components/InputHint";
 
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 
-const StyledField = styled(Field)({
-  alignItems: "center",
-  marginTop: "0.5rem", // Optical offset for theme.rotations.avatar
-});
+const StyledField = styled(Field)`
+  align-items: center;
+  margin-top: 0.5rem;
+`;
 
-const StyledImgContainer = styled("div")({
-  position: "relative",
-});
+const AvatarControls = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-const AvatarButton = styled(Button)({
-  marginLeft: "0.35rem", // Optical offset for theme.rotations.avatar
-  marginTop: "-1.25rem",
-  zIndex: 1,
-});
+const StyledImgContainer = styled.div`
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+`;
 
-const LoadingSpinner = styled("div")(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  fontSize: "20px",
+const AvatarButtonOverlay = styled.div`
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  z-index: 1;
+`;
 
-  position: "absolute",
-  inset: 0,
-  backgroundColor: theme.colors.background.overlay,
-  color: theme.colors.text.overlay,
-  // Match Avatar
-  transform: `rotate(${theme.rotations.avatar})`,
-  borderRadius: theme.corners.avatar,
-}));
+const AvatarButton = styled(Button)`
+  z-index: 1;
+`;
+
+const LoadingSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  position: absolute;
+  inset: 0;
+  background-color: ${theme.colors.background.overlay};
+  color: ${theme.colors.text.overlay};
+  transform: rotate(${theme.rotations.avatar});
+  border-radius: ${theme.corners.avatar.large};
+`;
 
 const AvatarComponent = Avatar as React.ComponentType<any>;
 
@@ -111,75 +125,81 @@ function AvatarUploadView({
           style={{ display: "none" }}
         />
 
-        <StyledImgContainer>
-          <AvatarComponent
-            bucket={bucket}
-            filename={avatar}
-            alt={t("Upload.avatarAlt")}
-            size="massive"
-            listing={listingType ? { type: listingType } : undefined}
-          />
+        <AvatarControls>
+          <StyledImgContainer>
+            <AvatarComponent
+              bucket={bucket}
+              filename={avatar}
+              alt={t("Upload.avatarAlt")}
+              size="massive"
+              listing={listingType ? { type: listingType } : undefined}
+            />
 
-          {loading && <LoadingSpinner>{t("Status.uploading")}</LoadingSpinner>}
-        </StyledImgContainer>
+            {loading && (
+              <LoadingSpinner>{t("Status.uploading")}</LoadingSpinner>
+            )}
 
-        {!avatar ? (
-          // Scenario 1: No avatar - show single "Add" button
-          <AvatarButton
-            variant="secondary"
-            size="small"
-            onClick={handleFileSelect}
-            loading={loading}
-            loadingText={t("Status.uploading")}
-            disabled={isBusy}
-          >
-            {t("Actions.add")}
-          </AvatarButton>
-        ) : (
-          // Scenario 2 & 3: Has avatar - show menu with options
-          <DropdownMenu.Root>
-            <DropdownMenu.Button
-              as={AvatarButton}
-              variant="secondary"
-              size="small"
-              loading={loading || isDeleting}
-              loadingText={
-                loading ? t("Status.uploading") : t("Status.deleting")
-              }
-              disabled={isBusy}
-            >
-              {t("Actions.edit")}
-            </DropdownMenu.Button>
-
-            <DropdownMenu.Items
-              transition
-              anchor={{ to: "bottom", gap: "4px" }}
-            >
-              <DropdownMenu.Item>
-                <Button
-                  onClick={handleFileSelect}
+            <AvatarButtonOverlay>
+              {!avatar ? (
+                // Scenario 1: No avatar - show single "Add" button
+                <AvatarButton
                   variant="secondary"
                   size="small"
+                  onClick={handleFileSelect}
+                  loading={loading}
+                  loadingText={t("Status.uploading")}
                   disabled={isBusy}
                 >
-                  {t("Actions.replace")}
-                </Button>
-              </DropdownMenu.Item>
-              <DropdownMenu.Item>
-                <Button
-                  onClick={handleDelete}
-                  variant="danger"
-                  size="small"
-                  loading={isDeleting}
-                  loadingText={t("Status.deleting")}
-                  disabled={isBusy}
-                >
-                  {t("Actions.delete")}
-                </Button>
-              </DropdownMenu.Item>
-            </DropdownMenu.Items>
-          </DropdownMenu.Root>
-        )}
+                  {t("Actions.add")}
+                </AvatarButton>
+              ) : (
+                // Scenario 2 & 3: Has avatar - show menu with options
+                <DropdownMenu.Root>
+                  <DropdownMenu.Button
+                    as={AvatarButton}
+                    variant="secondary"
+                    size="small"
+                    loading={loading || isDeleting}
+                    loadingText={
+                      loading ? t("Status.uploading") : t("Status.deleting")
+                    }
+                    disabled={isBusy}
+                  >
+                    {t("Actions.edit")}
+                  </DropdownMenu.Button>
+
+                  <DropdownMenu.Items
+                    transition
+                    anchor={{ to: "bottom", gap: "4px" }}
+                  >
+                    <DropdownMenu.Item>
+                      <Button
+                        onClick={handleFileSelect}
+                        variant="secondary"
+                        size="small"
+                        disabled={isBusy}
+                      >
+                        {t("Actions.replace")}
+                      </Button>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item>
+                      <Button
+                        onClick={handleDelete}
+                        variant="danger"
+                        size="small"
+                        loading={isDeleting}
+                        loadingText={t("Status.deleting")}
+                        disabled={isBusy}
+                      >
+                        {t("Actions.delete")}
+                      </Button>
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Items>
+                </DropdownMenu.Root>
+              )}
+            </AvatarButtonOverlay>
+          </StyledImgContainer>
+        </AvatarControls>
         {inputHintShown && (
           <InputHint variant="centered">{t("Upload.avatarHint")}</InputHint>
         )}

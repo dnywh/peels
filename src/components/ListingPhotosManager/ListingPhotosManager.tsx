@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import { useRef, useState } from "react";
 import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
@@ -14,71 +15,64 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd";
 
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 
-const DropzoneContents = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem", // Match Fieldset gap
-});
+const DropzoneContents = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
 
-const PhotoList = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-  // marginTop: "1rem",
-  flexWrap: "nowrap",
-});
+const PhotoList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+`;
 
-const PhotoItem = styled("div")({
-  position: "relative",
-  aspectRatio: "4/3",
-  maxWidth: "300px",
+const PhotoItem = styled.div`
+  position: relative;
+  aspect-ratio: 4/3;
+  max-width: 300px;
+  &:hover {
+    cursor: grab;
+  }
+  &:active {
+    cursor: grabbing;
+  }
+  & img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 0.5rem;
+  }
+  & button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+`;
 
-  // Add subtle hover state
-  "&:hover": {
-    cursor: "grab",
-  },
-
-  "&:active": {
-    cursor: "grabbing",
-  },
-
-  "& img": {
-    width: "100%",
-    height: "100%",
-    aspectRatio: "4/3",
-    objectFit: "cover",
-    borderRadius: "0.5rem",
-  },
-
-  "& button": {
-    position: "absolute",
-    top: "0.5rem",
-    right: "0.5rem",
-  },
-});
-
-const DropOverlay = styled("aside")(({ theme }) => ({
-  background: theme.colors.background.between,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "0.5rem",
-  border: `2.5px dashed ${theme.colors.border.special}`,
-  padding: "5rem 1rem",
-  maxWidth: "300px", // Match PhotoItem maxWidth
-  height: "100%", // Match PhotoItem height
-  aspectRatio: "4/3", // Match PhotoItem aspectRatio
-
-  "& p": {
-    textAlign: "center",
-    whiteSpace: "nowrap",
-    color: theme.colors.text.ui.tertiary,
-    fontWeight: "600",
-  },
-}));
+const DropOverlay = styled.aside`
+  background: ${theme.colors.background.between};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 2.5px dashed ${theme.colors.border.special};
+  padding: 5rem 1rem;
+  max-width: 300px;
+  height: 100%;
+  aspect-ratio: 4/3;
+  & p {
+    text-align: center;
+    white-space: nowrap;
+    color: ${theme.colors.text.ui.tertiary};
+    font-weight: 600;
+  }
+`;
 
 const MAX_PHOTOS = 5;
 const MAX_MB = 10;

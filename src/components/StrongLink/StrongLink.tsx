@@ -1,21 +1,28 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
-import { styled } from "@pigment-css/react";
+import { css, styled } from "next-yak";
 
 import { resolveExternalRel } from "@/utils/linkRel";
+import { theme } from "@/styles/theme.yak";
 
-const getSharedStyles = ({ theme }: { theme: any }) => ({
-  color: theme.colors.text.primary,
-  fontWeight: "500",
-  textDecoration: "underline",
-  transition: "opacity 150ms ease-in-out",
-  "&:hover": {
-    opacity: 0.65,
-  },
-});
+const sharedStyles = css`
+  color: ${theme.colors.text.primary};
+  font-weight: 500;
+  text-decoration: underline;
+  transition: opacity 150ms ease-in-out;
 
-const StyledLink = styled(Link)(getSharedStyles);
-const StyledPlainAnchor = styled("a")(getSharedStyles);
+  &:hover {
+    opacity: 0.65;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  ${sharedStyles}
+`;
+
+const StyledPlainAnchor = styled.a`
+  ${sharedStyles}
+`;
 
 type AnchorHTMLProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 type NextLinkProps = Omit<ComponentProps<typeof Link>, "href">;

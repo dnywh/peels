@@ -1,20 +1,30 @@
-const PRODUCTION_SUPABASE_HOST = "mfnaqdyunuafbwukbbyr.supabase.co";
 const STORAGE_PUBLIC_PATH = "/storage/v1/object/public";
+const PRODUCTION_SUPABASE_ORIGIN = "https://mfnaqdyunuafbwukbbyr.supabase.co";
 
 function normaliseAssetPath(assetPath: string) {
   return assetPath.replace(/^\/+/, "");
 }
 
-function getSupabaseHost() {
+function isLocalSupabaseHost(hostname: string) {
+  return hostname === "127.0.0.1" || hostname === "localhost";
+}
+
+function getHostedStaticOrigin() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-  if (!supabaseUrl) return null;
+  if (supabaseUrl) {
+    try {
+      const url = new URL(supabaseUrl);
 
-  try {
-    return new URL(supabaseUrl).hostname;
-  } catch {
-    return null;
+      if (!isLocalSupabaseHost(url.hostname)) {
+        return supabaseUrl.replace(/\/$/, "");
+      }
+    } catch {
+      // Ignore invalid URLs and fall back to the production static bucket.
+    }
   }
+
+  return PRODUCTION_SUPABASE_ORIGIN;
 }
 
 export function getStoragePublicUrl(bucket: string, assetPath: string) {
@@ -25,26 +35,15 @@ export function getStoragePublicUrl(bucket: string, assetPath: string) {
   return `${supabaseUrl.replace(/\/$/, "")}${STORAGE_PUBLIC_PATH}/${bucket}/${normaliseAssetPath(assetPath)}`;
 }
 
-export function usesHostedStaticAssets() {
-  return getSupabaseHost() === PRODUCTION_SUPABASE_HOST;
-}
-
 export function getStaticAssetUrl(
   assetPath: string,
-  localFallbackPath: string
+  _localFallbackPath: string
 ) {
-  if (!usesHostedStaticAssets()) {
-    return localFallbackPath;
-  }
-
-  return getStoragePublicUrl("static", assetPath) ?? localFallbackPath;
+  return `${getHostedStaticOrigin()}${STORAGE_PUBLIC_PATH}/static/${normaliseAssetPath(assetPath)}`;
 }
 
 export function getStaticFontUrl(assetPath: string) {
-  return getStoragePublicUrl(
-    "static",
-    `fonts/${normaliseAssetPath(assetPath)}`
-  );
+  return `${getHostedStaticOrigin()}${STORAGE_PUBLIC_PATH}/static/fonts/${normaliseAssetPath(assetPath)}`;
 }
 
 export function getPromoKitUrl() {

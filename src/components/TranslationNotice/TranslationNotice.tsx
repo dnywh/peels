@@ -1,4 +1,5 @@
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
+import { theme } from "@/styles/theme.yak";
 
 type TranslationNoticeProps = {
   title: string;
@@ -17,26 +18,24 @@ export default function TranslationNotice({
   );
 }
 
-const Container = styled("aside")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-  backgroundColor: theme.colors.background.sunk,
-  padding: "1rem 1.25rem",
-  margin: "0 0 2rem",
-  borderRadius: theme.corners.base,
-  border: `1px solid ${theme.colors.border.base}`,
-
-  "& h3": {
-    margin: 0,
-    fontSize: "0.875rem",
-    fontWeight: 600,
-    color: theme.colors.text.ui.secondary,
-  },
-
-  "& p": {
-    margin: 0,
-    color: theme.colors.text.ui.quaternary,
-    textWrap: "balance",
-  },
-}));
+const Container = styled.aside`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: ${theme.colors.background.sunk};
+  padding: 1rem 1.25rem;
+  margin: 0 0 2rem;
+  border-radius: ${theme.corners.base};
+  border: 1px solid ${theme.colors.border.base};
+  & h3 {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: ${theme.colors.text.ui.secondary};
+  }
+  & p {
+    margin: 0;
+    color: ${theme.colors.text.ui.quaternary};
+    text-wrap: balance;
+  }
+`;

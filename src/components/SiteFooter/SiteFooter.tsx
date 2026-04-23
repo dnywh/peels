@@ -3,9 +3,10 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import PeelsLogo from "@/components/PeelsLogo";
 import LocalePicker from "@/components/LocalePicker";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { getTranslations } from "next-intl/server";
 import { hasSupabaseAuthCookie } from "@/utils/supabase/authCookies";
+import { theme } from "@/styles/theme.yak";
 
 const currentYear = new Date().getFullYear();
 
@@ -36,43 +37,40 @@ export default async function SiteFooter() {
   );
 }
 
-const StyledFooter = styled("footer")(({ theme }) => ({
-  marginTop: "5rem", // Fallback if prior sibling has no marginBottom defined
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "1rem",
-  color: theme.colors.text.ui.emptyState,
+const StyledFooter = styled.footer`
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: ${theme.colors.text.ui.emptyState};
+  & p {
+    font-size: 0.875rem;
+  }
+`;
 
-  "& p": {
-    fontSize: "0.875rem", // Match links below
-  },
-}));
-
-const StyledNav = styled("nav")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  gap: "0.75rem 1.25rem",
-  alignItems: "center",
-  justifyContent: "center",
-  textAlign: "center",
-  flexWrap: "wrap",
-  padding: "0 2.5rem", // Inset slightly for balanced wrapping
-  fontSize: "0.875rem",
-
-  "& a": {
-    margin: 0,
-    fontWeight: "500",
-    color: theme.colors.text.ui.emptyState,
-    transition: theme.transitions.textColor,
-    "&:hover": {
-      color: theme.colors.text.secondary,
-    },
-  },
-
-  "@media (min-width: 768px)": {
-    gap: "1.25rem",
-    padding: "0 3.5rem",
-  },
-}));
+const StyledNav = styled.nav`
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+  padding: 0 2.5rem;
+  font-size: 0.875rem;
+  & a {
+    margin: 0;
+    font-weight: 500;
+    color: ${theme.colors.text.ui.emptyState};
+    transition: ${theme.transitions.textColor};
+    &:hover {
+      color: ${theme.colors.text.secondary};
+    }
+  }
+  @media (min-width: 768px) {
+    gap: 1.25rem;
+    padding: 0 3.5rem;
+  }
+`;

@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 import { useCallback, useEffect, useState, useRef } from "react";
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 
@@ -20,17 +21,17 @@ import Field from "@/components/Field";
 import Label from "@/components/Label";
 import InputHint from "@/components/InputHint";
 
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 
 const GeocodingControlComponent = GeocodingControl as any;
 const InputHintComponent = InputHint as any;
 
-const StyledFieldset = styled(Fieldset)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing.forms.gap.field,
-}));
+const StyledFieldset = styled(Fieldset)`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.forms.gap.field};
+`;
 
 const ZOOM_LEVEL = 16;
 

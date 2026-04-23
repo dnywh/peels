@@ -1,0 +1,201 @@
+:root {
+  color-scheme: light;
+
+  --color-logo-primary: hsla(22, 100%, 14%, 1);
+  --color-logo-quaternary: hsla(22, 26%, 85%, 1);
+  --color-focus-outline: hsla(193, 77%, 43%, 1);
+
+  --color-bg-top: hsla(0, 0%, 100%, 1);
+  --color-bg-slight: hsla(36, 26%, 99%, 1);
+  --color-bg-sunk: hsla(36, 26%, 96%, 1);
+  --color-bg-between: hsla(22, 35%, 96%, 1);
+  --color-bg-pit: hsla(22, 35%, 95%, 1);
+  --color-bg-overlay: hsla(0, 0%, 0%, 0.33);
+  --color-bg-error: hsla(22, 87%, 50%, 0.0625);
+  --color-bg-map: hsla(192, 75%, 91%, 1);
+  --color-bg-counter: hsla(0, 0%, 0%, 0.15);
+
+  --color-border-light: hsla(0, 0%, 0%, 0.03);
+  --color-border-base: hsla(0, 0%, 0%, 0.06);
+  --color-border-elevated: hsla(0, 0%, 0%, 0.06);
+  --color-border-stark: hsla(37, 5%, 83%, 1);
+  --color-border-collide: hsla(0, 4%, 95%, 1);
+  --color-border-special: hsla(22, 35%, 91%, 1);
+
+  --color-tab-active: hsla(81, 95%, 36%, 1);
+  --color-tab-inactive: hsla(38, 5%, 71%, 1);
+  --color-tab-unread: hsla(22, 87%, 50%, 1);
+
+  --color-status-accepted: hsla(81, 95%, 36%, 1);
+  --color-status-rejected: hsla(22, 87%, 50%, 1);
+
+  --color-message-sent-bg: hsla(81, 95%, 36%, 1);
+  --color-message-sent-text: hsla(0, 0%, 100%, 1);
+  --color-message-received-bg: hsla(36, 26%, 96%, 1);
+  --color-message-received-text: hsla(37, 5%, 25%, 1);
+
+  --color-marker-dot: hsla(0, 0%, 100%, 1);
+  --color-marker-residential: hsla(47, 100%, 50%, 1);
+  --color-marker-community: hsla(22, 87%, 50%, 1);
+  --color-marker-business: hsla(22, 97%, 25%, 1);
+  --color-marker-border: hsla(0, 0%, 100%, 1);
+
+  --color-checkbox-border: hsla(22, 100%, 14%, 1);
+  --color-checkbox-checked-bg: hsla(22, 100%, 14%, 1);
+  --color-checkbox-checked-fg: hsla(0, 0%, 100%, 1);
+  --color-checkbox-unchecked-bg: hsla(36, 26%, 99%, 1);
+  --color-checkbox-unchecked-fg: hsla(0, 0%, 100%, 1);
+
+  --color-radio-checked-bg: hsla(22, 35%, 95%, 1);
+  --color-radio-checked-border: hsla(22, 97%, 25%, 1);
+  --color-radio-unchecked-bg: hsla(0, 0%, 100%, 1);
+  --color-radio-unchecked-border: hsla(0, 4%, 95%, 1);
+  --color-radio-hover-bg: hsla(22, 35%, 96%, 1);
+  --color-radio-hover-border: hsla(37, 5%, 83%, 1);
+
+  --color-input-invalid-border: hsla(22, 87%, 50%, 1);
+  --color-input-invalid-text: hsla(22, 87%, 44%, 1);
+  --color-input-disabled-text: hsla(37, 5%, 61%, 1);
+  --color-input-placeholder-text: hsla(37, 5%, 61%, 1);
+
+  --color-button-primary-bg: hsla(47, 100%, 50%, 1);
+  --color-button-primary-hover-tint: hsla(0, 0%, 100%, 1);
+  --color-button-primary-hover-mix: 20%;
+  --color-button-primary-text: hsla(22, 100%, 14%, 1);
+
+  --color-button-secondary-bg: hsla(0, 0%, 100%, 1);
+  --color-button-secondary-hover-tint: hsla(0, 0%, 100%, 1);
+  --color-button-secondary-hover-mix: 40%;
+  --color-button-secondary-text: hsla(22, 100%, 14%, 1);
+
+  --color-button-send-bg: hsla(22, 100%, 14%, 1);
+  --color-button-send-hover-tint: hsla(22, 100%, 14%, 1);
+  --color-button-send-hover-mix: 60%;
+  --color-button-send-text: hsla(0, 0%, 100%, 1);
+
+  --color-button-danger-bg: hsla(0, 0%, 100%, 1);
+  --color-button-danger-hover-tint: hsla(0, 0%, 100%, 1);
+  --color-button-danger-hover-mix: 20%;
+  --color-button-danger-text: hsla(22, 87%, 44%, 1);
+
+  --color-button-disabled-bg: hsla(0, 4%, 95%, 1);
+  --color-button-disabled-text: hsla(37, 5%, 61%, 1);
+
+  --color-text-primary: hsla(22, 100%, 14%, 1);
+  --color-text-secondary: hsla(37, 5%, 25%, 1);
+  --color-text-tertiary: hsla(37, 5%, 61%, 1);
+  --color-text-link: hsla(22, 97%, 25%, 1);
+  --color-text-counter: hsla(37, 5%, 83%, 1);
+  --color-text-overlay: hsla(0, 0%, 100%, 1);
+  --color-text-ui-primary: hsla(37, 5%, 12%, 1);
+  --color-text-ui-secondary: hsla(37, 5%, 25%, 1);
+  --color-text-ui-tertiary: hsla(37, 5%, 40%, 1);
+  --color-text-ui-quaternary: hsla(37, 5%, 54%, 1);
+  --color-text-ui-quinary: hsla(37, 5%, 61%, 1);
+  --color-text-ui-empty-state: hsla(38, 5%, 71%, 1);
+  --color-text-ui-error: hsla(22, 87%, 44%, 1);
+  --color-text-brand-primary: hsla(22, 100%, 14%, 1);
+  --color-text-brand-quaternary: hsla(22, 26%, 85%, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-logo-primary: hsla(48, 97%, 64%, 1);
+    --color-logo-quaternary: hsla(37, 5%, 54%, 1);
+    --color-focus-outline: hsla(193, 77%, 63%, 1);
+
+    --color-bg-top: hsla(22, 18%, 14%, 1);
+    --color-bg-slight: hsla(22, 16%, 16%, 1);
+    --color-bg-sunk: hsla(22, 16%, 11%, 1);
+    --color-bg-between: hsla(22, 16%, 18%, 1);
+    --color-bg-pit: hsla(22, 16%, 20%, 1);
+    --color-bg-overlay: hsla(0, 0%, 0%, 0.5);
+    --color-bg-error: hsla(22, 87%, 50%, 0.18);
+    --color-bg-map: hsla(193, 24%, 22%, 1);
+    --color-bg-counter: hsla(0, 0%, 100%, 0.16);
+
+    --color-border-light: hsla(0, 0%, 100%, 0.06);
+    --color-border-base: hsla(0, 0%, 100%, 0.1);
+    --color-border-elevated: hsla(0, 0%, 100%, 0.12);
+    --color-border-stark: hsla(37, 5%, 40%, 1);
+    --color-border-collide: hsla(37, 5%, 25%, 1);
+    --color-border-special: hsla(22, 35%, 31%, 1);
+
+    --color-tab-active: hsla(81, 95%, 46%, 1);
+    --color-tab-inactive: hsla(37, 5%, 54%, 1);
+    --color-tab-unread: hsla(48, 97%, 64%, 1);
+
+    --color-status-accepted: hsla(81, 95%, 46%, 1);
+    --color-status-rejected: hsla(48, 97%, 64%, 1);
+
+    --color-message-sent-bg: hsla(81, 95%, 36%, 1);
+    --color-message-sent-text: hsla(0, 0%, 100%, 1);
+    --color-message-received-bg: hsla(22, 16%, 18%, 1);
+    --color-message-received-text: hsla(36, 20%, 96%, 1);
+
+    --color-marker-dot: hsla(0, 0%, 100%, 1);
+    --color-marker-residential: hsla(48, 97%, 64%, 1);
+    --color-marker-community: hsla(22, 87%, 50%, 1);
+    --color-marker-business: hsla(22, 87%, 44%, 1);
+    --color-marker-border: hsla(36, 20%, 96%, 1);
+
+    --color-checkbox-border: hsla(36, 20%, 96%, 1);
+    --color-checkbox-checked-bg: hsla(36, 20%, 96%, 1);
+    --color-checkbox-checked-fg: hsla(22, 18%, 14%, 1);
+    --color-checkbox-unchecked-bg: hsla(22, 16%, 16%, 1);
+    --color-checkbox-unchecked-fg: hsla(36, 20%, 96%, 1);
+
+    --color-radio-checked-bg: hsla(22, 16%, 20%, 1);
+    --color-radio-checked-border: hsla(48, 97%, 64%, 1);
+    --color-radio-unchecked-bg: hsla(22, 16%, 16%, 1);
+    --color-radio-unchecked-border: hsla(37, 5%, 40%, 1);
+    --color-radio-hover-bg: hsla(22, 16%, 18%, 1);
+    --color-radio-hover-border: hsla(37, 5%, 54%, 1);
+
+    --color-input-invalid-border: hsla(48, 97%, 64%, 1);
+    --color-input-invalid-text: hsla(48, 97%, 64%, 1);
+    --color-input-disabled-text: hsla(37, 5%, 54%, 1);
+    --color-input-placeholder-text: hsla(37, 5%, 54%, 1);
+
+    --color-button-primary-bg: hsla(48, 97%, 64%, 1);
+    --color-button-primary-hover-tint: hsla(0, 0%, 100%, 1);
+    --color-button-primary-hover-mix: 12%;
+    --color-button-primary-text: hsla(22, 18%, 12%, 1);
+
+    --color-button-secondary-bg: hsla(22, 16%, 16%, 1);
+    --color-button-secondary-hover-tint: hsla(0, 0%, 100%, 1);
+    --color-button-secondary-hover-mix: 10%;
+    --color-button-secondary-text: hsla(36, 20%, 96%, 1);
+
+    --color-button-send-bg: hsla(48, 97%, 64%, 1);
+    --color-button-send-hover-tint: hsla(0, 0%, 100%, 1);
+    --color-button-send-hover-mix: 12%;
+    --color-button-send-text: hsla(22, 18%, 12%, 1);
+
+    --color-button-danger-bg: hsla(22, 16%, 16%, 1);
+    --color-button-danger-hover-tint: hsla(0, 0%, 100%, 1);
+    --color-button-danger-hover-mix: 18%;
+    --color-button-danger-text: hsla(22, 87%, 50%, 1);
+
+    --color-button-disabled-bg: hsla(22, 16%, 18%, 1);
+    --color-button-disabled-text: hsla(37, 5%, 54%, 1);
+
+    --color-text-primary: hsla(36, 20%, 96%, 1);
+    --color-text-secondary: hsla(36, 10%, 82%, 1);
+    --color-text-tertiary: hsla(37, 5%, 61%, 1);
+    --color-text-link: hsla(48, 97%, 64%, 1);
+    --color-text-counter: hsla(37, 5%, 40%, 1);
+    --color-text-overlay: hsla(36, 20%, 96%, 1);
+    --color-text-ui-primary: hsla(36, 20%, 96%, 1);
+    --color-text-ui-secondary: hsla(36, 10%, 82%, 1);
+    --color-text-ui-tertiary: hsla(37, 5%, 71%, 1);
+    --color-text-ui-quaternary: hsla(37, 5%, 61%, 1);
+    --color-text-ui-quinary: hsla(37, 5%, 54%, 1);
+    --color-text-ui-empty-state: hsla(37, 5%, 40%, 1);
+    --color-text-ui-error: hsla(48, 97%, 64%, 1);
+    --color-text-brand-primary: hsla(48, 97%, 64%, 1);
+    --color-text-brand-quaternary: hsla(37, 5%, 54%, 1);
+  }
+}

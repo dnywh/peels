@@ -69,6 +69,7 @@ async function SignInForm({ searchParams }: SignInFormProps) {
 
       <SubmitButton
         variant="primary"
+        width="full"
         pendingText={t("Status.signingIn")}
         data-testid="sign-in-submit"
       >

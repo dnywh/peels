@@ -1,24 +1,19 @@
-import { styled } from "@pigment-css/react";
+import { css, styled } from "next-yak";
+import { theme } from "@/styles/theme.yak";
 
-const StyledFormMessage = styled("aside")<{
-  variant?: "error" | "success" | undefined;
-}>(({ theme }) => ({
-  width: "100%",
-  // flex: 1,
-  padding: "1.5rem 2rem",
-  borderRadius: theme.corners.base,
-  background: theme.colors.background.pit,
+const successMessageStyles = css`
+  text-wrap: balance;
+  text-align: center;
+`;
 
-  variants: [
-    {
-      props: { variant: "success" },
-      style: {
-        textWrap: "balance",
-        textAlign: "center",
-      },
-    },
-  ],
-}));
+const StyledFormMessage = styled.aside<{ $variant?: "error" | "success" }>`
+  width: 100%;
+  padding: 1.5rem 2rem;
+  border-radius: ${theme.corners.base};
+  background: ${theme.colors.background.pit};
+
+  ${({ $variant }) => $variant === "success" && successMessageStyles}
+`;
 
 export type Message = {
   error?: string | React.ReactNode;
@@ -27,7 +22,7 @@ export type Message = {
 
 export default function FormMessage({ message }: { message: Message }) {
   return (
-    <StyledFormMessage variant={"success" in message ? "success" : "error"}>
+    <StyledFormMessage $variant={"success" in message ? "success" : "error"}>
       {"success" in message && <p>{message.success}</p>}
       {"error" in message && <p>{message.error}</p>}
     </StyledFormMessage>

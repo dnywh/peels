@@ -1,5 +1,105 @@
 /* https://github.com/mui/pigment-css/blob/master/examples/pigment-css-nextjs-ts/src/app/globals.css */
 
+* {
+  font-family:
+    "National 2",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+* {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern", "liga", "clig", "calt", "quot", "apos";
+  font-variant-ligatures: common-ligatures;
+  font-variant-numeric: oldstyle-nums;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--color-bg-sunk);
+  color: var(--color-text-ui-primary);
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+a:not(p a, figcaption a) {
+  text-decoration: none;
+}
+
+a:visited {
+  color: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  letter-spacing: -0.015em;
+}
+
+:root {
+  interpolate-size: allow-keywords;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 /* This file seems to take precedence over styles defined elsewhere */
 /* * {
   box-sizing: border-box;

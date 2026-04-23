@@ -7,9 +7,10 @@ import Link from "next/link";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import StaticPageMain from "@/components/StaticPageMain";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { getLocale, getTranslations } from "next-intl/server";
 import { defaultLocale } from "@/i18n/config";
+import { theme } from "@/styles/theme.yak";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -59,15 +60,14 @@ export default async function NewsletterPage() {
   );
 }
 
-const AboveTheFoldSection = styled("section")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  width: "100%",
-  maxWidth: theme.spacing.container.maxWidth.media,
-  gap: theme.spacing.gap.section.md,
-
-  "@media (min-width: 768px)": {
-    gap: theme.spacing.gap.section.lg,
-  },
-}));
+const AboveTheFoldSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: ${theme.spacing.container.maxWidth.media};
+  gap: ${theme.spacing.gap.section.md};
+  @media (min-width: 768px) {
+    gap: ${theme.spacing.gap.section.lg};
+  }
+`;

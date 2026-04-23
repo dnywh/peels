@@ -16,7 +16,8 @@ import MapPin from "@/components/MapPin";
 import Button from "@/components/Button";
 import ListingChatDrawer from "@/components/ListingChatDrawer";
 import StrongLink from "@/components/StrongLink";
-import { styled } from "@pigment-css/react";
+import { css, styled } from "next-yak";
+import { theme } from "@/styles/theme.yak";
 import { useTranslations } from "next-intl";
 
 import type { DemoListing, Listing } from "@/types/listing";
@@ -118,7 +119,7 @@ const ListingRead = memo(function Listing({
 
   return (
     <Fragment key={realListing?.id ? realListing.id : undefined}>
-      <ColumnMain presentation={presentation}>
+      <ColumnMain $presentation={presentation}>
         <ListingHeader
           presentation={presentation}
           listing={listing}
@@ -145,7 +146,7 @@ const ListingRead = memo(function Listing({
           />
         ) : null}
 
-        <ListingContents presentation={presentation}>
+        <ListingContents $presentation={presentation}>
           {listing?.description && (
             <ListingSection>
               <h3>
@@ -174,9 +175,9 @@ const ListingRead = memo(function Listing({
       </ColumnMain>
 
       {realListing && !isDemo && (
-        <ColumnMinor presentation={presentation}>
+        <ColumnMinor $presentation={presentation}>
           {presentation !== "drawer" && coordinates && (
-            <ListingSection presentation={presentation}>
+            <ListingSection $presentation={presentation}>
               <h3>{t("Listings.read.location")}</h3>
 
               <MapThumbnail
@@ -267,8 +268,8 @@ const ListingRead = memo(function Listing({
 
           {realListing.photos && realListing.photos.length > 0 && (
             <ListingSection
-              presentation={presentation}
-              overflowX={
+              $presentation={presentation}
+              $overflowX={
                 !user && realListing.type === "residential"
                   ? undefined
                   : "visible"
@@ -293,7 +294,7 @@ const ListingRead = memo(function Listing({
           )}
 
           {realListing.links && realListing.links.length > 0 && (
-            <ListingSection presentation={presentation}>
+            <ListingSection $presentation={presentation}>
               <h3>{t("Common.links")}</h3>
               <ListingItemList items={realListing.links} type="links" />
             </ListingSection>
@@ -333,144 +334,137 @@ const sharedColumnStyles = {
   gap: "3rem",
 };
 
-const ColumnMain = styled("div")<PresentationVariantProps>(({ theme }) => ({
-  ...sharedColumnStyles,
+const fullColumnMainStyles = css`
+  @media (min-width: 768px) {
+    padding: 2rem 0;
+    background-color: ${theme.colors.background.top};
+    border: 1px solid ${theme.colors.border.base};
+    border-radius: ${theme.corners.base};
+  }
+`;
 
-  variants: [
-    {
-      props: { presentation: "full" },
-      style: {
-        "@media (min-width: 768px)": {
-          padding: "2rem 0",
-          backgroundColor: theme.colors.background.top,
-          border: `1px solid ${theme.colors.border.base}`,
-          borderRadius: theme.corners.base,
-        },
-      },
-    },
-  ],
-}));
+const fullColumnMinorStyles = css`
+  @media (min-width: 1280px) {
+    gap: 1.5rem;
+  }
+`;
 
-const ColumnMinor = styled("div")<PresentationVariantProps>(({ theme }) => ({
-  ...sharedColumnStyles,
+const fullListingContentsStyles = css`
+  padding: 1.5rem 0;
+  background-color: ${theme.colors.background.top};
+  border: 1px solid ${theme.colors.border.base};
+  border-radius: ${theme.corners.base};
 
-  variants: [
-    {
-      props: { presentation: "full" },
-      style: {
-        "@media (min-width: 1280px)": {
-          gap: "1.5rem",
-        },
-      },
-    },
-  ],
-}));
+  @media (min-width: 768px) {
+    padding: 0 0.5rem;
+    background-color: unset;
+    border: unset;
+    border-radius: unset;
+  }
+`;
 
-const ListingContents = styled("div")<PresentationVariantProps>(
-  ({ theme }) => ({
-    display: "flex",
-    flexDirection: "column",
-    gap: "3rem",
+const overflowVisibleStyles = css`
+  padding: 0;
+  overflow-x: visible;
 
-    variants: [
-      {
-        props: { presentation: "full" },
-        style: {
-          padding: "1.5rem 0",
-          backgroundColor: theme.colors.background.top,
-          border: `1px solid ${theme.colors.border.base}`,
-          borderRadius: theme.corners.base,
+  & h3 {
+    padding: 0 1rem;
+  }
+`;
 
-          "@media (min-width: 768px)": {
-            padding: "0 0.5rem",
-            backgroundColor: "unset",
-            border: "unset",
-            borderRadius: "unset",
-          },
-        },
-      },
-    ],
-  })
-);
+const fullSectionStyles = css`
+  background-color: ${theme.colors.background.top};
+  border: 1px solid ${theme.colors.border.base};
+  border-radius: ${theme.corners.base};
+  padding: 1rem 1rem 1.5rem;
 
-const ListingSection = styled("section")<ListingSectionVariantProps>(
-  ({ theme }) => ({
-    padding: "0 1rem",
+  @media (min-width: 768px) {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+`;
 
-    "& h3": {
-      fontWeight: "500",
-      marginBottom: "0.5rem",
-      color: theme.colors.text.ui.secondary,
-    },
+const fullOverflowVisibleStyles = css`
+  padding: 1rem 0 1.5rem;
 
-    "& p + p": {
-      marginTop: "0.5rem",
-      color: theme.colors.text.ui.primary,
-    },
+  @media (min-width: 768px) {
+    & h3 {
+      padding: 0 1.5rem;
+    }
+  }
+`;
 
-    variants: [
-      {
-        props: { overflowX: "visible" },
-        style: {
-          padding: "0",
-          overflowX: "visible",
+const ColumnMain = styled.div<{ $presentation?: Presentation }>`
+  display: ${sharedColumnStyles.display};
+  flex-direction: ${sharedColumnStyles.flexDirection};
+  gap: ${sharedColumnStyles.gap};
 
-          "& h3": {
-            padding: "0 1rem",
-          },
-        },
-      },
-      {
-        props: { overflowX: undefined, presentation: "full" },
-        style: {
-          backgroundColor: theme.colors.background.top,
-          border: `1px solid ${theme.colors.border.base}`,
-          borderRadius: theme.corners.base,
+  ${({ $presentation }) => $presentation === "full" && fullColumnMainStyles}
+`;
 
-          padding: "1rem 1rem 1.5rem",
+const ColumnMinor = styled.div<{ $presentation?: Presentation }>`
+  display: ${sharedColumnStyles.display};
+  flex-direction: ${sharedColumnStyles.flexDirection};
+  gap: ${sharedColumnStyles.gap};
 
-          "@media (min-width: 768px)": {
-            padding: "1rem 1.5rem 1.5rem",
-          },
-        },
-      },
-      {
-        props: { overflowX: "visible", presentation: "full" },
-        style: {
-          padding: "1rem 0 1.5rem",
+  ${({ $presentation }) => $presentation === "full" && fullColumnMinorStyles}
+`;
 
-          "@media (min-width: 768px)": {
-            "& h3": {
-              padding: "0 1.5rem",
-            },
-          },
-        },
-      },
-    ],
-  })
-);
+const ListingContents = styled.div<{ $presentation?: Presentation }>`
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
 
-const DemoButtonContainer = styled("div")({
-  padding: "0 1rem",
-});
+  ${({ $presentation }) =>
+    $presentation === "full" && fullListingContentsStyles}
+`;
 
-const MapDetails = styled("div")(({ theme }) => ({
-  marginTop: "1rem",
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
+const ListingSection = styled.section<{
+  $presentation?: Presentation;
+  $overflowX?: "visible";
+}>`
+  padding: 0 1rem;
 
-  "& p": {
-    fontSize: "0.875rem",
-    color: theme.colors.text.ui.tertiary,
-  },
-}));
+  & h3 {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: ${theme.colors.text.ui.secondary};
+  }
 
-const ButtonGroup = styled("div")({
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.5rem",
-});
+  & p + p {
+    margin-top: 0.5rem;
+    color: ${theme.colors.text.ui.primary};
+  }
+
+  ${({ $overflowX }) => $overflowX === "visible" && overflowVisibleStyles}
+  ${({ $overflowX, $presentation }) =>
+    $overflowX === undefined && $presentation === "full" && fullSectionStyles}
+  ${({ $overflowX, $presentation }) =>
+    $overflowX === "visible" &&
+    $presentation === "full" &&
+    fullOverflowVisibleStyles}
+`;
+
+const DemoButtonContainer = styled.div`
+  padding: 0 1rem;
+`;
+
+const MapDetails = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  & p {
+    font-size: 0.875rem;
+    color: ${theme.colors.text.ui.tertiary};
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
 
 // Split by line breaks and render each paragraph with inline link parsing.
 function MultiParagraphCluster({ text }: { text: string }) {

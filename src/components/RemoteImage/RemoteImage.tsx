@@ -1,0 +1,98 @@
+import Image from "next/image";
+import { getStoragePublicUrl } from "@/utils/storage";
+import type { CSSProperties, ComponentProps } from "react";
+
+export type RemoteImageProps = Omit<
+  ComponentProps<typeof Image>,
+  "src" | "alt" | "style"
+> & {
+  bucket?: string;
+  filename?: string | null;
+  alt?: string;
+  style?: CSSProperties;
+  defaultImage?: string;
+};
+
+//TODO: Use safer getPublicUrl method from Supabase
+// But this adds complication and all storage URLs are already public
+
+// E.g.
+// import { getAvatarUrl } from "@/utils/mediaUtils";
+
+// function getListingAvatarUrl(filename) {
+//   const {
+//     data: { publicUrl },
+//   } = supabase.storage.from("listing_avatars").getPublicUrl(filename);
+//   return publicUrl;
+// }
+
+// function getUserAvatarUrl(filename) {
+//   const {
+//     data: { publicUrl },
+//   } = supabase.storage.from("avatars").getPublicUrl(filename);
+//   return publicUrl;
+// }
+
+// function getPhotoUrl(filename) {
+//   const {
+//     data: { publicUrl },
+//   } = supabase.storage.from("listing_photos").getPublicUrl(filename);
+//   return publicUrl;
+// }
+
+export default function RemoteImage({
+  bucket,
+  filename,
+  alt = "",
+  style,
+  width,
+  height,
+  defaultImage = "profile.png",
+  ...props
+}: RemoteImageProps) {
+  // Fall back to default profile image if no filename or public bucket
+  // Note that these are duplicated on the static/avatars bucket for emails
+  // So update in both places if they ever change
+  if (!filename || bucket === "public") {
+    const imagePath = !filename
+      ? `/avatars/default/${defaultImage}`
+      : `/${filename}`;
+    return (
+      <Image
+        src={imagePath}
+        alt={alt}
+        style={style}
+        width={width}
+        height={height}
+        {...props}
+      />
+    );
+  }
+
+  // Handle Supabase storage images
+  const storageUrl = bucket ? getStoragePublicUrl(bucket, filename) : null;
+
+  if (!storageUrl) {
+    return (
+      <Image
+        src={`/avatars/default/${defaultImage}`}
+        alt={alt}
+        style={style}
+        width={width}
+        height={height}
+        {...props}
+      />
+    );
+  }
+
+  return (
+    <Image
+      src={storageUrl}
+      alt={alt}
+      style={style}
+      width={width}
+      height={height}
+      {...props}
+    />
+  );
+}

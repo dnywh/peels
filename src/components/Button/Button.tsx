@@ -1,9 +1,10 @@
 import { Button as UnstyledButton } from "@headlessui/react";
 import Link from "next/link";
-import { styled } from "@pigment-css/react";
+import { css, styled } from "next-yak";
 import { forwardRef, type ElementType, type ReactNode, type Ref } from "react";
 
 import { resolveExternalRel } from "@/utils/linkRel";
+import { theme } from "@/styles/theme.yak";
 
 export type ButtonVariant =
   | "primary"
@@ -19,6 +20,13 @@ type ButtonStyleProps = {
   size?: ButtonSize;
   width?: ButtonWidth;
   disabled?: boolean;
+};
+
+type StyledButtonStyleProps = {
+  $variant?: ButtonVariant;
+  $size?: ButtonSize;
+  $width?: ButtonWidth;
+  $disabledState?: boolean;
 };
 
 type BaseButtonProps = ButtonStyleProps & {
@@ -139,178 +147,211 @@ const getButtonElementProps = (props: ButtonElementRestProps) => {
 
 const getLinkButtonProps = (props: LinkButtonRestProps) => props;
 
-const buttonStyles = ({ theme }: { theme: any }): any => ({
-  // Resets
-  border: "none",
-  appearance: "none",
-  // Base styles that both button and link will share
-  flexShrink: 0,
-  borderRadius: `calc(${theme.corners.base} * 1)`,
-  cursor: "pointer",
-  fontWeight: "500",
-  display: "inline-flex", // Added to help with alignment
-  alignItems: "center", // Added to help with alignment
-  justifyContent: "center", // Added to help with alignment
-  textDecoration: "none",
-  padding: `0 calc(${theme.spacing.unit} * 2)`,
-  transform: "translateY(0)",
+const containedWidthStyles = css`
+  align-self: flex-start;
+`;
+
+const fullWidthStyles = css`
+  width: 100%;
+`;
+
+const massiveSizeStyles = css`
+  height: 4rem;
+  font-size: 1.3rem;
+  border-radius: calc(${theme.corners.base} * 1.25);
+  padding: 0 calc(${theme.spacing.unit} * 4);
+`;
+
+const largeSizeStyles = css`
+  height: 3.5rem;
+  font-size: 1.125rem;
+`;
+
+const normalSizeStyles = css`
+  height: 3rem;
+  font-size: 1.0625rem;
+`;
+
+const smallSizeStyles = css`
+  height: 2.25rem;
+  font-size: 0.875rem;
+  padding: 0 calc(${theme.spacing.unit} * 1.5);
+`;
+
+const iconSizeStyles = css`
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 50%;
+`;
+
+const primaryVariantStyles = css`
+  background: ${theme.colors.button.primary.background};
+  color: ${theme.colors.button.primary.text};
+
+  &:not([disabled]):not([aria-disabled="true"]) {
+    box-shadow: 0px 0px 0px 2px ${theme.colors.button.primary.background};
+  }
+
+  &:hover:not([disabled]):not([aria-disabled="true"]) {
+    background: color-mix(
+      in srgb,
+      ${theme.colors.button.primary.background},
+      ${theme.colors.button.primary.hover.tint}
+        ${theme.colors.button.primary.hover.mix}
+    );
+    box-shadow: 0px 0px 0px 2px
+      color-mix(
+        in srgb,
+        ${theme.colors.button.primary.background},
+        ${theme.colors.button.primary.hover.tint}
+          ${theme.colors.button.primary.hover.mix}
+      );
+  }
+`;
+
+const secondaryVariantStyles = css`
+  background: ${theme.colors.button.secondary.background};
+  color: ${theme.colors.button.secondary.text};
+  box-shadow: 0px 0px 0px 2px ${theme.colors.border.base};
+
+  &:hover:not([disabled]):not([aria-disabled="true"]) {
+    color: color-mix(
+      in srgb,
+      ${theme.colors.button.secondary.text},
+      ${theme.colors.button.secondary.hover.tint}
+        ${theme.colors.button.secondary.hover.mix}
+    );
+  }
+`;
+
+const dangerVariantStyles = css`
+  background: ${theme.colors.button.danger.background};
+  color: ${theme.colors.button.danger.text};
+  box-shadow: 0px 0px 0px 2px ${theme.colors.border.base};
+
+  &:hover:not([disabled]):not([aria-disabled="true"]) {
+    color: color-mix(
+      in srgb,
+      ${theme.colors.button.danger.text},
+      ${theme.colors.button.danger.hover.tint}
+        ${theme.colors.button.danger.hover.mix}
+    );
+  }
+`;
+
+const sendVariantStyles = css`
+  background-color: ${theme.colors.button.send.background};
+  border: none;
+  color: ${theme.colors.button.send.text};
+
+  &:hover:not([disabled]):not([aria-disabled="true"]) {
+    background-color: color-mix(
+      in srgb,
+      ${theme.colors.button.send.background},
+      ${theme.colors.button.send.hover.tint}
+        ${theme.colors.button.send.hover.mix}
+    );
+  }
+`;
+
+const subtleVariantStyles = css`
+  background: ${theme.colors.button.secondary.background};
+  color: ${theme.colors.button.secondary.text};
+  border: 1px solid ${theme.colors.border.base};
+
+  &:hover:not([disabled]):not([aria-disabled="true"]) {
+    background-color: ${theme.colors.background.sunk};
+  }
+`;
+
+const disabledVariantStyles = css`
+  cursor: default;
+  background: ${theme.colors.button.disabled.background};
+  color: ${theme.colors.button.disabled.text};
+  box-shadow: none;
+`;
+
+const sharedButtonStyles = css<StyledButtonStyleProps>`
+  border: none;
+  appearance: none;
+  flex-shrink: 0;
+  border-radius: ${theme.corners.base};
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 0 calc(${theme.spacing.unit} * 2);
+  transform: translateY(0);
   transition:
-    "background 100ms ease-in-out, color 75ms ease-in-out, box-shadow 100ms ease-in-out, transform 50ms ease-out",
+    background 100ms ease-in-out,
+    color 75ms ease-in-out,
+    box-shadow 100ms ease-in-out,
+    transform 50ms ease-out;
 
-  // Ellipsize text
-  "& span": {
-    display: "inline-block",
-    alignItems: "center",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-  },
+  & span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: inherit;
+    line-height: inherit;
+    padding-block: 0.08em;
+  }
 
-  "&:focus": {
-    outline: `3px solid ${theme.colors.focus.outline}`,
-  },
-  "&[data-focus]": {
-    outline: `3px solid ${theme.colors.focus.outline}`,
-  },
-  '&[aria-disabled="true"]': {
-    cursor: "default",
-    background: theme.colors.button.disabled.background,
-    color: theme.colors.button.disabled.text,
-  },
-  '&:active:not([disabled]):not([aria-disabled="true"])': {
-    transform: "translateY(1px)",
-  },
+  & svg {
+    color: inherit;
+    flex-shrink: 0;
+  }
 
-  variants: [
-    {
-      props: { width: "contained" },
-      style: {
-        alignSelf: "flex-start",
-      },
-    },
-    {
-      props: { width: "full" },
-      style: {
-        width: "100%",
-      },
-    },
-    {
-      props: { size: "massive" },
-      style: {
-        height: "4rem",
-        fontSize: "1.3rem",
-        borderRadius: `calc(${theme.corners.base} * 1.25)`,
-        padding: `0 calc(${theme.spacing.unit} * 4)`,
-      },
-    },
-    {
-      props: { size: "large" },
-      style: {
-        height: "3.5rem",
-        fontSize: "1.125rem",
-      },
-    },
-    {
-      props: { size: "normal" },
-      style: {
-        height: "3rem",
-        fontSize: "1.0625rem", // 17px
-      },
-    },
-    {
-      props: { size: "small" },
-      style: {
-        height: "2.25rem",
-        fontSize: "0.875rem",
-        padding: `0 calc(${theme.spacing.unit} * 1.5)`,
-      },
-    },
-    {
-      props: { variant: "primary" },
-      style: {
-        background: theme.colors.button.primary.background,
-        color: theme.colors.button.primary.text,
+  &:focus,
+  &[data-focus] {
+    outline: 3px solid ${theme.colors.focus.outline};
+  }
 
-        "&:not([disabled])": {
-          boxShadow: `0px 0px 0px 2px ${theme.colors.button.primary.background}`, // Match visual height of sibling buttons with box-shadow
-        },
-        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
-          background: `color-mix(in srgb, ${theme.colors.button.primary.background}, ${theme.colors.button.primary.hover.tint} ${theme.colors.button.primary.hover.mix})`,
-          boxShadow: `0px 0px 0px 2px color-mix(in srgb, ${theme.colors.button.primary.background}, ${theme.colors.button.primary.hover.tint} ${theme.colors.button.primary.hover.mix})`,
-        },
-      },
-    },
-    {
-      props: { variant: "secondary" },
-      style: {
-        background: theme.colors.button.secondary.background,
-        color: theme.colors.button.secondary.text,
-        // borderColor: theme.colors.border.base,
-        boxShadow: `0px 0px 0px 2px ${theme.colors.border.base}`,
-        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
-          color: `color-mix(in srgb, ${theme.colors.button.secondary.text}, ${theme.colors.button.secondary.hover.tint} ${theme.colors.button.secondary.hover.mix})`,
-        },
-      },
-    },
-    {
-      props: { variant: "danger" },
-      style: {
-        background: theme.colors.button.danger.background,
-        color: theme.colors.button.danger.text,
-        // borderColor: theme.colors.border.base,
-        boxShadow: `0px 0px 0px 2px ${theme.colors.border.base}`,
-        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
-          color: `color-mix(in srgb, ${theme.colors.button.danger.text}, ${theme.colors.button.danger.hover.tint} ${theme.colors.button.danger.hover.mix})`,
-        },
-      },
-    },
-    {
-      props: { variant: "send" },
-      style: {
-        backgroundColor: theme.colors.button.send.background,
-        border: "none",
-        color: theme.colors.button.send.text,
+  &[aria-disabled="true"] {
+    cursor: default;
+    background: ${theme.colors.button.disabled.background};
+    color: ${theme.colors.button.disabled.text};
+  }
 
-        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
-          backgroundColor: `color-mix(in srgb, ${theme.colors.button.send.text}, ${theme.colors.button.send.hover.tint} ${theme.colors.button.send.hover.mix})`,
-        },
-      },
-    },
-    {
-      // The default style for IconButton
-      props: { variant: "subtle" },
-      style: {
-        // Assume styles from secondary, mainly so I don't have to put visual styles in size: "icon" (TODO: avoid repetition)
-        background: theme.colors.button.secondary.background,
-        color: theme.colors.button.secondary.text,
-        border: `1px solid ${theme.colors.border.base}`,
-        '&:hover&:not([disabled]):not([aria-disabled="true"])': {
-          backgroundColor: theme.colors.background.sunk,
-        },
-      },
-    },
-    {
-      props: { size: "icon" },
-      style: {
-        width: "2rem",
-        height: "2rem",
-        padding: 0,
-        borderRadius: "50%",
-      },
-    },
-    {
-      props: { disabled: true },
-      style: {
-        cursor: "default",
-        background: theme.colors.button.disabled.background,
-        color: theme.colors.button.disabled.text,
-      },
-    },
-  ],
-});
+  &:active:not([disabled]):not([aria-disabled="true"]) {
+    transform: translateY(1px);
+  }
 
-const StyledButton = styled(UnstyledButton)<ButtonStyleProps>(buttonStyles);
-const StyledLink = styled(Link)<ButtonStyleProps>(buttonStyles);
+  ${({ $width = "contained" }) =>
+    $width === "full" ? fullWidthStyles : containedWidthStyles}
+
+  ${({ $size = "normal" }) => {
+    if ($size === "massive") return massiveSizeStyles;
+    if ($size === "large") return largeSizeStyles;
+    if ($size === "small") return smallSizeStyles;
+    if ($size === "icon") return iconSizeStyles;
+    return normalSizeStyles;
+  }}
+
+  ${({ $variant = "secondary" }) => {
+    if ($variant === "primary") return primaryVariantStyles;
+    if ($variant === "danger") return dangerVariantStyles;
+    if ($variant === "send") return sendVariantStyles;
+    if ($variant === "subtle") return subtleVariantStyles;
+    return secondaryVariantStyles;
+  }}
+
+  ${({ $disabledState }) => $disabledState && disabledVariantStyles}
+`;
+
+const StyledButton = styled(UnstyledButton)<StyledButtonStyleProps>`
+  ${sharedButtonStyles}
+`;
+
+const StyledLink = styled(Link)<StyledButtonStyleProps>`
+  ${sharedButtonStyles}
+`;
 
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
   function Button(allProps, ref) {
@@ -348,11 +389,13 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         <StyledLink
           href={allProps.href}
           ref={ref as Ref<HTMLAnchorElement>}
-          variant={variant}
+          $variant={variant}
+          $width={allProps.width}
+          $size={size}
+          $disabledState={isDisabled}
           tabIndex={isDisabled ? -1 : tabIndex}
           aria-disabled={isDisabled || undefined}
           aria-busy={isLoading || undefined}
-          size={size}
           onClick={handleLinkClick}
           {...linkProps}
           rel={rel}
@@ -371,11 +414,13 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         type={type}
         ref={ref as Ref<HTMLButtonElement>}
         disabled={isDisabled}
-        variant={variant}
+        $variant={variant}
+        $width={allProps.width}
+        $size={size}
+        $disabledState={isDisabled}
         tabIndex={isDisabled ? -1 : tabIndex}
         aria-disabled={isDisabled || undefined}
         aria-busy={isLoading || undefined}
-        size={size}
         onClick={onClick}
         {...buttonProps}
       >
