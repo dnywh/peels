@@ -130,11 +130,13 @@ export async function deleteListingPhoto(
     if (storageError) throw storageError;
 
     if (listingSlug) {
-      const { data: listing } = await supabase
+      const { data: listing, error: fetchError } = await supabase
         .from("listings")
         .select("photos")
         .eq("slug", listingSlug)
         .single();
+
+      if (fetchError) throw fetchError;
 
       const updatedPhotos = (
         (listing as ListingPhotoRecord | null)?.photos ?? []

@@ -34,6 +34,20 @@ type GenerateListingMetadataOptions = {
   includeFullMetadata?: boolean;
 };
 
+function normaliseListingType(
+  listingType: ListingLike["type"]
+): ListingType | null {
+  if (
+    listingType === "business" ||
+    listingType === "community" ||
+    listingType === "residential"
+  ) {
+    return listingType;
+  }
+
+  return null;
+}
+
 function compactTextParts(parts: Array<string | null | undefined>) {
   return parts
     .map((part) => part?.trim())
@@ -46,12 +60,14 @@ export function getListingDisplayName(
 ) {
   if (!listing) return "";
 
-  if (listing.type === "residential") {
+  const listingType = normaliseListingType(listing.type);
+
+  if (listingType === "residential") {
     if (!user) return "Private Host";
     return listing.owner_first_name || "Private Host";
   }
 
-  return listing.name || "";
+  return listing.name || "Listing";
 }
 
 export function getListingAvatar(
@@ -60,17 +76,20 @@ export function getListingAvatar(
 ): AvatarDescriptor {
   if (!listing) return null;
 
+  const listingType = normaliseListingType(listing.type);
+  const listingDisplayName = getListingDisplayName(listing, user);
+
   if (listing.is_demo) {
     const demoAvatarFilename = listing.avatar?.split("/").pop();
 
     return {
       isDemo: true,
       path: `/avatars/demo/${demoAvatarFilename}`,
-      alt: `${listing.name}’s avatar`,
+      alt: `${listingDisplayName} avatar`,
     };
   }
 
-  if (listing.type === "residential") {
+  if (listingType === "residential") {
     if (!user) {
       return {
         bucket: "public",
@@ -82,21 +101,21 @@ export function getListingAvatar(
     return {
       bucket: "avatars",
       filename: listing.owner_avatar || null,
-      alt: `${listing.owner_first_name}’s avatar`,
+      alt: `${listing.owner_first_name || "Private Host"} avatar`,
     };
   }
 
   if (!listing.avatar) {
     return {
-      path: `/avatars/default/${listing.type}.png`,
-      alt: `${listing.name}’s avatar`,
+      path: `/avatars/default/${listingType || "community"}.png`,
+      alt: `${listingDisplayName} avatar`,
     };
   }
 
   return {
     bucket: "listing_avatars",
     filename: listing.avatar || null,
-    alt: `${listing.name}’s avatar`,
+    alt: `${listingDisplayName} avatar`,
   };
 }
 
@@ -108,7 +127,7 @@ export function getListingOwnerAvatar(
   return {
     bucket: "avatars",
     filename: listing.owner_avatar || null,
-    alt: `${listing.owner_first_name}’s avatar`,
+    alt: `${listing.owner_first_name || "Listing owner"} avatar`,
   };
 }
 
@@ -125,15 +144,21 @@ export function getProfileAvatar(profileId: string | null | undefined) {
 export function getListingDisplayType(listing: ListingLike | null | undefined) {
   if (!listing) return "";
 
-  if (listing.type === "residential") {
+  const listingType = normaliseListingType(listing.type);
+
+  if (listingType === "residential") {
     return "Local resident";
   }
 
-  if (listing.type === "community") {
+  if (listingType === "community") {
     return "Community spot";
   }
 
-  return `Local ${listing.type}`;
+  if (listingType === "business") {
+    return "Local business";
+  }
+
+  return "Local listing";
 }
 
 export function generateListingMetadata(
@@ -148,6 +173,7 @@ export function generateListingMetadata(
   }
 
   const listingDisplayName = getListingDisplayName(listing, user);
+  const listingType = normaliseListingType(listing.type);
   const listingCountryName = countries.find(
     (country) => country.code === listing.country_code
   )?.name;
@@ -157,19 +183,21 @@ export function generateListingMetadata(
   ]);
   const listingFullLocation = listingLocationParts.join(", ");
   const listingBaseDescriptor =
-    listing.type === "residential"
+    listingType === "residential"
       ? `${listingDisplayName} is a local resident`
-      : `${listingDisplayName} is a ${listing.type}`;
+      : listingType
+        ? `${listingDisplayName} is a ${listingType}`
+        : `${listingDisplayName} is a local listing`;
   const listingDescriptionParts = [
     listingBaseDescriptor,
     listingFullLocation ? `based in ${listingFullLocation}.` : null,
-    listing.type === "residential"
+    listingType === "residential"
       ? null
       : listing.description?.trim()
         ? `${listing.description.trim()}`
         : null,
     `Connect with ${
-      listing.type === "residential"
+      listingType === "residential"
         ? "them"
         : listing.name || listingDisplayName
     } on ${siteConfig.name}, ${siteConfig.meta.explainer}.`,
