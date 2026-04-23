@@ -11,7 +11,7 @@ import PeelsLogo from "@/components/PeelsLogo";
 
 import { styled } from "next-yak";
 import type { User } from "@supabase/supabase-js";
-import type { ChatThreadRecord, ChatThreadView } from "@/types/chat";
+import type { ChatThreadListItem, ChatThreadView } from "@/types/chat";
 
 const ChatPageLayout = styled.main`
   display: flex;
@@ -68,7 +68,7 @@ export default function ChatPageClient({
   selectedThread,
 }: {
   user: User;
-  initialThreads: ChatThreadRecord[];
+  initialThreads: ChatThreadListItem[];
   initialThreadId?: string | null;
   selectedThread?: ChatThreadView | null;
 }) {
