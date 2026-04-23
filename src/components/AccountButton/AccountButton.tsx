@@ -12,11 +12,13 @@ type AccountButtonProps = Omit<
 
 export default function AccountButton({ ...props }: AccountButtonProps) {
   const t = useTranslations("Actions");
+  const tCommon = useTranslations("Common");
   const { user, profileFirstName } = useAuthUser({ includeProfile: true });
+  const label = profileFirstName?.trim() || tCommon("account");
 
   return user ? (
     <Button href="/profile" variant="secondary" {...props}>
-      {profileFirstName}
+      {label}
     </Button>
   ) : (
     <Button href="/sign-in" variant="secondary" {...props}>

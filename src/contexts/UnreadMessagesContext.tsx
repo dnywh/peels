@@ -7,10 +7,6 @@ import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 
 type ThreadReadStatus = Record<string, boolean>;
 
-type UnreadMessageRow = {
-  id: string;
-};
-
 type ChatMessagePayload = {
   id: string;
   sender_id: string | null;
@@ -99,9 +95,9 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
           return;
         }
 
-        const { data: unreadMessages, error } = await supabase
+        const { count, error } = await supabase
           .from("chat_messages")
-          .select("id")
+          .select("*", { count: "exact", head: true })
           .neq("sender_id", userId)
           .is("read_at", null);
 
@@ -111,9 +107,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
         }
 
         if (!isActive) return;
-        setUnreadCount(
-          (unreadMessages as UnreadMessageRow[] | null)?.length ?? 0
-        );
+        setUnreadCount(count ?? 0);
       } catch (error) {
         console.error("Error in checkUnreadMessages:", error);
       }

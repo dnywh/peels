@@ -1,7 +1,7 @@
 import { siteConfig } from "@/config/site";
 import { countries } from "@/data/countries";
 import type { Metadata } from "next";
-import type { DemoListing, Listing, ListingType } from "@/types/listing";
+import type { ListingType } from "@/types/listing";
 
 type ListingLike = {
   type?: ListingType | string | null;
