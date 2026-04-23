@@ -100,7 +100,7 @@ npm run dev
 
 ### Local `.env.local` for Playwright
 
-The production-like Playwright suite expects the local seeded Supabase stack, not the hosted Peels project.
+Both Playwright suites expect the local seeded Supabase stack, not the hosted Peels project.
 
 Use this shape in `.env.local` before `npm run test:e2e:prod`:
 
@@ -117,7 +117,7 @@ Recommended sequence:
 3. Run `npm run seed:local-media`
 4. Run `npm run supabase:env`
 5. Paste the printed `ANON_KEY` into `.env.local`
-6. Run `npm run test:e2e:prod`
+6. Run `npm run test:e2e` or `npm run test:e2e:prod`
 
 If `.env.local` still points at `https://mfnaqdyunuafbwukbbyr.supabase.co`, the smoke suite will not see the seeded local listings, demo accounts, or demo chat thread.
 

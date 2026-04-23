@@ -262,7 +262,7 @@ Peels keeps testing intentionally small:
 
 The smoke suite covers seeded sign-in, public listing, profile, and chat flows against local Supabase data. It is designed to stay small and high-signal rather than grow into a broad frontend testing matrix.
 
-Before `npm run test:e2e:prod`, make sure you are using the local seeded app stack, not hosted Supabase:
+Before `npm run test:e2e` or `npm run test:e2e:prod`, make sure you are using the local seeded app stack, not hosted Supabase:
 
 - Run `npm run supabase:start`
 - Run `npm run supabase:reset`
@@ -279,7 +279,13 @@ NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<paste the ANON_KEY from npm run supabase:env>
 ```
 
-Then run:
+Then run either:
+
+```bash
+npm run test:e2e
+```
+
+or:
 
 ```bash
 npm run test:e2e:prod
