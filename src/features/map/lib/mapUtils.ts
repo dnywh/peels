@@ -73,10 +73,10 @@ export function hasValidCoordinates(
   const coordinates = getListingCoordinates(listing);
   return Boolean(
     coordinates &&
-    typeof coordinates.latitude === "number" &&
-    typeof coordinates.longitude === "number" &&
-    Number.isFinite(coordinates.latitude) &&
-    Number.isFinite(coordinates.longitude)
+      typeof coordinates.latitude === "number" &&
+      typeof coordinates.longitude === "number" &&
+      Number.isFinite(coordinates.latitude) &&
+      Number.isFinite(coordinates.longitude)
   );
 }
 
