@@ -32,6 +32,8 @@ export function parseTextWithLinks(text: string): ParsedTextPart[] {
 
   let match: RegExpExecArray | null;
 
+  EMAIL_REGEX.lastIndex = 0;
+
   while ((match = EMAIL_REGEX.exec(text)) !== null) {
     matches.push({
       type: "email",

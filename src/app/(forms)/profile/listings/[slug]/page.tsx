@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import FormHeader from "@/components/FormHeader";
 import ListingWrite from "@/components/ListingWrite";
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 type EditListingPageProps = {
@@ -25,7 +26,7 @@ export default async function EditListingPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return <div>{t("Listings.edit.notFound")}</div>;
+    redirect(`/sign-in?redirect_to=/profile/listings/${slug}`);
   }
 
   const { data: profile } = await supabase

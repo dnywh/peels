@@ -16,16 +16,9 @@ export async function uploadAvatar(
   const fileExt = file.name.split(".").pop();
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
-  await supabase.storage
-    .from(bucket)
-    .remove([fileName])
-    .catch(() => {});
-
   const { data, error } = await supabase.storage
     .from(bucket)
-    .upload(fileName, file, {
-      upsert: true,
-    });
+    .upload(fileName, file);
 
   if (error) throw error;
   console.log("Avatar uploaded:", data);

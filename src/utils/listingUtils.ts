@@ -34,6 +34,12 @@ type GenerateListingMetadataOptions = {
   includeFullMetadata?: boolean;
 };
 
+function compactTextParts(parts: Array<string | null | undefined>) {
+  return parts
+    .map((part) => part?.trim())
+    .filter((part): part is string => Boolean(part));
+}
+
 export function getListingDisplayName(
   listing: ListingLike | null | undefined,
   user: ListingUser
@@ -145,14 +151,32 @@ export function generateListingMetadata(
   const listingCountryName = countries.find(
     (country) => country.code === listing.country_code
   )?.name;
-  const listingFullLocation = `${listing.area_name}, ${listingCountryName}`;
-  const listingDescription = `${listingDisplayName} is ${
-    listing.type === "residential" ? "" : ` a ${listing.type}`
-  } based in ${listingFullLocation}. ${
-    listing.type === "residential" ? "" : `${listing.description}`
-  } Connect with ${
-    listing.type === "residential" ? "them" : `${listing.name}`
-  } on ${siteConfig.name}, ${siteConfig.meta.explainer}.`;
+  const listingLocationParts = compactTextParts([
+    listing.area_name,
+    listingCountryName,
+  ]);
+  const listingFullLocation = listingLocationParts.join(", ");
+  const listingBaseDescriptor =
+    listing.type === "residential"
+      ? `${listingDisplayName} is a local resident`
+      : `${listingDisplayName} is a ${listing.type}`;
+  const listingDescriptionParts = [
+    listingBaseDescriptor,
+    listingFullLocation ? `based in ${listingFullLocation}.` : null,
+    listing.type === "residential"
+      ? null
+      : listing.description?.trim()
+        ? `${listing.description.trim()}`
+        : null,
+    `Connect with ${
+      listing.type === "residential"
+        ? "them"
+        : listing.name || listingDisplayName
+    } on ${siteConfig.name}, ${siteConfig.meta.explainer}.`,
+  ];
+  const listingDescription = compactTextParts(listingDescriptionParts).join(
+    " "
+  );
 
   const metadata: Metadata = {
     title: listingDisplayName,
@@ -164,15 +188,18 @@ export function generateListingMetadata(
   };
 
   if (options.includeFullMetadata) {
+    const locationKeywords = listingFullLocation
+      ? [
+          listingFullLocation,
+          `food scraps in ${listingFullLocation}`,
+          `compost ${listingFullLocation}`,
+          `food scrap drop-off ${listingFullLocation}`,
+          `compost drop-off ${listingFullLocation}`,
+        ]
+      : [];
+
     metadata.description = listingDescription;
-    metadata.keywords = [
-      listingFullLocation,
-      `food scraps in ${listing.area_name} ${listingCountryName}`,
-      `compost ${listing.area_name} ${listingCountryName}`,
-      `food scrap drop-off ${listing.area_name} ${listingCountryName}`,
-      `compost drop-off ${listing.area_name} ${listingCountryName}`,
-      ...siteConfig.meta.keywords,
-    ];
+    metadata.keywords = [...locationKeywords, ...siteConfig.meta.keywords];
   }
 
   return metadata;

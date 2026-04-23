@@ -12,6 +12,11 @@ function toDate(dateValue: string | Date) {
   return dateValue instanceof Date ? dateValue : new Date(dateValue);
 }
 
+function formatRelativeDayLabel(daysAgo: 0 | 1, locale: string) {
+  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  return formatter.format(-daysAgo, "day");
+}
+
 export function formatPublishDate(dateValue: string | Date) {
   return toDate(dateValue).toLocaleDateString(getLocale(), {
     year: "numeric",
@@ -64,11 +69,11 @@ export function formatWeekday(dateValue: string | Date) {
   }
 
   if (compareDate.getTime() === compareToday.getTime()) {
-    return "Today";
+    return formatRelativeDayLabel(0, locale);
   }
 
   if (compareDate.getTime() === compareYesterday.getTime()) {
-    return "Yesterday";
+    return formatRelativeDayLabel(1, locale);
   }
 
   if (diffDays < 7) {
