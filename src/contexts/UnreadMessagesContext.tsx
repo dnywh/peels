@@ -40,24 +40,69 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
     {}
   );
   const [hasViewedChats, setHasViewedChats] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const supabase = useMemo(() => createClient(), []);
   const pathname = usePathname();
 
   useEffect(() => {
     let isActive = true;
 
+    async function loadUserId(nextUserId?: string | null) {
+      const resolvedUserId =
+        nextUserId ?? (await supabase.auth.getUser()).data.user?.id ?? null;
+
+      if (!isActive) return;
+
+      setUserId((previousUserId) => {
+        if (previousUserId !== resolvedUserId) {
+          setUnreadCount(0);
+          setThreadReadStatus({});
+          setHasViewedChats(false);
+        }
+
+        return resolvedUserId;
+      });
+    }
+
+    void loadUserId();
+
+    if (isAuthDebugEnabled) {
+      console.log("Setting up auth listener");
+    }
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (isAuthDebugEnabled) {
+        console.log("Auth event:", event);
+        console.log("Session:", session ? "exists" : "none");
+      }
+
+      void loadUserId(session?.user?.id ?? null);
+    });
+
+    return () => {
+      isActive = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  useEffect(() => {
+    let isActive = true;
+
     async function checkUnreadMessages() {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user || !isActive) return;
+        if (!userId) {
+          if (isActive) {
+            setUnreadCount(0);
+          }
+          return;
+        }
 
         const { data: unreadMessages, error } = await supabase
           .from("chat_messages")
           .select("id")
-          .neq("sender_id", user.id)
+          .neq("sender_id", userId)
           .is("read_at", null);
 
         if (error) {
@@ -79,7 +124,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
     return () => {
       isActive = false;
     };
-  }, [supabase]);
+  }, [supabase, userId]);
 
   useEffect(() => {
     if (pathname === "/chats") {
@@ -88,36 +133,13 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   }, [pathname]);
 
   useEffect(() => {
-    if (isAuthDebugEnabled) {
-      console.log("Setting up auth listener");
-    }
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!isAuthDebugEnabled) return;
-
-      console.log("Auth event:", event);
-      console.log("Session:", session ? "exists" : "none");
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [supabase]);
-
-  useEffect(() => {
     let activeChannel: ReturnType<typeof supabase.channel> | null = null;
 
     async function setupSubscription() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
+      if (!userId) return;
 
       activeChannel = supabase
-        .channel("chat_messages")
+        .channel(`chat_messages:${userId}`)
         .on(
           "postgres_changes",
           {
@@ -128,7 +150,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
           async (payload) => {
             const message = payload.new as ChatMessagePayload;
 
-            if (message.sender_id === user.id) return;
+            if (message.sender_id === userId) return;
 
             const currentPath = window.location.pathname;
 
@@ -167,7 +189,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
         supabase.removeChannel(activeChannel);
       }
     };
-  }, [supabase]);
+  }, [supabase, userId]);
 
   function markThreadAsRead(threadId: string) {
     setThreadReadStatus((previousStatus) => ({

@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 export default async function ChatsPage({ params }: ChatsPageProps) {
   const { threadId: threadIdSegments } = await params;
   const threadId = threadIdSegments?.[0] ?? null;
+  const redirectPath = threadId ? `/chats/${threadId}` : "/chats";
 
   const supabase = await createClient();
   const {
@@ -24,7 +25,7 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/sign-in");
+    redirect(`/sign-in?redirect_to=${redirectPath}`);
   }
 
   const { data: threads } = await supabase
