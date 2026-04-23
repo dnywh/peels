@@ -1,33 +1,34 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import Textarea from "@/components/Textarea";
 import IconButton from "@/components/IconButton";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import FormMessage from "@/components/FormMessage";
 import { useTranslations } from "next-intl";
 
-const ChatComposerForm = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "stretch",
-  gap: "0.5rem",
-  borderTop: `1px solid ${theme.colors.border.base}`,
-  padding: "1rem",
-}));
+const ChatComposerForm = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: stretch;
+  gap: 0.5rem;
+  border-top: 1px solid ${theme.colors.border.base};
+  padding: 1rem;
+`;
 
-const ChatComposerInner = styled("form")(({ theme }) => ({
-  width: "100%",
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "flex-end",
-  justifyContent: "stretch",
-  gap: "0.75rem",
-}));
+const ChatComposerInner = styled.form`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: stretch;
+  gap: 0.75rem;
+`;
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  marginBottom: "0.6rem", // TODO: Make dynamic. Since we're aligning items to the bottom, we need to manually set this to appear horizontally centered
-}));
+const StyledIconButton = styled(IconButton)`
+  align-self: center;
+`;
 
 const TextareaComponent = Textarea as React.ComponentType<any>;
 

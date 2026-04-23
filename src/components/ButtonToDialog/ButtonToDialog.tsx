@@ -1,50 +1,63 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import * as Dialog from "@radix-ui/react-dialog";
 import Button from "@/components/Button";
 import SubmitButton from "@/components/SubmitButton";
 
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
-const DialogContent = styled(Dialog.Content)(({ theme }) => ({
-  background: "white",
-  position: "fixed",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "90vw",
-  maxWidth: "450px",
-  maxHeight: "85vh",
-  padding: "25px",
-  borderRadius: theme.corners.base,
-  zIndex: 3, // Stop map controls, AvatarButton, etc from showing above overlay and dialog
+const DialogContent = styled(Dialog.Content)`
+  background: ${theme.colors.background.top};
+  color: ${theme.colors.text.primary};
+  border: 1px solid ${theme.colors.border.base};
+  box-shadow: 0 0 0 1px ${theme.colors.border.light};
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 450px;
+  max-height: 85vh;
+  padding: 25px;
+  border-radius: ${theme.corners.base};
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-}));
+const Text = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 
-const Text = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.35rem",
-});
+  & h2 {
+    color: ${theme.colors.text.primary};
+    line-height: 115%;
+  }
 
-const Buttons = styled("div")({
-  display: "flex",
-  flexDirection: "row",
-  gap: "0.5rem",
-  flexWrap: "wrap",
-});
+  & p {
+    color: ${theme.colors.text.secondary};
+    line-height: 145%;
+  }
+`;
 
-const DialogOverlay = styled(Dialog.Overlay)({
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
-  position: "fixed",
-  inset: 0,
-  zIndex: 3, // Stop map controls, AvatarButton, etc from showing above overlay and dialog
-});
+const Buttons = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+const DialogOverlay = styled(Dialog.Overlay)`
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+`;
 
 type ButtonToDialogProps = {
   variant?: "primary" | "secondary" | "danger";

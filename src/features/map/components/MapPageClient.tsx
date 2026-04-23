@@ -1,8 +1,9 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import { useCallback } from "react";
 import { Drawer } from "vaul";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import type { User } from "@supabase/supabase-js";
 
 import { useDeviceContext } from "@/hooks/useDeviceContext";
@@ -24,26 +25,26 @@ type MapPageClientProps = {
   initialListing?: Listing | null;
 };
 
-const StyledMapPage = styled("main")(({ theme }) => ({
-  flex: 1,
-  gap: theme.spacing.gap.desktop,
-  alignItems: "stretch",
-  display: "flex",
-  flexDirection: "row",
-}));
+const StyledMapPage = styled.main`
+  flex: 1;
+  gap: ${theme.spacing.gap.desktop};
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+`;
 
-const StyledMapWrapper = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  flex: 1,
-  height: "100%",
-  "@media (min-width: 768px)": {
-    borderRadius: theme.corners.base,
-    border: `1px solid ${theme.colors.border.base}`,
-    overflow: "hidden",
-  },
-}));
+const StyledMapWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  height: 100%;
+  @media (min-width: 768px) {
+    border-radius: ${theme.corners.base};
+    border: 1px solid ${theme.colors.border.base};
+    overflow: hidden;
+  }
+`;
 
 export default function MapPageClient({
   user,

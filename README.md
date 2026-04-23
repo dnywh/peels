@@ -23,8 +23,6 @@ npm run dev
 # Go to http://localhost:3000
 ```
 
-> **Note**: This project currently uses `--webpack` flag for the `dev` and `build` scripts and `legacy-peer-deps=true` in a new `.npmrc` file due to compatibility with Pigment CSS. Once [Pigment CSS adds Turbopack support](https://github.com/mui/pigment-css/issues), we'll switch back to Turbopack (Next.js 16's default bundler).
-
 > **Note**: You'll need some API keys for full functionality. See [Required Services](#required-services) below.
 
 ## Prerequisites
@@ -211,7 +209,7 @@ npm run dev
 
 ### Development Guidelines
 
-- We use Pigment CSS for styling at a component-level
+- We use Next Yak for component-level styling
 - We’re slowly moving towards TypeScript for type safety
 - Heavy commenting is encouraged to make the codebase accessible to others
 - Code formatting is handled by Prettier. Please ensure your code is formatted according to `.prettierrc` before submitting a pull request
@@ -323,6 +321,6 @@ Check out the [Next.js and Supabase Starter Kit](https://github.com/supabase/sup
 - Authentication and database by [Supabase](https://supabase.com)
 - Translations powered by [next-intl](https://next-intl.dev/) with in-repo message catalogues under `messages/`
 - Maps powered by [MapTiler](https://www.maptiler.com) and [Protomaps](https://protomaps.com)
-- Styled components built with [Pigment CSS](https://github.com/mui/pigment-css)
+- Styled components built with [Next Yak](https://yak.js.org)
 
 See the [Colophon](https://www.peels.app/colophon) and [Wiki](https://peels.notion.site/207b37e1678f80259217f54cd9d1f637) for more.

@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -29,26 +30,25 @@ import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
 import FormMessage from "@/components/FormMessage";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
-const FieldsetWithGap = styled(Fieldset)({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-});
+const FieldsetWithGap = styled(Fieldset)`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
 
-const AdditionalSettings = styled("footer")(({ theme }) => ({
-  width: "100%", // Take full width of the container
-
-  borderTop: `1px solid ${theme.colors.border.base}`,
-  paddingTop: `calc(${theme.spacing.unit} * 3)`,
-  display: "flex",
-  flexDirection: "column",
-  gap: `calc(${theme.spacing.unit} * 1.5)`,
-}));
+const AdditionalSettings = styled.footer`
+  width: 100%;
+  border-top: 1px solid ${theme.colors.border.base};
+  padding-top: calc(${theme.spacing.unit} * 3);
+  display: flex;
+  flex-direction: column;
+  gap: calc(${theme.spacing.unit} * 1.5);
+`;
 
 const AvatarUploadManagerComponent =
   AvatarUploadManager as React.ComponentType<any>;

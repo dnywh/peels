@@ -8,20 +8,19 @@ import { setDisplayLocaleAction } from "@/app/actions";
 import Select from "@/components/Select";
 import Field from "@/components/Field";
 import InputHint from "@/components/InputHint";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 
-const Container = styled("div")(({ theme }) => ({
-  width: "100%",
-  maxWidth: "18rem",
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-  alignItems: "stretch",
-
-  "@media (min-width: 768px)": {
-    alignItems: "center",
-  },
-}));
+const Container = styled.div`
+  width: 100%;
+  max-width: 18rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+  @media (min-width: 768px) {
+    align-items: center;
+  }
+`;
 
 type LocalePickerProps = {
   showHint?: boolean;

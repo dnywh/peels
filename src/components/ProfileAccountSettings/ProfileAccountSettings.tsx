@@ -17,62 +17,59 @@ import {
 } from "@/i18n/config";
 import type { InlineActionResult } from "@/types/actionResult";
 
-import { styled } from "@pigment-css/react";
+import { css, styled } from "next-yak";
+import { theme } from "@/styles/theme.yak";
+import { sharedInsetListStyles } from "@/styles/commonStyles";
 import { FIELD_CONFIGS } from "@/lib/formValidation";
 import { useTranslations } from "next-intl";
 
-const List = styled("ul")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  padding: ` 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`,
-}));
+const editingListItemStyles = css`
+  flex-direction: column;
+  border-color: ${theme.colors.border.collide};
+  transition: border-color 800ms linear;
+`;
 
-const ListItem = styled("li")<{ editing?: boolean }>(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  borderStyle: "solid",
-  borderColor: "transparent",
-  transition: "border-color 25ms linear",
-  borderWidth: "1px 0",
-  padding: "1rem 0",
-  margin: "-0.5px 0",
+const List = styled.ul`
+  ${sharedInsetListStyles};
+`;
 
-  "&:first-child": {
-    borderWidth: `0 0 1px`,
-    padding: "0 0 1rem",
-  },
+const ListItem = styled.li<{ $editing?: boolean }>`
+  display: flex;
+  flex-direction: row;
+  border-style: solid;
+  border-color: transparent;
+  transition: border-color 25ms linear;
+  border-width: 1px 0;
+  padding: 1rem 0;
+  margin: -0.5px 0;
 
-  "&:last-child": {
-    borderWidth: `1px 0 0`,
-    padding: "1rem 0 0",
-  },
+  &:first-child {
+    border-width: 0 0 1px;
+    padding: 0 0 1rem;
+  }
 
-  variants: [
-    {
-      props: { editing: true },
-      style: {
-        flexDirection: "column",
-        borderColor: theme.colors.border.collide,
-        transition: "border-color 800ms linear",
-      },
-    },
-  ],
-}));
+  &:last-child {
+    border-width: 1px 0 0;
+    padding: 1rem 0 0;
+  }
 
-const ListItemReadField = styled(Field)(() => ({
-  flex: 1,
-}));
+  ${({ $editing }) => $editing && editingListItemStyles}
+`;
 
-const ButtonGroup = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  gap: theme.spacing.unit,
-}));
+const ListItemReadField = styled(Field)`
+  flex: 1;
+`;
 
-const PasswordPreview = styled("p")(({ theme }) => ({
-  color: theme.colors.text.ui.tertiary,
-  userSelect: "none",
-}));
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: ${theme.spacing.unit};
+`;
+
+const PasswordPreview = styled.p`
+  color: ${theme.colors.text.ui.tertiary};
+  user-select: none;
+`;
 
 const InputComponent = Input as React.ComponentType<any>;
 const nestedFormStyle = {
@@ -477,7 +474,7 @@ function ProfileAccountSettings({
 
   return (
     <List>
-      <ListItem editing={firstName.isEditing}>
+      <ListItem $editing={firstName.isEditing}>
         {firstName.isEditing ? (
           <FirstNameEditor
             action={updateFirstNameAction}
@@ -504,7 +501,7 @@ function ProfileAccountSettings({
         )}
       </ListItem>
 
-      <ListItem editing={email.isEditing}>
+      <ListItem $editing={email.isEditing}>
         {email.isEditing ? (
           <EmailEditor
             action={sendEmailChangeEmailAction}
@@ -529,7 +526,7 @@ function ProfileAccountSettings({
         )}
       </ListItem>
 
-      <ListItem editing={newsletterPreference.isEditing}>
+      <ListItem $editing={newsletterPreference.isEditing}>
         {newsletterPreference.isEditing ? (
           <NewsletterPreferenceEditor
             action={updateNewsletterPreferenceAction}
@@ -559,7 +556,7 @@ function ProfileAccountSettings({
         )}
       </ListItem>
 
-      <ListItem editing={preferredLocale.isEditing}>
+      <ListItem $editing={preferredLocale.isEditing}>
         {preferredLocale.isEditing ? (
           <PreferredLocaleEditor
             action={updatePreferredLocaleAction}

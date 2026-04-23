@@ -1,0 +1,75 @@
+"use client";
+import { theme } from "@/styles/theme.yak";
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { useTranslations } from "next-intl";
+import Button from "@/components/Button";
+import { styled } from "next-yak";
+import type { User } from "@supabase/supabase-js";
+
+export default function HeroButtons() {
+  const t = useTranslations("Index.buttons");
+  const [user, setUser] = useState<User | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function loadUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    }
+
+    loadUser();
+  }, []);
+
+  return (
+    <ButtonContainer>
+      <HeroActionButton href="/map" variant="primary" size="massive">
+        {t("browseMap")}
+      </HeroActionButton>
+      {user ? (
+        <HeroActionButton
+          href="/profile/listings/new"
+          variant="secondary"
+          size="massive"
+        >
+          {t("addListing")}
+        </HeroActionButton>
+      ) : (
+        <HeroActionButton href="/sign-up" variant="secondary" size="massive">
+          {t("signUp")}
+        </HeroActionButton>
+      )}
+    </ButtonContainer>
+  );
+}
+
+const HeroActionButton = styled(Button)`
+  width: 100%;
+  align-self: stretch;
+
+  @media (min-width: 768px) {
+    width: auto;
+    align-self: center;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  margin-top: 1rem;
+  width: 100%;
+  max-width: ${theme.spacing.tabBar.maxWidth};
+  align-items: stretch;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: calc(${theme.spacing.unit} * 2);
+
+  @media (min-width: 768px) {
+    margin-top: 2rem;
+    width: fit-content;
+    max-width: none;
+    align-items: center;
+    flex-direction: row;
+  }
+`;

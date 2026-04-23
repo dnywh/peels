@@ -1,43 +1,41 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import { siteConfig } from "@/config/site";
 import ButtonToDialog from "@/components/ButtonToDialog";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
 import SubmitButton from "@/components/SubmitButton";
 
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
+import { sharedInsetListStyles } from "@/styles/commonStyles";
 
-const List = styled("ul")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  padding: ` 0 calc(${theme.spacing.unit} * 1.5) calc(${theme.spacing.unit} * 1.5)`, // Visually match parent padding
-  gap: `calc(${theme.spacing.unit} * 5)`, // Visually match other sections
-}));
+const List = styled.ul`
+  ${sharedInsetListStyles};
+  gap: calc(${theme.spacing.unit} * 5);
+`;
 
-const ListItem = styled("li")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  gap: "1.5rem",
-}));
+const ListItem = styled.li`
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+`;
 
-const ListItemText = styled("div")(({ theme }) => ({
-  flex: 1,
+const ListItemText = styled.div`
+  flex: 1;
+  & > h4 {
+    color: ${theme.colors.text.ui.primary};
+    font-weight: 500;
+  }
+  & > p {
+    color: ${theme.colors.text.ui.quaternary};
+    font-size: 0.875rem;
+  }
+`;
 
-  "& > h4": {
-    color: theme.colors.text.ui.primary,
-    fontWeight: "500", // TODO: Match the weight of the other headings, including labels
-  },
-
-  "& > p": {
-    color: theme.colors.text.ui.quaternary,
-    fontSize: "0.875rem",
-  },
-}));
-
-const ActionForm = styled("form")({
-  flexShrink: 0,
-});
+const ActionForm = styled.form`
+  flex-shrink: 0;
+`;
 
 type ProfileActionsProps = {
   listings?: unknown[];

@@ -3,104 +3,118 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
-import { styled } from "@pigment-css/react";
+import { css, styled } from "next-yak";
+import { theme } from "@/styles/theme.yak";
 
 const AvatarComponent = Avatar as any;
 
 const MAX_LISTINGS = 12; // TODO: Store this value on Supabase and use in the related RLS policy, so they are always in sync
 
-const ListingsList = styled("ul")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.25rem",
-  marginTop: "-0.75rem", // Account for padding below
-}));
+const ListingsList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: -0.75rem;
+`;
 
-const LozengeContainer = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-  alignItems: "flex-end",
+const LozengeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
 
-  "@media (min-width: 768px)": {
-    flexDirection: "row",
-  },
-}));
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+`;
 
-const NewListingAvatar = styled("div")(({ theme }) => ({
-  // TODO: Use Avatar component instead of hardcoding the same values here
-  width: "40px", // Match the size of the avatar in the Avatar component
-  height: "40px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+const NewListingAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: ${theme.corners.avatar.small};
+  flex-shrink: 0;
+  background: ${theme.colors.background.pit};
+  box-shadow:
+    0px 0px 0px 2px ${theme.colors.background.top},
+    0px 0px 0px 3.5px ${theme.colors.border.base},
+    2px 2.5px 0px 2.15px ${theme.colors.border.stark};
+  transform: rotate(${theme.rotations.avatar});
+  color: ${theme.colors.text.brand.quaternary};
+`;
 
-  fontSize: "2.25rem",
+const NewListingAvatarGlyph = styled.span`
+  display: block;
+  font-size: 2.25rem;
+  line-height: 1;
+  transform: translateY(-0.06em);
+`;
 
-  // Match everything else from Avatar component
-  borderRadius: theme.corners.avatar.small,
-  flexShrink: 0,
-  background: theme.colors.background.pit,
-  boxShadow: `0px 0px 0px 2px ${theme.colors.background.top}, 0px 0px 0px 3.5px ${theme.colors.border.base}, 2px 2.5px 0px 2.15px ${theme.colors.border.stark}`,
-  transform: `rotate(${theme.rotations.avatar})`,
-  color: theme.colors.text.brand.quaternary,
-}));
+const sharedLinkStyles = css`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  border-radius: calc(${theme.corners.base} * 0.625);
+  border-color: ${theme.colors.border.special};
+  align-items: center;
+  min-height: 4.5rem;
+  transition: background-color 150ms ease-in-out;
 
-const sharedLinkStyles = ({ theme }: { theme: any }) => ({
-  padding: "0.75rem 1rem", // Visually match parent padding
-  display: "flex",
-  flexDirection: "row",
-  gap: "1.5rem",
-  borderRadius: `calc(${theme.corners.base} * 0.625)`,
-  borderColor: theme.colors.border.special,
-  alignItems: "center",
-  // Ensure each item takes up the same height
-  minHeight: "4.5rem",
+  &:hover {
+    background-color: ${theme.colors.background.sunk};
+  }
+`;
 
-  transition: "background-color 150ms ease-in-out",
-  "&:hover": {
-    backgroundColor: theme.colors.background.sunk,
-  },
-});
+const dashedLinkStyles = css`
+  border-width: 1.5px;
+  border-style: dashed;
+`;
 
-const AddYourFirstListingLink = styled(Link)(sharedLinkStyles, {
-  borderWidth: "1.5px",
-  borderStyle: "dashed",
-});
+const textStyles = css`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 
-const AddAnotherListingLink = styled(Link)(sharedLinkStyles, {
-  borderWidth: "1.5px",
-  borderStyle: "dashed",
-});
+  & h3 {
+    color: ${theme.colors.text.ui.primary};
+    font-size: 1rem;
+  }
 
-const ExistingListingLink = styled(Link)(sharedLinkStyles, {});
+  & p {
+    font-size: 0.875rem;
+    color: ${theme.colors.text.ui.quaternary};
+  }
+`;
 
-const textStyles = ({ theme }: { theme: any }) => ({
-  display: "flex",
-  flexDirection: "column",
-  flex: 1,
+const AddYourFirstListingLink = styled(Link)`
+  ${sharedLinkStyles}
+  ${dashedLinkStyles}
+`;
 
-  "& h3": {
-    color: theme.colors.text.ui.primary,
-    fontSize: "1rem",
-  },
+const AddAnotherListingLink = styled(Link)`
+  ${sharedLinkStyles}
+  ${dashedLinkStyles}
+`;
 
-  "& p": {
-    fontSize: "0.875rem",
-    color: theme.colors.text.ui.quaternary,
-  },
-});
+const ExistingListingLink = styled(Link)`
+  ${sharedLinkStyles}
+`;
 
-const Text = styled("div")(textStyles);
+const Text = styled.div`
+  ${textStyles}
+`;
 
-const SpecialText = styled("div")(({ theme }) => ({
-  ...textStyles({ theme }),
+const SpecialText = styled.div`
+  ${textStyles}
 
-  "& h3": {
-    color: theme.colors.text.brand.primary,
-    fontSize: "1.25rem",
-  },
-}));
+  & h3 {
+    color: ${theme.colors.text.brand.primary};
+    font-size: 1.25rem;
+  }
+`;
 
 type ProfileListingsProps = {
   user: any;
@@ -153,7 +167,9 @@ export default function ProfileListings({
         <li>
           {listings.length === 0 ? (
             <AddYourFirstListingLink href="/profile/listings/new">
-              <NewListingAvatar aria-hidden="true">+</NewListingAvatar>
+              <NewListingAvatar aria-hidden="true">
+                <NewListingAvatarGlyph>+</NewListingAvatarGlyph>
+              </NewListingAvatar>
               <SpecialText>
                 <h3>{t("Profile.addListing")}</h3>
                 <p>{t("Profile.listingPrompt")}</p>
@@ -161,7 +177,9 @@ export default function ProfileListings({
             </AddYourFirstListingLink>
           ) : (
             <AddAnotherListingLink href="/profile/listings/new">
-              <NewListingAvatar aria-hidden="true">+</NewListingAvatar>
+              <NewListingAvatar aria-hidden="true">
+                <NewListingAvatarGlyph>+</NewListingAvatarGlyph>
+              </NewListingAvatar>
               <Text>
                 <h3>{t("Profile.addAnotherListing")}</h3>
               </Text>

@@ -2,7 +2,7 @@
 
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Drawer } from "vaul";
-import { keyframes, styled } from "@pigment-css/react";
+import { keyframes, styled } from "next-yak";
 import { useTranslations } from "next-intl";
 import type { User } from "@supabase/supabase-js";
 
@@ -14,6 +14,7 @@ import {
   getListingDisplayType,
 } from "@/utils/listingUtils";
 import { isListingError, type SelectedListing } from "@/types/listing";
+import { theme } from "@/styles/theme.yak";
 
 import { SIDEBAR_WIDTH } from "../lib/mapUtils";
 
@@ -35,196 +36,195 @@ const sharedButtonStyles = {
   pointerEvents: "all" as const,
 };
 
-const StyledIconButtonAbsolute = styled(IconButton)({
-  ...sharedButtonStyles,
-  position: "absolute",
-  right: "0.75rem",
-});
+const StyledIconButtonAbsolute = styled(IconButton)`
+  pointer-events: ${sharedButtonStyles.pointerEvents};
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+`;
 
-const StyledIconButtonStationary = styled(IconButton)({
-  ...sharedButtonStyles,
-  position: "relative",
-});
+const StyledIconButtonStationary = styled(IconButton)`
+  pointer-events: ${sharedButtonStyles.pointerEvents};
+  position: relative;
+`;
 
-const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
-  borderBottom: "none",
-  borderRadius: `${theme.corners.base} ${theme.corners.base} 0 0`,
+const StyledDrawerContent = styled(Drawer.Content)`
+  border-bottom: none;
+  border-radius: ${theme.corners.base} ${theme.corners.base} 0 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 97%;
+  background: ${theme.colors.background.sunk};
+  border: 0.5px solid ${theme.colors.border.base};
+  box-shadow: 0px -3px 3px 1px rgba(0, 0, 0, 0.06);
+  overflow-x: hidden;
 
-  position: "fixed",
-  bottom: "0",
-  left: "0",
-  right: "0",
+  &::after {
+    display: none;
+  }
 
-  height: "97%", // Take up full height to prevent awkward drawer pop-ups when minimal content
+  @media (min-width: 768px) {
+    background: ${theme.colors.background.top};
+    border-radius: ${theme.corners.base};
+    box-shadow: -3px 0px 3px 1px rgba(0, 0, 0, 0.03);
+    height: unset;
+    top: 24px;
+    right: 24px;
+    bottom: 24px;
+    left: unset;
+    outline: none;
+    width: ${SIDEBAR_WIDTH};
+  }
+`;
 
-  background: theme.colors.background.sunk,
+const StyledDrawerHeader = styled.header`
+  flex: 1;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+`;
 
-  border: `0.5px solid ${theme.colors.border.base}`,
-  boxShadow: `0px -3px 3px 1px rgba(0, 0, 0, 0.06)`,
+const StyledDrawerHeaderInner = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  background: ${theme.colors.background.sunk};
+  border-bottom: 1px solid ${theme.colors.border.base};
+  box-shadow: 0px 1px 8px 0px ${theme.colors.border.base};
+  transform: translateY(-0.5px);
 
-  overflowX: "hidden",
+  @media (min-width: 768px) {
+    background: ${theme.colors.background.slight};
+    transform: unset;
+  }
+`;
 
-  "&::after": {
-    display: "none", // Otherwise seems to visibly block the drawer content
-  },
+const StyledHeaderText = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 2.5rem;
 
-  "@media (min-width: 768px)": {
-    background: theme.colors.background.top,
-    borderRadius: theme.corners.base,
-    boxShadow: `-3px 0px 3px 1px rgba(0, 0, 0, 0.03)`,
+  & h3,
+  & p {
+    line-height: 1.15;
+    overflow: hidden;
+    white-space: nowrap;
+    display: block;
+    text-overflow: ellipsis;
+    padding-block: 0.04rem;
+  }
 
-    height: "unset",
-    top: "24px",
-    right: "24px",
-    bottom: "24px",
-    left: "unset",
-    outline: "none",
-    width: SIDEBAR_WIDTH,
-  },
-}));
+  & h3 {
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: ${theme.colors.text.secondary};
+  }
 
-const StyledDrawerHeader = styled("header")({
-  flex: 1,
+  & p {
+    font-size: 0.8rem;
+    color: ${theme.colors.text.tertiary};
+  }
+`;
 
-  position: "sticky",
-  top: "0",
-  // Create a new stacking context to ensure header content stays above
-  // avatar whose rotation transform caused a new stacking context
-  zIndex: 1,
-  width: "100%",
+const StyledDrawerInner = styled.div`
+  width: 100%;
+  padding: 1rem 0;
+  padding-top: 2rem;
+  margin-top: -3.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-bottom: 1.5rem;
+`;
 
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  textAlign: "center",
-});
+const DrawerHandleContainer = styled.div`
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+`;
 
-const StyledDrawerHeaderInner = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  width: "100%",
+const ButtonSet = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  position: absolute;
+  right: 0.75rem;
+`;
 
-  padding: "1rem",
-  background: theme.colors.background.sunk,
-  borderBottom: `1px solid ${theme.colors.border.base}`,
-  boxShadow: `0px 1px 8px 0px ${theme.colors.border.base}`,
+const NoListingFound = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  color: ${theme.colors.text.secondary};
 
-  transform: "translateY(-0.5px)", // Avoid clipping on Retina screens
+  & > header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
 
-  "@media (min-width: 768px)": {
-    background: theme.colors.background.slight,
-    transform: "unset",
-  },
-}));
+  & > header > * {
+    text-align: center;
+    text-wrap: balance;
+  }
+`;
 
-const StyledHeaderText = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.25rem",
-  width: "100%",
-  padding: "0 2.5rem", // Padding to account for the icon button
+const LoadingState = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0 1rem;
+`;
 
-  "& h3, p": {
-    lineHeight: "100%",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    display: "block",
-    textOverflow: "ellipsis",
-  },
-  "& h3": {
-    fontWeight: "500",
-    fontSize: "0.85rem",
-    color: theme.colors.text.secondary,
-  },
-  "& p": {
-    fontSize: "0.8rem",
-    color: theme.colors.text.tertiary,
-  },
-}));
+const mapDrawerPulse = keyframes`
+  0% {
+    opacity: 0.55;
+  }
 
-const StyledDrawerInner = styled("div")({
-  width: "100%",
-  padding: "1rem 0", // Commented out X axis to allow overflow for things like photo x-scroll
-  paddingTop: "2rem",
-  marginTop: "-3.5rem", // To account for sticky header
+  50% {
+    opacity: 1;
+  }
 
-  overflowY: "auto",
-  overflowX: "hidden", // Prevent horizontal scrolling
+  100% {
+    opacity: 0.55;
+  }
+`;
 
-  display: "flex",
-  flexDirection: "column",
-  gap: "3rem", // Match in ListingRead
-  marginBottom: "1.5rem", // Visual buffer
-});
+const SkeletonBlock = styled.div`
+  border-radius: ${theme.corners.base};
+  background: ${theme.colors.background.slight};
+  opacity: 0.85;
+  animation: ${mapDrawerPulse} 1.2s ease-in-out infinite;
+`;
 
-const DrawerHandleContainer = styled("div")({
-  position: "absolute",
-  top: "0.5rem",
-  left: "50%",
-  transform: "translateX(-50%)",
-});
+const SkeletonHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
 
-const ButtonSet = styled("div")({
-  display: "flex",
-  flexDirection: "row",
-  gap: "0.5rem",
-  position: "absolute",
-  right: "0.75rem",
-});
-
-const NoListingFound = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "2rem",
-  padding: "2rem",
-  color: theme.colors.text.secondary,
-
-  "& > header": {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-
-    "& > *": {
-      textAlign: "center",
-      textWrap: "balance",
-    },
-  },
-}));
-
-const LoadingState = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1.5rem",
-  padding: "0 1rem",
-});
-
-const mapDrawerPulse = keyframes({
-  "0%": { opacity: 0.55 },
-  "50%": { opacity: 1 },
-  "100%": { opacity: 0.55 },
-});
-
-const SkeletonBlock = styled("div")(({ theme }) => ({
-  borderRadius: theme.corners.base,
-  background: theme.colors.background.slight,
-  opacity: 0.85,
-  animation: `${mapDrawerPulse} 1.2s ease-in-out infinite`,
-}));
-
-const SkeletonHeader = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-});
-
-const SkeletonText = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.75rem",
-});
+const SkeletonText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
 
 export default function MapListingDrawerPanel({
   user,

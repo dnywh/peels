@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { useDeviceContext } from "@/hooks/useDeviceContext";
@@ -6,57 +7,52 @@ import { Drawer } from "vaul";
 import Button from "@/components/Button";
 import ChatWindow from "@/components/ChatWindow";
 import ListingCta from "@/components/ListingCta";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 
 import type { Listing } from "@/types/listing";
 
 const sidebarWidth = "clamp(20rem, 30vw, 30rem)";
 
-const StyledDrawerOverlay = styled(Drawer.Overlay)({
-  background: "rgba(0, 0, 0, 0.3)",
-  position: "fixed",
-  inset: "0",
-});
+const StyledDrawerOverlay = styled(Drawer.Overlay)`
+  background: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  inset: 0;
+`;
 
-const ListingCtaContainer = styled("div")({
-  padding: "0 1rem",
+const ListingCtaContainer = styled.div`
+  padding: 0 1rem;
+  & > * {
+    width: 100%;
+  }
+`;
 
-  "& > *": {
-    width: "100%",
-  },
-});
-
-const StyledDrawerContent = styled(Drawer.Content)(({ theme }) => ({
-  background: theme.colors.background.top,
-  borderRadius: `${theme.corners.base} ${theme.corners.base} 0 0`,
-
-  overflowX: "hidden",
-
-  "&::after": {
-    display: "none",
-  },
-
-  marginTop: "24px",
-  height: "95%",
-  position: "fixed",
-  bottom: "0",
-  left: "0",
-  right: "0",
-  display: "flex",
-  flexDirection: "column",
-
-  "@media (min-width: 768px)": {
-    borderRadius: theme.corners.base,
-    height: "unset",
-    marginTop: "unset",
-    top: "24px",
-    right: "24px",
-    bottom: "24px",
-    left: "unset",
-    outline: "none",
-    width: sidebarWidth,
-  },
-}));
+const StyledDrawerContent = styled(Drawer.Content)`
+  background: ${theme.colors.background.top};
+  border-radius: ${theme.corners.base} ${theme.corners.base} 0 0;
+  overflow-x: hidden;
+  &::after {
+    display: none;
+  }
+  margin-top: 24px;
+  height: 95%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 768px) {
+    border-radius: ${theme.corners.base};
+    height: unset;
+    margin-top: unset;
+    top: 24px;
+    right: 24px;
+    bottom: 24px;
+    left: unset;
+    outline: none;
+    width: ${sidebarWidth};
+  }
+`;
 
 type ListingChatDrawerProps = {
   isNested?: boolean;

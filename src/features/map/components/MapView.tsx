@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import { useCallback, useEffect, useRef } from "react";
 import type { ComponentType, CSSProperties } from "react";
@@ -16,7 +17,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import { useTranslations } from "next-intl";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 
 import Button from "@/components/Button";
 import type {
@@ -54,43 +55,42 @@ type MapViewProps = {
   countryCode: string | null;
 };
 
-const MapContainer = styled("div")({
-  position: "relative",
-  width: "100%",
-  height: "100%",
-  backgroundColor: "lightblue",
-});
+const MapContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: lightblue;
+`;
 
-const ReturnToListingButton = styled(Button)({
-  position: "absolute",
-  top: "20px",
-  left: "50%",
-  transform: "translateX(-50%)",
-  zIndex: 1,
+const ReturnToListingButton = styled(Button)`
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  @media (min-width: 768px) {
+    top: auto;
+    bottom: 20px;
+  }
+`;
 
-  "@media (min-width: 768px)": {
-    top: "auto",
-    bottom: "20px",
-  },
-});
-
-const LoadingChip = styled("div")(({ theme }) => ({
-  position: "absolute",
-  top: "0.75rem",
-  left: "50%",
-  transform: "translateX(-50%)",
-  zIndex: 2,
-  padding: "0.25rem 0.75rem",
-  borderRadius: "999px",
-  background: theme.colors.background.top,
-  boxShadow: "0 1px 6px rgba(0, 0, 0, 0.08)",
-  fontSize: "0.75rem",
-  fontWeight: 500,
-  color: theme.colors.text.secondary,
-  opacity: 0.9,
-  pointerEvents: "none",
-  transition: "opacity 150ms ease",
-}));
+const LoadingChip = styled.div`
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: ${theme.colors.background.top};
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: ${theme.colors.text.secondary};
+  opacity: 0.9;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+`;
 
 const attributionControlMobileStyle: CSSProperties = {
   marginRight: `calc(clamp(var(--spacing-tabBar-marginX), calc(((100vw - var(--spacing-tabBar-maxWidth)) / 2)), 100vw) + 4px)`,

@@ -1,4 +1,5 @@
 "use client";
+import { theme } from "@/styles/theme.yak";
 
 import { useState, useEffect, memo, useMemo } from "react";
 
@@ -10,7 +11,7 @@ import ChatHeader from "@/components/ChatHeader";
 
 import { formatWeekday } from "@/utils/dateUtils";
 
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 import { useTranslations } from "next-intl";
 
@@ -24,74 +25,69 @@ type ChatWindowProps = {
 
 type ChatMessageRecord = any;
 
-const StyledChatWindow = styled("div")(({ theme }) => ({
-  height: "100%",
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  overflow: "hidden",
-  backgroundColor: theme.colors.background.top,
+const StyledChatWindow = styled.div`
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: ${theme.colors.background.top};
+  @media (min-width: 768px) {
+    border-radius: ${theme.corners.base};
+    border: 1px solid ${theme.colors.border.base};
+  }
+`;
 
-  "@media (min-width: 768px)": {
-    borderRadius: theme.corners.base,
-    border: `1px solid ${theme.colors.border.base}`,
-  },
-}));
+const StyledMessagesContainer = styled.div`
+  flex: 1;
+  padding: 1.5rem 1rem 1rem;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 
-const StyledMessagesContainer = styled("div")({
-  flex: 1,
-  padding: "1.5rem 1rem 1rem",
-  overflowY: "scroll",
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  & p {
+    color: ${theme.colors.text.ui.emptyState};
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 120%;
+    text-wrap: balance;
+  }
+`;
 
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-});
+const Day = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
 
-const EmptyState = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "2rem",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100%",
-
-  "& p": {
-    color: theme.colors.text.ui.emptyState,
-    fontSize: "1.2rem",
-    fontWeight: "500",
-    lineHeight: "120%",
-    textWrap: "balance",
-  },
-}));
-
-const Day = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "2rem",
-}));
-
-const DayHeader = styled("header")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.375rem",
-  alignItems: "stretch",
-
-  "& h3, & p": {
-    textAlign: "center",
-    lineHeight: "100%",
-    fontSize: "0.75rem", // Match timestamp font size
-  },
-
-  "& h3": {
-    fontWeight: "500",
-    color: theme.colors.text.ui.primary,
-  },
-
-  "& p": {
-    color: theme.colors.text.ui.quaternary,
-  },
-}));
+const DayHeader = styled.header`
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  align-items: stretch;
+  & h3,
+  & p {
+    text-align: center;
+    line-height: 100%;
+    font-size: 0.75rem;
+  }
+  & h3 {
+    font-weight: 500;
+    color: ${theme.colors.text.ui.primary};
+  }
+  & p {
+    color: ${theme.colors.text.ui.quaternary};
+  }
+`;
 
 // Memoize the ChatWindow component
 const ChatWindow = memo(function ChatWindow({
@@ -340,7 +336,7 @@ const ChatWindow = memo(function ChatWindow({
     setMessage(e.target.value);
   };
 
-  const directionsForDemo = ["sent", "received"];
+  const directionsForDemo = ["sent", "received"] as const;
 
   const role = isDemo
     ? "initiator"

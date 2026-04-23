@@ -1,20 +1,34 @@
-const PRODUCTION_SUPABASE_HOST = "mfnaqdyunuafbwukbbyr.supabase.co";
 const STORAGE_PUBLIC_PATH = "/storage/v1/object/public";
+const PRODUCTION_SUPABASE_ORIGIN = "https://mfnaqdyunuafbwukbbyr.supabase.co";
 
 function normaliseAssetPath(assetPath: string) {
   return assetPath.replace(/^\/+/, "");
 }
 
-function getSupabaseHost() {
+function isLocalSupabaseHost(hostname: string) {
+  return hostname === "127.0.0.1" || hostname === "localhost";
+}
+
+function getHostedStaticOrigin() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-  if (!supabaseUrl) return null;
+  if (supabaseUrl) {
+    try {
+      const url = new URL(supabaseUrl);
 
-  try {
-    return new URL(supabaseUrl).hostname;
-  } catch {
-    return null;
+      if (!isLocalSupabaseHost(url.hostname)) {
+        return supabaseUrl.replace(/\/$/, "");
+      }
+    } catch {
+      // Ignore invalid URLs and fall back to the production static bucket.
+    }
   }
+
+  return PRODUCTION_SUPABASE_ORIGIN;
+}
+
+function getStaticObjectPath(assetPath: string) {
+  return `${STORAGE_PUBLIC_PATH}/static/${normaliseAssetPath(assetPath)}`;
 }
 
 export function getStoragePublicUrl(bucket: string, assetPath: string) {
@@ -25,38 +39,27 @@ export function getStoragePublicUrl(bucket: string, assetPath: string) {
   return `${supabaseUrl.replace(/\/$/, "")}${STORAGE_PUBLIC_PATH}/${bucket}/${normaliseAssetPath(assetPath)}`;
 }
 
-export function usesHostedStaticAssets() {
-  return getSupabaseHost() === PRODUCTION_SUPABASE_HOST;
+export function getHostedStaticPublicUrl(assetPath: string) {
+  return `${getHostedStaticOrigin()}${getStaticObjectPath(assetPath)}`;
 }
 
-export function getStaticAssetUrl(
-  assetPath: string,
-  localFallbackPath: string
-) {
-  if (!usesHostedStaticAssets()) {
-    return localFallbackPath;
-  }
-
-  return getStoragePublicUrl("static", assetPath) ?? localFallbackPath;
+export function getStaticAssetUrl(assetPath: string) {
+  return getHostedStaticPublicUrl(assetPath);
 }
 
 export function getStaticFontUrl(assetPath: string) {
-  return getStoragePublicUrl(
-    "static",
-    `fonts/${normaliseAssetPath(assetPath)}`
+  return getHostedStaticPublicUrl(
+    `fonts/${normaliseAssetPath(assetPath).replace(/^fonts\//, "")}`
   );
 }
 
 export function getPromoKitUrl() {
-  return getStaticAssetUrl("promo-kit.zip", "/fallbacks/promo-kit.txt");
+  return getStaticAssetUrl("promo-kit.zip");
 }
 
 export function getNewsletterIssueImageUrl(
   issueNumber: number | string,
   assetFile: string
 ) {
-  return getStaticAssetUrl(
-    `newsletter/${issueNumber}/${assetFile}`,
-    "/map-tiles/hero.jpg"
-  );
+  return getStaticAssetUrl(`newsletter/${issueNumber}/${assetFile}`);
 }

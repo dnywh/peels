@@ -10,8 +10,8 @@ import {
   EllipsisVertical,
 } from "lucide-react";
 
-import { styled } from "@pigment-css/react";
-import { forwardRef } from "react";
+import { css, styled } from "next-yak";
+import { forwardRef, type ComponentType } from "react";
 
 type IconButtonIcon =
   | "back"
@@ -36,23 +36,23 @@ export type IconButtonProps = Omit<
     loadingLabel?: string;
   };
 
-const StyledButton = styled(Button)<StyledButtonProps>(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+const smallBreakpointStyles = css`
+  display: flex;
 
-  variants: [
-    {
-      props: { breakpoint: "sm" },
-      style: {
-        display: "flex",
-        "@media (min-width: 768px)": {
-          display: "none",
-        },
-      },
-    },
-  ],
-}));
+  @media (min-width: 768px) {
+    display: none;
+  }
+`;
+
+const StyledButton = styled(Button)<{ $breakpoint?: IconButtonBreakpoint }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ${({ $breakpoint }) => $breakpoint === "sm" && smallBreakpointStyles}
+`;
+
+const StyledButtonComponent = StyledButton as ComponentType<any>;
 
 const iconLabels: Record<IconButtonIcon, string> = {
   back: "Go back",
@@ -130,11 +130,11 @@ const IconButton = forwardRef<
   };
 
   return (
-    <StyledButton
+    <StyledButtonComponent
       ref={ref}
       size="icon"
       variant={variant}
-      breakpoint={breakpoint}
+      $breakpoint={breakpoint}
       onClick={handleClick}
       aria-label={accessibleLabel}
       aria-busy={loading || undefined}
@@ -156,7 +156,7 @@ const IconButton = forwardRef<
           )}
         </>
       )}
-    </StyledButton>
+    </StyledButtonComponent>
   );
 });
 

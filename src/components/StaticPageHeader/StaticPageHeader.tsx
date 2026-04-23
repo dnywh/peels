@@ -1,10 +1,11 @@
 import Link from "next/link";
 import {
-  sharedSectionTextBlockStyles,
   sharedAnchorTagStyles,
+  sharedSectionTextBlockStyles,
 } from "@/styles/commonStyles";
 import ChevronRightIcon from "@/components/ChevronRightIcon";
-import { styled } from "@pigment-css/react";
+import { styled } from "next-yak";
+import { theme } from "@/styles/theme.yak";
 
 function StaticPageHeader({
   title,
@@ -30,58 +31,61 @@ function StaticPageHeader({
 
 export default StaticPageHeader;
 
-const Header = styled("header")(({ theme }) => ({
-  margin: "5rem auto 3rem",
+const Header = styled.header`
+  margin: 5rem auto 3rem;
+  ${sharedSectionTextBlockStyles}
+  max-width: ${theme.spacing.container.maxWidth.media};
 
-  ...sharedSectionTextBlockStyles({ theme }),
-  maxWidth: theme.spacing.container.maxWidth.media,
+  & h1 {
+    max-width: 24ch;
+    font-size: 3rem;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    font-weight: 775;
+    color: ${theme.colors.text.primary};
 
-  "& h1": {
-    // fontSize: "3.5rem",
-    // color: theme.colors.text.primary,
+    @media (min-width: 768px) {
+      font-size: 4rem;
+    }
+  }
 
-    // Forked from index page.js
-    // TODO: consolidate or separate properly
-    maxWidth: "24ch",
-    fontSize: "3rem",
-    letterSpacing: "-0.03em",
-    lineHeight: "1.05",
-    fontWeight: "775",
-    color: theme.colors.text.primary,
+  & p {
+    font-size: 1.25rem;
+    color: ${theme.colors.text.tertiary};
+  }
 
-    "@media (min-width: 768px)": {
-      // fontSize: "4.75rem",
-      fontSize: "4rem",
-    },
-  },
+  & p a {
+    color: inherit;
+    transition: ${theme.transitions.textColor};
+  }
 
-  "& p": {
-    fontSize: "1.25rem",
-    color: theme.colors.text.tertiary,
+  & p a:visited {
+    color: inherit;
+  }
 
-    "& a": {
-      ...sharedAnchorTagStyles({ theme }),
-    },
-  },
-}));
+  & p a:hover {
+    color: ${theme.colors.text.primary};
+  }
+`;
 
-const StyledLink = styled(Link)(({ theme }) => ({
-  ...sharedAnchorTagStyles({ theme }),
-  display: "flex",
-  alignItems: "center",
-  gap: "0.125rem",
-  color: theme.colors.text.ui.quinary, // theme.colors.text.tertiary,
-  transition: theme.transitions.textColor,
+const StyledLink = styled(Link)`
+  ${sharedAnchorTagStyles}
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  color: ${theme.colors.text.ui.quinary};
+  transition: ${theme.transitions.textColor};
 
-  "& svg": {
-    stroke: theme.colors.text.ui.quinary,
-    transition: theme.transitions.svgColor,
-  },
+  & svg {
+    stroke: ${theme.colors.text.ui.quinary};
+    transition: ${theme.transitions.svgColor};
+  }
 
-  "&:hover": {
-    color: theme.colors.text.ui.emptyState,
-    "& svg": {
-      stroke: theme.colors.text.ui.emptyState,
-    },
-  },
-}));
+  &:hover {
+    color: ${theme.colors.text.ui.emptyState};
+  }
+
+  &:hover svg {
+    stroke: ${theme.colors.text.ui.emptyState};
+  }
+`;
