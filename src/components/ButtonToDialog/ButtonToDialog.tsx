@@ -6,8 +6,9 @@ import Button from "@/components/Button";
 import SubmitButton from "@/components/SubmitButton";
 
 import { styled } from "next-yak";
-import { useState, type ReactNode } from "react";
+import { useState, type FormHTMLAttributes, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import type { FormSubmitHandler } from "@/types/events";
 
 const DialogContent = styled(Dialog.Content)`
   background: ${theme.colors.background.top};
@@ -68,9 +69,9 @@ type ButtonToDialogProps = {
   confirmButtonText?: ReactNode;
   confirmLoadingText?: string;
   cancelButtonText?: ReactNode;
-  action?: React.FormHTMLAttributes<HTMLFormElement>["action"];
+  action?: FormHTMLAttributes<HTMLFormElement>["action"];
   disabled?: boolean;
-  onSubmit?: React.FormEventHandler<HTMLFormElement>;
+  onSubmit?: FormSubmitHandler;
   pending?: boolean;
 };
 
@@ -97,22 +98,21 @@ function ButtonToDialog({
   const resolvedCancelButtonText = cancelButtonText || t("Actions.noCancel");
   const isPending = pending || isSubmitting;
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> | undefined =
-    onSubmit
-      ? async (event) => {
-          if (isPending) {
-            event.preventDefault();
-            return;
-          }
-
-          setIsSubmitting(true);
-          try {
-            await onSubmit(event);
-          } finally {
-            setIsSubmitting(false);
-          }
+  const handleSubmit: FormSubmitHandler | undefined = onSubmit
+    ? async (event) => {
+        if (isPending) {
+          event.preventDefault();
+          return;
         }
-      : undefined;
+
+        setIsSubmitting(true);
+        try {
+          await onSubmit(event);
+        } finally {
+          setIsSubmitting(false);
+        }
+      }
+    : undefined;
 
   return (
     <Dialog.Root>

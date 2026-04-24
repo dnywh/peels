@@ -8,6 +8,7 @@ test("profile account actions show pending feedback and update the read view", a
   await delayProfileActionRequests(page);
 
   const profileAccountSettings = page.getByTestId("profile-account-settings");
+  await expect(page.getByTestId("avatar-upload-avatars")).toBeVisible();
   await expect(profileAccountSettings).toBeVisible();
   await expect(profileAccountSettings).toHaveAttribute("data-hydrated", "true");
 

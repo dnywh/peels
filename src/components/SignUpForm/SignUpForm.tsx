@@ -18,6 +18,7 @@ import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { FormSubmitEvent } from "@/types/events";
 
 interface SignUpFormProps {
   defaultValues?: {
@@ -169,7 +170,7 @@ export default function SignUpForm({
     setIsTurnstileInteractive(false);
   }, []);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormSubmitEvent) => {
     event.preventDefault();
     if (isSubmitting || isWaitingForToken) return;
 

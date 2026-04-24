@@ -28,6 +28,7 @@ import type {
   ChatThreadView,
 } from "@/types/chat";
 import type { DemoListing } from "@/types/listing";
+import type { FormSubmitEvent } from "@/types/events";
 
 type ChatWindowProps = {
   isDrawer?: boolean;
@@ -224,7 +225,7 @@ const ChatWindow = memo(function ChatWindow({
     user?.id,
   ]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormSubmitEvent) {
     event.preventDefault();
 
     const messageToSend = message.trim();
