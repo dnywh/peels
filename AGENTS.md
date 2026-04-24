@@ -11,6 +11,7 @@ These instructions apply to the whole repository.
 - Prefer Server Components by default. Only add `"use client"` when the component needs browser-only APIs, state/effects, event handlers, or client-only libraries.
 - When touching JS/JSX components, convert them to TS/TSX when it is reasonable and scoped to the change.
 - Keep shared presentational components server-safe where possible. For translated labels or suffixes, prefer passing translated text from the caller instead of adding `useTranslations` to a shared component.
+- For React form submit handlers, use the shared `FormSubmitEvent` / `FormSubmitHandler` types from `src/types/events.ts`, which wrap React 19's `SubmitEvent`. Avoid deprecated `FormEvent`, `FormEventHandler`, and `React.FormEvent`; keep `ChangeEvent` for input/select/textarea change handlers.
 - In MDX prose, if an inline component inside a Markdown list item is formatted onto multiple lines and changes rendered spacing, use a targeted `{/* prettier-ignore */}` before that list rather than disabling formatting for the whole file.
 
 ## Testing
