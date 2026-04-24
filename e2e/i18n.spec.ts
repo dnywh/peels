@@ -5,14 +5,7 @@ import {
   delayServerActionRequests,
   signIn,
 } from "./helpers";
-
-const languageLabels: Record<string, string> = {
-  de: "Deutsch",
-  en: "English",
-  es: "Español",
-  fr: "Français",
-  "pt-BR": "Português (Brasil)",
-};
+import { isValidLocale, localeLabels, type Locale } from "../src/i18n/config";
 
 test("public footer locale switch refreshes the page locale", async ({
   page,
@@ -39,7 +32,13 @@ test("profile locale change persists after refresh", async ({ page }) => {
   await page.getByTestId("profile-account-language-edit").click();
   const languageInput = page.getByTestId("profile-account-language-input");
   const originalLanguage = await languageInput.inputValue();
-  const updatedLanguage = originalLanguage === "de" ? "en" : "de";
+
+  if (!isValidLocale(originalLanguage)) {
+    throw new Error(`Unexpected profile language value: ${originalLanguage}`);
+  }
+
+  const originalLocale: Locale = originalLanguage;
+  const updatedLanguage: Locale = originalLocale === "de" ? "en" : "de";
 
   await languageInput.selectOption(updatedLanguage);
 
@@ -49,7 +48,7 @@ test("profile locale change persists after refresh", async ({ page }) => {
   await expect(languageSubmit).toHaveAttribute("aria-busy", "true");
   await languageClick;
   await expect(page.getByTestId("profile-account-language-value")).toHaveText(
-    languageLabels[updatedLanguage]
+    localeLabels[updatedLanguage]
   );
 
   await page.reload();
@@ -60,13 +59,13 @@ test("profile locale change persists after refresh", async ({ page }) => {
   await page.getByTestId("profile-account-language-edit").click();
   await page
     .getByTestId("profile-account-language-input")
-    .selectOption(originalLanguage);
+    .selectOption(originalLocale);
   await page.getByTestId("profile-account-language-submit").click();
   await expect(page.getByTestId("profile-account-language-value")).toHaveText(
-    languageLabels[originalLanguage]
+    localeLabels[originalLocale]
   );
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("lang", originalLanguage, {
+  await expect(page.locator("html")).toHaveAttribute("lang", originalLocale, {
     timeout: 15_000,
   });
 });
