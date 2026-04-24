@@ -27,12 +27,22 @@ type Presentation = "full" | "drawer" | "demo";
 
 type ListingReadListing = Listing | DemoListing;
 
-type ListingReadProps = {
+type SharedListingReadProps = {
   user: User | null;
   listing: ListingReadListing | null;
-  presentation?: Presentation;
-  referenceNow?: string;
 };
+
+type DemoListingReadProps = SharedListingReadProps & {
+  presentation: "demo";
+  referenceNow?: never;
+};
+
+type NonDemoListingReadProps = SharedListingReadProps & {
+  presentation?: Exclude<Presentation, "demo">;
+  referenceNow: string;
+};
+
+type ListingReadProps = DemoListingReadProps | NonDemoListingReadProps;
 
 function isDemoListing(
   listing: ListingReadListing | null
@@ -66,6 +76,7 @@ const ListingRead = memo(function Listing({
   );
 
   const isDemo = presentation === "demo";
+  const nonDemoReferenceNow = isDemo ? undefined : referenceNow;
   const demoListing = isDemoListing(listing) ? listing : null;
   const realListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
@@ -148,7 +159,7 @@ const ListingRead = memo(function Listing({
             isChatDrawerOpen={isChatDrawerOpen}
             setIsChatDrawerOpen={setIsChatDrawerOpen}
             existingThread={existingThread}
-            referenceNow={referenceNow}
+            referenceNow={nonDemoReferenceNow as string}
           />
         ) : null}
 

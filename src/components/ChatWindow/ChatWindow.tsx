@@ -35,14 +35,24 @@ import type {
 import type { DemoListing } from "@/types/listing";
 import type { FormSubmitEvent } from "@/types/events";
 
-type ChatWindowProps = {
+type SharedChatWindowProps = {
   isDrawer?: boolean;
   user: User | null;
   listing: ChatListing | DemoListing;
   existingThread?: ChatThreadRecord | ChatThreadView | null;
-  isDemo?: boolean;
-  referenceNow?: string;
 };
+
+type DemoChatWindowProps = SharedChatWindowProps & {
+  isDemo: true;
+  referenceNow?: never;
+};
+
+type NonDemoChatWindowProps = SharedChatWindowProps & {
+  isDemo?: false;
+  referenceNow: string;
+};
+
+type ChatWindowProps = DemoChatWindowProps | NonDemoChatWindowProps;
 
 const DIRECTIONS_FOR_DEMO = ["sent", "received"] as const;
 type ChatRenderOptions = {
@@ -174,6 +184,15 @@ const ChatWindow = memo(function ChatWindow({
             timeZone: clientTimeZone ?? CHAT_RENDER_TIME_ZONE,
           },
     [clientTimeZone, isDemo, locale, referenceNow]
+  );
+  const messageDateKeys = useMemo(
+    () =>
+      messages.map((chatMessage) =>
+        getChatDateKey(chatMessage.created_at, {
+          timeZone: chatRenderOptions.timeZone,
+        })
+      ),
+    [messages, chatRenderOptions.timeZone]
   );
 
   function resolveChatErrorMessage(errorMessage: string | null) {
@@ -382,14 +401,10 @@ const ChatWindow = memo(function ChatWindow({
         )}
 
         {messages.map((chatMessage, index) => {
+          const currentDateKey = messageDateKeys[index];
+          const previousDateKey = messageDateKeys[index - 1];
           const showDateHeader =
-            index === 0 ||
-            getChatDateKey(chatMessage.created_at, {
-              timeZone: chatRenderOptions.timeZone,
-            }) !==
-              getChatDateKey(messages[index - 1].created_at, {
-                timeZone: chatRenderOptions.timeZone,
-              });
+            index === 0 || currentDateKey !== previousDateKey;
           const showInitiationHeader = index === 0;
 
           return (

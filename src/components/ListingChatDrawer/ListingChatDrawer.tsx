@@ -62,7 +62,7 @@ type ListingChatDrawerProps = {
   isChatDrawerOpen: boolean;
   setIsChatDrawerOpen: (open: boolean) => void;
   existingThread: ChatThreadRecord | null;
-  referenceNow?: string;
+  referenceNow: string;
 };
 
 type SharedDrawerProps = {

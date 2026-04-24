@@ -47,7 +47,9 @@ test("homepage hydrates without chat date mismatches", async ({
   await serverContext.close();
 
   await page.waitForLoadState("networkidle");
-  await page.waitForTimeout(2_000);
+  await expect
+    .poll(async () => page.getByTestId("chat-day-label").allTextContents())
+    .toEqual(["Yesterday", "Today"]);
 
   const hydratedDayLabels = await page
     .getByTestId("chat-day-label")

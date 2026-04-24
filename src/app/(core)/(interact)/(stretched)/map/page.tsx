@@ -58,12 +58,14 @@ export async function generateMetadata({
 export default async function Page({ searchParams }: MapPageProps) {
   const listingSlug = (await searchParams)?.listing;
   const { user, listing } = await getInitialData(listingSlug);
+  const referenceNow = new Date().toISOString();
 
   return (
     <MapPageClient
       user={user}
       initialListingSlug={listingSlug ?? null}
       initialListing={listing}
+      referenceNow={referenceNow}
     />
   );
 }
