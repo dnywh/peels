@@ -67,6 +67,10 @@ type UpdatePreferredLocaleActionData = {
   preferredLocale: Locale;
 };
 
+type SetDisplayLocaleActionData = {
+  locale: Locale;
+};
+
 function getActionFormData<T>(
   previousStateOrFormData: FormData | InlineActionResult<T>,
   maybeFormData?: FormData
@@ -458,17 +462,22 @@ export async function updateNewsletterPreferenceAction(
   });
 }
 
-export const setDisplayLocaleAction = async (formData: FormData) => {
+export const setDisplayLocaleAction = async (
+  formData: FormData
+): Promise<InlineActionResult<SetDisplayLocaleActionData>> => {
+  const t = await getTranslations("Errors");
   const nextLocale = normaliseLocale(formData.get("locale")?.toString());
 
   if (!nextLocale) {
-    return { error: "Invalid locale" };
+    return actionError<SetDisplayLocaleActionData>(t("generic"));
   }
 
   await setUserLocale(nextLocale);
   revalidatePath("/", "layout");
 
-  return { success: true };
+  return actionSuccess<SetDisplayLocaleActionData>({
+    locale: nextLocale,
+  });
 };
 
 export async function updatePreferredLocaleAction(

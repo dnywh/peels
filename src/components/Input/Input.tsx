@@ -1,4 +1,7 @@
-import { Input as HeadlessInput } from "@headlessui/react";
+import {
+  Input as HeadlessInput,
+  type InputProps as HeadlessInputProps,
+} from "@headlessui/react";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 
@@ -29,6 +32,10 @@ const StyledInput = styled(HeadlessInput)`
   }
 `;
 
-export default function Input({ error = null, ...props }) {
+type InputProps = Omit<HeadlessInputProps, "invalid"> & {
+  error?: string | null;
+};
+
+export default function Input({ error = null, ...props }: InputProps) {
   return <StyledInput invalid={error ? true : undefined} {...props} />;
 }

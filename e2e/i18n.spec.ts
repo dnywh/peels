@@ -1,23 +1,40 @@
 import { expect, test } from "@playwright/test";
-import { HOST_EMAIL, delayProfileActionRequests, signIn } from "./helpers";
+import {
+  HOST_EMAIL,
+  delayProfileActionRequests,
+  delayServerActionRequests,
+  signIn,
+} from "./helpers";
+
+const languageLabels: Record<string, string> = {
+  de: "Deutsch",
+  en: "English",
+  es: "Español",
+  fr: "Français",
+  "pt-BR": "Português (Brasil)",
+};
 
 test("public footer locale switch refreshes the page locale", async ({
   page,
 }) => {
+  await delayServerActionRequests(page);
   await page.goto("/");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await page.getByTestId("locale-picker-select").selectOption("de");
+  const localeSelect = page.getByTestId("locale-picker-select");
+  const localeChange = localeSelect.selectOption("de");
+  await expect(localeSelect).toBeDisabled();
+  await expect(localeSelect).toHaveAttribute("aria-busy", "true");
+  await localeChange;
   await expect(page.locator("html")).toHaveAttribute("lang", "de", {
     timeout: 15_000,
   });
-  await expect(page.getByTestId("locale-picker-select")).toHaveValue("de");
+  await expect(localeSelect).toHaveValue("de");
 });
 
 test("profile locale change persists after refresh", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
   await delayProfileActionRequests(page);
-  await page.waitForTimeout(3_000);
 
   await page.getByTestId("profile-account-language-edit").click();
   const languageInput = page.getByTestId("profile-account-language-input");
@@ -31,7 +48,9 @@ test("profile locale change persists after refresh", async ({ page }) => {
   await expect(languageSubmit).toBeDisabled();
   await expect(languageSubmit).toHaveAttribute("aria-busy", "true");
   await languageClick;
-  await page.waitForTimeout(2_000);
+  await expect(page.getByTestId("profile-account-language-value")).toHaveText(
+    languageLabels[updatedLanguage]
+  );
 
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", updatedLanguage, {
@@ -43,7 +62,9 @@ test("profile locale change persists after refresh", async ({ page }) => {
     .getByTestId("profile-account-language-input")
     .selectOption(originalLanguage);
   await page.getByTestId("profile-account-language-submit").click();
-  await page.waitForTimeout(2_000);
+  await expect(page.getByTestId("profile-account-language-value")).toHaveText(
+    languageLabels[originalLanguage]
+  );
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", originalLanguage, {
     timeout: 15_000,

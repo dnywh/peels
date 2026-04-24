@@ -1,7 +1,7 @@
 import { Description as HeadlessDescription } from "@headlessui/react";
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 const errorHintStyles = css`
   color: ${theme.colors.input.invalid.text};
@@ -26,14 +26,14 @@ const StyledInputHint = styled(HeadlessDescription)<{
   ${({ $variant }) => $variant === "centered" && centredHintStyles}
 `;
 
-type InputHintProps = {
+type InputHintProps = HTMLAttributes<HTMLElement> & {
   variant?: InputHintVariant;
   children?: ReactNode;
 };
 
-function InputHint({ variant, children }: InputHintProps) {
+function InputHint({ variant, children, ...props }: InputHintProps) {
   return (
-    <StyledInputHint $variant={variant ? variant : undefined}>
+    <StyledInputHint $variant={variant ? variant : undefined} {...props}>
       {children}
     </StyledInputHint>
   );
