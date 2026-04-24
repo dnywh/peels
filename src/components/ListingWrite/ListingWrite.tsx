@@ -6,7 +6,6 @@ import {
   useState,
   type ChangeEvent,
   type ComponentType,
-  type FormEvent,
   type InputHTMLAttributes,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -53,6 +52,7 @@ import type {
   ListingWriteFieldErrors,
   ListingWriteProfile,
 } from "@/types/listing";
+import type { FormSubmitEvent } from "@/types/events";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
@@ -166,7 +166,7 @@ export default function ListingWrite({
         })
       : null);
 
-  async function handleDeleteListing(event: FormEvent<HTMLFormElement>) {
+  async function handleDeleteListing(event: FormSubmitEvent) {
     event.preventDefault();
 
     if (!initialListing || isMutating) {
@@ -196,7 +196,7 @@ export default function ListingWrite({
     }
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormSubmitEvent) {
     event.preventDefault();
 
     if (isMutating) {
@@ -282,33 +282,39 @@ export default function ListingWrite({
   }
 
   const addAcceptedItem = () => {
-    setAcceptedItems([...acceptedItems, ""]);
+    setAcceptedItems((currentItems) => [...currentItems, ""]);
   };
 
   const addRejectedItem = () => {
-    setRejectedItems([...rejectedItems, ""]);
+    setRejectedItems((currentItems) => [...currentItems, ""]);
   };
 
   const addLink = () => {
-    setLinks([...links, ""]);
+    setLinks((currentLinks) => [...currentLinks, ""]);
   };
 
   const handleAcceptedItemChange = (index: number, value: string) => {
-    const nextItems = [...acceptedItems];
-    nextItems[index] = value;
-    setAcceptedItems(nextItems);
+    setAcceptedItems((currentItems) => {
+      const nextItems = [...currentItems];
+      nextItems[index] = value;
+      return nextItems;
+    });
   };
 
   const handleRejectedItemChange = (index: number, value: string) => {
-    const nextItems = [...rejectedItems];
-    nextItems[index] = value;
-    setRejectedItems(nextItems);
+    setRejectedItems((currentItems) => {
+      const nextItems = [...currentItems];
+      nextItems[index] = value;
+      return nextItems;
+    });
   };
 
   const handleLinksChange = (index: number, value: string) => {
-    const nextLinks = [...links];
-    nextLinks[index] = value;
-    setLinks(nextLinks);
+    setLinks((currentLinks) => {
+      const nextLinks = [...currentLinks];
+      nextLinks[index] = value;
+      return nextLinks;
+    });
   };
 
   return (
@@ -321,16 +327,7 @@ export default function ListingWrite({
         data-hydrated={isHydrated ? "true" : "false"}
       >
         <DisabledFieldset disabled={isMutating}>
-          {listingType === "residential" ? (
-            <AvatarUploadManager
-              initialAvatar={profile?.avatar || ""}
-              bucket="avatars"
-              entityId={user?.id ?? ""}
-              onAvatarChange={setAvatar}
-              inputHintShown={profile?.avatar ? undefined : true}
-              listingType={listingType}
-            />
-          ) : (
+          {listingType !== "residential" && (
             <AvatarUploadManager
               initialAvatar={avatar}
               bucket="listing_avatars"
@@ -617,6 +614,7 @@ export default function ListingWrite({
           <SubmitButton
             data-testid="listing-write-submit"
             variant="primary"
+            width="full"
             pending={submitMutation.isPending}
             pendingText={
               initialListing ? t("Status.saving") : t("Status.adding")

@@ -420,6 +420,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
           tabIndex={isDisabled ? -1 : tabIndex}
           aria-disabled={isDisabled || undefined}
           aria-busy={isLoading || undefined}
+          data-button-width={allProps.width ?? "contained"}
           onClick={handleLinkClick}
           {...linkProps}
           rel={rel}
@@ -445,6 +446,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         tabIndex={isDisabled ? -1 : tabIndex}
         aria-disabled={isDisabled || undefined}
         aria-busy={isLoading || undefined}
+        data-button-width={allProps.width ?? "contained"}
         onClick={onClick}
         {...buttonProps}
       >

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import {
+  DONOR_EMAIL,
   HOST_EMAIL,
   PROFILE_RENDER_TIMEOUT_MS,
   delayServerActionRequests,
@@ -7,6 +8,8 @@ import {
 } from "./helpers";
 
 const BUSINESS_LISTING_EDIT_PATH = "/profile/listings/demo-inner-west-cafe";
+const RESIDENTIAL_LISTING_EDIT_PATH =
+  "/profile/listings/demo-newtown-worm-farm";
 const ALTERNATE_BUSINESS_DESCRIPTION =
   "A demo business listing with a slightly different description for e2e coverage.";
 
@@ -91,6 +94,8 @@ test("listing edit saves and restores seeded business fields", async ({
   await delayServerActionRequests(page);
 
   const submitButton = page.getByTestId("listing-write-submit");
+  await expect(submitButton).toHaveAttribute("data-button-width", "full");
+
   const updateNavigation = page.waitForURL(
     /\/listings\/demo-inner-west-cafe\?status=updated$/
   );
@@ -114,4 +119,19 @@ test("listing edit saves and restores seeded business fields", async ({
   await page.goto(BUSINESS_LISTING_EDIT_PATH);
   await expect(page.locator("#description")).toHaveValue(originalDescription);
   await expect(page.locator("#visibility")).toHaveValue(originalVisibility);
+});
+
+test("residential listing edit leaves avatar management on the profile page", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: RESIDENTIAL_LISTING_EDIT_PATH,
+  });
+
+  await expect(page.getByTestId("listing-write-form")).toBeVisible();
+  await expect(page.getByTestId("avatar-upload-avatars")).toHaveCount(0);
+  await expect(page.getByTestId("avatar-upload-listing_avatars")).toHaveCount(
+    0
+  );
 });

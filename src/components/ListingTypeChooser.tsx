@@ -6,6 +6,7 @@ import SubmitButton from "@/components/SubmitButton";
 import Form from "@/components/Form";
 import RadioGroup from "@/components/RadioGroup";
 import Radio from "@/components/Radio";
+import type { FormSubmitEvent } from "@/types/events";
 
 type ListingTypeOption = {
   key: string;
@@ -49,7 +50,7 @@ export default function ListingTypeChooser({
     return "/profile/listings/new?type=host";
   }, [mode, selectedOption]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormSubmitEvent) {
     event.preventDefault();
 
     if (!nextHref) return;

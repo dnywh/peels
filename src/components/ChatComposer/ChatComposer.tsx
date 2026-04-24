@@ -6,6 +6,7 @@ import IconButton from "@/components/IconButton";
 import { styled } from "next-yak";
 import FormMessage from "@/components/FormMessage";
 import { useTranslations } from "next-intl";
+import type { FormSubmitHandler } from "@/types/events";
 
 const ChatComposerForm = styled.div`
   display: flex;
@@ -33,7 +34,7 @@ const StyledIconButton = styled(IconButton)`
 const TextareaComponent = Textarea as React.ComponentType<any>;
 
 type ChatComposerProps = {
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onSubmit: FormSubmitHandler;
   message: string;
   handleMessageChange: React.ChangeEventHandler<HTMLTextAreaElement>;
   error?: string | null;

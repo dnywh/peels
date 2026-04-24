@@ -28,6 +28,7 @@ import type {
   ChatThreadView,
 } from "@/types/chat";
 import type { DemoListing } from "@/types/listing";
+import type { FormSubmitEvent } from "@/types/events";
 
 type ChatWindowProps = {
   isDrawer?: boolean;
@@ -36,6 +37,8 @@ type ChatWindowProps = {
   existingThread?: ChatThreadRecord | ChatThreadView | null;
   isDemo?: boolean;
 };
+
+const DIRECTIONS_FOR_DEMO = ["sent", "received"] as const;
 
 const StyledChatWindow = styled.div`
   height: 100%;
@@ -198,9 +201,10 @@ const ChatWindow = memo(function ChatWindow({
 
       const { readAt, readMessageIds } = result.data;
 
+      const readMessageIdsSet = new Set(readMessageIds);
       setMessages((previousMessages) =>
         previousMessages.map((chatMessage) =>
-          readMessageIds.includes(chatMessage.id)
+          readMessageIdsSet.has(chatMessage.id)
             ? { ...chatMessage, read_at: readAt }
             : chatMessage
         )
@@ -224,7 +228,7 @@ const ChatWindow = memo(function ChatWindow({
     user?.id,
   ]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormSubmitEvent) {
     event.preventDefault();
 
     const messageToSend = message.trim();
@@ -299,7 +303,6 @@ const ChatWindow = memo(function ChatWindow({
     setMessage(event.target.value);
   };
 
-  const directionsForDemo = ["sent", "received"] as const;
   const role = isDemo
     ? "initiator"
     : existingThread
@@ -364,7 +367,7 @@ const ChatWindow = memo(function ChatWindow({
               <ChatMessage
                 direction={
                   isDemo
-                    ? directionsForDemo[index % 2]
+                    ? DIRECTIONS_FOR_DEMO[index % 2]
                     : chatMessage.sender_id === user?.id
                       ? "sent"
                       : "received"

@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 export default async function EditListingPage({
   params,
 }: EditListingPageProps) {
-  const t = await getTranslations();
+  const supabasePromise = createClient();
   const { slug } = await params;
-  const supabase = await createClient();
+  const supabase = await supabasePromise;
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -29,18 +29,55 @@ export default async function EditListingPage({
     redirect(`/sign-in?redirect_to=/profile/listings/${slug}`);
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select()
-    .eq("id", user.id)
-    .single();
+  const [
+    t,
+    { data: profile, error: profileError },
+    { data: listing, error: listingError },
+  ] = await Promise.all([
+    getTranslations(),
+    supabase
+      .from("profiles")
+      .select("first_name, avatar, is_admin")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("listings_private_data")
+      .select(
+        `
+          id,
+          avatar,
+          name,
+          description,
+          coordinates,
+          country_code,
+          area_name,
+          accepted_items,
+          rejected_items,
+          photos,
+          links,
+          type,
+          slug,
+          is_stub,
+          visibility,
+          owner_has_multiple_non_residential_listings
+        `
+      )
+      .eq("owner_id", user.id)
+      .match({ slug })
+      .maybeSingle(),
+  ]);
 
-  const { data: listing } = await supabase
-    .from("listings_private_data")
-    .select()
-    .eq("owner_id", user.id)
-    .match({ slug })
-    .single();
+  if (profileError) {
+    throw new Error(
+      `Failed to fetch profile for user "${user.id}": ${profileError.message}`
+    );
+  }
+
+  if (listingError) {
+    throw new Error(
+      `Failed to fetch listing for slug "${slug}" and user "${user.id}": ${listingError.message}`
+    );
+  }
 
   if (!listing) {
     return <div>{t("Listings.edit.notFound")}</div>;

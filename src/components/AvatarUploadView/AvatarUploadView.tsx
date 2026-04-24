@@ -112,7 +112,7 @@ function AvatarUploadView({
   };
 
   return (
-    <Fieldset>
+    <Fieldset data-testid={`avatar-upload-${bucket}`}>
       <StyledField>
         {/* Hidden file input */}
         <input

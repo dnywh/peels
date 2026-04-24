@@ -18,6 +18,7 @@ import { isTurnstileEnabled } from "@/utils/utils";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { FormSubmitEvent } from "@/types/events";
 
 interface SignUpFormProps {
   defaultValues?: {
@@ -169,7 +170,7 @@ export default function SignUpForm({
     setIsTurnstileInteractive(false);
   }, []);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormSubmitEvent) => {
     event.preventDefault();
     if (isSubmitting || isWaitingForToken) return;
 
@@ -256,22 +257,33 @@ export default function SignUpForm({
     }
   };
 
-  const turnstileProps = {
-    ref: turnstileRef,
-    siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
-    onSuccess: handleTurnstileSuccess,
-    onError: handleTurnstileError,
-    onExpire: handleTurnstileExpire,
-    onTimeout: handleTurnstileTimeout,
-    onUnsupported: handleTurnstileUnsupported,
-    onBeforeInteractive: handleTurnstileBeforeInteractive,
-    onAfterInteractive: handleTurnstileAfterInteractive,
-    options: {
-      appearance: "interaction-only",
-      execution: "execute",
-      responseField: false,
-    } as const,
-  };
+  const turnstileProps = useMemo(
+    () => ({
+      ref: turnstileRef,
+      siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
+      onSuccess: handleTurnstileSuccess,
+      onError: handleTurnstileError,
+      onExpire: handleTurnstileExpire,
+      onTimeout: handleTurnstileTimeout,
+      onUnsupported: handleTurnstileUnsupported,
+      onBeforeInteractive: handleTurnstileBeforeInteractive,
+      onAfterInteractive: handleTurnstileAfterInteractive,
+      options: {
+        appearance: "interaction-only",
+        execution: "execute",
+        responseField: false,
+      } as const,
+    }),
+    [
+      handleTurnstileAfterInteractive,
+      handleTurnstileBeforeInteractive,
+      handleTurnstileError,
+      handleTurnstileExpire,
+      handleTurnstileSuccess,
+      handleTurnstileTimeout,
+      handleTurnstileUnsupported,
+    ]
+  );
 
   const turnstileContainerStyle = useMemo(
     () =>
