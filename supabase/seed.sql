@@ -176,7 +176,9 @@ insert into public.listings (
   avatar,
   country_code,
   area_name,
-  is_stub
+  is_stub,
+  homepage_featured,
+  homepage_featured_photo_indexes
 )
 values
   (
@@ -194,7 +196,9 @@ values
     'demo/farm.jpg',
     'AU',
     'Marrickville',
-    false
+    false,
+    true,
+    array[0, 2]
   ),
   (
     1002,
@@ -211,7 +215,9 @@ values
     'demo/brewery.jpg',
     'AU',
     'Enmore',
-    false
+    false,
+    true,
+    array[0]
   ),
   (
     1003,
@@ -228,7 +234,47 @@ values
     null,
     'AU',
     'Newtown',
-    false
+    false,
+    false,
+    '{}'::integer[]
+  ),
+  (
+    1004,
+    '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
+    'Tempe Share Shed',
+    'A neighbourhood drop-off spot sharing compost space and practical know-how for nearby growers.',
+    extensions.st_setsrid(extensions.st_makepoint(151.1578, -33.9242), 4326)::extensions.geography,
+    array['Fruit scraps', 'Coffee grounds', 'Leafy greens'],
+    array['Meat', 'Plastic packaging'],
+    array['demo/tumbler.jpg', 'demo/garden.jpg'],
+    array['https://www.peels.app/about'],
+    true,
+    'community',
+    'demo/farm.jpg',
+    'AU',
+    'Tempe',
+    false,
+    true,
+    array[1]
+  ),
+  (
+    1005,
+    '2c9ae20c-2469-4e60-84b3-39268697717c',
+    'Stanmore Bakery Scraps',
+    'A public business listing that should stay off the homepage featured strip unless explicitly curated.',
+    extensions.st_setsrid(extensions.st_makepoint(151.1631, -33.8940), 4326)::extensions.geography,
+    array['Coffee grounds', 'Fruit scraps'],
+    array['Plastic', 'Packaging'],
+    array['demo/wheelbarrow.jpg'],
+    array['https://www.peels.app/faq'],
+    true,
+    'business',
+    'demo/brewery.jpg',
+    'AU',
+    'Stanmore',
+    false,
+    false,
+    '{}'::integer[]
   )
 on conflict (id) do update
 set
@@ -245,17 +291,21 @@ set
   avatar = excluded.avatar,
   country_code = excluded.country_code,
   area_name = excluded.area_name,
-  is_stub = excluded.is_stub;
+  is_stub = excluded.is_stub,
+  homepage_featured = excluded.homepage_featured,
+  homepage_featured_photo_indexes = excluded.homepage_featured_photo_indexes;
 
 update public.listings
 set slug = case id
   when 1001 then 'demo-marrickville-compost'
   when 1002 then 'demo-inner-west-cafe'
   when 1003 then 'demo-newtown-worm-farm'
+  when 1004 then 'demo-tempe-share-shed'
+  when 1005 then 'demo-stanmore-bakery'
 end
-where id in (1001, 1002, 1003);
+where id in (1001, 1002, 1003, 1004, 1005);
 
-select setval('public.listings_id_seq', 1003, true);
+select setval('public.listings_id_seq', 1005, true);
 
 insert into public.chat_threads (
   id,

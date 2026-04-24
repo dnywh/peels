@@ -70,3 +70,32 @@ test("homepage hydrates without chat date mismatches", async ({
     )
   ).toBeFalsy();
 });
+
+test("homepage drop-off only shows curated featured hosts", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByTestId("homepage-featured-hosts")).toBeVisible();
+
+  const featuredHostCards = page.locator(
+    '[data-testid^="homepage-featured-host-"]'
+  );
+
+  await expect(featuredHostCards).toHaveCount(3);
+  await expect(
+    page.getByTestId("homepage-featured-host-demo-marrickville-compost")
+  ).toBeVisible();
+  await expect(
+    page.getByTestId("homepage-featured-host-demo-inner-west-cafe")
+  ).toBeVisible();
+  await expect(
+    page.getByTestId("homepage-featured-host-demo-tempe-share-shed")
+  ).toBeVisible();
+  await expect(
+    page.getByTestId("homepage-featured-host-demo-stanmore-bakery")
+  ).toHaveCount(0);
+  await expect(
+    page.getByTestId("homepage-featured-host-demo-newtown-worm-farm")
+  ).toHaveCount(0);
+});
