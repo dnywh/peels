@@ -31,8 +31,14 @@ export type Message = {
 };
 
 export default function FormMessage({ message }: { message: Message }) {
+  const variant = "success" in message ? "success" : "error";
+
   return (
-    <StyledFormMessage $variant={"success" in message ? "success" : "error"}>
+    <StyledFormMessage
+      $variant={variant}
+      role={variant === "error" ? "alert" : "status"}
+      aria-live={variant === "error" ? "assertive" : "polite"}
+    >
       {"success" in message && <p>{message.success}</p>}
       {"error" in message && <p>{message.error}</p>}
     </StyledFormMessage>
