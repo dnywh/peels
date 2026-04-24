@@ -7,11 +7,11 @@ import AvatarPair from "@/components/AvatarPair";
 import { css, styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 import { useTranslations } from "next-intl";
-import type { ChatThreadRecord, ChatUser } from "@/types/chat";
+import type { ChatThreadListItem, ChatUser } from "@/types/chat";
 
 type ThreadsListProps = {
   user: ChatUser;
-  threads?: ChatThreadRecord[] | null;
+  threads?: ChatThreadListItem[] | null;
   currentThreadId?: string | null;
 };
 
@@ -177,9 +177,7 @@ function ThreadsList({ user, threads, currentThreadId }: ThreadsListProps) {
                 : otherPersonName;
 
             const hasUnreadMessages =
-              thread.chat_messages_with_senders?.some(
-                (msg) => !msg.read_at && msg.sender_id !== user.id
-              ) && !isThreadRead(thread.id);
+              thread.has_unread_messages && !isThreadRead(thread.id);
 
             return (
               <li key={thread.id}>
@@ -221,16 +219,9 @@ function ThreadsList({ user, threads, currentThreadId }: ThreadsListProps) {
                   />
                   <ThreadPreviewText>
                     <h3>{displayNameVerbose}</h3>
-                    {thread.chat_messages_with_senders &&
-                      thread.chat_messages_with_senders.length > 0 && (
-                        <p>
-                          {
-                            thread.chat_messages_with_senders[
-                              thread.chat_messages_with_senders.length - 1
-                            ].content
-                          }
-                        </p>
-                      )}
+                    {thread.last_message && (
+                      <p>{thread.last_message.content}</p>
+                    )}
                   </ThreadPreviewText>
                 </ThreadPreview>
               </li>

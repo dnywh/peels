@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { HOST_EMAIL, PROFILE_RENDER_TIMEOUT_MS, signIn } from "./helpers";
+import {
+  HOST_EMAIL,
+  PROFILE_RENDER_TIMEOUT_MS,
+  delayServerActionRequests,
+  signIn,
+} from "./helpers";
 
 const BUSINESS_LISTING_EDIT_PATH = "/profile/listings/demo-inner-west-cafe";
 const ALTERNATE_BUSINESS_DESCRIPTION =
@@ -83,11 +88,16 @@ test("listing edit saves and restores seeded business fields", async ({
 
   await descriptionInput.fill(updatedDescription);
   await visibilityInput.selectOption(updatedVisibility);
+  await delayServerActionRequests(page);
 
-  await Promise.all([
-    page.waitForURL(/\/listings\/demo-inner-west-cafe\?status=updated$/),
-    page.getByTestId("listing-write-submit").click(),
-  ]);
+  const submitButton = page.getByTestId("listing-write-submit");
+  const updateNavigation = page.waitForURL(
+    /\/listings\/demo-inner-west-cafe\?status=updated$/
+  );
+  await submitButton.click();
+  await expect(submitButton).toBeDisabled();
+  await expect(submitButton).toHaveAttribute("aria-busy", "true");
+  await updateNavigation;
 
   await page.goto(BUSINESS_LISTING_EDIT_PATH);
   await expect(page.locator("#description")).toHaveValue(updatedDescription);

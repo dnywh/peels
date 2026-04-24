@@ -69,7 +69,9 @@ type ButtonToDialogProps = {
   confirmLoadingText?: string;
   cancelButtonText?: ReactNode;
   action?: React.FormHTMLAttributes<HTMLFormElement>["action"];
+  disabled?: boolean;
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
+  pending?: boolean;
 };
 
 function ButtonToDialog({
@@ -82,7 +84,9 @@ function ButtonToDialog({
   confirmLoadingText,
   cancelButtonText,
   action,
+  disabled = false,
   onSubmit,
+  pending = false,
   // ...props // Setting this on Button (for size etc) seems to stop the dialog from opening
 }: ButtonToDialogProps) {
   const t = useTranslations();
@@ -91,11 +95,12 @@ function ButtonToDialog({
     confirmLoadingText ||
     (variant === "danger" ? t("Status.deleting") : t("Status.working"));
   const resolvedCancelButtonText = cancelButtonText || t("Actions.noCancel");
+  const isPending = pending || isSubmitting;
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> | undefined =
     onSubmit
       ? async (event) => {
-          if (isSubmitting) {
+          if (isPending) {
             event.preventDefault();
             return;
           }
@@ -112,7 +117,12 @@ function ButtonToDialog({
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <Button width="contained" variant={variant} size={size}>
+        <Button
+          width="contained"
+          variant={variant}
+          size={size}
+          disabled={disabled || isPending}
+        >
           {initialButtonText}
         </Button>
       </Dialog.Trigger>
@@ -128,6 +138,8 @@ function ButtonToDialog({
               <SubmitButton
                 variant={variant !== "danger" ? "primary" : "danger"}
                 width="contained"
+                disabled={disabled || isPending}
+                pending={isPending}
                 pendingText={resolvedConfirmLoadingText}
                 // tabIndex={undefined} // Doesn't work. See below.
                 autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
@@ -140,7 +152,8 @@ function ButtonToDialog({
               <SubmitButton
                 variant={variant !== "danger" ? "primary" : "danger"}
                 width="contained"
-                loading={isSubmitting}
+                disabled={disabled || isPending}
+                loading={isPending}
                 loadingText={resolvedConfirmLoadingText}
                 // tabIndex={undefined} // Doesn't work. See below.
                 autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
@@ -150,7 +163,7 @@ function ButtonToDialog({
             </form>
           ) : null}
           <Dialog.Close asChild>
-            <Button variant="secondary" width="contained">
+            <Button variant="secondary" width="contained" disabled={isPending}>
               {resolvedCancelButtonText}
             </Button>
           </Dialog.Close>

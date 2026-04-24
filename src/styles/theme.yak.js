@@ -44,7 +44,7 @@ const palette = {
     700: "hsla(47, 100%, 50%, 1)",
     800: "hsla(47, 100%, 46%, 1)",
   },
-} as const;
+};
 
 const spacing = {
   unit: "0.5rem",
@@ -83,7 +83,7 @@ const spacing = {
   dropdownMenu: {
     gap: "4px",
   },
-} as const;
+};
 
 const corners = {
   thumbnail: "0.375rem",
@@ -92,16 +92,16 @@ const corners = {
     small: "0.375rem",
     large: "0.5rem",
   },
-} as const;
+};
 
 const rotations = {
   avatar: "-3deg",
-} as const;
+};
 
 const transitions = {
   textColor: "color 150ms ease-in-out",
   svgColor: "stroke 150ms ease-in-out",
-} as const;
+};
 
 const typography = {
   size: {
@@ -119,9 +119,9 @@ const typography = {
       lg: "160%",
     },
   },
-} as const;
+};
 
-const cssVar = (name: string) => `var(${name})`;
+const cssVar = (name) => `var(${name})`;
 
 export const theme = {
   colors: {
@@ -282,7 +282,7 @@ export const theme = {
   rotations,
   transitions,
   typography,
-} as const;
+};
 
 export const rawTheme = {
   palette,
@@ -291,4 +291,4 @@ export const rawTheme = {
   rotations,
   transitions,
   typography,
-} as const;
+};

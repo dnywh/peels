@@ -11,7 +11,7 @@ import PeelsLogo from "@/components/PeelsLogo";
 
 import { styled } from "next-yak";
 import type { User } from "@supabase/supabase-js";
-import type { ChatThreadRecord } from "@/types/chat";
+import type { ChatThreadListItem, ChatThreadView } from "@/types/chat";
 
 const ChatPageLayout = styled.main`
   display: flex;
@@ -68,9 +68,9 @@ export default function ChatPageClient({
   selectedThread,
 }: {
   user: User;
-  initialThreads: ChatThreadRecord[];
+  initialThreads: ChatThreadListItem[];
   initialThreadId?: string | null;
-  selectedThread?: ChatThreadRecord | null;
+  selectedThread?: ChatThreadView | null;
 }) {
   const t = useTranslations("Chat");
   const { setTabBarProps } = useTabBar();
@@ -100,18 +100,11 @@ export default function ChatPageClient({
       />
 
       <ChatWindowWrapper>
-        {initialThreadId && selectedThread?.listing ? (
+        {selectedThread?.listing ? (
           <ChatWindow
             user={user}
             listing={selectedThread.listing}
-            existingThread={
-              selectedThread
-                ? {
-                    ...selectedThread,
-                    chat_messages: selectedThread.chat_messages_with_senders,
-                  }
-                : null
-            }
+            existingThread={selectedThread}
           />
         ) : (
           <ChatWindowEmptyState>

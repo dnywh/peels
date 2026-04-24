@@ -6,12 +6,22 @@ const successMessageStyles = css`
   text-align: center;
 `;
 
+const errorMessageStyles = css`
+  background: ${theme.colors.background.error};
+  color: ${theme.colors.button.danger.text};
+`;
+
 const StyledFormMessage = styled.aside<{ $variant?: "error" | "success" }>`
   width: 100%;
   padding: 1.5rem 2rem;
   border-radius: ${theme.corners.base};
   background: ${theme.colors.background.pit};
 
+  p {
+    margin: 0;
+  }
+
+  ${({ $variant }) => $variant === "error" && errorMessageStyles}
   ${({ $variant }) => $variant === "success" && successMessageStyles}
 `;
 
