@@ -44,16 +44,7 @@ function selectHomepagePhotoIndex(listing: ListingPublicData): number | null {
     ];
   }
 
-  const eligibleIndexes = Array.from(
-    { length: photos.length },
-    (_, index) => index
-  );
-
-  if (eligibleIndexes.length === 0) {
-    return null;
-  }
-
-  return eligibleIndexes[Math.floor(Math.random() * eligibleIndexes.length)];
+  return Math.floor(Math.random() * photos.length);
 }
 
 const PhotoRow = styled.ul`
