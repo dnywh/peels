@@ -1,4 +1,9 @@
 "use client";
+
+import { useCallback, useMemo, useState } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { useTranslations } from "next-intl";
+
 import { signUpAction } from "@/app/actions";
 import Button from "@/components/Button";
 import CheckboxCluster from "@/components/CheckboxCluster";
@@ -11,14 +16,12 @@ import Input from "@/components/Input";
 import InputHint from "@/components/InputHint";
 import Label from "@/components/Label";
 import LegalAgreement from "@/components/LegalAgreement";
+import { useTurnstileToken } from "@/components/SignUpForm/useTurnstileToken";
 import { siteConfig } from "@/config/site";
 import { FIELD_CONFIGS, validateFirstName } from "@/lib/formValidation";
+import type { FormSubmitEvent } from "@/types/events";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
 import { isTurnstileEnabled } from "@/utils/utils";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { FormSubmitEvent } from "@/types/events";
 
 interface SignUpFormProps {
   defaultValues?: {
@@ -29,160 +32,49 @@ interface SignUpFormProps {
   error?: string;
 }
 
-const BACKGROUND_TOKEN_TIMEOUT = 10000;
-const INTERACTIVE_TOKEN_TIMEOUT = 120000;
-
 export default function SignUpForm({
   defaultValues = {},
   error,
 }: SignUpFormProps) {
   const t = useTranslations();
-  const expiredMessage = t("Auth.turnstile.expired");
   const timeoutMessage = t("Auth.turnstile.timeout");
-  const unsupportedMessage = t("Auth.turnstile.unsupported");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState<string | null>(null);
-
-  const [captchaError, setCaptchaError] = useState<string | null>(null);
-  const [isWaitingForToken, setIsWaitingForToken] = useState(false);
-  const [isTurnstileInteractive, setIsTurnstileInteractive] = useState(false);
-
-  const turnstileRef = useRef<TurnstileInstance>(null);
-  const tokenResolverRef = useRef<((token: string) => void) | null>(null);
-  const tokenRejecterRef = useRef<((error: Error) => void) | null>(null);
-  const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const turnstileEnabled = isTurnstileEnabled();
+  const failedMessage = useCallback(
+    (code: string) => t("Auth.turnstile.failed", { code }),
+    [t]
+  );
+  const turnstile = useTurnstileToken({
+    enabled: turnstileEnabled,
+    expiredMessage: t("Auth.turnstile.expired"),
+    failedMessage,
+    notReadyMessage: t("Auth.turnstile.notReady"),
+    siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? "",
+    timeoutMessage,
+    unsupportedMessage: t("Auth.turnstile.unsupported"),
+  });
+  const captchaError = turnstile.error;
+  const isBusy = isSubmitting || turnstile.isWaitingForToken;
   const fieldErrorCount =
     Number(Boolean(firstNameError)) + Number(Boolean(captchaError));
   const hasFieldErrors = fieldErrorCount > 0;
 
-  const clearTokenTimeout = useCallback(() => {
-    if (tokenTimeoutRef.current) {
-      clearTimeout(tokenTimeoutRef.current);
-      tokenTimeoutRef.current = null;
-    }
-  }, []);
-
-  const clearTokenPromise = useCallback(() => {
-    tokenResolverRef.current = null;
-    tokenRejecterRef.current = null;
-    clearTokenTimeout();
-  }, [clearTokenTimeout]);
-
-  const rejectTokenPromise = useCallback(
-    (errorMessage: string) => {
-      if (tokenRejecterRef.current) {
-        tokenRejecterRef.current(new Error(errorMessage));
-      }
-      clearTokenPromise();
-    },
-    [clearTokenPromise]
-  );
-
-  const scheduleTokenTimeout = useCallback(
-    (timeout: number, errorMessage = timeoutMessage) => {
-      clearTokenTimeout();
-      tokenTimeoutRef.current = setTimeout(() => {
-        rejectTokenPromise(errorMessage);
-      }, timeout);
-    },
-    [clearTokenTimeout, rejectTokenPromise, timeoutMessage]
-  );
-
-  // Promise-based token wait mechanism with timeout
-  const waitForToken = useCallback(
-    (timeout = BACKGROUND_TOKEN_TIMEOUT): Promise<string> => {
-      return new Promise((resolve, reject) => {
-        // Store resolvers for onSuccess/onError callbacks
-        tokenResolverRef.current = resolve;
-        tokenRejecterRef.current = reject;
-
-        scheduleTokenTimeout(timeout);
-      });
-    },
-    [scheduleTokenTimeout]
-  );
-
-  const resolveTokenPromise = useCallback(
-    (token: string) => {
-      if (tokenResolverRef.current) {
-        tokenResolverRef.current(token);
-      }
-      clearTokenPromise();
-    },
-    [clearTokenPromise]
-  );
-
-  useEffect(() => clearTokenTimeout, [clearTokenTimeout]);
-
-  const handleTurnstileSuccess = useCallback(
-    (token: string) => {
-      setCaptchaError(null);
-      setIsWaitingForToken(false);
-      setIsTurnstileInteractive(false);
-      resolveTokenPromise(token);
-    },
-    [resolveTokenPromise]
-  );
-
-  const handleTurnstileError = useCallback(
-    (error: string) => {
-      setIsWaitingForToken(false);
-      setIsTurnstileInteractive(false);
-
-      const errorMessage = t("Auth.turnstile.failed", { code: error });
-
-      setCaptchaError(errorMessage);
-      rejectTokenPromise(errorMessage);
-    },
-    [rejectTokenPromise, t]
-  );
-
-  const handleTurnstileExpire = useCallback(() => {
-    setIsWaitingForToken(false);
-    setIsTurnstileInteractive(false);
-    setCaptchaError(expiredMessage);
-    rejectTokenPromise(expiredMessage);
-  }, [expiredMessage, rejectTokenPromise]);
-
-  const handleTurnstileTimeout = useCallback(() => {
-    setIsWaitingForToken(false);
-    setIsTurnstileInteractive(false);
-    setCaptchaError(timeoutMessage);
-    rejectTokenPromise(timeoutMessage);
-  }, [rejectTokenPromise, timeoutMessage]);
-
-  const handleTurnstileUnsupported = useCallback(() => {
-    setIsWaitingForToken(false);
-    setIsTurnstileInteractive(false);
-    setCaptchaError(unsupportedMessage);
-    rejectTokenPromise(unsupportedMessage);
-  }, [rejectTokenPromise, unsupportedMessage]);
-
-  const handleTurnstileBeforeInteractive = useCallback(() => {
-    setCaptchaError(null);
-    setIsTurnstileInteractive(true);
-    scheduleTokenTimeout(INTERACTIVE_TOKEN_TIMEOUT);
-  }, [scheduleTokenTimeout]);
-
-  const handleTurnstileAfterInteractive = useCallback(() => {
-    setIsTurnstileInteractive(false);
-  }, []);
-
   const handleSubmit = async (event: FormSubmitEvent) => {
     event.preventDefault();
-    if (isSubmitting || isWaitingForToken) return;
 
-    // Reset validation errors
+    if (isBusy) {
+      return;
+    }
+
     setFirstNameError(null);
-    setCaptchaError(null);
+    turnstile.resetError();
 
-    // Client-side validation
     const formData = new FormData(event.currentTarget);
     const validation = validateFirstName(
       formData.get("first_name")?.toString()
     );
+
     if (!validation.isValid) {
       switch (validation.error) {
         case "empty":
@@ -207,44 +99,21 @@ export default function SignUpForm({
       return;
     }
 
-    // Handle Turnstile token generation if enabled
-    // Always get a fresh token as they are single-use and never reused
     let tokenToUse: string | undefined;
-    if (turnstileEnabled) {
-      // Reset any existing token to ensure we get a fresh one
-      turnstileRef.current?.reset();
-
-      setIsWaitingForToken(true);
-      try {
-        // Start waiting before execution so a fast success callback cannot race us.
-        const tokenPromise = waitForToken(BACKGROUND_TOKEN_TIMEOUT);
-
-        turnstileRef.current?.execute();
-
-        // Wait for token with timeout
-        tokenToUse = await tokenPromise;
-
-        // Token obtained, proceed with submission
-        setIsWaitingForToken(false);
-        setIsSubmitting(true);
-      } catch (error) {
-        setIsWaitingForToken(false);
-        setCaptchaError(
-          error instanceof Error ? error.message : timeoutMessage
-        );
-        return;
-      }
-    } else {
-      setIsSubmitting(true);
-    }
 
     try {
-      // Add captcha token to form data if available
+      tokenToUse = await turnstile.requestToken();
+    } catch {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
       if (tokenToUse) {
         formData.append("captcha_token", tokenToUse);
       }
 
-      // Add stored UTM parameters to form data
       const utmParams = getStoredAttributionParams();
       Object.entries(utmParams).forEach(([key, value]) => {
         if (value && typeof value === "string") formData.append(key, value);
@@ -257,37 +126,9 @@ export default function SignUpForm({
     }
   };
 
-  const turnstileProps = useMemo(
-    () => ({
-      ref: turnstileRef,
-      siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
-      onSuccess: handleTurnstileSuccess,
-      onError: handleTurnstileError,
-      onExpire: handleTurnstileExpire,
-      onTimeout: handleTurnstileTimeout,
-      onUnsupported: handleTurnstileUnsupported,
-      onBeforeInteractive: handleTurnstileBeforeInteractive,
-      onAfterInteractive: handleTurnstileAfterInteractive,
-      options: {
-        appearance: "interaction-only",
-        execution: "execute",
-        responseField: false,
-      } as const,
-    }),
-    [
-      handleTurnstileAfterInteractive,
-      handleTurnstileBeforeInteractive,
-      handleTurnstileError,
-      handleTurnstileExpire,
-      handleTurnstileSuccess,
-      handleTurnstileTimeout,
-      handleTurnstileUnsupported,
-    ]
-  );
-
   const turnstileContainerStyle = useMemo(
     () =>
-      isTurnstileInteractive || captchaError
+      turnstile.isInteractive || captchaError
         ? undefined
         : ({
             position: "absolute",
@@ -296,22 +137,28 @@ export default function SignUpForm({
             overflow: "hidden",
             clipPath: "inset(50%)",
           } as const),
-    [captchaError, isTurnstileInteractive]
+    [captchaError, turnstile.isInteractive]
   );
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form
+      onSubmit={handleSubmit}
+      aria-busy={isBusy || undefined}
+      data-testid="sign-up-form"
+    >
       <Field>
         <Label htmlFor="first_name">{t("Auth.signUp.firstName")}</Label>
         <Input
           name="first_name"
           {...FIELD_CONFIGS.firstName}
           defaultValue={defaultValues.first_name}
-          // @ts-expect-error: Input accepts any truthy value at runtime for error, but type is inferred as null | undefined
           error={firstNameError}
+          disabled={isBusy}
         />
         {firstNameError && (
-          <InputHint variant="error">{firstNameError}</InputHint>
+          <InputHint variant="error" data-testid="sign-up-first-name-error">
+            {firstNameError}
+          </InputHint>
         )}
       </Field>
 
@@ -321,6 +168,7 @@ export default function SignUpForm({
           name="email"
           {...FIELD_CONFIGS.email}
           defaultValue={defaultValues.email}
+          disabled={isBusy}
         />
       </Field>
 
@@ -330,15 +178,17 @@ export default function SignUpForm({
           name="password"
           {...FIELD_CONFIGS.password}
           placeholder={t("Auth.signUp.newPassword")}
+          disabled={isBusy}
         />
       </Field>
 
       <CheckboxCluster>
-        <LegalAgreement required={true} />
+        <LegalAgreement required={true} disabled={isBusy} />
         <CheckboxRow
           name="newsletter_preference"
           required={false}
           defaultChecked={defaultValues.newsletter_preference}
+          disabled={isBusy}
         >
           {t("Auth.signUp.newsletterOptIn")}
         </CheckboxRow>
@@ -346,9 +196,11 @@ export default function SignUpForm({
 
       {turnstileEnabled && (
         <Field style={turnstileContainerStyle}>
-          <Turnstile {...turnstileProps} />
+          <Turnstile {...turnstile.turnstileProps} />
           {captchaError && (
-            <InputHint variant="error">{captchaError}</InputHint>
+            <InputHint variant="error" data-testid="sign-up-captcha-error">
+              {captchaError}
+            </InputHint>
           )}
         </Field>
       )}
@@ -376,11 +228,14 @@ export default function SignUpForm({
         type="submit"
         variant="primary"
         width="full"
-        loading={isSubmitting || isWaitingForToken}
+        loading={isBusy}
         loadingText={
-          isWaitingForToken ? t("Status.verifying") : t("Status.signingUp")
+          turnstile.isWaitingForToken
+            ? t("Status.verifying")
+            : t("Status.signingUp")
         }
-        disabled={isSubmitting || isWaitingForToken}
+        disabled={isBusy}
+        data-testid="sign-up-submit"
       >
         {t("Actions.signUp")}
       </Button>

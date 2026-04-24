@@ -71,7 +71,6 @@ const PasswordPreview = styled.p`
   user-select: none;
 `;
 
-const InputComponent = Input as React.ComponentType<any>;
 const nestedFormStyle = {
   width: "100%",
   display: "flex",
@@ -200,17 +199,29 @@ function FirstNameEditor({
   }, [onSaved, state.data?.firstName, state.success]);
 
   return (
-    <form style={nestedFormStyle} data-testid="profile-account-first-name-form">
+    <form
+      style={nestedFormStyle}
+      aria-busy={isPending || undefined}
+      data-testid="profile-account-first-name-form"
+    >
       <Field>
         <Label>{t("Profile.account.firstName")}</Label>
-        <InputComponent
+        <Input
           name="first_name"
           {...FIELD_CONFIGS.firstName}
           defaultValue={currentFirstName}
           error={state.error}
+          disabled={isPending}
           data-testid="profile-account-first-name-input"
         />
-        {state.error && <InputHint variant="error">{state.error}</InputHint>}
+        {state.error && (
+          <InputHint
+            variant="error"
+            data-testid="profile-account-first-name-message"
+          >
+            {state.error}
+          </InputHint>
+        )}
       </Field>
 
       <ButtonGroup>
@@ -243,18 +254,24 @@ function EmailEditor({
   );
 
   return (
-    <form style={nestedFormStyle} data-testid="profile-account-email-form">
+    <form
+      style={nestedFormStyle}
+      aria-busy={isPending || undefined}
+      data-testid="profile-account-email-form"
+    >
       <input type="hidden" name="locale" value={currentLocale} />
       <Field>
         <Label>{t("Common.email")}</Label>
-        <InputComponent
+        <Input
           name="email"
           defaultValue={currentEmail}
           {...FIELD_CONFIGS.email}
           error={state.error}
+          disabled={isPending}
           data-testid="profile-account-email-input"
         />
         <InputHint
+          data-testid="profile-account-email-message"
           variant={
             state.error ? "error" : state.success ? "success" : "default"
           }
@@ -305,7 +322,11 @@ function NewsletterPreferenceEditor({
   }, [onSaved, state.data?.newsletterPreference, state.success]);
 
   return (
-    <form style={nestedFormStyle} data-testid="profile-account-newsletter-form">
+    <form
+      style={nestedFormStyle}
+      aria-busy={isPending || undefined}
+      data-testid="profile-account-newsletter-form"
+    >
       <Field>
         <Label>{t("Common.newsletter")}</Label>
         <Select
@@ -321,7 +342,10 @@ function NewsletterPreferenceEditor({
           <option value="false">{t("Common.notSubscribed")}</option>
           <option value="true">{t("Common.subscribed")}</option>
         </Select>
-        <InputHint variant={state.error ? "error" : "default"}>
+        <InputHint
+          variant={state.error ? "error" : "default"}
+          data-testid="profile-account-newsletter-message"
+        >
           {state.error
             ? state.error
             : currentPreference
@@ -367,7 +391,11 @@ function PreferredLocaleEditor({
   }, [onSaved, state.data?.preferredLocale, state.success]);
 
   return (
-    <form style={nestedFormStyle} data-testid="profile-account-language-form">
+    <form
+      style={nestedFormStyle}
+      aria-busy={isPending || undefined}
+      data-testid="profile-account-language-form"
+    >
       <Field>
         <Label>{t("Common.language")}</Label>
         <Select
@@ -386,7 +414,10 @@ function PreferredLocaleEditor({
             </option>
           ))}
         </Select>
-        <InputHint variant={state.error ? "error" : "default"}>
+        <InputHint
+          variant={state.error ? "error" : "default"}
+          data-testid="profile-account-language-message"
+        >
           {state.error ? state.error : t("Profile.account.languageHint")}
         </InputHint>
       </Field>

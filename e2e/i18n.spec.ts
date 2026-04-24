@@ -1,28 +1,44 @@
 import { expect, test } from "@playwright/test";
-import { HOST_EMAIL, delayProfileActionRequests, signIn } from "./helpers";
+import {
+  HOST_EMAIL,
+  delayProfileActionRequests,
+  delayServerActionRequests,
+  signIn,
+} from "./helpers";
+import { isValidLocale, localeLabels, type Locale } from "../src/i18n/config";
 
 test("public footer locale switch refreshes the page locale", async ({
   page,
 }) => {
+  await delayServerActionRequests(page);
   await page.goto("/");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await page.getByTestId("locale-picker-select").selectOption("de");
+  const localeSelect = page.getByTestId("locale-picker-select");
+  const localeChange = localeSelect.selectOption("de");
+  await expect(localeSelect).toBeDisabled();
+  await expect(localeSelect).toHaveAttribute("aria-busy", "true");
+  await localeChange;
   await expect(page.locator("html")).toHaveAttribute("lang", "de", {
     timeout: 15_000,
   });
-  await expect(page.getByTestId("locale-picker-select")).toHaveValue("de");
+  await expect(localeSelect).toHaveValue("de");
 });
 
 test("profile locale change persists after refresh", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
   await delayProfileActionRequests(page);
-  await page.waitForTimeout(3_000);
 
   await page.getByTestId("profile-account-language-edit").click();
   const languageInput = page.getByTestId("profile-account-language-input");
   const originalLanguage = await languageInput.inputValue();
-  const updatedLanguage = originalLanguage === "de" ? "en" : "de";
+
+  if (!isValidLocale(originalLanguage)) {
+    throw new Error(`Unexpected profile language value: ${originalLanguage}`);
+  }
+
+  const originalLocale: Locale = originalLanguage;
+  const updatedLanguage: Locale = originalLocale === "de" ? "en" : "de";
 
   await languageInput.selectOption(updatedLanguage);
 
@@ -31,7 +47,9 @@ test("profile locale change persists after refresh", async ({ page }) => {
   await expect(languageSubmit).toBeDisabled();
   await expect(languageSubmit).toHaveAttribute("aria-busy", "true");
   await languageClick;
-  await page.waitForTimeout(2_000);
+  await expect(page.getByTestId("profile-account-language-value")).toHaveText(
+    localeLabels[updatedLanguage]
+  );
 
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", updatedLanguage, {
@@ -41,11 +59,13 @@ test("profile locale change persists after refresh", async ({ page }) => {
   await page.getByTestId("profile-account-language-edit").click();
   await page
     .getByTestId("profile-account-language-input")
-    .selectOption(originalLanguage);
+    .selectOption(originalLocale);
   await page.getByTestId("profile-account-language-submit").click();
-  await page.waitForTimeout(2_000);
+  await expect(page.getByTestId("profile-account-language-value")).toHaveText(
+    localeLabels[originalLocale]
+  );
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("lang", originalLanguage, {
+  await expect(page.locator("html")).toHaveAttribute("lang", originalLocale, {
     timeout: 15_000,
   });
 });

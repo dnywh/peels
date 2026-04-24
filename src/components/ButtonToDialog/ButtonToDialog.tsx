@@ -6,7 +6,13 @@ import Button from "@/components/Button";
 import SubmitButton from "@/components/SubmitButton";
 
 import { styled } from "next-yak";
-import { useState, type FormHTMLAttributes, type ReactNode } from "react";
+import {
+  useRef,
+  useState,
+  type ComponentPropsWithoutRef,
+  type FormHTMLAttributes,
+  type ReactNode,
+} from "react";
 import { useTranslations } from "next-intl";
 import type { FormSubmitHandler } from "@/types/events";
 
@@ -92,11 +98,24 @@ function ButtonToDialog({
 }: ButtonToDialogProps) {
   const t = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const cancelButtonRef = useRef<HTMLButtonElement | HTMLAnchorElement>(null);
   const resolvedConfirmLoadingText =
     confirmLoadingText ||
     (variant === "danger" ? t("Status.deleting") : t("Status.working"));
   const resolvedCancelButtonText = cancelButtonText || t("Actions.noCancel");
   const isPending = pending || isSubmitting;
+  const handleOpenAutoFocus: ComponentPropsWithoutRef<
+    typeof Dialog.Content
+  >["onOpenAutoFocus"] = (event) => {
+    if (variant !== "danger") {
+      return;
+    }
+
+    event.preventDefault();
+    requestAnimationFrame(() => {
+      cancelButtonRef.current?.focus();
+    });
+  };
 
   const handleSubmit: FormSubmitHandler | undefined = onSubmit
     ? async (event) => {
@@ -127,7 +146,7 @@ function ButtonToDialog({
         </Button>
       </Dialog.Trigger>
       <DialogOverlay />
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={handleOpenAutoFocus}>
         <Text>
           <Dialog.Title>{dialogTitle}</Dialog.Title>
           <Dialog.Description>{children}</Dialog.Description>
@@ -141,8 +160,7 @@ function ButtonToDialog({
                 disabled={disabled || isPending}
                 pending={isPending}
                 pendingText={resolvedConfirmLoadingText}
-                // tabIndex={undefined} // Doesn't work. See below.
-                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
+                data-testid="dialog-confirm-button"
               >
                 {confirmButtonText}
               </SubmitButton>
@@ -155,15 +173,20 @@ function ButtonToDialog({
                 disabled={disabled || isPending}
                 loading={isPending}
                 loadingText={resolvedConfirmLoadingText}
-                // tabIndex={undefined} // Doesn't work. See below.
-                autoFocus={variant === "danger" ? false : undefined} // Doesn't work. TODO: Make it so this button isn't tabbed to by default (but can be for accessibility)
+                data-testid="dialog-confirm-button"
               >
                 {confirmButtonText}
               </SubmitButton>
             </form>
           ) : null}
           <Dialog.Close asChild>
-            <Button variant="secondary" width="contained" disabled={isPending}>
+            <Button
+              ref={cancelButtonRef}
+              variant="secondary"
+              width="contained"
+              disabled={isPending}
+              data-testid="dialog-cancel-button"
+            >
               {resolvedCancelButtonText}
             </Button>
           </Dialog.Close>

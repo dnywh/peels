@@ -68,3 +68,34 @@ test("profile account actions show pending feedback and update the read view", a
   ).toHaveValue(originalNewsletterPreference);
   await page.getByRole("button", { name: /cancel|abbrechen/i }).click();
 });
+
+test("profile email edit shows pending and inline error feedback", async ({
+  page,
+}) => {
+  await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
+  await delayProfileActionRequests(page);
+
+  await page.getByTestId("profile-account-email-edit").click();
+  const emailInput = page.getByTestId("profile-account-email-input");
+  await emailInput.fill(HOST_EMAIL);
+
+  const emailSubmit = page.getByTestId("profile-account-email-submit");
+  const emailClick = emailSubmit.click();
+  await expect(emailSubmit).toBeDisabled();
+  await expect(emailSubmit).toHaveAttribute("aria-busy", "true");
+  await emailClick;
+
+  await expect(page.getByTestId("profile-account-email-message")).toContainText(
+    /already.*email/i
+  );
+  await expect(page.getByTestId("profile-account-email-form")).toBeVisible();
+});
+
+test("danger dialogs focus the safe cancel action first", async ({ page }) => {
+  await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
+
+  await page.getByRole("button", { name: "Delete account" }).click();
+
+  await expect(page.getByTestId("dialog-cancel-button")).toBeFocused();
+  await expect(page.getByTestId("dialog-confirm-button")).not.toBeFocused();
+});

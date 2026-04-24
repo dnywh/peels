@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { localeLabels, locales, type Locale } from "@/i18n/config";
 import { setDisplayLocaleAction } from "@/app/actions";
@@ -32,31 +32,42 @@ export default function LocalePicker({
 }: LocalePickerProps) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
-  const [isPending, startTransition] = useTransition();
+  const [selectedLocale, setSelectedLocale] = useState(locale);
+  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (nextLocale: Locale) => {
-    startTransition(() => {
-      void (async () => {
-        setError(null);
+  useEffect(() => {
+    setSelectedLocale(locale);
+  }, [locale]);
 
-        try {
-          const formData = new FormData();
-          formData.set("locale", nextLocale);
-          const result = await setDisplayLocaleAction(formData);
+  const handleChange = async (nextLocale: Locale) => {
+    if (isPending) {
+      return;
+    }
 
-          if (result?.error) {
-            setError(t("Errors.genericLater"));
-            return;
-          }
+    setSelectedLocale(nextLocale);
+    setError(null);
+    setIsPending(true);
 
-          window.location.reload();
-        } catch (error) {
-          console.error("Error updating display locale:", error);
-          setError(t("Errors.genericLater"));
-        }
-      })();
-    });
+    try {
+      const formData = new FormData();
+      formData.set("locale", nextLocale);
+      const result = await setDisplayLocaleAction(formData);
+
+      if (!result.success || result.error) {
+        setSelectedLocale(locale);
+        setError(result.error || t("Errors.genericLater"));
+        return;
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating display locale:", error);
+      setSelectedLocale(locale);
+      setError(t("Errors.genericLater"));
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -65,9 +76,9 @@ export default function LocalePicker({
         <Select
           variant={compact ? "compact" : "default"}
           name="locale"
-          value={locale}
+          value={selectedLocale}
           onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-            handleChange(event.target.value as Locale)
+            void handleChange(event.target.value as Locale)
           }
           disabled={isPending}
           aria-busy={isPending || undefined}
@@ -81,9 +92,13 @@ export default function LocalePicker({
           ))}
         </Select>
         {error ? (
-          <InputHint variant="error">{error}</InputHint>
+          <InputHint variant="error" data-testid="locale-picker-message">
+            {error}
+          </InputHint>
         ) : showHint ? (
-          <InputHint variant="default">{t("Common.languageHint")}</InputHint>
+          <InputHint variant="default" data-testid="locale-picker-message">
+            {t("Common.languageHint")}
+          </InputHint>
         ) : null}
       </Field>
     </Container>
