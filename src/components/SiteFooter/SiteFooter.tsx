@@ -1,6 +1,6 @@
 import { siteConfig } from "@/config/site";
+import Link from "next/link";
 import { cookies } from "next/headers";
-import AppLink from "@/components/AppLink";
 import PeelsLogo from "@/components/PeelsLogo";
 import LocalePicker from "@/components/LocalePicker";
 import { styled } from "next-yak";
@@ -25,15 +25,13 @@ export default async function SiteFooter() {
       {!hasSignedInSession && <LocalePicker compact={true} />}
 
       <StyledNav>
-        <AppLink href={siteConfig.links.about}>{t("App.about")}</AppLink>
-        <AppLink href={siteConfig.links.support}>{t("Support.title")}</AppLink>
-        <AppLink href={siteConfig.links.newsletter}>
-          {t("Newsletter.title")}
-        </AppLink>
+        <Link href={siteConfig.links.about}>{t("App.about")}</Link>
+        <Link href={siteConfig.links.support}>{t("Support.title")}</Link>
+        <Link href={siteConfig.links.newsletter}>{t("Newsletter.title")}</Link>
         {/* <Link href={siteConfig.links.colophon}>Colophon</Link> */}
-        <AppLink href={siteConfig.links.terms}>{t("Legal.terms")}</AppLink>
-        <AppLink href={siteConfig.links.privacy}>{t("Legal.privacy")}</AppLink>
-        <AppLink href={siteConfig.links.contact}>{t("Contact.title")}</AppLink>
+        <Link href={siteConfig.links.terms}>{t("Legal.terms")}</Link>
+        <Link href={siteConfig.links.privacy}>{t("Legal.privacy")}</Link>
+        <Link href={siteConfig.links.contact}>{t("Contact.title")}</Link>
       </StyledNav>
     </StyledFooter>
   );
