@@ -10,6 +10,9 @@ interface ListingPublicData {
   name: string;
   photos: string[] | null;
   type: string;
+  is_stub: boolean | null;
+  homepage_featured: boolean;
+  homepage_featured_photo_indexes: number[] | null;
 }
 
 interface ListingWithPhotoIndex extends ListingPublicData {
@@ -18,6 +21,31 @@ interface ListingWithPhotoIndex extends ListingPublicData {
 }
 
 const MAX_PHOTOS_TO_SHOW = 3;
+
+function selectHomepagePhotoIndex(listing: ListingPublicData): number | null {
+  if (!Array.isArray(listing.photos) || listing.photos.length === 0) {
+    return null;
+  }
+
+  const photos = listing.photos;
+  const configuredIndexes = listing.homepage_featured_photo_indexes ?? [];
+
+  if (configuredIndexes.length > 0) {
+    const validConfiguredIndexes = configuredIndexes.filter(
+      (index) => Number.isInteger(index) && index >= 0 && index < photos.length
+    );
+
+    if (validConfiguredIndexes.length === 0) {
+      return null;
+    }
+
+    return validConfiguredIndexes[
+      Math.floor(Math.random() * validConfiguredIndexes.length)
+    ];
+  }
+
+  return Math.floor(Math.random() * photos.length);
+}
 
 const PhotoRow = styled.ul`
   margin: 2rem 0;
@@ -61,7 +89,11 @@ function PeelsFeaturedHostsPhotos() {
     const loadListings = async () => {
       const { data, error } = await supabase
         .from("listings_public_data")
-        .select("slug, name, photos, type")
+        .select(
+          "slug, name, photos, type, is_stub, homepage_featured, homepage_featured_photo_indexes"
+        )
+        .eq("homepage_featured", true)
+        .eq("is_stub", false)
         .neq("type", "residential")
         .not("photos", "is", null);
 
@@ -71,14 +103,22 @@ function PeelsFeaturedHostsPhotos() {
       }
 
       const validListingsWithPhotos = (data as ListingPublicData[])
+        .map((listing) => {
+          const photoIndex = selectHomepagePhotoIndex(listing);
+
+          if (!Array.isArray(listing.photos) || photoIndex === null) {
+            return null;
+          }
+
+          return {
+            ...listing,
+            photos: listing.photos,
+            photoIndex,
+          };
+        })
         .filter(
-          (listing): listing is ListingPublicData & { photos: string[] } =>
-            Array.isArray(listing.photos) && listing.photos.length > 0
-        )
-        .map((listing) => ({
-          ...listing,
-          photoIndex: Math.floor(Math.random() * listing.photos.length),
-        }));
+          (listing): listing is ListingWithPhotoIndex => listing !== null
+        );
 
       const shuffledData = [...validListingsWithPhotos].sort(
         () => Math.random() - 0.5
@@ -90,7 +130,7 @@ function PeelsFeaturedHostsPhotos() {
   }, []);
 
   return (
-    <PhotoRow>
+    <PhotoRow data-testid="homepage-featured-hosts">
       {featuredListings.slice(0, MAX_PHOTOS_TO_SHOW).map((listing) => {
         return (
           <PhotoThumbnail
@@ -98,6 +138,7 @@ function PeelsFeaturedHostsPhotos() {
             fileName={listing.photos[listing.photoIndex]}
             listingId={listing.slug}
             caption={listing.name}
+            testId={`homepage-featured-host-${listing.slug}`}
           />
         );
       })}

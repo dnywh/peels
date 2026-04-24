@@ -55,14 +55,19 @@ function PhotoThumbnail({
   fileName,
   listingId,
   caption,
+  testId,
 }: {
   fileName: string;
   listingId: string;
   caption?: string;
+  testId?: string;
 }) {
   return (
     <li>
-      <PhotoThumbnailContainer href={`/map?listing=${listingId}`}>
+      <PhotoThumbnailContainer
+        href={`/map?listing=${listingId}`}
+        data-testid={testId}
+      >
         <ListingPhotoRemoteImage
           bucket="listing_photos"
           filename={fileName}

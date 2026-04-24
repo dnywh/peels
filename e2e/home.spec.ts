@@ -70,3 +70,41 @@ test("homepage hydrates without chat date mismatches", async ({
     )
   ).toBeFalsy();
 });
+
+test("homepage drop-off only shows curated featured hosts", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByTestId("homepage-featured-hosts")).toBeVisible();
+
+  const featuredHostCards = page.locator(
+    '[data-testid^="homepage-featured-host-"]'
+  );
+  const allowedFeaturedHosts = new Set([
+    "homepage-featured-host-demo-marrickville-compost",
+    "homepage-featured-host-demo-inner-west-cafe",
+    "homepage-featured-host-demo-tempe-share-shed",
+  ]);
+
+  await expect(featuredHostCards).toHaveCount(3);
+
+  const renderedFeaturedHosts = await featuredHostCards.evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute("data-testid"))
+  );
+
+  expect(renderedFeaturedHosts).toHaveLength(3);
+  expect(new Set(renderedFeaturedHosts).size).toBe(3);
+  expect(
+    renderedFeaturedHosts.every(
+      (testId): testId is string =>
+        typeof testId === "string" && allowedFeaturedHosts.has(testId)
+    )
+  ).toBeTruthy();
+  await expect(
+    page.getByTestId("homepage-featured-host-demo-stanmore-bakery")
+  ).toHaveCount(0);
+  await expect(
+    page.getByTestId("homepage-featured-host-demo-newtown-worm-farm")
+  ).toHaveCount(0);
+});
