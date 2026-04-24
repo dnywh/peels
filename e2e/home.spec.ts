@@ -81,17 +81,26 @@ test("homepage drop-off only shows curated featured hosts", async ({
   const featuredHostCards = page.locator(
     '[data-testid^="homepage-featured-host-"]'
   );
+  const allowedFeaturedHosts = new Set([
+    "homepage-featured-host-demo-marrickville-compost",
+    "homepage-featured-host-demo-inner-west-cafe",
+    "homepage-featured-host-demo-tempe-share-shed",
+  ]);
 
   await expect(featuredHostCards).toHaveCount(3);
-  await expect(
-    page.getByTestId("homepage-featured-host-demo-marrickville-compost")
-  ).toBeVisible();
-  await expect(
-    page.getByTestId("homepage-featured-host-demo-inner-west-cafe")
-  ).toBeVisible();
-  await expect(
-    page.getByTestId("homepage-featured-host-demo-tempe-share-shed")
-  ).toBeVisible();
+
+  const renderedFeaturedHosts = await featuredHostCards.evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute("data-testid"))
+  );
+
+  expect(renderedFeaturedHosts).toHaveLength(3);
+  expect(new Set(renderedFeaturedHosts).size).toBe(3);
+  expect(
+    renderedFeaturedHosts.every(
+      (testId): testId is string =>
+        typeof testId === "string" && allowedFeaturedHosts.has(testId)
+    )
+  ).toBeTruthy();
   await expect(
     page.getByTestId("homepage-featured-host-demo-stanmore-bakery")
   ).toHaveCount(0);
