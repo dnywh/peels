@@ -1,6 +1,6 @@
-import type { SyntheticEvent } from "react";
+import type { SubmitEvent as ReactSubmitEvent } from "react";
 
-export type FormSubmitEvent = SyntheticEvent<HTMLFormElement>;
+export type FormSubmitEvent = ReactSubmitEvent<HTMLFormElement>;
 export type FormSubmitHandler = (
   event: FormSubmitEvent
 ) => void | Promise<void>;
