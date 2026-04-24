@@ -24,6 +24,7 @@ export function useTurnstileToken({
   unsupportedMessage,
 }: UseTurnstileTokenOptions) {
   const turnstileRef = useRef<TurnstileInstance>(null);
+  const isMountedRef = useRef(false);
   const tokenResolverRef = useRef<((token: string) => void) | null>(null);
   const tokenRejecterRef = useRef<((error: Error) => void) | null>(null);
   const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,10 +99,14 @@ export function useTurnstileToken({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : timeoutMessage;
-      setError(errorMessage);
+      if (isMountedRef.current) {
+        setError(errorMessage);
+      }
       throw error;
     } finally {
-      setIsWaitingForToken(false);
+      if (isMountedRef.current) {
+        setIsWaitingForToken(false);
+      }
     }
   }, [enabled, timeoutMessage, waitForToken]);
 
@@ -109,7 +114,16 @@ export function useTurnstileToken({
     setError(null);
   }, []);
 
-  useEffect(() => clearTokenPromise, [clearTokenPromise]);
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+      rejectTokenPromise(
+        "Turnstile token request was cancelled because the component unmounted."
+      );
+    };
+  }, [rejectTokenPromise]);
 
   const turnstileProps = useMemo(
     () => ({

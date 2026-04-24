@@ -57,7 +57,6 @@ export default function LocalePicker({
       if (!result.success || result.error) {
         setSelectedLocale(locale);
         setError(result.error || t("Errors.genericLater"));
-        setIsPending(false);
         return;
       }
 
@@ -66,6 +65,7 @@ export default function LocalePicker({
       console.error("Error updating display locale:", error);
       setSelectedLocale(locale);
       setError(t("Errors.genericLater"));
+    } finally {
       setIsPending(false);
     }
   };
