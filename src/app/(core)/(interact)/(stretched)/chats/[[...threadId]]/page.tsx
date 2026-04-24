@@ -16,9 +16,19 @@ type ChatsPageProps = {
   }>;
 };
 
+type UnreadThreadRow = {
+  thread_id: string | null;
+};
+
 export const metadata: Metadata = {
   title: "Chats",
 };
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value
+  );
+}
 
 function toChatThreadView(thread: ChatThreadRecord): ChatThreadView {
   return {
@@ -85,6 +95,10 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
     redirect(`/sign-in?redirect_to=${redirectPath}`);
   }
 
+  if (threadId && !isUuid(threadId)) {
+    redirect("/chats");
+  }
+
   const threadParticipantFilter = `initiator_id.eq.${user.id},owner_id.eq.${user.id}`;
 
   const [threadsResult, selectedThreadResult] = await Promise.all([
@@ -147,23 +161,20 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
   const previewThreads = (threadsResult.data ??
     []) as ChatThreadPreviewRecord[];
   const previewThreadIds = previewThreads.map((thread) => thread.id);
-  const { data: unreadMessages, error: unreadMessagesError } =
+  const { data: unreadThreads, error: unreadThreadsError } =
     previewThreadIds.length > 0
-      ? await supabase
-          .from("chat_messages")
-          .select("thread_id")
-          .in("thread_id", previewThreadIds)
-          .neq("sender_id", user.id)
-          .is("read_at", null)
+      ? await supabase.rpc("unread_chat_thread_ids", {
+          thread_ids: previewThreadIds,
+        })
       : { data: [], error: null };
 
-  if (unreadMessagesError) {
-    throw new Error(unreadMessagesError.message);
+  if (unreadThreadsError) {
+    throw new Error(unreadThreadsError.message);
   }
 
   const unreadThreadIds = new Set(
-    (unreadMessages ?? [])
-      .map((message) => message.thread_id)
+    ((unreadThreads as UnreadThreadRow[] | null) ?? [])
+      .map((thread) => thread.thread_id)
       .filter((messageThreadId): messageThreadId is string =>
         Boolean(messageThreadId)
       )

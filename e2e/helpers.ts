@@ -40,14 +40,16 @@ export async function signIn(
 export async function delayServerActionRequests(page: Page, delayMs = 500) {
   await page.route("**/*", async (route) => {
     const request = route.request();
-
-    if (
+    const isServerActionRequest =
       request.method() === "POST" &&
-      request.headers()["next-action"] !== undefined
-    ) {
-      await page.waitForTimeout(delayMs);
+      request.headers()["next-action"] !== undefined;
+
+    if (!isServerActionRequest) {
+      await route.fallback();
+      return;
     }
 
+    await page.waitForTimeout(delayMs);
     await route.continue();
   });
 }
