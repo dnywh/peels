@@ -59,6 +59,12 @@ const defaultChatRenderOptions: ChatRenderOptions = {
   useRelativeDayLabels: false,
 };
 
+function getClientTimeZone() {
+  return (
+    Intl.DateTimeFormat().resolvedOptions().timeZone ?? CHAT_RENDER_TIME_ZONE
+  );
+}
+
 const StyledChatWindow = styled.div`
   height: 100%;
   flex: 1;
@@ -151,6 +157,7 @@ const ChatWindow = memo(function ChatWindow({
   const [messages, setMessages] = useState<ChatMessageRecord[]>(
     getThreadMessages(existingThread)
   );
+  const [clientTimeZone, setClientTimeZone] = useState<string | null>(null);
   const chatRenderOptions = useMemo<ChatRenderOptions>(
     () =>
       isDemo
@@ -158,14 +165,15 @@ const ChatWindow = memo(function ChatWindow({
             locale,
             now: DEMO_CHAT_REFERENCE_TIME,
             timeZone: CHAT_RENDER_TIME_ZONE,
-            useRelativeDayLabels: true,
+            useRelativeDayLabels: clientTimeZone !== null,
           }
         : {
             ...defaultChatRenderOptions,
             locale,
             now: referenceNow,
+            timeZone: clientTimeZone ?? CHAT_RENDER_TIME_ZONE,
           },
-    [isDemo, locale, referenceNow]
+    [clientTimeZone, isDemo, locale, referenceNow]
   );
 
   function resolveChatErrorMessage(errorMessage: string | null) {
@@ -186,6 +194,10 @@ const ChatWindow = memo(function ChatWindow({
 
     return errorMessage;
   }
+
+  useEffect(() => {
+    setClientTimeZone(getClientTimeZone());
+  }, []);
 
   useEffect(() => {
     setThreadId(existingThread?.id ?? null);
