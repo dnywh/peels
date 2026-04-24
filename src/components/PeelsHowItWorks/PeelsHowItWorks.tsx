@@ -41,7 +41,11 @@ function PeelsHowItWorks() {
         <StepFooter>
           <p>
             {t.rich("footer", {
-              page: (chunks) => <Link href="/sign-up">{chunks}</Link>,
+              page: (chunks) => (
+                <Link href="/sign-up" prefetch={false}>
+                  {chunks}
+                </Link>
+              ),
             })}
           </p>
         </StepFooter>

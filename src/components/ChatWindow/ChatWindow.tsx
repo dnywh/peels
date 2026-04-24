@@ -14,12 +14,16 @@ import {
   markChatThreadRead,
   sendChatMessage,
 } from "@/components/ChatWindow/chatWindowController";
-import { formatWeekday } from "@/utils/dateUtils";
+import {
+  CHAT_RENDER_TIME_ZONE,
+  formatWeekday,
+  getChatDateKey,
+} from "@/utils/dateUtils";
 
 import { styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 import { useInlineMutation } from "@/hooks/useInlineMutation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type {
   ChatListing,
   ChatMessageRecord,
@@ -117,6 +121,7 @@ const ChatWindow = memo(function ChatWindow({
   isDemo = false,
 }: ChatWindowProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const supabase = useMemo(() => (isDemo ? null : createClient()), [isDemo]);
   const { setUnreadCount, markThreadAsRead } = useUnreadMessages();
   const realListing = isDemo ? null : (listing as ChatListing);
@@ -335,8 +340,12 @@ const ChatWindow = memo(function ChatWindow({
         {messages.map((chatMessage, index) => {
           const showDateHeader =
             index === 0 ||
-            new Date(chatMessage.created_at).toDateString() !==
-              new Date(messages[index - 1].created_at).toDateString();
+            getChatDateKey(chatMessage.created_at, {
+              timeZone: CHAT_RENDER_TIME_ZONE,
+            }) !==
+              getChatDateKey(messages[index - 1].created_at, {
+                timeZone: CHAT_RENDER_TIME_ZONE,
+              });
           const showInitiationHeader = index === 0;
 
           return (
@@ -344,7 +353,12 @@ const ChatWindow = memo(function ChatWindow({
               {showDateHeader || showInitiationHeader ? (
                 <DayHeader>
                   {showDateHeader && (
-                    <h3>{formatWeekday(chatMessage.created_at)}</h3>
+                    <h3 data-testid="chat-day-label">
+                      {formatWeekday(chatMessage.created_at, {
+                        locale,
+                        timeZone: CHAT_RENDER_TIME_ZONE,
+                      })}
+                    </h3>
                   )}
                   {showInitiationHeader && (
                     <p>
@@ -373,6 +387,8 @@ const ChatWindow = memo(function ChatWindow({
                       : "received"
                 }
                 message={chatMessage}
+                locale={locale}
+                timeZone={CHAT_RENDER_TIME_ZONE}
               />
             </Day>
           );

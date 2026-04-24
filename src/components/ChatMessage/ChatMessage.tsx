@@ -51,14 +51,23 @@ const Timestamp = styled.p`
 function ChatMessage({
   direction,
   message,
+  locale,
+  timeZone,
 }: {
   direction: ChatDirection;
   message: { content: string; created_at: string };
+  locale: string;
+  timeZone: string;
 }) {
   return (
     <ChatMessageContainer $direction={direction}>
       <ChatBubble $direction={direction}>{message.content}</ChatBubble>
-      <Timestamp>{formatTimestamp(message.created_at)}</Timestamp>
+      <Timestamp data-testid="chat-message-timestamp">
+        {formatTimestamp(message.created_at, {
+          locale,
+          timeZone,
+        })}
+      </Timestamp>
     </ChatMessageContainer>
   );
 }

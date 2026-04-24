@@ -1,90 +1,92 @@
-const DEFAULT_LOCALE = "en-AU";
+const DEFAULT_LOCALE = "en";
+export const CHAT_RENDER_TIME_ZONE = "UTC";
 
-function getLocale() {
-  if (typeof navigator !== "undefined" && navigator.language) {
-    return navigator.language;
-  }
-
-  return DEFAULT_LOCALE;
-}
+type DateFormatOptions = {
+  locale?: string;
+  timeZone?: string;
+  now?: string | Date;
+};
 
 function toDate(dateValue: string | Date) {
   return dateValue instanceof Date ? dateValue : new Date(dateValue);
 }
 
-function formatRelativeDayLabel(daysAgo: 0 | 1, locale: string) {
-  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-  return formatter.format(-daysAgo, "day");
+function getResolvedOptions({
+  locale = DEFAULT_LOCALE,
+  timeZone = CHAT_RENDER_TIME_ZONE,
+}: DateFormatOptions = {}) {
+  return { locale, timeZone };
 }
 
-export function formatPublishDate(dateValue: string | Date) {
-  return toDate(dateValue).toLocaleDateString(getLocale(), {
+function getDatePart(
+  dateValue: string | Date,
+  part: "year" | "month" | "day",
+  { timeZone = CHAT_RENDER_TIME_ZONE }: Pick<DateFormatOptions, "timeZone"> = {}
+) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  })
+    .formatToParts(toDate(dateValue))
+    .find((datePart) => datePart.type === part)?.value;
+}
+
+export function getChatDateKey(
+  dateValue: string | Date,
+  options?: Pick<DateFormatOptions, "timeZone">
+) {
+  const year = getDatePart(dateValue, "year", options);
+  const month = getDatePart(dateValue, "month", options);
+  const day = getDatePart(dateValue, "day", options);
+
+  return `${year}-${month}-${day}`;
+}
+
+export function formatPublishDate(
+  dateValue: string | Date,
+  options?: DateFormatOptions
+) {
+  const { locale, timeZone } = getResolvedOptions(options);
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
     year: "numeric",
     month: "long",
     day: "numeric",
-  });
+  }).format(toDate(dateValue));
 }
 
-export function formatTimestamp(dateValue: string | Date) {
-  return new Intl.DateTimeFormat(getLocale(), {
+export function formatTimestamp(
+  dateValue: string | Date,
+  options?: DateFormatOptions
+) {
+  const { locale, timeZone } = getResolvedOptions(options);
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
   }).format(toDate(dateValue));
 }
 
-export function formatWeekday(dateValue: string | Date) {
-  const date = toDate(dateValue);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  const compareDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate()
-  );
-  const compareToday = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
-  const compareYesterday = new Date(
-    yesterday.getFullYear(),
-    yesterday.getMonth(),
-    yesterday.getDate()
-  );
-
-  const diffTime = compareToday.getTime() - compareDate.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  const locale = getLocale();
-
-  if (diffDays > 365) {
-    return new Intl.DateTimeFormat(locale, {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(date);
-  }
-
-  if (compareDate.getTime() === compareToday.getTime()) {
-    return formatRelativeDayLabel(0, locale);
-  }
-
-  if (compareDate.getTime() === compareYesterday.getTime()) {
-    return formatRelativeDayLabel(1, locale);
-  }
-
-  if (diffDays < 7) {
-    return new Intl.DateTimeFormat(locale, {
-      weekday: "long",
-    }).format(date);
-  }
+export function formatWeekday(
+  dateValue: string | Date,
+  options?: DateFormatOptions
+) {
+  const { locale, timeZone } = getResolvedOptions(options);
+  const referenceDate = toDate(options?.now ?? dateValue);
+  const shouldIncludeYear =
+    getDatePart(dateValue, "year", { timeZone }) !==
+    getDatePart(referenceDate, "year", { timeZone });
 
   return new Intl.DateTimeFormat(locale, {
+    timeZone,
     weekday: "short",
     day: "numeric",
     month: "short",
-  }).format(date);
+    ...(shouldIncludeYear ? { year: "numeric" } : {}),
+  }).format(toDate(dateValue));
 }

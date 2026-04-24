@@ -17,11 +17,11 @@ export default function AccountButton({ ...props }: AccountButtonProps) {
   const label = profileFirstName?.trim() || tCommon("account");
 
   return user ? (
-    <Button href="/profile" variant="secondary" {...props}>
+    <Button href="/profile" variant="secondary" prefetch={false} {...props}>
       {label}
     </Button>
   ) : (
-    <Button href="/sign-in" variant="secondary" {...props}>
+    <Button href="/sign-in" variant="secondary" prefetch={false} {...props}>
       {t("signIn")}
     </Button>
   );

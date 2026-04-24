@@ -75,7 +75,11 @@ export default function Index() {
         <FooterBlock>
           <p>
             {t.rich("newsletter.footer", {
-              page: (chunks) => <Link href="/newsletter">{chunks}</Link>,
+              page: (chunks) => (
+                <Link href="/newsletter" prefetch={false}>
+                  {chunks}
+                </Link>
+              ),
             })}
           </p>
         </FooterBlock>
@@ -90,7 +94,11 @@ export default function Index() {
         <FooterBlock>
           <p>
             {t.rich("faq.footer", {
-              page: (chunks) => <Link href="/support">{chunks}</Link>,
+              page: (chunks) => (
+                <Link href="/support" prefetch={false}>
+                  {chunks}
+                </Link>
+              ),
             })}
           </p>
         </FooterBlock>

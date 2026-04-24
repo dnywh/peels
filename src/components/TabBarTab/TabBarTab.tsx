@@ -54,7 +54,7 @@ export default function TabBarTab({
   tone?: "default" | "brand";
 }) {
   return (
-    <StyledTabBarTab href={href} $active={active} $tone={tone}>
+    <StyledTabBarTab href={href} prefetch={false} $active={active} $tone={tone}>
       <StyledTabBarTabIcon>
         {icon}
         {unreadDot && <UnreadDot />}
