@@ -282,33 +282,39 @@ export default function ListingWrite({
   }
 
   const addAcceptedItem = () => {
-    setAcceptedItems([...acceptedItems, ""]);
+    setAcceptedItems((currentItems) => [...currentItems, ""]);
   };
 
   const addRejectedItem = () => {
-    setRejectedItems([...rejectedItems, ""]);
+    setRejectedItems((currentItems) => [...currentItems, ""]);
   };
 
   const addLink = () => {
-    setLinks([...links, ""]);
+    setLinks((currentLinks) => [...currentLinks, ""]);
   };
 
   const handleAcceptedItemChange = (index: number, value: string) => {
-    const nextItems = [...acceptedItems];
-    nextItems[index] = value;
-    setAcceptedItems(nextItems);
+    setAcceptedItems((currentItems) => {
+      const nextItems = [...currentItems];
+      nextItems[index] = value;
+      return nextItems;
+    });
   };
 
   const handleRejectedItemChange = (index: number, value: string) => {
-    const nextItems = [...rejectedItems];
-    nextItems[index] = value;
-    setRejectedItems(nextItems);
+    setRejectedItems((currentItems) => {
+      const nextItems = [...currentItems];
+      nextItems[index] = value;
+      return nextItems;
+    });
   };
 
   const handleLinksChange = (index: number, value: string) => {
-    const nextLinks = [...links];
-    nextLinks[index] = value;
-    setLinks(nextLinks);
+    setLinks((currentLinks) => {
+      const nextLinks = [...currentLinks];
+      nextLinks[index] = value;
+      return nextLinks;
+    });
   };
 
   return (

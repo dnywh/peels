@@ -18,9 +18,7 @@ export const metadata: Metadata = {
 export default async function EditListingPage({
   params,
 }: EditListingPageProps) {
-  const t = await getTranslations();
-  const { slug } = await params;
-  const supabase = await createClient();
+  const [{ slug }, supabase] = await Promise.all([params, createClient()]);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -30,9 +28,11 @@ export default async function EditListingPage({
   }
 
   const [
+    t,
     { data: profile, error: profileError },
     { data: listing, error: listingError },
   ] = await Promise.all([
+    getTranslations(),
     supabase
       .from("profiles")
       .select("first_name, avatar, is_admin")

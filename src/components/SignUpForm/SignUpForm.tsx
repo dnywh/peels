@@ -257,22 +257,33 @@ export default function SignUpForm({
     }
   };
 
-  const turnstileProps = {
-    ref: turnstileRef,
-    siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
-    onSuccess: handleTurnstileSuccess,
-    onError: handleTurnstileError,
-    onExpire: handleTurnstileExpire,
-    onTimeout: handleTurnstileTimeout,
-    onUnsupported: handleTurnstileUnsupported,
-    onBeforeInteractive: handleTurnstileBeforeInteractive,
-    onAfterInteractive: handleTurnstileAfterInteractive,
-    options: {
-      appearance: "interaction-only",
-      execution: "execute",
-      responseField: false,
-    } as const,
-  };
+  const turnstileProps = useMemo(
+    () => ({
+      ref: turnstileRef,
+      siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
+      onSuccess: handleTurnstileSuccess,
+      onError: handleTurnstileError,
+      onExpire: handleTurnstileExpire,
+      onTimeout: handleTurnstileTimeout,
+      onUnsupported: handleTurnstileUnsupported,
+      onBeforeInteractive: handleTurnstileBeforeInteractive,
+      onAfterInteractive: handleTurnstileAfterInteractive,
+      options: {
+        appearance: "interaction-only",
+        execution: "execute",
+        responseField: false,
+      } as const,
+    }),
+    [
+      handleTurnstileAfterInteractive,
+      handleTurnstileBeforeInteractive,
+      handleTurnstileError,
+      handleTurnstileExpire,
+      handleTurnstileSuccess,
+      handleTurnstileTimeout,
+      handleTurnstileUnsupported,
+    ]
+  );
 
   const turnstileContainerStyle = useMemo(
     () =>

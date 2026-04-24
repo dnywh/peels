@@ -38,6 +38,8 @@ type ChatWindowProps = {
   isDemo?: boolean;
 };
 
+const DIRECTIONS_FOR_DEMO = ["sent", "received"] as const;
+
 const StyledChatWindow = styled.div`
   height: 100%;
   flex: 1;
@@ -199,9 +201,10 @@ const ChatWindow = memo(function ChatWindow({
 
       const { readAt, readMessageIds } = result.data;
 
+      const readMessageIdsSet = new Set(readMessageIds);
       setMessages((previousMessages) =>
         previousMessages.map((chatMessage) =>
-          readMessageIds.includes(chatMessage.id)
+          readMessageIdsSet.has(chatMessage.id)
             ? { ...chatMessage, read_at: readAt }
             : chatMessage
         )
@@ -300,7 +303,6 @@ const ChatWindow = memo(function ChatWindow({
     setMessage(event.target.value);
   };
 
-  const directionsForDemo = ["sent", "received"] as const;
   const role = isDemo
     ? "initiator"
     : existingThread
@@ -365,7 +367,7 @@ const ChatWindow = memo(function ChatWindow({
               <ChatMessage
                 direction={
                   isDemo
-                    ? directionsForDemo[index % 2]
+                    ? DIRECTIONS_FOR_DEMO[index % 2]
                     : chatMessage.sender_id === user?.id
                       ? "sent"
                       : "received"
