@@ -11,12 +11,7 @@ export default function HeroButtons() {
 
   return (
     <ButtonContainer>
-      <HeroActionButton
-        href="/map"
-        variant="primary"
-        size="massive"
-        prefetch={false}
-      >
+      <HeroActionButton href="/map" variant="primary" size="massive">
         {t("browseMap")}
       </HeroActionButton>
       {user ? (
@@ -24,17 +19,11 @@ export default function HeroButtons() {
           href="/profile/listings/new"
           variant="secondary"
           size="massive"
-          prefetch={false}
         >
           {t("addListing")}
         </HeroActionButton>
       ) : (
-        <HeroActionButton
-          href="/sign-up"
-          variant="secondary"
-          size="massive"
-          prefetch={false}
-        >
+        <HeroActionButton href="/sign-up" variant="secondary" size="massive">
           {t("signUp")}
         </HeroActionButton>
       )}

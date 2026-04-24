@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-test("homepage hydrates without chat date mismatches", async ({ page }) => {
+test("homepage hydrates without chat date mismatches", async ({
+  browser,
+  page,
+}) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
 
@@ -21,12 +24,19 @@ test("homepage hydrates without chat date mismatches", async ({ page }) => {
     })
   ).toBeVisible();
 
-  const initialDayLabels = await page
+  const serverContext = await browser.newContext({
+    baseURL: "http://127.0.0.1:3000",
+    javaScriptEnabled: false,
+  });
+  const serverPage = await serverContext.newPage();
+  await serverPage.goto("/");
+  const serverDayLabels = await serverPage
     .getByTestId("chat-day-label")
     .allTextContents();
-  const initialTimestamps = await page
+  const serverTimestamps = await serverPage
     .getByTestId("chat-message-timestamp")
     .allTextContents();
+  await serverContext.close();
 
   await page.waitForLoadState("networkidle");
   await page.waitForTimeout(2_000);
@@ -38,8 +48,9 @@ test("homepage hydrates without chat date mismatches", async ({ page }) => {
     .getByTestId("chat-message-timestamp")
     .allTextContents();
 
-  expect(hydratedDayLabels).toEqual(initialDayLabels);
-  expect(hydratedTimestamps).toEqual(initialTimestamps);
+  expect(serverDayLabels).toEqual(["Thu, May 1", "Fri, May 2"]);
+  expect(hydratedDayLabels).toEqual(["Yesterday", "Today"]);
+  expect(hydratedTimestamps).toEqual(serverTimestamps);
   expect(
     pageErrors.some((message) => message.includes("Minified React error #418"))
   ).toBeFalsy();

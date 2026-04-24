@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { css, styled } from "next-yak";
 
+import AppLink from "@/components/AppLink";
 import { resolveExternalRel } from "@/utils/linkRel";
 import { theme } from "@/styles/theme.yak";
 
@@ -20,7 +20,7 @@ const sharedStyles = css`
   }
 `;
 
-const StyledLink = styled(Link)`
+const StyledLink = styled(AppLink)`
   ${sharedStyles}
 `;
 
@@ -29,7 +29,7 @@ const StyledPlainAnchor = styled.a`
 `;
 
 type AnchorHTMLProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
-type NextLinkProps = Omit<ComponentProps<typeof Link>, "href">;
+type NextLinkProps = Omit<ComponentProps<typeof AppLink>, "href">;
 
 type SharedStrongLinkProps = {
   href: string;

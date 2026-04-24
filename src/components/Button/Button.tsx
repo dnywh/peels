@@ -1,8 +1,8 @@
 import { Button as UnstyledButton } from "@headlessui/react";
-import Link from "next/link";
 import { css, styled } from "next-yak";
 import { forwardRef, type ElementType, type ReactNode, type Ref } from "react";
 
+import AppLink from "@/components/AppLink";
 import { resolveExternalRel } from "@/utils/linkRel";
 import { theme } from "@/styles/theme.yak";
 
@@ -373,7 +373,7 @@ const StyledButton = styled(UnstyledButton)<StyledButtonStyleProps>`
   ${sharedButtonStyles}
 `;
 
-const StyledLink = styled(Link)<StyledButtonStyleProps>`
+const StyledLink = styled(AppLink)<StyledButtonStyleProps>`
   ${sharedButtonStyles}
 `;
 

@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { css, styled } from "next-yak";
+import AppLink from "@/components/AppLink";
 import { theme } from "@/styles/theme.yak";
 import type { ReactNode } from "react";
 
@@ -54,7 +54,7 @@ export default function TabBarTab({
   tone?: "default" | "brand";
 }) {
   return (
-    <StyledTabBarTab href={href} prefetch={false} $active={active} $tone={tone}>
+    <StyledTabBarTab href={href} $active={active} $tone={tone}>
       <StyledTabBarTabIcon>
         {icon}
         {unreadDot && <UnreadDot />}
@@ -64,7 +64,7 @@ export default function TabBarTab({
   );
 }
 
-const StyledTabBarTab = styled(Link)<{
+const StyledTabBarTab = styled(AppLink)<{
   $active?: boolean;
   $tone?: "default" | "brand";
 }>`

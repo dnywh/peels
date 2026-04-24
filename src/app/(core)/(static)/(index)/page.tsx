@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import { siteConfig } from "@/config/site";
 import IntroHeader from "@/components/IntroHeader";
 import Toast from "@/components/Toast";
@@ -75,11 +75,7 @@ export default function Index() {
         <FooterBlock>
           <p>
             {t.rich("newsletter.footer", {
-              page: (chunks) => (
-                <Link href="/newsletter" prefetch={false}>
-                  {chunks}
-                </Link>
-              ),
+              page: (chunks) => <AppLink href="/newsletter">{chunks}</AppLink>,
             })}
           </p>
         </FooterBlock>
@@ -94,11 +90,7 @@ export default function Index() {
         <FooterBlock>
           <p>
             {t.rich("faq.footer", {
-              page: (chunks) => (
-                <Link href="/support" prefetch={false}>
-                  {chunks}
-                </Link>
-              ),
+              page: (chunks) => <AppLink href="/support">{chunks}</AppLink>,
             })}
           </p>
         </FooterBlock>

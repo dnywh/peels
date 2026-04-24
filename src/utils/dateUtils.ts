@@ -5,6 +5,7 @@ type DateFormatOptions = {
   locale?: string;
   timeZone?: string;
   now?: string | Date;
+  useRelativeDayLabels?: boolean;
 };
 
 function toDate(dateValue: string | Date) {
@@ -78,6 +79,27 @@ export function formatWeekday(
 ) {
   const { locale, timeZone } = getResolvedOptions(options);
   const referenceDate = toDate(options?.now ?? dateValue);
+  const dateKey = getChatDateKey(dateValue, { timeZone });
+  const referenceDateKey = getChatDateKey(referenceDate, { timeZone });
+
+  if (options?.useRelativeDayLabels) {
+    if (dateKey === referenceDateKey) {
+      return "Today";
+    }
+
+    const yesterday = new Date(referenceDate);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+
+    if (
+      dateKey ===
+      getChatDateKey(yesterday, {
+        timeZone,
+      })
+    ) {
+      return "Yesterday";
+    }
+  }
+
   const shouldIncludeYear =
     getDatePart(dateValue, "year", { timeZone }) !==
     getDatePart(referenceDate, "year", { timeZone });

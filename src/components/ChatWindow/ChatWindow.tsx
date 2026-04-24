@@ -14,6 +14,7 @@ import {
   markChatThreadRead,
   sendChatMessage,
 } from "@/components/ChatWindow/chatWindowController";
+import { DEMO_CHAT_REFERENCE_TIME } from "@/data/demo/threads";
 import {
   CHAT_RENDER_TIME_ZONE,
   formatWeekday,
@@ -43,6 +44,19 @@ type ChatWindowProps = {
 };
 
 const DIRECTIONS_FOR_DEMO = ["sent", "received"] as const;
+type ChatRenderOptions = {
+  locale: string;
+  now?: string;
+  timeZone: string;
+  useRelativeDayLabels: boolean;
+};
+
+const defaultChatRenderOptions: ChatRenderOptions = {
+  locale: "en",
+  now: undefined,
+  timeZone: CHAT_RENDER_TIME_ZONE,
+  useRelativeDayLabels: false,
+};
 
 const StyledChatWindow = styled.div`
   height: 100%;
@@ -135,6 +149,10 @@ const ChatWindow = memo(function ChatWindow({
   const [messages, setMessages] = useState<ChatMessageRecord[]>(
     getThreadMessages(existingThread)
   );
+  const [chatRenderOptions, setChatRenderOptions] = useState(() => ({
+    ...defaultChatRenderOptions,
+    locale,
+  }));
 
   function resolveChatErrorMessage(errorMessage: string | null) {
     if (!errorMessage) {
@@ -160,6 +178,30 @@ const ChatWindow = memo(function ChatWindow({
     setMessages(getThreadMessages(existingThread));
     lastReadSignatureRef.current = null;
   }, [existingThread]);
+
+  useEffect(() => {
+    setChatRenderOptions((previousOptions) => ({
+      ...previousOptions,
+      locale,
+    }));
+  }, [locale]);
+
+  useEffect(() => {
+    if (!isDemo) {
+      setChatRenderOptions({
+        ...defaultChatRenderOptions,
+        locale,
+      });
+      return;
+    }
+
+    setChatRenderOptions({
+      locale,
+      now: DEMO_CHAT_REFERENCE_TIME,
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      useRelativeDayLabels: true,
+    });
+  }, [isDemo, locale]);
 
   useEffect(() => {
     if (isDemo || !supabase || !threadId || !user?.id) {
@@ -355,8 +397,11 @@ const ChatWindow = memo(function ChatWindow({
                   {showDateHeader && (
                     <h3 data-testid="chat-day-label">
                       {formatWeekday(chatMessage.created_at, {
-                        locale,
-                        timeZone: CHAT_RENDER_TIME_ZONE,
+                        locale: chatRenderOptions.locale,
+                        now: chatRenderOptions.now,
+                        timeZone: chatRenderOptions.timeZone,
+                        useRelativeDayLabels:
+                          chatRenderOptions.useRelativeDayLabels,
                       })}
                     </h3>
                   )}
@@ -387,8 +432,8 @@ const ChatWindow = memo(function ChatWindow({
                       : "received"
                 }
                 message={chatMessage}
-                locale={locale}
-                timeZone={CHAT_RENDER_TIME_ZONE}
+                locale={chatRenderOptions.locale}
+                timeZone={chatRenderOptions.timeZone}
               />
             </Day>
           );

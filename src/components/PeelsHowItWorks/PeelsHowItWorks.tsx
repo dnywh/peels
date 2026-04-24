@@ -1,4 +1,4 @@
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import { useTranslations } from "next-intl";
 import PeelsMapDemo from "@/components/PeelsMapDemo";
 import PeelsChatDemo from "@/components/PeelsChatDemo";
@@ -41,11 +41,7 @@ function PeelsHowItWorks() {
         <StepFooter>
           <p>
             {t.rich("footer", {
-              page: (chunks) => (
-                <Link href="/sign-up" prefetch={false}>
-                  {chunks}
-                </Link>
-              ),
+              page: (chunks) => <AppLink href="/sign-up">{chunks}</AppLink>,
             })}
           </p>
         </StepFooter>

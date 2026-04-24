@@ -43,3 +43,24 @@ test("chat day labels include the year when the reference year differs", () => {
     "Tue, Dec 31, 2024"
   );
 });
+
+test("chat day labels can use stable relative labels", () => {
+  assert.equal(
+    formatWeekday("2025-05-02T06:48:00.000Z", {
+      locale: "en",
+      now: "2025-05-02T09:02:00.000Z",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      useRelativeDayLabels: true,
+    }),
+    "Today"
+  );
+  assert.equal(
+    formatWeekday("2025-05-01T20:10:00.000Z", {
+      locale: "en",
+      now: "2025-05-02T09:02:00.000Z",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      useRelativeDayLabels: true,
+    }),
+    "Yesterday"
+  );
+});

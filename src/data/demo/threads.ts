@@ -10,6 +10,8 @@ type DemoThread = {
   }>;
 };
 
+export const DEMO_CHAT_REFERENCE_TIME = "2025-05-02T09:02:00.000Z";
+
 export const demoThreads: DemoThread[] = [
   {
     id: "demo-thread-1",
