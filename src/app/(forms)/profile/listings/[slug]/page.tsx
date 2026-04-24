@@ -18,7 +18,9 @@ export const metadata: Metadata = {
 export default async function EditListingPage({
   params,
 }: EditListingPageProps) {
-  const [{ slug }, supabase] = await Promise.all([params, createClient()]);
+  const supabasePromise = createClient();
+  const { slug } = await params;
+  const supabase = await supabasePromise;
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -66,11 +68,15 @@ export default async function EditListingPage({
   ]);
 
   if (profileError) {
-    throw new Error(profileError.message);
+    throw new Error(
+      `Failed to fetch profile for user "${user.id}": ${profileError.message}`
+    );
   }
 
   if (listingError) {
-    throw new Error(listingError.message);
+    throw new Error(
+      `Failed to fetch listing for slug "${slug}" and user "${user.id}": ${listingError.message}`
+    );
   }
 
   if (!listing) {

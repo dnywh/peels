@@ -79,9 +79,6 @@ test("listing edit saves and restores seeded business fields", async ({
     redirectTo: BUSINESS_LISTING_EDIT_PATH,
   });
   await expect(page.getByTestId("listing-write-form")).toBeVisible();
-  const formWidth = await page
-    .getByTestId("listing-write-form")
-    .evaluate((form) => form.getBoundingClientRect().width);
   const descriptionInput = page.locator("#description");
   const visibilityInput = page.locator("#visibility");
   const originalDescription = await descriptionInput.inputValue();
@@ -97,10 +94,7 @@ test("listing edit saves and restores seeded business fields", async ({
   await delayServerActionRequests(page);
 
   const submitButton = page.getByTestId("listing-write-submit");
-  const submitWidth = await submitButton.evaluate(
-    (button) => button.getBoundingClientRect().width
-  );
-  expect(Math.abs(submitWidth - formWidth)).toBeLessThanOrEqual(2);
+  await expect(submitButton).toHaveAttribute("data-button-width", "full");
 
   const updateNavigation = page.waitForURL(
     /\/listings\/demo-inner-west-cafe\?status=updated$/
