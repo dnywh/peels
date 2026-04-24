@@ -21,6 +21,12 @@ function getResolvedOptions({
 
 const chatDateKeyFormatterCache = new Map<string, Intl.DateTimeFormat>();
 
+type ChatDateParts = {
+  year: string;
+  month: string;
+  day: string;
+};
+
 function getChatDateKeyFormatter(timeZone = CHAT_RENDER_TIME_ZONE) {
   const cachedFormatter = chatDateKeyFormatterCache.get(timeZone);
 
@@ -43,15 +49,24 @@ function getChatDateKeyFormatter(timeZone = CHAT_RENDER_TIME_ZONE) {
 function getChatDateParts(
   dateValue: string | Date,
   { timeZone = CHAT_RENDER_TIME_ZONE }: Pick<DateFormatOptions, "timeZone"> = {}
-) {
+): ChatDateParts {
   const parts = getChatDateKeyFormatter(timeZone).formatToParts(
     toDate(dateValue)
   );
+  const year = parts.find((datePart) => datePart.type === "year")?.value;
+  const month = parts.find((datePart) => datePart.type === "month")?.value;
+  const day = parts.find((datePart) => datePart.type === "day")?.value;
+
+  if (!year || !month || !day) {
+    throw new Error(
+      `Unable to format chat date parts for ${String(dateValue)}`
+    );
+  }
 
   return {
-    year: parts.find((datePart) => datePart.type === "year")?.value,
-    month: parts.find((datePart) => datePart.type === "month")?.value,
-    day: parts.find((datePart) => datePart.type === "day")?.value,
+    year,
+    month,
+    day,
   };
 }
 

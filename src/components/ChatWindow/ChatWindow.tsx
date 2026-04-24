@@ -182,6 +182,7 @@ const ChatWindow = memo(function ChatWindow({
             locale,
             now: referenceNow,
             timeZone: clientTimeZone ?? CHAT_RENDER_TIME_ZONE,
+            useRelativeDayLabels: clientTimeZone !== null,
           },
     [clientTimeZone, isDemo, locale, referenceNow]
   );
