@@ -66,11 +66,13 @@ export default function ChatPageClient({
   initialThreads,
   initialThreadId,
   selectedThread,
+  referenceNow,
 }: {
   user: User;
   initialThreads: ChatThreadListItem[];
   initialThreadId?: string | null;
   selectedThread?: ChatThreadView | null;
+  referenceNow: string;
 }) {
   const t = useTranslations("Chat");
   const { setTabBarProps } = useTabBar();
@@ -105,6 +107,7 @@ export default function ChatPageClient({
             user={user}
             listing={selectedThread.listing}
             existingThread={selectedThread}
+            referenceNow={referenceNow}
           />
         ) : (
           <ChatWindowEmptyState>

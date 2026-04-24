@@ -14,12 +14,17 @@ import {
   markChatThreadRead,
   sendChatMessage,
 } from "@/components/ChatWindow/chatWindowController";
-import { formatWeekday } from "@/utils/dateUtils";
+import { DEMO_CHAT_REFERENCE_TIME } from "@/data/demo/threads";
+import {
+  CHAT_RENDER_TIME_ZONE,
+  formatWeekday,
+  getChatDateKey,
+} from "@/utils/dateUtils";
 
 import { styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
 import { useInlineMutation } from "@/hooks/useInlineMutation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type {
   ChatListing,
   ChatMessageRecord,
@@ -30,15 +35,45 @@ import type {
 import type { DemoListing } from "@/types/listing";
 import type { FormSubmitEvent } from "@/types/events";
 
-type ChatWindowProps = {
+type SharedChatWindowProps = {
   isDrawer?: boolean;
   user: User | null;
   listing: ChatListing | DemoListing;
   existingThread?: ChatThreadRecord | ChatThreadView | null;
-  isDemo?: boolean;
 };
 
+type DemoChatWindowProps = SharedChatWindowProps & {
+  isDemo: true;
+  referenceNow?: never;
+};
+
+type NonDemoChatWindowProps = SharedChatWindowProps & {
+  isDemo?: false;
+  referenceNow: string;
+};
+
+type ChatWindowProps = DemoChatWindowProps | NonDemoChatWindowProps;
+
 const DIRECTIONS_FOR_DEMO = ["sent", "received"] as const;
+type ChatRenderOptions = {
+  locale: string;
+  now?: string;
+  timeZone: string;
+  useRelativeDayLabels: boolean;
+};
+
+const defaultChatRenderOptions: ChatRenderOptions = {
+  locale: "en",
+  now: undefined,
+  timeZone: CHAT_RENDER_TIME_ZONE,
+  useRelativeDayLabels: false,
+};
+
+function getClientTimeZone() {
+  return (
+    Intl.DateTimeFormat().resolvedOptions().timeZone ?? CHAT_RENDER_TIME_ZONE
+  );
+}
 
 const StyledChatWindow = styled.div`
   height: 100%;
@@ -115,8 +150,10 @@ const ChatWindow = memo(function ChatWindow({
   listing,
   existingThread = null,
   isDemo = false,
+  referenceNow,
 }: ChatWindowProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const supabase = useMemo(() => (isDemo ? null : createClient()), [isDemo]);
   const { setUnreadCount, markThreadAsRead } = useUnreadMessages();
   const realListing = isDemo ? null : (listing as ChatListing);
@@ -129,6 +166,34 @@ const ChatWindow = memo(function ChatWindow({
   );
   const [messages, setMessages] = useState<ChatMessageRecord[]>(
     getThreadMessages(existingThread)
+  );
+  const [clientTimeZone, setClientTimeZone] = useState<string | null>(null);
+  const chatRenderOptions = useMemo<ChatRenderOptions>(
+    () =>
+      isDemo
+        ? {
+            locale,
+            now: DEMO_CHAT_REFERENCE_TIME,
+            timeZone: CHAT_RENDER_TIME_ZONE,
+            useRelativeDayLabels: clientTimeZone !== null,
+          }
+        : {
+            ...defaultChatRenderOptions,
+            locale,
+            now: referenceNow,
+            timeZone: clientTimeZone ?? CHAT_RENDER_TIME_ZONE,
+            useRelativeDayLabels: clientTimeZone !== null,
+          },
+    [clientTimeZone, isDemo, locale, referenceNow]
+  );
+  const messageDateKeys = useMemo(
+    () =>
+      messages.map((chatMessage) =>
+        getChatDateKey(chatMessage.created_at, {
+          timeZone: chatRenderOptions.timeZone,
+        })
+      ),
+    [messages, chatRenderOptions.timeZone]
   );
 
   function resolveChatErrorMessage(errorMessage: string | null) {
@@ -149,6 +214,10 @@ const ChatWindow = memo(function ChatWindow({
 
     return errorMessage;
   }
+
+  useEffect(() => {
+    setClientTimeZone(getClientTimeZone());
+  }, []);
 
   useEffect(() => {
     setThreadId(existingThread?.id ?? null);
@@ -333,10 +402,10 @@ const ChatWindow = memo(function ChatWindow({
         )}
 
         {messages.map((chatMessage, index) => {
+          const currentDateKey = messageDateKeys[index];
+          const previousDateKey = messageDateKeys[index - 1];
           const showDateHeader =
-            index === 0 ||
-            new Date(chatMessage.created_at).toDateString() !==
-              new Date(messages[index - 1].created_at).toDateString();
+            index === 0 || currentDateKey !== previousDateKey;
           const showInitiationHeader = index === 0;
 
           return (
@@ -344,7 +413,15 @@ const ChatWindow = memo(function ChatWindow({
               {showDateHeader || showInitiationHeader ? (
                 <DayHeader>
                   {showDateHeader && (
-                    <h3>{formatWeekday(chatMessage.created_at)}</h3>
+                    <h3 data-testid="chat-day-label">
+                      {formatWeekday(chatMessage.created_at, {
+                        locale: chatRenderOptions.locale,
+                        now: chatRenderOptions.now,
+                        timeZone: chatRenderOptions.timeZone,
+                        useRelativeDayLabels:
+                          chatRenderOptions.useRelativeDayLabels,
+                      })}
+                    </h3>
                   )}
                   {showInitiationHeader && (
                     <p>
@@ -373,6 +450,8 @@ const ChatWindow = memo(function ChatWindow({
                       : "received"
                 }
                 message={chatMessage}
+                locale={chatRenderOptions.locale}
+                timeZone={chatRenderOptions.timeZone}
               />
             </Day>
           );

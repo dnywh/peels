@@ -22,6 +22,7 @@ type MapListingDrawerPanelProps = {
   user: User | null;
   selectedListing: SelectedListing | null;
   isSelectedListingLoading: boolean;
+  referenceNow: string;
   isDesktop: boolean;
   hasTouch: boolean;
   isDrawerHeaderShown: boolean;
@@ -230,6 +231,7 @@ export default function MapListingDrawerPanel({
   user,
   selectedListing,
   isSelectedListingLoading,
+  referenceNow,
   isDesktop,
   hasTouch,
   isDrawerHeaderShown,
@@ -349,6 +351,7 @@ export default function MapListingDrawerPanel({
               user={user}
               listing={listingForDisplay}
               presentation="drawer"
+              referenceNow={referenceNow}
             />
           )}
         </StyledDrawerInner>

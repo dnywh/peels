@@ -9,6 +9,7 @@ import { styled } from "next-yak";
 import type { CSSProperties, ReactNode } from "react";
 
 const INTERVAL_DURATION = 7000;
+const INITIAL_ROTATION_ANGLE = "-1.5deg";
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -135,7 +136,7 @@ export default function PeelsMapDemo({
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [rotationAngle, setRotationAngle] = useState(0);
+  const [rotationAngle, setRotationAngle] = useState(INITIAL_ROTATION_ANGLE);
 
   const loadListingByIndex = async (index: number) => {
     setIsTransitioning(true);
@@ -150,20 +151,13 @@ export default function PeelsMapDemo({
 
     // Generate new rotation angle only after fade out, before fade in
     const newRotation = Math.random() * 4 - 2; // Random value between -2 and +2
-    setRotationAngle(newRotation);
+    setRotationAngle(`${newRotation}deg`);
 
     // Reset transition state after a brief delay
     setTimeout(() => {
       setIsTransitioning(false);
     }, 50);
   };
-
-  // Initial load effect - runs once
-  useEffect(() => {
-    // Start with a random index
-    const randomIndex = Math.floor(Math.random() * demoListings.length);
-    loadListingByIndex(randomIndex);
-  }, []); // Empty dependency array for initial load only
 
   // Cycling effect - separate from initial load
   useEffect(() => {
@@ -218,9 +212,7 @@ export default function PeelsMapDemo({
         </ListingBackground>
         <ListingDemo
           data-transitioning={isTransitioning}
-          style={
-            { "--rotation-angle": `${rotationAngle}deg` } as ListingDemoStyle
-          }
+          style={{ "--rotation-angle": rotationAngle } as ListingDemoStyle}
         >
           <ListingRead
             listing={demoListings[selectedIndex]}

@@ -23,6 +23,7 @@ type MapPageClientProps = {
   user: User | null;
   initialListingSlug?: string | null;
   initialListing?: Listing | null;
+  referenceNow: string;
 };
 
 const StyledMapPage = styled.main`
@@ -50,6 +51,7 @@ export default function MapPageClient({
   user,
   initialListingSlug,
   initialListing,
+  referenceNow,
 }: MapPageClientProps) {
   const { isDesktop, hasTouch } = useDeviceContext();
 
@@ -142,6 +144,7 @@ export default function MapPageClient({
             user={user}
             selectedListing={selectedListing}
             isSelectedListingLoading={isSelectedListingLoading}
+            referenceNow={referenceNow}
             isDesktop={isDesktop}
             hasTouch={hasTouch}
             isDrawerHeaderShown={isDrawerHeaderShown}

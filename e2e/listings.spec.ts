@@ -78,9 +78,10 @@ test("listing edit saves and restores seeded business fields", async ({
     email: HOST_EMAIL,
     redirectTo: BUSINESS_LISTING_EDIT_PATH,
   });
-  await expect(page.getByTestId("listing-write-form")).toBeVisible();
-  const descriptionInput = page.locator("#description");
-  const visibilityInput = page.locator("#visibility");
+  const listingWriteForm = page.getByTestId("listing-write-form");
+  await expect(listingWriteForm).toBeVisible();
+  const descriptionInput = listingWriteForm.locator("#description").first();
+  const visibilityInput = listingWriteForm.locator("#visibility");
   const originalDescription = await descriptionInput.inputValue();
   const originalVisibility = await visibilityInput.inputValue();
   const updatedDescription =
@@ -105,11 +106,20 @@ test("listing edit saves and restores seeded business fields", async ({
   await updateNavigation;
 
   await page.goto(BUSINESS_LISTING_EDIT_PATH);
-  await expect(page.locator("#description")).toHaveValue(updatedDescription);
-  await expect(page.locator("#visibility")).toHaveValue(updatedVisibility);
+  await expect(listingWriteForm.locator("#description").first()).toHaveValue(
+    updatedDescription
+  );
+  await expect(listingWriteForm.locator("#visibility")).toHaveValue(
+    updatedVisibility
+  );
 
-  await page.locator("#description").fill(originalDescription);
-  await page.locator("#visibility").selectOption(originalVisibility);
+  await listingWriteForm
+    .locator("#description")
+    .first()
+    .fill(originalDescription);
+  await listingWriteForm
+    .locator("#visibility")
+    .selectOption(originalVisibility);
 
   await Promise.all([
     page.waitForURL(/\/listings\/demo-inner-west-cafe\?status=updated$/),
@@ -117,8 +127,12 @@ test("listing edit saves and restores seeded business fields", async ({
   ]);
 
   await page.goto(BUSINESS_LISTING_EDIT_PATH);
-  await expect(page.locator("#description")).toHaveValue(originalDescription);
-  await expect(page.locator("#visibility")).toHaveValue(originalVisibility);
+  await expect(listingWriteForm.locator("#description").first()).toHaveValue(
+    originalDescription
+  );
+  await expect(listingWriteForm.locator("#visibility")).toHaveValue(
+    originalVisibility
+  );
 });
 
 test("residential listing edit leaves avatar management on the profile page", async ({

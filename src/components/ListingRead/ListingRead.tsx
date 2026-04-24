@@ -27,11 +27,22 @@ type Presentation = "full" | "drawer" | "demo";
 
 type ListingReadListing = Listing | DemoListing;
 
-type ListingReadProps = {
+type SharedListingReadProps = {
   user: User | null;
   listing: ListingReadListing | null;
-  presentation?: Presentation;
 };
+
+type DemoListingReadProps = SharedListingReadProps & {
+  presentation: "demo";
+  referenceNow?: never;
+};
+
+type NonDemoListingReadProps = SharedListingReadProps & {
+  presentation?: Exclude<Presentation, "demo">;
+  referenceNow: string;
+};
+
+type ListingReadProps = DemoListingReadProps | NonDemoListingReadProps;
 
 function isDemoListing(
   listing: ListingReadListing | null
@@ -39,10 +50,21 @@ function isDemoListing(
   return Boolean(listing && (listing as DemoListing).is_demo === true);
 }
 
+function requireReferenceNow(referenceNow: string | undefined) {
+  if (!referenceNow) {
+    throw new Error(
+      "ListingRead requires referenceNow for non-demo presentations"
+    );
+  }
+
+  return referenceNow;
+}
+
 const ListingRead = memo(function Listing({
   user,
   listing,
   presentation = "full",
+  referenceNow,
 }: ListingReadProps) {
   const t = useTranslations();
   // Hooks must be called unconditionally; router is unused in demo mode.
@@ -64,6 +86,7 @@ const ListingRead = memo(function Listing({
   );
 
   const isDemo = presentation === "demo";
+  const nonDemoReferenceNow = !isDemo ? referenceNow : undefined;
   const demoListing = isDemoListing(listing) ? listing : null;
   const realListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
@@ -120,6 +143,33 @@ const ListingRead = memo(function Listing({
     return null;
   }
 
+  let listingAction: ReactNode = null;
+
+  if (isDemo && demoListing) {
+    listingAction = (
+      <DemoButtonContainer>
+        <Button variant="primary" width="full" href="/#contact">
+          {t("Listings.read.contact", {
+            name: demoListing.owner_first_name ?? demoListing.name ?? "",
+          })}
+        </Button>
+      </DemoButtonContainer>
+    );
+  } else if (realListing) {
+    const requiredReferenceNow = requireReferenceNow(nonDemoReferenceNow);
+    listingAction = (
+      <ListingChatDrawer
+        isNested={presentation === "drawer"}
+        user={user}
+        listing={realListing}
+        isChatDrawerOpen={isChatDrawerOpen}
+        setIsChatDrawerOpen={setIsChatDrawerOpen}
+        existingThread={existingThread}
+        referenceNow={requiredReferenceNow}
+      />
+    );
+  }
+
   return (
     <Fragment key={realListing?.id ? realListing.id : undefined}>
       <ColumnMain $presentation={presentation}>
@@ -130,24 +180,7 @@ const ListingRead = memo(function Listing({
           user={user}
         />
 
-        {isDemo && demoListing ? (
-          <DemoButtonContainer>
-            <Button variant="primary" width="full" href="/#contact">
-              {t("Listings.read.contact", {
-                name: demoListing.owner_first_name ?? demoListing.name ?? "",
-              })}
-            </Button>
-          </DemoButtonContainer>
-        ) : realListing ? (
-          <ListingChatDrawer
-            isNested={presentation === "drawer"}
-            user={user}
-            listing={realListing}
-            isChatDrawerOpen={isChatDrawerOpen}
-            setIsChatDrawerOpen={setIsChatDrawerOpen}
-            existingThread={existingThread}
-          />
-        ) : null}
+        {listingAction}
 
         <ListingContents $presentation={presentation}>
           {listing?.description && (

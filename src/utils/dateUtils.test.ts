@@ -1,0 +1,97 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+  CHAT_RENDER_TIME_ZONE,
+  formatTimestamp,
+  formatWeekday,
+  getChatDateKey,
+} from "./dateUtils.ts";
+
+test("chat date formatting stays deterministic for explicit locale and timezone", () => {
+  const messageDate = "2025-05-01T20:10:00.000Z";
+
+  assert.equal(
+    formatTimestamp(messageDate, {
+      locale: "en",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+    }),
+    "08:10 PM"
+  );
+  assert.equal(
+    formatWeekday(messageDate, {
+      locale: "en",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      now: "2025-05-02T06:48:00.000Z",
+    }),
+    "Thu, May 1"
+  );
+  assert.equal(
+    getChatDateKey(messageDate, {
+      timeZone: CHAT_RENDER_TIME_ZONE,
+    }),
+    "2025-05-01"
+  );
+});
+
+test("chat day labels include the year when the reference year differs", () => {
+  assert.equal(
+    formatWeekday("2024-12-31T23:15:00.000Z", {
+      locale: "en",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      now: "2025-01-01T00:15:00.000Z",
+    }),
+    "Tue, Dec 31, 2024"
+  );
+});
+
+test("chat day labels include the year when no explicit reference time is provided", () => {
+  const previousYear = new Date().getUTCFullYear() - 1;
+  const formattedDate = formatWeekday(`${previousYear}-12-31T23:15:00.000Z`, {
+    locale: "en",
+    timeZone: CHAT_RENDER_TIME_ZONE,
+  });
+
+  assert.match(formattedDate, new RegExp(`\\b${previousYear}\\b`));
+});
+
+test("chat day labels can use stable relative labels", () => {
+  assert.equal(
+    formatWeekday("2025-05-02T06:48:00.000Z", {
+      locale: "en",
+      now: "2025-05-02T09:02:00.000Z",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      useRelativeDayLabels: true,
+    }),
+    "Today"
+  );
+  assert.equal(
+    formatWeekday("2025-05-01T20:10:00.000Z", {
+      locale: "en",
+      now: "2025-05-02T09:02:00.000Z",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      useRelativeDayLabels: true,
+    }),
+    "Yesterday"
+  );
+});
+
+test("chat day labels localise relative labels for the configured timezone", () => {
+  assert.equal(
+    formatWeekday("2025-05-02T06:48:00.000Z", {
+      locale: "de",
+      now: "2025-05-02T09:02:00.000Z",
+      timeZone: CHAT_RENDER_TIME_ZONE,
+      useRelativeDayLabels: true,
+    }),
+    "Heute"
+  );
+  assert.equal(
+    formatWeekday("2025-05-01T09:10:00.000Z", {
+      locale: "de",
+      now: "2025-05-02T09:02:00.000Z",
+      timeZone: "Australia/Melbourne",
+      useRelativeDayLabels: true,
+    }),
+    "Gestern"
+  );
+});

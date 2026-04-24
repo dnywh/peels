@@ -26,11 +26,7 @@ export default function NewsletterIssueTile({
 }: NewsletterIssueTileProps) {
   return (
     <ListItem key={slug}>
-      <LinkedRow
-        $featured={featured}
-        prefetch={false}
-        href={`/newsletter/${slug}`}
-      >
+      <LinkedRow $featured={featured} href={`/newsletter/${slug}`}>
         <Text $featured={featured}>
           <h3>{title}</h3>
           <p>{subtitle}</p>

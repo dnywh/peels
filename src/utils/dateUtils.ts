@@ -1,90 +1,166 @@
-const DEFAULT_LOCALE = "en-AU";
+const DEFAULT_LOCALE = "en";
+export const CHAT_RENDER_TIME_ZONE = "UTC";
 
-function getLocale() {
-  if (typeof navigator !== "undefined" && navigator.language) {
-    return navigator.language;
-  }
-
-  return DEFAULT_LOCALE;
-}
+type DateFormatOptions = {
+  locale?: string;
+  timeZone?: string;
+  now?: string | Date;
+  useRelativeDayLabels?: boolean;
+};
 
 function toDate(dateValue: string | Date) {
   return dateValue instanceof Date ? dateValue : new Date(dateValue);
 }
 
-function formatRelativeDayLabel(daysAgo: 0 | 1, locale: string) {
-  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-  return formatter.format(-daysAgo, "day");
+function getResolvedOptions({
+  locale = DEFAULT_LOCALE,
+  timeZone = CHAT_RENDER_TIME_ZONE,
+}: DateFormatOptions = {}) {
+  return { locale, timeZone };
 }
 
-export function formatPublishDate(dateValue: string | Date) {
-  return toDate(dateValue).toLocaleDateString(getLocale(), {
+const chatDateKeyFormatterCache = new Map<string, Intl.DateTimeFormat>();
+
+type ChatDateParts = {
+  year: string;
+  month: string;
+  day: string;
+};
+
+function getChatDateKeyFormatter(timeZone = CHAT_RENDER_TIME_ZONE) {
+  const cachedFormatter = chatDateKeyFormatterCache.get(timeZone);
+
+  if (cachedFormatter) {
+    return cachedFormatter;
+  }
+
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  chatDateKeyFormatterCache.set(timeZone, formatter);
+
+  return formatter;
+}
+
+function getChatDateParts(
+  dateValue: string | Date,
+  { timeZone = CHAT_RENDER_TIME_ZONE }: Pick<DateFormatOptions, "timeZone"> = {}
+): ChatDateParts {
+  const parts = getChatDateKeyFormatter(timeZone).formatToParts(
+    toDate(dateValue)
+  );
+  const year = parts.find((datePart) => datePart.type === "year")?.value;
+  const month = parts.find((datePart) => datePart.type === "month")?.value;
+  const day = parts.find((datePart) => datePart.type === "day")?.value;
+
+  if (!year || !month || !day) {
+    throw new Error(
+      `Unable to format chat date parts for ${String(dateValue)}`
+    );
+  }
+
+  return {
+    year,
+    month,
+    day,
+  };
+}
+
+function subtractDaysFromDateKey(dateKey: string, days: number) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const shiftedDate = new Date(Date.UTC(year, month - 1, day));
+  shiftedDate.setUTCDate(shiftedDate.getUTCDate() - days);
+
+  return getChatDateKey(shiftedDate, { timeZone: "UTC" });
+}
+
+function formatRelativeDayLabel(locale: string, value: number) {
+  const relativeDayLabel = new Intl.RelativeTimeFormat(locale, {
+    numeric: "auto",
+  }).format(value, "day");
+  const [firstCharacter = "", ...remainingCharacters] =
+    Array.from(relativeDayLabel);
+
+  return `${firstCharacter.toLocaleUpperCase(locale)}${remainingCharacters.join("")}`;
+}
+
+function getDatePart(
+  dateValue: string | Date,
+  part: "year" | "month" | "day",
+  options: Pick<DateFormatOptions, "timeZone"> = {}
+) {
+  return getChatDateParts(dateValue, options)[part];
+}
+
+export function getChatDateKey(
+  dateValue: string | Date,
+  options?: Pick<DateFormatOptions, "timeZone">
+) {
+  const { year, month, day } = getChatDateParts(dateValue, options);
+
+  return `${year}-${month}-${day}`;
+}
+
+export function formatPublishDate(
+  dateValue: string | Date,
+  options?: DateFormatOptions
+) {
+  const { locale, timeZone } = getResolvedOptions(options);
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
     year: "numeric",
     month: "long",
     day: "numeric",
-  });
+  }).format(toDate(dateValue));
 }
 
-export function formatTimestamp(dateValue: string | Date) {
-  return new Intl.DateTimeFormat(getLocale(), {
+export function formatTimestamp(
+  dateValue: string | Date,
+  options?: DateFormatOptions
+) {
+  const { locale, timeZone } = getResolvedOptions(options);
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
   }).format(toDate(dateValue));
 }
 
-export function formatWeekday(dateValue: string | Date) {
-  const date = toDate(dateValue);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
+export function formatWeekday(
+  dateValue: string | Date,
+  options?: DateFormatOptions
+) {
+  const { locale, timeZone } = getResolvedOptions(options);
+  const referenceDate = toDate(options?.now ?? new Date());
+  const dateKey = getChatDateKey(dateValue, { timeZone });
+  const referenceDateKey = getChatDateKey(referenceDate, { timeZone });
 
-  const compareDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate()
-  );
-  const compareToday = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
-  const compareYesterday = new Date(
-    yesterday.getFullYear(),
-    yesterday.getMonth(),
-    yesterday.getDate()
-  );
+  if (options?.useRelativeDayLabels) {
+    if (dateKey === referenceDateKey) {
+      return formatRelativeDayLabel(locale, 0);
+    }
 
-  const diffTime = compareToday.getTime() - compareDate.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  const locale = getLocale();
-
-  if (diffDays > 365) {
-    return new Intl.DateTimeFormat(locale, {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(date);
+    if (dateKey === subtractDaysFromDateKey(referenceDateKey, 1)) {
+      return formatRelativeDayLabel(locale, -1);
+    }
   }
 
-  if (compareDate.getTime() === compareToday.getTime()) {
-    return formatRelativeDayLabel(0, locale);
-  }
-
-  if (compareDate.getTime() === compareYesterday.getTime()) {
-    return formatRelativeDayLabel(1, locale);
-  }
-
-  if (diffDays < 7) {
-    return new Intl.DateTimeFormat(locale, {
-      weekday: "long",
-    }).format(date);
-  }
+  const shouldIncludeYear =
+    getDatePart(dateValue, "year", { timeZone }) !==
+    getDatePart(referenceDate, "year", { timeZone });
 
   return new Intl.DateTimeFormat(locale, {
+    timeZone,
     weekday: "short",
     day: "numeric",
     month: "short",
-  }).format(date);
+    ...(shouldIncludeYear ? { year: "numeric" } : {}),
+  }).format(toDate(dateValue));
 }
