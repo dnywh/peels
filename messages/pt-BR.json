@@ -235,6 +235,7 @@
     },
     "turnstile": {
       "expired": "A verificação expirou. Conclua-a novamente.",
+      "notReady": "A verificação de segurança ainda está carregando. Tente novamente em instantes.",
       "timeout": "A verificação de segurança não foi concluída. Tente desativar bloqueadores de anúncios e tente de novo. Se continuar falhando, use outro navegador ou outra rede.",
       "unsupported": "Este navegador não consegue concluir a verificação de segurança. Tente outro navegador ou outra rede.",
       "failed": "A verificação de segurança falhou com o erro #{code}. Tente novamente ou use outro navegador."

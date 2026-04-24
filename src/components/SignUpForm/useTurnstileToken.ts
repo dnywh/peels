@@ -6,12 +6,20 @@ import type { TurnstileInstance } from "@marsidev/react-turnstile";
 const BACKGROUND_TOKEN_TIMEOUT = 10000;
 const INTERACTIVE_TOKEN_TIMEOUT = 120000;
 
+class TokenRequestCancelledError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TokenRequestCancelledError";
+  }
+}
+
 type UseTurnstileTokenOptions = {
   enabled: boolean;
   failedMessage: (code: string) => string;
   siteKey: string;
   timeoutMessage: string;
   expiredMessage: string;
+  notReadyMessage: string;
   unsupportedMessage: string;
 };
 
@@ -21,10 +29,12 @@ export function useTurnstileToken({
   siteKey,
   timeoutMessage,
   expiredMessage,
+  notReadyMessage,
   unsupportedMessage,
 }: UseTurnstileTokenOptions) {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const isMountedRef = useRef(false);
+  const activeRequestIdRef = useRef(0);
   const tokenResolverRef = useRef<((token: string) => void) | null>(null);
   const tokenRejecterRef = useRef<((error: Error) => void) | null>(null);
   const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -46,33 +56,51 @@ export function useTurnstileToken({
   }, [clearTokenTimeout]);
 
   const rejectTokenPromise = useCallback(
-    (errorMessage: string) => {
-      tokenRejecterRef.current?.(new Error(errorMessage));
+    (error: Error) => {
+      tokenRejecterRef.current?.(error);
       clearTokenPromise();
     },
     [clearTokenPromise]
   );
 
+  const cancelTokenPromise = useCallback(
+    (message: string) => {
+      rejectTokenPromise(new TokenRequestCancelledError(message));
+    },
+    [rejectTokenPromise]
+  );
+
   const scheduleTokenTimeout = useCallback(
-    (timeout: number, errorMessage = timeoutMessage) => {
+    (timeout: number, requestId: number, errorMessage = timeoutMessage) => {
       clearTokenTimeout();
       tokenTimeoutRef.current = setTimeout(() => {
-        setIsWaitingForToken(false);
-        setError(errorMessage);
-        rejectTokenPromise(errorMessage);
+        if (isMountedRef.current && requestId === activeRequestIdRef.current) {
+          setIsWaitingForToken(false);
+          setError(errorMessage);
+        }
+        rejectTokenPromise(new Error(errorMessage));
       }, timeout);
     },
     [clearTokenTimeout, rejectTokenPromise, timeoutMessage]
   );
 
   const waitForToken = useCallback(
-    (timeout = BACKGROUND_TOKEN_TIMEOUT) =>
-      new Promise<string>((resolve, reject) => {
+    (timeout = BACKGROUND_TOKEN_TIMEOUT) => {
+      const requestId = activeRequestIdRef.current + 1;
+      activeRequestIdRef.current = requestId;
+
+      const promise = new Promise<string>((resolve, reject) => {
+        cancelTokenPromise(
+          "Turnstile token request was cancelled because a newer request started."
+        );
         tokenResolverRef.current = resolve;
         tokenRejecterRef.current = reject;
-        scheduleTokenTimeout(timeout);
-      }),
-    [scheduleTokenTimeout]
+        scheduleTokenTimeout(timeout, requestId);
+      });
+
+      return { promise, requestId };
+    },
+    [cancelTokenPromise, scheduleTokenTimeout]
   );
 
   const resolveTokenPromise = useCallback(
@@ -89,26 +117,44 @@ export function useTurnstileToken({
     }
 
     setError(null);
+
+    const turnstile = turnstileRef.current;
+    if (!turnstile) {
+      if (isMountedRef.current) {
+        setError(notReadyMessage);
+        setIsWaitingForToken(false);
+        setIsInteractive(false);
+      }
+      throw new Error(notReadyMessage);
+    }
+
     setIsWaitingForToken(true);
-    turnstileRef.current?.reset();
+    turnstile.reset();
+
+    let requestId = activeRequestIdRef.current;
 
     try {
-      const tokenPromise = waitForToken(BACKGROUND_TOKEN_TIMEOUT);
-      turnstileRef.current?.execute();
-      return await tokenPromise;
+      const tokenRequest = waitForToken(BACKGROUND_TOKEN_TIMEOUT);
+      requestId = tokenRequest.requestId;
+      turnstile.execute();
+      return await tokenRequest.promise;
     } catch (error) {
+      if (error instanceof TokenRequestCancelledError) {
+        throw error;
+      }
+
       const errorMessage =
         error instanceof Error ? error.message : timeoutMessage;
-      if (isMountedRef.current) {
+      if (isMountedRef.current && requestId === activeRequestIdRef.current) {
         setError(errorMessage);
       }
       throw error;
     } finally {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && requestId === activeRequestIdRef.current) {
         setIsWaitingForToken(false);
       }
     }
-  }, [enabled, timeoutMessage, waitForToken]);
+  }, [enabled, notReadyMessage, timeoutMessage, waitForToken]);
 
   const resetError = useCallback(() => {
     setError(null);
@@ -119,54 +165,71 @@ export function useTurnstileToken({
 
     return () => {
       isMountedRef.current = false;
-      rejectTokenPromise(
+      cancelTokenPromise(
         "Turnstile token request was cancelled because the component unmounted."
       );
     };
-  }, [rejectTokenPromise]);
+  }, [cancelTokenPromise]);
 
   const turnstileProps = useMemo(
     () => ({
       ref: turnstileRef,
       siteKey,
       onSuccess: (token: string) => {
-        setError(null);
-        setIsWaitingForToken(false);
-        setIsInteractive(false);
+        if (isMountedRef.current) {
+          setError(null);
+          setIsWaitingForToken(false);
+          setIsInteractive(false);
+        }
         resolveTokenPromise(token);
       },
       onError: (code: string) => {
         const errorMessage = failedMessage(code);
-        setIsWaitingForToken(false);
-        setIsInteractive(false);
-        setError(errorMessage);
-        rejectTokenPromise(errorMessage);
+        if (isMountedRef.current) {
+          setIsWaitingForToken(false);
+          setIsInteractive(false);
+          setError(errorMessage);
+        }
+        rejectTokenPromise(new Error(errorMessage));
       },
       onExpire: () => {
-        setIsWaitingForToken(false);
-        setIsInteractive(false);
-        setError(expiredMessage);
-        rejectTokenPromise(expiredMessage);
+        if (isMountedRef.current) {
+          setIsWaitingForToken(false);
+          setIsInteractive(false);
+          setError(expiredMessage);
+        }
+        rejectTokenPromise(new Error(expiredMessage));
       },
       onTimeout: () => {
-        setIsWaitingForToken(false);
-        setIsInteractive(false);
-        setError(timeoutMessage);
-        rejectTokenPromise(timeoutMessage);
+        if (isMountedRef.current) {
+          setIsWaitingForToken(false);
+          setIsInteractive(false);
+          setError(timeoutMessage);
+        }
+        rejectTokenPromise(new Error(timeoutMessage));
       },
       onUnsupported: () => {
-        setIsWaitingForToken(false);
-        setIsInteractive(false);
-        setError(unsupportedMessage);
-        rejectTokenPromise(unsupportedMessage);
+        if (isMountedRef.current) {
+          setIsWaitingForToken(false);
+          setIsInteractive(false);
+          setError(unsupportedMessage);
+        }
+        rejectTokenPromise(new Error(unsupportedMessage));
       },
       onBeforeInteractive: () => {
-        setError(null);
-        setIsInteractive(true);
-        scheduleTokenTimeout(INTERACTIVE_TOKEN_TIMEOUT);
+        if (isMountedRef.current) {
+          setError(null);
+          setIsInteractive(true);
+        }
+        scheduleTokenTimeout(
+          INTERACTIVE_TOKEN_TIMEOUT,
+          activeRequestIdRef.current
+        );
       },
       onAfterInteractive: () => {
-        setIsInteractive(false);
+        if (isMountedRef.current) {
+          setIsInteractive(false);
+        }
       },
       options: {
         appearance: "interaction-only",

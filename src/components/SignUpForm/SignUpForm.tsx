@@ -49,6 +49,7 @@ export default function SignUpForm({
     enabled: turnstileEnabled,
     expiredMessage: t("Auth.turnstile.expired"),
     failedMessage,
+    notReadyMessage: t("Auth.turnstile.notReady"),
     siteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? "",
     timeoutMessage,
     unsupportedMessage: t("Auth.turnstile.unsupported"),

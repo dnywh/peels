@@ -235,6 +235,7 @@
     },
     "turnstile": {
       "expired": "Verification expired. Please complete it again.",
+      "notReady": "Security verification is still loading. Please try again in a moment.",
       "timeout": "Security check didn’t complete. Try disabling ad blockers and then try again. If it still fails, try a different browser or network.",
       "unsupported": "This browser can’t complete the security check. Please try a different browser or network.",
       "failed": "Security verification failed with error #{code}. Please try again or use a different browser."

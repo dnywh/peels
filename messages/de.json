@@ -235,6 +235,7 @@
     },
     "turnstile": {
       "expired": "Die Verifizierung ist abgelaufen. Bitte schließe sie erneut ab.",
+      "notReady": "Die Sicherheitsverifizierung wird noch geladen. Bitte versuche es gleich erneut.",
       "timeout": "Die Sicherheitsprüfung wurde nicht abgeschlossen. Deaktiviere Werbeblocker und versuche es erneut. Wenn es weiterhin fehlschlägt, probiere einen anderen Browser oder ein anderes Netzwerk.",
       "unsupported": "Dieser Browser kann die Sicherheitsprüfung nicht abschließen. Bitte probiere einen anderen Browser oder ein anderes Netzwerk.",
       "failed": "Die Sicherheitsverifizierung ist mit Fehler #{code} fehlgeschlagen. Bitte versuche es erneut oder nutze einen anderen Browser."
