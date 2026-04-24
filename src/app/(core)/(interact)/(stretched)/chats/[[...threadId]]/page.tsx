@@ -85,6 +85,7 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
   const { threadId: threadIdSegments } = await params;
   const threadId = threadIdSegments?.[0] ?? null;
   const redirectPath = threadId ? `/chats/${threadId}` : "/chats";
+  const referenceNow = new Date().toISOString();
 
   const supabase = await createClient();
   const {
@@ -198,6 +199,7 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
       initialThreads={typedThreads}
       initialThreadId={threadId}
       selectedThread={selectedThread}
+      referenceNow={referenceNow}
     />
   );
 }

@@ -62,6 +62,7 @@ type ListingChatDrawerProps = {
   isChatDrawerOpen: boolean;
   setIsChatDrawerOpen: (open: boolean) => void;
   existingThread: ChatThreadRecord | null;
+  referenceNow?: string;
 };
 
 type SharedDrawerProps = {
@@ -90,6 +91,7 @@ export default function ListingChatDrawer({
   isChatDrawerOpen,
   setIsChatDrawerOpen,
   existingThread,
+  referenceNow,
 }: ListingChatDrawerProps) {
   const { isDesktop, hasTouch } = useDeviceContext();
 
@@ -143,6 +145,7 @@ export default function ListingChatDrawer({
             user={user}
             listing={listing}
             existingThread={existingThread}
+            referenceNow={referenceNow}
           />
         </StyledDrawerContent>
       </Drawer.Portal>

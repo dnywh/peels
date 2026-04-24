@@ -41,6 +41,7 @@ type ChatWindowProps = {
   listing: ChatListing | DemoListing;
   existingThread?: ChatThreadRecord | ChatThreadView | null;
   isDemo?: boolean;
+  referenceNow?: string;
 };
 
 const DIRECTIONS_FOR_DEMO = ["sent", "received"] as const;
@@ -133,6 +134,7 @@ const ChatWindow = memo(function ChatWindow({
   listing,
   existingThread = null,
   isDemo = false,
+  referenceNow,
 }: ChatWindowProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -149,10 +151,22 @@ const ChatWindow = memo(function ChatWindow({
   const [messages, setMessages] = useState<ChatMessageRecord[]>(
     getThreadMessages(existingThread)
   );
-  const [chatRenderOptions, setChatRenderOptions] = useState(() => ({
-    ...defaultChatRenderOptions,
-    locale,
-  }));
+  const chatRenderOptions = useMemo<ChatRenderOptions>(
+    () =>
+      isDemo
+        ? {
+            locale,
+            now: DEMO_CHAT_REFERENCE_TIME,
+            timeZone: CHAT_RENDER_TIME_ZONE,
+            useRelativeDayLabels: true,
+          }
+        : {
+            ...defaultChatRenderOptions,
+            locale,
+            now: referenceNow,
+          },
+    [isDemo, locale, referenceNow]
+  );
 
   function resolveChatErrorMessage(errorMessage: string | null) {
     if (!errorMessage) {
@@ -178,30 +192,6 @@ const ChatWindow = memo(function ChatWindow({
     setMessages(getThreadMessages(existingThread));
     lastReadSignatureRef.current = null;
   }, [existingThread]);
-
-  useEffect(() => {
-    setChatRenderOptions((previousOptions) => ({
-      ...previousOptions,
-      locale,
-    }));
-  }, [locale]);
-
-  useEffect(() => {
-    if (!isDemo) {
-      setChatRenderOptions({
-        ...defaultChatRenderOptions,
-        locale,
-      });
-      return;
-    }
-
-    setChatRenderOptions({
-      locale,
-      now: DEMO_CHAT_REFERENCE_TIME,
-      timeZone: CHAT_RENDER_TIME_ZONE,
-      useRelativeDayLabels: true,
-    });
-  }, [isDemo, locale]);
 
   useEffect(() => {
     if (isDemo || !supabase || !threadId || !user?.id) {
@@ -383,10 +373,10 @@ const ChatWindow = memo(function ChatWindow({
           const showDateHeader =
             index === 0 ||
             getChatDateKey(chatMessage.created_at, {
-              timeZone: CHAT_RENDER_TIME_ZONE,
+              timeZone: chatRenderOptions.timeZone,
             }) !==
               getChatDateKey(messages[index - 1].created_at, {
-                timeZone: CHAT_RENDER_TIME_ZONE,
+                timeZone: chatRenderOptions.timeZone,
               });
           const showInitiationHeader = index === 0;
 

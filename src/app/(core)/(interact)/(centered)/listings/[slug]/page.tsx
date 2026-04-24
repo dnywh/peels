@@ -61,6 +61,7 @@ export default async function ListingPage({
 }) {
   const { slug } = await params;
   const { user, listing } = await getListingData(slug);
+  const referenceNow = new Date().toISOString();
 
   if (!listing) {
     notFound();
@@ -70,7 +71,7 @@ export default async function ListingPage({
 
   return (
     <StyledMain>
-      <ListingRead user={user} listing={listing} />
+      <ListingRead user={user} listing={listing} referenceNow={referenceNow} />
     </StyledMain>
   );
 }

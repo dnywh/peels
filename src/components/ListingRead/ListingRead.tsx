@@ -31,6 +31,7 @@ type ListingReadProps = {
   user: User | null;
   listing: ListingReadListing | null;
   presentation?: Presentation;
+  referenceNow?: string;
 };
 
 function isDemoListing(
@@ -43,6 +44,7 @@ const ListingRead = memo(function Listing({
   user,
   listing,
   presentation = "full",
+  referenceNow,
 }: ListingReadProps) {
   const t = useTranslations();
   // Hooks must be called unconditionally; router is unused in demo mode.
@@ -146,6 +148,7 @@ const ListingRead = memo(function Listing({
             isChatDrawerOpen={isChatDrawerOpen}
             setIsChatDrawerOpen={setIsChatDrawerOpen}
             existingThread={existingThread}
+            referenceNow={referenceNow}
           />
         ) : null}
 

@@ -4,6 +4,12 @@ test("homepage hydrates without chat date mismatches", async ({
   browser,
   page,
 }) => {
+  const { baseURL, extraHTTPHeaders, locale } = test.info().project.use;
+
+  if (typeof baseURL !== "string") {
+    throw new Error("Expected Playwright baseURL to be configured");
+  }
+
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
 
@@ -25,8 +31,10 @@ test("homepage hydrates without chat date mismatches", async ({
   ).toBeVisible();
 
   const serverContext = await browser.newContext({
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
+    extraHTTPHeaders,
     javaScriptEnabled: false,
+    locale,
   });
   const serverPage = await serverContext.newPage();
   await serverPage.goto("/");

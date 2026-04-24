@@ -19,6 +19,24 @@ function getResolvedOptions({
   return { locale, timeZone };
 }
 
+function subtractDaysFromDateKey(dateKey: string, days: number) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const shiftedDate = new Date(Date.UTC(year, month - 1, day));
+  shiftedDate.setUTCDate(shiftedDate.getUTCDate() - days);
+
+  return getChatDateKey(shiftedDate, { timeZone: "UTC" });
+}
+
+function formatRelativeDayLabel(locale: string, value: number) {
+  const relativeDayLabel = new Intl.RelativeTimeFormat(locale, {
+    numeric: "auto",
+  }).format(value, "day");
+  const [firstCharacter = "", ...remainingCharacters] =
+    Array.from(relativeDayLabel);
+
+  return `${firstCharacter.toLocaleUpperCase(locale)}${remainingCharacters.join("")}`;
+}
+
 function getDatePart(
   dateValue: string | Date,
   part: "year" | "month" | "day",
@@ -78,25 +96,17 @@ export function formatWeekday(
   options?: DateFormatOptions
 ) {
   const { locale, timeZone } = getResolvedOptions(options);
-  const referenceDate = toDate(options?.now ?? dateValue);
+  const referenceDate = toDate(options?.now ?? new Date());
   const dateKey = getChatDateKey(dateValue, { timeZone });
   const referenceDateKey = getChatDateKey(referenceDate, { timeZone });
 
   if (options?.useRelativeDayLabels) {
     if (dateKey === referenceDateKey) {
-      return "Today";
+      return formatRelativeDayLabel(locale, 0);
     }
 
-    const yesterday = new Date(referenceDate);
-    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-
-    if (
-      dateKey ===
-      getChatDateKey(yesterday, {
-        timeZone,
-      })
-    ) {
-      return "Yesterday";
+    if (dateKey === subtractDaysFromDateKey(referenceDateKey, 1)) {
+      return formatRelativeDayLabel(locale, -1);
     }
   }
 
