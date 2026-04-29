@@ -43,6 +43,11 @@ const ThumbnailLink = styled(Link)`
   cursor: zoom-in;
   display: block;
 
+  &,
+  & * {
+    cursor: zoom-in;
+  }
+
   &:focus-visible {
     outline: 3px solid ${theme.colors.focus.outline};
     outline-offset: 2px;
