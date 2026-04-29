@@ -25,7 +25,8 @@ const PhotosList = styled.ul<{
     cursor: zoom-in;
     flex-shrink: 0;
     border-radius: 0.25rem;
-    box-shadow: 0 0 0 2px ${theme.colors.border.elevated} inset;
+    background-color: ${theme.colors.background.sunk};
+    border: 1px solid ${theme.colors.border.elevated};
     overflow: hidden;
     transition:
       transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -60,9 +61,8 @@ const ThumbnailLink = styled(Link)`
 `;
 
 const ThumbnailImage = styled(RemoteImage)`
-  mix-blend-mode: multiply;
   object-fit: cover;
-  background-color: ${theme.colors.background.map};
+  background-color: ${theme.colors.background.sunk};
   display: block;
 `;
 
