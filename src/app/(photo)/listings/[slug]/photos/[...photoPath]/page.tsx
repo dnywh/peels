@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import StandaloneListingPhotoPage from "@/components/StandaloneListingPhotoPage";
+import { getListingDisplayName } from "@/utils/listingUtils";
 import { createClient } from "@/utils/supabase/server";
 import { getStoragePublicUrl } from "@/utils/storage";
 import { parseListingPhotoPath } from "@/utils/listingPhotoRoute";
@@ -25,6 +27,35 @@ const getListingData = cache(async (slug: string) => {
 
   return { user, listing };
 });
+
+export async function generateMetadata({
+  params,
+}: {
+  params: ListingPhotoPageParams;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const { user, listing } = await getListingData(slug);
+
+  if (!listing) {
+    return {
+      title: "Photo",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
+  const listingDisplayName = getListingDisplayName(listing, user);
+
+  return {
+    title: listingDisplayName ? `Photo · ${listingDisplayName}` : "Photo",
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function ListingPhotoPage({
   params,

@@ -56,15 +56,11 @@ const ViewerBody = styled.div`
   display: flex;
   justify-content: center;
   min-height: 100dvh;
-  padding: max(3.75rem, calc(env(safe-area-inset-top) + 2.75rem))
-    max(0.5rem, env(safe-area-inset-right))
-    max(0.5rem, env(safe-area-inset-bottom))
+  padding: 0 max(0.5rem, env(safe-area-inset-right)) 0
     max(0.5rem, env(safe-area-inset-left));
 
   @media (min-width: 768px) {
-    padding: max(4.5rem, calc(env(safe-area-inset-top) + 3.25rem))
-      max(1rem, env(safe-area-inset-right))
-      max(1rem, env(safe-area-inset-bottom))
+    padding: 0 max(1rem, env(safe-area-inset-right)) 0
       max(1rem, env(safe-area-inset-left));
   }
 `;
