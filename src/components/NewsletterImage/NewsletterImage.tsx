@@ -1,7 +1,11 @@
 import RemoteImage from "@/components/RemoteImage";
 import NewsletterImageFigcaption from "@/components/NewsletterImageFigcaption";
 import { css, styled } from "next-yak";
-import { theme } from "@/styles/theme.yak";
+import {
+  sharedMediaFrameBorderStyles,
+  sharedMediaFrameImageStyles,
+  sharedMediaFrameShapeStyles,
+} from "@/styles/mediaFrame";
 import type { ReactNode } from "react";
 import type { RemoteImageProps } from "@/components/RemoteImage/RemoteImage";
 
@@ -17,11 +21,13 @@ function NewsletterImage({
   border = true,
   ...props
 }: NewsletterImageProps) {
+  const Frame = border ? BorderedThumbnailContainer : ThumbnailContainer;
+
   return (
     <Figure $margin={margin}>
-      <ThumbnailContainer>
-        <StyledRemoteImage $border={border} {...props} />
-      </ThumbnailContainer>
+      <Frame>
+        <StyledRemoteImage {...props} />
+      </Frame>
       {caption && (
         <NewsletterImageFigcaption>{caption}</NewsletterImageFigcaption>
       )}
@@ -40,21 +46,15 @@ const Figure = styled.figure<{ $margin?: boolean }>`
 `;
 
 const ThumbnailContainer = styled.div`
-  box-shadow: 0 0 0 2px ${theme.colors.border.elevated} inset;
-  overflow: hidden;
-  border-radius: ${theme.corners.thumbnail};
+  ${sharedMediaFrameShapeStyles}
 `;
 
-const StyledRemoteImage = styled(RemoteImage)<{ $border?: boolean }>`
+const BorderedThumbnailContainer = styled(ThumbnailContainer)`
+  ${sharedMediaFrameBorderStyles}
+`;
+
+const StyledRemoteImage = styled(RemoteImage)`
+  ${sharedMediaFrameImageStyles}
   width: 100%;
   object-fit: cover;
-  background-color: ${theme.colors.background.sunk};
-  border-radius: ${theme.corners.thumbnail};
-
-  @media (prefers-color-scheme: light) {
-    mix-blend-mode: multiply;
-  }
-
-  ${({ $border }) =>
-    $border && `border: 1px solid ${theme.colors.border.base};`}
 `;

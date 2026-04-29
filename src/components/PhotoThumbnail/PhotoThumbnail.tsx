@@ -1,18 +1,19 @@
 import Link from "next/link";
 import RemoteImage from "@/components/RemoteImage";
 import { styled } from "next-yak";
-import { theme } from "@/styles/theme.yak";
+import {
+  sharedMediaFrameImageStyles,
+  sharedMediaFrameStyles,
+} from "@/styles/mediaFrame";
 
 const PHOTO_THUMBNAIL_WIDTH = 360;
 const PHOTO_THUMBNAIL_HEIGHT = 240;
 
 const PhotoThumbnailContainer = styled(Link)`
+  ${sharedMediaFrameStyles}
   display: block;
   position: relative;
   flex-shrink: 0;
-  border-radius: 0.375rem;
-  box-shadow: 0 0 0 2px ${theme.colors.border.elevated} inset;
-  overflow: hidden;
   width: calc(${PHOTO_THUMBNAIL_WIDTH}px * 0.65);
   height: calc(${PHOTO_THUMBNAIL_HEIGHT}px * 0.65);
   @media (min-width: 768px) {
@@ -22,9 +23,8 @@ const PhotoThumbnailContainer = styled(Link)`
 `;
 
 const ListingPhotoRemoteImage = styled(RemoteImage)`
-  mix-blend-mode: multiply;
+  ${sharedMediaFrameImageStyles}
   object-fit: cover;
-  background-color: ${theme.colors.background.map};
 `;
 
 const Caption = styled.div`
