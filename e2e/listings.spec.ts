@@ -8,6 +8,8 @@ import {
 } from "./helpers";
 
 const BUSINESS_LISTING_EDIT_PATH = "/profile/listings/demo-inner-west-cafe";
+const MAP_MULTI_PHOTO_LISTING_PATH = "/map?listing=demo-marrickville-compost";
+const PUBLIC_MULTI_PHOTO_LISTING_PATH = "/listings/demo-marrickville-compost";
 const RESIDENTIAL_LISTING_EDIT_PATH =
   "/profile/listings/demo-newtown-worm-farm";
 const ALTERNATE_BUSINESS_DESCRIPTION =
@@ -148,4 +150,58 @@ test("residential listing edit leaves avatar management on the profile page", as
   await expect(page.getByTestId("avatar-upload-listing_avatars")).toHaveCount(
     0
   );
+});
+
+test("listing photos open in a dedicated photo tab", async ({ page }) => {
+  await page.goto(PUBLIC_MULTI_PHOTO_LISTING_PATH);
+
+  const firstThumbnail = page.getByTestId("listing-photo-thumbnail-1");
+  await expect(firstThumbnail).toBeVisible();
+  await expect(firstThumbnail).toHaveAttribute("target", "_blank");
+
+  const href = await firstThumbnail.getAttribute("href");
+  expect(href).toBe(
+    "/listings/demo-marrickville-compost/photos/demo/garden.jpg"
+  );
+
+  const photoPage = await page.context().newPage();
+  await photoPage.goto(`http://127.0.0.1:3000${href}`);
+  await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
+  await expect(photoPage.getByRole("navigation")).toHaveCount(0);
+  await expect(page).toHaveURL(PUBLIC_MULTI_PHOTO_LISTING_PATH);
+
+  await photoPage.close();
+});
+
+test("direct photo page close falls back to the listing page", async ({
+  page,
+}) => {
+  await page.goto("/listings/demo-marrickville-compost/photos/demo/garden.jpg");
+
+  await expect(page.getByTestId("listing-photo-tab-viewer")).toBeVisible();
+  await page.getByTestId("listing-photo-tab-viewer-close").click();
+  await expect(page).toHaveURL(PUBLIC_MULTI_PHOTO_LISTING_PATH);
+});
+
+test("map listing photos open in a dedicated photo tab without disturbing the drawer", async ({
+  page,
+}) => {
+  await page.goto(MAP_MULTI_PHOTO_LISTING_PATH);
+
+  const firstThumbnail = page.getByTestId("listing-photo-thumbnail-1");
+  await expect(firstThumbnail).toBeVisible();
+  await expect(firstThumbnail).toHaveAttribute("target", "_blank");
+
+  const href = await firstThumbnail.getAttribute("href");
+  expect(href).toBe(
+    "/listings/demo-marrickville-compost/photos/demo/garden.jpg"
+  );
+
+  const photoPage = await page.context().newPage();
+  await photoPage.goto(`http://127.0.0.1:3000${href}`);
+  await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
+  await expect(page).toHaveURL(MAP_MULTI_PHOTO_LISTING_PATH);
+  await expect(firstThumbnail).toBeVisible();
+
+  await photoPage.close();
 });

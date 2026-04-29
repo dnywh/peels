@@ -322,6 +322,7 @@ const ListingRead = memo(function Listing({
                 </p>
               ) : (
                 <ListingPhotoGallery
+                  listingSlug={realListing.slug}
                   presentation={presentation}
                   photos={realListing.photos}
                 />

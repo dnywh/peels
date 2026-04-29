@@ -51,7 +51,6 @@
     "maplibre-gl": "^4.7.1",
     "next": "16.2.4",
     "next-intl": "^4.9.1",
-    "photoswipe": "^5.4.4",
     "pmtiles": "^4.4.1",
     "prettier": "^3.8.3",
     "protomaps-themes-base": "^4.5.0",
@@ -59,7 +58,6 @@
     "react-dom": "19.2.5",
     "react-dropzone": "^14.4.1",
     "react-map-gl": "^7.1.9",
-    "react-photoswipe-gallery": "^3.1.1",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
