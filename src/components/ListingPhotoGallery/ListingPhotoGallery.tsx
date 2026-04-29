@@ -22,6 +22,7 @@ const PhotosList = styled.ul<{
   padding: 0 1rem;
 
   & li {
+    cursor: zoom-in;
     flex-shrink: 0;
     border-radius: 0.25rem;
     box-shadow: 0 0 0 2px ${theme.colors.border.elevated} inset;
@@ -34,6 +35,10 @@ const PhotosList = styled.ul<{
   & li:hover {
     transform: scale(0.98);
     opacity: 0.86;
+  }
+
+  & li * {
+    cursor: zoom-in;
   }
 
   ${({ $presentation }) => $presentation === "full" && fullPresentationStyles}

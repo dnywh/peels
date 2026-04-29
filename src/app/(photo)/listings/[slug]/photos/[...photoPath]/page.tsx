@@ -25,9 +25,13 @@ const getListingData = cache(async (slug: string) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const tableName = user ? "listings_private_data" : "listings_public_data";
+  const selectColumns = user
+    ? "name, owner_first_name, photos, type"
+    : "name, photos, type";
   const { data: listingData } = await supabase
-    .from(user ? "listings_private_data" : "listings_public_data")
-    .select("name, owner_first_name, photos, type")
+    .from(tableName)
+    .select(selectColumns)
     .match({ slug })
     .single();
 
