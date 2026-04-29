@@ -72,6 +72,7 @@ function ListingPhotoGallery({
           <ThumbnailLink
             data-testid={`listing-photo-thumbnail-${index + 1}`}
             href={buildListingPhotoHref(listingSlug, photo)}
+            rel="noopener"
             target="_blank"
           >
             <ThumbnailImage

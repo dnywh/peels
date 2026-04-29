@@ -10,5 +10,9 @@ export function buildListingPhotoHref(listingSlug: string, photo: string) {
 export function parseListingPhotoPath(photoPath: string[] | undefined) {
   if (!photoPath || photoPath.length === 0) return null;
 
-  return photoPath.map((segment) => decodeURIComponent(segment)).join("/");
+  try {
+    return photoPath.map((segment) => decodeURIComponent(segment)).join("/");
+  } catch {
+    return null;
+  }
 }
