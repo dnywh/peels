@@ -40,6 +40,7 @@ const PhotosList = styled.ul<{
 `;
 
 const ThumbnailLink = styled(Link)`
+  cursor: zoom-in;
   display: block;
 
   &:focus-visible {
@@ -52,7 +53,6 @@ const ThumbnailImage = styled(RemoteImage)`
   mix-blend-mode: multiply;
   object-fit: cover;
   background-color: ${theme.colors.background.map};
-  cursor: zoom-in;
   display: block;
 `;
 
