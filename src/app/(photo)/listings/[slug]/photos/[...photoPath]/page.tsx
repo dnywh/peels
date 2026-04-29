@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import StandaloneListingPhotoPage from "@/components/StandaloneListingPhotoPage";
+import type { Listing } from "@/types/listing";
 import { getListingDisplayName } from "@/utils/listingUtils";
 import { createClient } from "@/utils/supabase/server";
 import { getStoragePublicUrl } from "@/utils/storage";
@@ -14,18 +15,26 @@ type ListingPhotoPageParams = Promise<{
   slug: string;
 }>;
 
+type ListingPhotoPageListing = Pick<
+  Listing,
+  "name" | "owner_first_name" | "photos" | "type"
+>;
+
 const getListingData = cache(async (slug: string) => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const { data: listing } = await supabase
+  const { data: listingData } = await supabase
     .from(user ? "listings_private_data" : "listings_public_data")
-    .select()
+    .select("name, owner_first_name, photos, type")
     .match({ slug })
     .single();
 
-  return { user, listing };
+  return {
+    user,
+    listing: (listingData as ListingPhotoPageListing | null) ?? null,
+  };
 });
 
 export async function generateMetadata({
