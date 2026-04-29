@@ -4,6 +4,10 @@ import { styled } from "next-yak";
 import { useRouter } from "next/navigation";
 
 import IconButton from "@/components/IconButton";
+import {
+  sharedMediaFrameBorderWidth,
+  sharedMediaFrameRadius,
+} from "@/styles/mediaFrame";
 
 const ViewerPage = styled.main`
   background: #000;
@@ -66,8 +70,8 @@ const ViewerBody = styled.div`
 `;
 
 const ViewerImage = styled.img`
-  border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: ${sharedMediaFrameRadius};
+  border: ${sharedMediaFrameBorderWidth} solid rgba(255, 255, 255, 0.16);
   display: block;
   margin: 0 auto;
   max-height: calc(100dvh - 4.75rem);

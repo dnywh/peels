@@ -2,6 +2,10 @@ import Link from "next/link";
 import { css, styled } from "next-yak";
 
 import RemoteImage from "@/components/RemoteImage";
+import {
+  sharedMediaFrameImageStyles,
+  sharedMediaFrameStyles,
+} from "@/styles/mediaFrame";
 import { theme } from "@/styles/theme.yak";
 import { buildListingPhotoHref } from "@/utils/listingPhotoRoute";
 
@@ -22,12 +26,10 @@ const PhotosList = styled.ul<{
   padding: 0 1rem;
 
   & li {
+    ${sharedMediaFrameStyles}
     cursor: pointer;
     flex-shrink: 0;
-    border-radius: 0.25rem;
     background-color: ${theme.colors.background.sunk};
-    border: 2px solid ${theme.colors.border.elevated};
-    overflow: hidden;
     transition:
       transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
       opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -61,9 +63,8 @@ const ThumbnailLink = styled(Link)`
 `;
 
 const ThumbnailImage = styled(RemoteImage)`
+  ${sharedMediaFrameImageStyles}
   object-fit: cover;
-  background-color: ${theme.colors.background.sunk};
-  display: block;
 `;
 
 function ListingPhotoGallery({

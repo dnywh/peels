@@ -1,5 +1,10 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
+import {
+  sharedMediaFrameBorderStyles,
+  sharedMediaFrameRadius,
+  sharedMediaFrameShapeStyles,
+} from "@/styles/mediaFrame";
 import { useEffect, useState, useCallback, useRef } from "react";
 
 import Map, { AttributionControl } from "react-map-gl/maplibre";
@@ -11,23 +16,11 @@ import layers from "protomaps-themes-base";
 import { styled } from "next-yak";
 import type { ComponentProps, ReactNode } from "react";
 
-const RADIUS = "0.375rem";
-
 const MapContainer = styled.div`
-  border-radius: ${RADIUS};
-  box-shadow: 0 0 0 2px ${theme.colors.border.elevated} inset;
+  ${sharedMediaFrameShapeStyles}
+  ${sharedMediaFrameBorderStyles}
   background-color: ${theme.colors.background.map};
   position: relative;
-`;
-
-//  Could use mixBlendMode: "multiply" on parent but that requires managing a white background fill
-// So instead setting a separate border div with the same dimensions
-const MapBorder = styled.div`
-  border-radius: ${RADIUS};
-  box-shadow: 0 0 0 2px ${theme.colors.border.elevated} inset;
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
 `;
 
 export default function MapThumbnail({
@@ -66,13 +59,16 @@ export default function MapThumbnail({
           layers: (layers as any)("protomaps", "light"),
         }}
         renderWorldCopies={true}
-        style={{ width: "100%", height: height, borderRadius: RADIUS }}
+        style={{
+          width: "100%",
+          height: height,
+          borderRadius: sharedMediaFrameRadius,
+        }}
         {...props}
       >
         <AttributionControl compact={true} />
         {children}
       </Map>
-      <MapBorder />
     </MapContainer>
   );
 }
