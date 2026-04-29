@@ -4,15 +4,11 @@ import { styled } from "next-yak";
 import { useRouter } from "next/navigation";
 
 import IconButton from "@/components/IconButton";
-import { theme } from "@/styles/theme.yak";
 
 const ViewerPage = styled.main`
   background: #000;
   color: #fff;
   min-height: 100dvh;
-  padding: max(1rem, env(safe-area-inset-top))
-    max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
   position: relative;
 `;
 
@@ -20,7 +16,9 @@ const ViewerToolbar = styled.div`
   display: flex;
   justify-content: flex-end;
   left: 0;
-  padding: 0.5rem;
+  padding: max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right)) 0
+    max(0.75rem, env(safe-area-inset-left));
   position: absolute;
   right: 0;
   top: 0;
@@ -57,27 +55,36 @@ const ViewerBody = styled.div`
   align-items: center;
   display: flex;
   justify-content: center;
-  min-height: calc(100dvh - 2rem);
+  min-height: 100dvh;
+  padding: max(3.75rem, calc(env(safe-area-inset-top) + 2.75rem))
+    max(0.5rem, env(safe-area-inset-right))
+    max(0.5rem, env(safe-area-inset-bottom))
+    max(0.5rem, env(safe-area-inset-left));
 
   @media (min-width: 768px) {
-    min-height: calc(100dvh - 3rem);
+    padding: max(4.5rem, calc(env(safe-area-inset-top) + 3.25rem))
+      max(1rem, env(safe-area-inset-right))
+      max(1rem, env(safe-area-inset-bottom))
+      max(1rem, env(safe-area-inset-left));
   }
 `;
 
 const ViewerImage = styled.img`
   border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   display: block;
   margin: 0 auto;
-  max-height: calc(100dvh - 7rem);
-  max-width: 100%;
+  max-height: calc(100dvh - 4.75rem);
+  max-width: calc(100vw - 1rem);
   object-fit: contain;
-  outline: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
   box-shadow:
-    0 0 0 2px ${theme.colors.border.elevated},
+    0 0 0 1px rgba(255, 255, 255, 0.04),
     0 24px 80px rgba(0, 0, 0, 0.45);
 
   @media (min-width: 768px) {
-    max-height: calc(100dvh - 9rem);
+    max-height: calc(100dvh - 6.5rem);
+    max-width: calc(100vw - 2rem);
   }
 `;
 
