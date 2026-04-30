@@ -1,7 +1,7 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import type { ComponentType, CSSProperties } from "react";
 
 import Map, {
@@ -12,9 +12,8 @@ import Map, {
   type ViewStateChangeEvent,
   type MapLayerMouseEvent,
 } from "react-map-gl/maplibre";
-import maplibregl, { type LngLatBounds } from "maplibre-gl";
+import type { LngLatBounds } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Protocol } from "pmtiles";
 import { useLocale, useTranslations } from "next-intl";
 import { styled } from "next-yak";
 
@@ -34,7 +33,6 @@ import {
   getListingCoordinates,
   hasValidCoordinates,
 } from "../lib/mapUtils";
-import { handleMapError } from "../lib/mapErrors";
 import { useListingsInView } from "../hooks/useListingsInView";
 import { useMapCenter } from "../hooks/useMapCenter";
 import { usePreferredMapFlavor } from "../hooks/usePreferredMapFlavor";
@@ -178,15 +176,6 @@ export default function MapView({
   const hasInitialPosition =
     hasValidCoordinates(selectedListing) || Boolean(initialCoordinates);
 
-  useEffect(() => {
-    const protocol = new Protocol();
-    maplibregl.addProtocol("pmtiles", protocol.tile);
-
-    return () => {
-      maplibregl.removeProtocol("pmtiles");
-    };
-  }, []);
-
   const emitBoundsChange = useCallback(
     (bounds: LngLatBounds) => {
       requestBounds(bounds);
@@ -248,7 +237,6 @@ export default function MapView({
             ref={mapRef}
             attributionControl={false}
             mapStyle={mapStyle}
-            onError={handleMapError}
             renderWorldCopies={true}
             initialViewState={resolveInitialViewState(
               selectedListing,

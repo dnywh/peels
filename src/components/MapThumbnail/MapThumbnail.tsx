@@ -5,18 +5,15 @@ import {
   sharedMediaFrameRadius,
   sharedMediaFrameShapeStyles,
 } from "@/styles/mediaFrame";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import Map, { AttributionControl } from "react-map-gl/maplibre";
-import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Protocol } from "pmtiles";
 import { useLocale } from "next-intl";
 
 import { styled } from "next-yak";
 import type { ComponentProps, ReactNode } from "react";
 import { createProtomapsStyle } from "@/features/map/lib/protomapsStyle";
-import { handleMapError } from "@/features/map/lib/mapErrors";
 import { usePreferredMapFlavor } from "@/features/map/hooks/usePreferredMapFlavor";
 
 const MapContainer = styled.div`
@@ -41,20 +38,11 @@ export default function MapThumbnail({
     [locale, mapFlavor]
   );
 
-  useEffect(() => {
-    let protocol = new Protocol();
-    maplibregl.addProtocol("pmtiles", protocol.tile);
-    return () => {
-      maplibregl.removeProtocol("pmtiles");
-    };
-  }, []);
-
   return (
     <MapContainer>
       <Map
         attributionControl={false} // Customised below
         mapStyle={mapStyle}
-        onError={handleMapError}
         renderWorldCopies={true}
         style={{
           width: "100%",
