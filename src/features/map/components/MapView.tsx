@@ -34,6 +34,7 @@ import {
   getListingCoordinates,
   hasValidCoordinates,
 } from "../lib/mapUtils";
+import { handleMapError } from "../lib/mapErrors";
 import { useListingsInView } from "../hooks/useListingsInView";
 import { useMapCenter } from "../hooks/useMapCenter";
 import { usePreferredMapFlavor } from "../hooks/usePreferredMapFlavor";
@@ -247,6 +248,7 @@ export default function MapView({
             ref={mapRef}
             attributionControl={false}
             mapStyle={mapStyle}
+            onError={handleMapError}
             renderWorldCopies={true}
             initialViewState={resolveInitialViewState(
               selectedListing,
