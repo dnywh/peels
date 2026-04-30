@@ -45,7 +45,7 @@
     "deepmerge": "^4.3.1",
     "fakeout": "^1.0.18",
     "feed": "^5.2.1",
-    "lucide-react": "^0.577.0",
+    "lucide-react": "^1.14.0",
     "mapbox-gl": "^3.23.0",
     "maplibre-gl": "^5.24.0",
     "next": "16.2.4",
