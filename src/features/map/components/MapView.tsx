@@ -1,7 +1,7 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
 
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { ComponentType, CSSProperties } from "react";
 
 import Map, {
@@ -18,25 +18,27 @@ import { useLocale, useTranslations } from "next-intl";
 import { styled } from "next-yak";
 
 import Button from "@/components/Button";
-import type {
-  ListingCoordinates,
-  ListingMarker,
-  SelectedListing,
-} from "@/types/listing";
+import type { ListingMarker, SelectedListing } from "@/types/listing";
 
 import MapPinLayer from "./MapPinLayer";
 import MapSearch from "./MapSearch";
 import {
-  DEFAULT_COORDINATES,
+  MAP_MAX_ZOOM,
   ZOOM_LEVEL_DEFAULT,
   ZOOM_LEVEL_SELECTED,
   getListingCoordinates,
   hasValidCoordinates,
+  wrapLongitude,
 } from "../lib/mapUtils";
 import { useListingsInView } from "../hooks/useListingsInView";
 import { useMapCenter } from "../hooks/useMapCenter";
 import { usePreferredMapFlavor } from "../hooks/usePreferredMapFlavor";
 import { createProtomapsStyle } from "../lib/protomapsStyle";
+import {
+  NEUTRAL_INITIAL_COORDINATES,
+  saveStoredInitialMapCoordinates,
+  type InitialMapCoordinates,
+} from "../lib/mapInitialView";
 
 type GeocodingPickEvent = {
   feature?: { center?: [number, number] };
@@ -47,7 +49,7 @@ type MapViewProps = {
   selectedListingId: number | null;
   listingSlug: string | null;
   isListingSelected: boolean;
-  initialCoordinates: (ListingCoordinates & { zoom: number }) | null;
+  initialCoordinates: InitialMapCoordinates | null;
   onMapClick: () => void;
   onMarkerClick: (listing: ListingMarker) => void;
   DrawerTrigger: ComponentType<{ children?: React.ReactNode }>;
@@ -111,9 +113,13 @@ const searchStyle: CSSProperties = {
   zIndex: 1,
 };
 
+const STORE_MAP_VIEW_DELAY_MS = 300;
+const STORE_MAP_VIEW_DELTA = 0.000001;
+const STORE_MAP_ZOOM_DELTA = 0.01;
+
 function resolveInitialViewState(
   selectedListing: SelectedListing | null,
-  initialCoordinates: (ListingCoordinates & { zoom: number }) | null
+  initialCoordinates: InitialMapCoordinates | null
 ) {
   const selectedCoords = getListingCoordinates(selectedListing);
   const isSelected =
@@ -123,14 +129,14 @@ function resolveInitialViewState(
     longitude:
       (isSelected ? selectedCoords!.longitude : undefined) ??
       initialCoordinates?.longitude ??
-      DEFAULT_COORDINATES.longitude,
+      NEUTRAL_INITIAL_COORDINATES.longitude,
     latitude:
       (isSelected ? selectedCoords!.latitude : undefined) ??
       initialCoordinates?.latitude ??
-      DEFAULT_COORDINATES.latitude,
+      NEUTRAL_INITIAL_COORDINATES.latitude,
     zoom: isSelected
       ? ZOOM_LEVEL_SELECTED
-      : (initialCoordinates?.zoom ?? ZOOM_LEVEL_DEFAULT),
+      : (initialCoordinates?.zoom ?? NEUTRAL_INITIAL_COORDINATES.zoom),
   };
 }
 
@@ -150,9 +156,19 @@ export default function MapView({
   const locale = useLocale();
   const mapFlavor = usePreferredMapFlavor();
   const mapRef = useRef<MapRef | null>(null);
+  const saveMapViewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const lastSavedMapViewRef = useRef<InitialMapCoordinates | null>(
+    initialCoordinates
+  );
   const mapStyle = useMemo(
     () => createProtomapsStyle({ flavorName: mapFlavor, locale }),
     [locale, mapFlavor]
+  );
+  const initialViewState = useMemo(
+    () => resolveInitialViewState(selectedListing, initialCoordinates),
+    [initialCoordinates, selectedListing]
   );
 
   const { listings, isFetching, requestBounds } = useListingsInView();
@@ -167,14 +183,6 @@ export default function MapView({
     mapRef,
     selectedListing,
   });
-
-  // MapLibre's `initialViewState` is only consumed once at mount, so we wait
-  // for either a selected listing or the IP-based (or fallback) initial
-  // centre to resolve before mounting the Map. `useIpInitialLocation`
-  // always resolves (to DEFAULT_COORDINATES on failure or when skipped), so
-  // this cannot stall indefinitely.
-  const hasInitialPosition =
-    hasValidCoordinates(selectedListing) || Boolean(initialCoordinates);
 
   const emitBoundsChange = useCallback(
     (bounds: LngLatBounds) => {
@@ -191,14 +199,63 @@ export default function MapView({
     }
   }, [emitBoundsChange, handleMapLoad]);
 
+  useEffect(() => {
+    if (initialCoordinates) {
+      lastSavedMapViewRef.current = initialCoordinates;
+    }
+  }, [initialCoordinates]);
+
+  const scheduleStoredMapViewSave = useCallback(() => {
+    if (saveMapViewTimeoutRef.current !== null) {
+      clearTimeout(saveMapViewTimeoutRef.current);
+    }
+
+    saveMapViewTimeoutRef.current = setTimeout(() => {
+      saveMapViewTimeoutRef.current = null;
+
+      const map = mapRef.current?.getMap();
+      if (!map) return;
+
+      const center = map.getCenter();
+      const coordinates = {
+        latitude: center.lat,
+        longitude: wrapLongitude(center.lng),
+        zoom: map.getZoom(),
+      };
+      const lastSaved = lastSavedMapViewRef.current;
+      const hasMeaningfulChange =
+        !lastSaved ||
+        Math.abs(lastSaved.latitude - coordinates.latitude) >
+          STORE_MAP_VIEW_DELTA ||
+        Math.abs(lastSaved.longitude - coordinates.longitude) >
+          STORE_MAP_VIEW_DELTA ||
+        Math.abs(lastSaved.zoom - coordinates.zoom) > STORE_MAP_ZOOM_DELTA;
+
+      if (!hasMeaningfulChange) return;
+
+      saveStoredInitialMapCoordinates(coordinates);
+      lastSavedMapViewRef.current = coordinates;
+    }, STORE_MAP_VIEW_DELAY_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (saveMapViewTimeoutRef.current !== null) {
+        clearTimeout(saveMapViewTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleMoveEnd = useCallback(
     (_event: ViewStateChangeEvent) => {
       const map = mapRef.current?.getMap();
       if (!map) return;
+
+      scheduleStoredMapViewSave();
       emitBoundsChange(map.getBounds());
       handleMapMoveEnd();
     },
-    [emitBoundsChange, handleMapMoveEnd]
+    [emitBoundsChange, handleMapMoveEnd, scheduleStoredMapViewSave]
   );
 
   const handleMapClickInternal = useCallback(
@@ -228,20 +285,20 @@ export default function MapView({
   const showReturnButton = Boolean(
     selectedListing && isListingSelected && !isSelectedInView
   );
+  const hasInitialPosition =
+    hasValidCoordinates(selectedListing) || initialCoordinates !== null;
 
   return (
-    <MapContainer>
-      {hasInitialPosition && (
+    <MapContainer data-testid="map-view">
+      {hasInitialPosition ? (
         <>
           <Map
             ref={mapRef}
             attributionControl={false}
             mapStyle={mapStyle}
+            maxZoom={MAP_MAX_ZOOM}
             renderWorldCopies={true}
-            initialViewState={resolveInitialViewState(
-              selectedListing,
-              initialCoordinates
-            )}
+            initialViewState={initialViewState}
             onMoveEnd={handleMoveEnd}
             onLoad={handleLoad}
             onClick={handleMapClickInternal}
@@ -271,20 +328,24 @@ export default function MapView({
             countryCode={countryCode}
             style={searchStyle}
           />
-
-          {isFetching && <LoadingChip>{t("loadingPins")}</LoadingChip>}
-
-          {showReturnButton && (
-            <ReturnToListingButton
-              onClick={flyToSelected}
-              variant="secondary"
-              size="small"
-              width="contained"
-            >
-              {t("returnToListing")}
-            </ReturnToListingButton>
-          )}
         </>
+      ) : (
+        <LoadingChip>{t("loadingPins")}</LoadingChip>
+      )}
+
+      {hasInitialPosition && isFetching && (
+        <LoadingChip>{t("loadingPins")}</LoadingChip>
+      )}
+
+      {showReturnButton && (
+        <ReturnToListingButton
+          onClick={flyToSelected}
+          variant="secondary"
+          size="small"
+          width="contained"
+        >
+          {t("returnToListing")}
+        </ReturnToListingButton>
       )}
     </MapContainer>
   );

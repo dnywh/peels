@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { config, geolocation } from "@maptiler/client";
 
-import type { ListingCoordinates } from "@/types/listing";
-
-import { DEFAULT_COORDINATES, ZOOM_LEVEL_DEFAULT } from "../lib/mapUtils";
+import { ZOOM_LEVEL_DEFAULT } from "../lib/mapUtils";
+import {
+  NEUTRAL_INITIAL_COORDINATES,
+  readStoredInitialMapCoordinates,
+  type InitialMapCoordinates,
+} from "../lib/mapInitialView";
 
 type UseIpInitialLocationArgs = {
   // Skip when the page already has a listing slug (deep-linked selections
@@ -14,8 +17,14 @@ type UseIpInitialLocationArgs = {
 };
 
 type UseIpInitialLocationResult = {
-  initialCoordinates: (ListingCoordinates & { zoom: number }) | null;
+  initialCoordinates: InitialMapCoordinates | null;
   countryCode: string | null;
+};
+
+type MapTilerIpLocation = {
+  latitude?: number;
+  longitude?: number;
+  country_code?: string;
 };
 
 // Guarded one-time init so the key is only assigned in the browser (the hook
@@ -30,65 +39,89 @@ function ensureMapTilerConfig() {
   hasConfiguredMapTiler = true;
 }
 
-// One-time IP-based initial centre. On timeout, error, or when skipped we
-// still resolve to `DEFAULT_COORDINATES` so MapView, which gates on
-// `initialCoordinates` being set, always eventually mounts — including deep
-// links to listings with `coordinates: null` or that resolve to an error.
+const INITIAL_LOCATION_TIMEOUT_MS = 1500;
+
+// One-time initial centre. Prefer the user's last viewed map area, otherwise
+// wait briefly for IP location before falling back to a neutral world view.
 export function useIpInitialLocation({
   skip = false,
 }: UseIpInitialLocationArgs = {}): UseIpInitialLocationResult {
-  const [initialCoordinates, setInitialCoordinates] = useState<
-    (ListingCoordinates & { zoom: number }) | null
-  >(null);
+  const shouldApplyIpCoordinatesRef = useRef(false);
+  const [initialCoordinates, setInitialCoordinates] =
+    useState<InitialMapCoordinates | null>(() => {
+      if (skip) return NEUTRAL_INITIAL_COORDINATES;
+      const storedCoordinates = readStoredInitialMapCoordinates();
+      shouldApplyIpCoordinatesRef.current = storedCoordinates === null;
+      return storedCoordinates;
+    });
   const [countryCode, setCountryCode] = useState<string | null>(null);
 
   useEffect(() => {
     if (skip) {
-      // Deep-linked: we're not running the IP lookup, but MapView still
-      // needs a non-null initial centre in case the listing itself has no
-      // valid coordinates (error sentinel or coordinates: null).
-      setInitialCoordinates({
-        ...DEFAULT_COORDINATES,
-        zoom: ZOOM_LEVEL_DEFAULT,
-      });
+      // Deep-linked selections centre on the listing when possible. Otherwise
+      // the neutral fallback keeps the map mountable.
+      setInitialCoordinates(
+        (current) => current ?? NEUTRAL_INITIAL_COORDINATES
+      );
       return;
     }
 
     ensureMapTilerConfig();
 
     let cancelled = false;
+
+    if (!shouldApplyIpCoordinatesRef.current) {
+      async function initializeCountryCode() {
+        try {
+          const response = (await geolocation.info()) as MapTilerIpLocation;
+          if (!cancelled) {
+            setCountryCode(response.country_code ?? null);
+          }
+        } catch {
+          // The stored map view is enough to render; country-code narrowing is
+          // a best-effort enhancement for search.
+        }
+      }
+
+      initializeCountryCode();
+
+      return () => {
+        cancelled = true;
+      };
+    }
+
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const applyFallback = () => {
       if (cancelled) return;
-      setInitialCoordinates({
-        ...DEFAULT_COORDINATES,
-        zoom: ZOOM_LEVEL_DEFAULT,
-      });
+      if (shouldApplyIpCoordinatesRef.current) {
+        setInitialCoordinates(NEUTRAL_INITIAL_COORDINATES);
+        shouldApplyIpCoordinatesRef.current = false;
+      }
     };
 
     async function initializeLocation() {
-      // Race the network call against a 3s timeout. We track the timeout id
-      // so we can clear it once the race settles — otherwise the losing
-      // branch can still fire and surface as an unhandled rejection.
-      const timeoutPromise = new Promise<never>((_, reject) => {
+      // Race the network call against a short timeout. We track the timeout id
+      // so a successful geolocation response can cancel the pending fallback
+      // work before it fires.
+      const timeoutPromise = new Promise<null>((resolve) => {
         timeoutId = setTimeout(() => {
           timeoutId = null;
-          reject(new Error("Location timeout"));
-        }, 3000);
+          resolve(null);
+        }, INITIAL_LOCATION_TIMEOUT_MS);
       });
 
       try {
         const response = (await Promise.race([
           geolocation.info(),
           timeoutPromise,
-        ])) as {
-          latitude?: number;
-          longitude?: number;
-          country_code?: string;
-        };
+        ])) as MapTilerIpLocation | null;
 
         if (cancelled) return;
+        if (!response) {
+          applyFallback();
+          return;
+        }
 
         const lat = response?.latitude;
         const lng = response?.longitude;
@@ -99,11 +132,14 @@ export function useIpInitialLocation({
           Number.isFinite(lng)
         ) {
           setCountryCode(response.country_code ?? null);
-          setInitialCoordinates({
-            latitude: lat,
-            longitude: lng,
-            zoom: ZOOM_LEVEL_DEFAULT,
-          });
+          if (shouldApplyIpCoordinatesRef.current) {
+            setInitialCoordinates({
+              latitude: lat,
+              longitude: lng,
+              zoom: ZOOM_LEVEL_DEFAULT,
+            });
+            shouldApplyIpCoordinatesRef.current = false;
+          }
         } else {
           applyFallback();
         }
