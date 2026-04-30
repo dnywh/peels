@@ -3,7 +3,6 @@ import { theme } from "@/styles/theme.yak";
 import { useCallback, useEffect, useState, useRef } from "react";
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 
-import { GeocodingControl } from "@maptiler/geocoding-control/react";
 // import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
 
 import { countries } from "@/data/countries";
@@ -13,6 +12,9 @@ import { Marker, NavigationControl } from "react-map-gl/maplibre";
 
 import Select from "@/components/Select";
 
+import MapTilerGeocoder, {
+  type MapTilerGeocoderHandle,
+} from "@/components/MapTilerGeocoder";
 import MapThumbnail from "@/components/MapThumbnail";
 import MapPin from "@/components/MapPin";
 
@@ -24,7 +26,6 @@ import InputHint from "@/components/InputHint";
 import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 
-const GeocodingControlComponent = GeocodingControl as any;
 const InputHintComponent = InputHint as any;
 
 const StyledFieldset = styled(Fieldset)`
@@ -151,7 +152,7 @@ export default function LocationSelect({
 }: LocationSelectProps) {
   const t = useTranslations();
   const mapRef = useRef<any>(null);
-  const inputRef = useRef<any>(null);
+  const inputRef = useRef<MapTilerGeocoderHandle | null>(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
@@ -297,10 +298,10 @@ export default function LocationSelect({
           id="custom-geocoding-styles"
           className={error ? "error" : undefined}
         >
-          <GeocodingControlComponent
+          <MapTilerGeocoder
             // Add these two props to the custom component
             error={error}
-            aria-invalid={error ? "true" : undefined}
+            ariaInvalid={error ? "true" : undefined}
             // Continue with actual props
             id="autocomplete" // Doesn't work out of the box
             ref={inputRef}
@@ -325,7 +326,7 @@ export default function LocationSelect({
             errorMessage={t("Map.searchError")}
             noResultsMessage={t("Map.searchNoResults")}
             minLength={3}
-            showPlaceType={false}
+            showPlaceType="never"
             onPick={handlePick}
             // Testing...
             required={true}

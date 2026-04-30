@@ -1,7 +1,7 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import type { ComponentType, CSSProperties } from "react";
 
 import Map, {
@@ -12,11 +12,9 @@ import Map, {
   type ViewStateChangeEvent,
   type MapLayerMouseEvent,
 } from "react-map-gl/maplibre";
-import maplibregl, { type LngLatBounds } from "maplibre-gl";
+import type { LngLatBounds } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Protocol } from "pmtiles";
-import layers from "protomaps-themes-base";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { styled } from "next-yak";
 
 import Button from "@/components/Button";
@@ -37,6 +35,8 @@ import {
 } from "../lib/mapUtils";
 import { useListingsInView } from "../hooks/useListingsInView";
 import { useMapCenter } from "../hooks/useMapCenter";
+import { usePreferredMapFlavor } from "../hooks/usePreferredMapFlavor";
+import { createProtomapsStyle } from "../lib/protomapsStyle";
 
 type GeocodingPickEvent = {
   feature?: { center?: [number, number] };
@@ -111,25 +111,6 @@ const searchStyle: CSSProperties = {
   zIndex: 1,
 };
 
-// MapLibre style spec — protomaps tiles with the bundled light theme. Kept as
-// a module-level constant because it has no runtime-dependent inputs (the env
-// key is inlined at build time and the layers array is stable). Stable
-// reference also keeps the Map from re-evaluating its style on re-renders.
-const MAP_STYLE = {
-  version: 8 as const,
-  glyphs:
-    "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-  sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-  sources: {
-    protomaps: {
-      type: "vector" as const,
-      url: `https://api.protomaps.com/tiles/v4.json?key=${process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY}`,
-      attribution: '<a href="https://protomaps.com">Protomaps</a>',
-    },
-  },
-  layers: layers("protomaps", "light", "en"),
-};
-
 function resolveInitialViewState(
   selectedListing: SelectedListing | null,
   initialCoordinates: (ListingCoordinates & { zoom: number }) | null
@@ -166,7 +147,13 @@ export default function MapView({
   countryCode,
 }: MapViewProps) {
   const t = useTranslations("Map");
+  const locale = useLocale();
+  const mapFlavor = usePreferredMapFlavor();
   const mapRef = useRef<MapRef | null>(null);
+  const mapStyle = useMemo(
+    () => createProtomapsStyle({ flavorName: mapFlavor, locale }),
+    [locale, mapFlavor]
+  );
 
   const { listings, isFetching, requestBounds } = useListingsInView();
 
@@ -188,15 +175,6 @@ export default function MapView({
   // this cannot stall indefinitely.
   const hasInitialPosition =
     hasValidCoordinates(selectedListing) || Boolean(initialCoordinates);
-
-  useEffect(() => {
-    const protocol = new Protocol();
-    maplibregl.addProtocol("pmtiles", protocol.tile);
-
-    return () => {
-      maplibregl.removeProtocol("pmtiles");
-    };
-  }, []);
 
   const emitBoundsChange = useCallback(
     (bounds: LngLatBounds) => {
@@ -258,7 +236,7 @@ export default function MapView({
           <Map
             ref={mapRef}
             attributionControl={false}
-            mapStyle={MAP_STYLE}
+            mapStyle={mapStyle}
             renderWorldCopies={true}
             initialViewState={resolveInitialViewState(
               selectedListing,
