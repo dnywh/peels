@@ -11,7 +11,7 @@ import Map, { AttributionControl } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
-import layers from "protomaps-themes-base";
+import { layers, namedFlavor } from "@protomaps/basemaps";
 
 import { styled } from "next-yak";
 import type { ComponentProps, ReactNode } from "react";
@@ -56,7 +56,7 @@ export default function MapThumbnail({
               attribution: '<a href="https://protomaps.com">Protomaps</a>',
             },
           },
-          layers: (layers as any)("protomaps", "light"),
+          layers: layers("protomaps", namedFlavor("light"), { lang: "en" }),
         }}
         renderWorldCopies={true}
         style={{

@@ -15,7 +15,7 @@ import Map, {
 import maplibregl, { type LngLatBounds } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
-import layers from "protomaps-themes-base";
+import { layers, namedFlavor } from "@protomaps/basemaps";
 import { useTranslations } from "next-intl";
 import { styled } from "next-yak";
 
@@ -127,7 +127,7 @@ const MAP_STYLE = {
       attribution: '<a href="https://protomaps.com">Protomaps</a>',
     },
   },
-  layers: layers("protomaps", "light", "en"),
+  layers: layers("protomaps", namedFlavor("light"), { lang: "en" }),
 };
 
 function resolveInitialViewState(
