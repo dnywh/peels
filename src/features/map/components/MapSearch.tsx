@@ -2,9 +2,9 @@
 
 import type { CSSProperties } from "react";
 
-import { GeocodingControl } from "@maptiler/geocoding-control/react";
-import "@maptiler/geocoding-control/style.css";
 import { useTranslations } from "next-intl";
+
+import MapTilerGeocoder from "@/components/MapTilerGeocoder";
 
 type GeocodingPickEvent = {
   feature?: { center?: [number, number] };
@@ -26,7 +26,7 @@ export default function MapSearch({
 
   return (
     <div style={style}>
-      <GeocodingControl
+      <MapTilerGeocoder
         clearOnBlur={true}
         collapsed={true} // Visibly collapsed into square icon until hover or tap
         debounceSearch={250} // Default is 200
@@ -50,7 +50,7 @@ export default function MapSearch({
         placeholder={t("searchPlaceholder")}
         errorMessage={t("searchError")}
         noResultsMessage={t("searchNoResults")}
-        onPick={(event: GeocodingPickEvent) => {
+        onPick={(event) => {
           onPick(event);
         }}
       />
