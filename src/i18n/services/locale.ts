@@ -23,9 +23,10 @@ export async function getUserLocale() {
   const acceptedLocales = parseAcceptLanguageHeader(
     headersList.get("accept-language")
   );
+  const fallbackLocale = cookieLocale ?? acceptedLocales[0] ?? defaultLocale;
 
   if (!hasSupabaseAuthCookie(cookieStore.getAll())) {
-    return cookieLocale ?? acceptedLocales[0] ?? defaultLocale;
+    return fallbackLocale;
   }
 
   const supabase = await createClient();
@@ -62,7 +63,7 @@ export async function getUserLocale() {
     }
   }
 
-  return cookieLocale ?? acceptedLocales[0] ?? defaultLocale;
+  return fallbackLocale;
 }
 
 // Used in an explicit component, like a language picker:
