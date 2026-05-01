@@ -1,7 +1,10 @@
 import type { ListingCoordinates } from "@/types/listing";
 
 import { MAP_MAX_ZOOM, wrapLongitude } from "./mapUtils";
-import { STORED_MAP_VIEW_KEY } from "./mapStorageConstants";
+import {
+  STORED_MAP_VIEW_COOKIE_MAX_AGE,
+  STORED_MAP_VIEW_KEY,
+} from "./mapStorageConstants";
 
 export type InitialMapCoordinates = ListingCoordinates & { zoom: number };
 
@@ -10,6 +13,15 @@ export const NEUTRAL_INITIAL_COORDINATES: InitialMapCoordinates = {
   longitude: 0,
   zoom: 1.5,
 };
+
+const COOKIE_COORDINATE_PRECISION = 2;
+const COOKIE_ZOOM_PRECISION = 2;
+
+function roundToPrecision(value: number, precision: number) {
+  const factor = 10 ** precision;
+  const roundedValue = Math.round(value * factor) / factor;
+  return Object.is(roundedValue, -0) ? 0 : roundedValue;
+}
 
 function isValidInitialMapCoordinates(
   value: Partial<InitialMapCoordinates> | null
@@ -40,15 +52,33 @@ function normaliseInitialMapCoordinates(
   };
 }
 
+function coarsenInitialMapCoordinatesForCookie(
+  value: InitialMapCoordinates
+): InitialMapCoordinates {
+  return {
+    latitude: roundToPrecision(value.latitude, COOKIE_COORDINATE_PRECISION),
+    longitude: roundToPrecision(value.longitude, COOKIE_COORDINATE_PRECISION),
+    zoom: roundToPrecision(value.zoom, COOKIE_ZOOM_PRECISION),
+  };
+}
+
+export function parseStoredInitialMapCoordinates(value: string | null) {
+  if (!value) return null;
+
+  try {
+    const parsed = JSON.parse(value) as Partial<InitialMapCoordinates> | null;
+    return normaliseInitialMapCoordinates(parsed);
+  } catch {
+    return null;
+  }
+}
+
 export function readStoredInitialMapCoordinates() {
   if (typeof window === "undefined") return null;
 
   try {
     const value = window.localStorage.getItem(STORED_MAP_VIEW_KEY);
-    if (!value) return null;
-
-    const parsed = JSON.parse(value) as Partial<InitialMapCoordinates> | null;
-    return normaliseInitialMapCoordinates(parsed);
+    return parseStoredInitialMapCoordinates(value);
   } catch {
     return null;
   }
@@ -60,13 +90,26 @@ export function saveStoredInitialMapCoordinates(
   if (typeof window === "undefined") return;
   const normalisedCoordinates = normaliseInitialMapCoordinates(coordinates);
   if (!normalisedCoordinates) return;
+  const serialisedCoordinates = JSON.stringify(normalisedCoordinates);
+  // The cookie is only a hydration snapshot, so keep it coarse. localStorage
+  // retains the precise client-side view without sending it back to the server.
+  const serialisedCookieCoordinates = JSON.stringify(
+    coarsenInitialMapCoordinatesForCookie(normalisedCoordinates)
+  );
 
   try {
-    window.localStorage.setItem(
-      STORED_MAP_VIEW_KEY,
-      JSON.stringify(normalisedCoordinates)
-    );
+    window.localStorage.setItem(STORED_MAP_VIEW_KEY, serialisedCoordinates);
   } catch {
     // Ignore storage failures, such as private browsing restrictions.
+  }
+
+  try {
+    const secureAttribute =
+      window.location.protocol === "https:" ? "; Secure" : "";
+    window.document.cookie = `${STORED_MAP_VIEW_KEY}=${encodeURIComponent(
+      serialisedCookieCoordinates
+    )}; Path=/map; Max-Age=${STORED_MAP_VIEW_COOKIE_MAX_AGE}; SameSite=Lax${secureAttribute}`;
+  } catch {
+    // Ignore cookie write failures, such as restrictive browser settings.
   }
 }

@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { cookies } from "next/headers";
 import type { Metadata } from "next/types";
 
 import { createClient } from "@/utils/supabase/server";
@@ -6,6 +7,8 @@ import { siteConfig } from "@/config/site";
 import { generateListingMetadata } from "@/utils/listingUtils";
 import MapPageClient from "@/features/map";
 import type { Listing } from "@/types/listing";
+import { parseStoredInitialMapCoordinates } from "@/features/map/lib/mapInitialView";
+import { STORED_MAP_VIEW_KEY } from "@/features/map/lib/mapStorageConstants";
 
 type MapPageSearchParams = {
   listing?: string;
@@ -36,6 +39,16 @@ const getInitialData = cache(async (listingSlug: string | undefined) => {
   };
 });
 
+function parseInitialMapCoordinatesCookie(value: string | undefined) {
+  if (!value) return null;
+
+  try {
+    return parseStoredInitialMapCoordinates(decodeURIComponent(value));
+  } catch {
+    return parseStoredInitialMapCoordinates(value);
+  }
+}
+
 export async function generateMetadata({
   searchParams,
 }: MapPageProps): Promise<Metadata> {
@@ -59,12 +72,16 @@ export default async function Page({ searchParams }: MapPageProps) {
   const listingSlug = (await searchParams)?.listing;
   const { user, listing } = await getInitialData(listingSlug);
   const referenceNow = new Date().toISOString();
+  const storedMapViewCookie = (await cookies()).get(STORED_MAP_VIEW_KEY)?.value;
+  const initialMapCoordinates =
+    parseInitialMapCoordinatesCookie(storedMapViewCookie);
 
   return (
     <MapPageClient
       user={user}
       initialListingSlug={listingSlug ?? null}
       initialListing={listing}
+      initialMapCoordinates={initialMapCoordinates}
       referenceNow={referenceNow}
     />
   );

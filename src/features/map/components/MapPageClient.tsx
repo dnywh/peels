@@ -14,6 +14,7 @@ import MapListingDrawerPanel from "./MapListingDrawerPanel";
 import MapSidebar from "./MapSidebar";
 import { useMapListingUrl } from "../hooks/useMapListingUrl";
 import { useIpInitialLocation } from "../hooks/useIpInitialLocation";
+import type { InitialMapCoordinates } from "../lib/mapInitialView";
 import {
   MAP_DRAWER_SNAP_POINTS,
   useMapDrawerState,
@@ -23,6 +24,7 @@ type MapPageClientProps = {
   user: User | null;
   initialListingSlug?: string | null;
   initialListing?: Listing | null;
+  initialMapCoordinates?: InitialMapCoordinates | null;
   referenceNow: string;
 };
 
@@ -51,6 +53,7 @@ export default function MapPageClient({
   user,
   initialListingSlug,
   initialListing,
+  initialMapCoordinates,
   referenceNow,
 }: MapPageClientProps) {
   const { isDesktop, hasTouch } = useDeviceContext();
@@ -66,6 +69,7 @@ export default function MapPageClient({
   } = useMapListingUrl({ user, initialListingSlug, initialListing });
 
   const { initialCoordinates, countryCode } = useIpInitialLocation({
+    initialCoordinates: initialMapCoordinates,
     skip: Boolean(initialListingSlug),
   });
 
@@ -135,7 +139,6 @@ export default function MapPageClient({
             initialCoordinates={initialCoordinates}
             onMapClick={handleMapClick}
             onMarkerClick={handleMarkerClick}
-            DrawerTrigger={Drawer.Trigger}
             isDesktop={isDesktop}
             countryCode={countryCode}
           />

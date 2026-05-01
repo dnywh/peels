@@ -13,6 +13,7 @@ import { useLocale } from "next-intl";
 
 import { styled } from "next-yak";
 import type { ComponentProps, ReactNode } from "react";
+import { handleMapError } from "@/features/map/lib/mapErrors";
 import { createProtomapsStyle } from "@/features/map/lib/protomapsStyle";
 import { usePreferredMapFlavor } from "@/features/map/hooks/usePreferredMapFlavor";
 
@@ -43,6 +44,7 @@ export default function MapThumbnail({
       <Map
         attributionControl={false} // Customised below
         mapStyle={mapStyle}
+        onError={handleMapError}
         renderWorldCopies={true}
         style={{
           width: "100%",

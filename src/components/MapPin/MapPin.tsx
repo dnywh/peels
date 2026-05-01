@@ -7,12 +7,23 @@ import { theme } from "@/styles/theme.yak";
 import type { ListingType } from "@/types/listing";
 
 type MapPinProps = {
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
   selected?: boolean;
+  markerId?: number | string;
   // Accept any string so callers that hold generic listing types (e.g.
   // LocationSelect) can still pass them in; unknown values just render the
   // default pin without a specialised icon.
   type?: string;
 };
+
+const PIN_ANIMATION_CURVE = "cubic-bezier(0.175, 0.885, 0.28, 1.12)";
+const PIN_MORPH_COLLAPSE_MS = 110;
+const PIN_MORPH_DOT_HOLD_MS = PIN_MORPH_COLLAPSE_MS;
+const PIN_MORPH_POP_MS = 135;
+const PIN_MORPH_REVEAL_DELAY_MS = PIN_MORPH_DOT_HOLD_MS + 35;
+const PIN_MORPH_REVEAL_MS = 50;
+const PIN_MORPH_COLLAPSED_SCALE = 0.16;
+const PIN_OPEN_ENTER_SCALE = 0.88;
 
 const residentialPinStyles = css`
   background:
@@ -79,18 +90,70 @@ const businessSelectedIconStyles = css`
   fill: ${theme.colors.marker.background.business};
 `;
 
-const UnselectedPin = styled.div`
+const PinRoot = styled.div<{ $selected?: boolean }>`
   cursor: pointer;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
+  position: relative;
+  isolation: isolate;
+  pointer-events: none;
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 1ms !important;
+      animation-duration: 1ms !important;
+    }
+  }
+`;
+
+const PinLayer = styled.div`
+  position: absolute;
+  top: -18px;
+  left: -18px;
+  width: 80px;
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
+  transform-origin: center;
 `;
 
-const UnselectedPinInner = styled.div<{ $type?: string }>`
-  box-shadow: 0 0 0 2.5px ${theme.colors.marker.border};
+const CompactPinLayer = styled(PinLayer)<{ $selected?: boolean }>`
+  visibility: ${({ $selected }) => ($selected ? "hidden" : "visible")};
+  transform: translateY(${({ $selected }) => ($selected ? "0.125rem" : "0")})
+    scale(${({ $selected }) => ($selected ? PIN_MORPH_COLLAPSED_SCALE : 1)});
+  transition:
+    visibility 0ms
+      ${({ $selected }) => ($selected ? "0ms" : `${PIN_MORPH_COLLAPSE_MS}ms`)},
+    transform
+      ${({ $selected }) =>
+        $selected
+          ? `${PIN_MORPH_COLLAPSE_MS}ms ease-in`
+          : `${PIN_MORPH_POP_MS}ms ${PIN_ANIMATION_CURVE} ${PIN_MORPH_DOT_HOLD_MS}ms`};
+  z-index: 2;
+`;
+
+const CompactPinHitTarget = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+`;
+
+const CompactPinInner = styled.div<{ $type?: string }>`
+  box-shadow:
+    0 0 0 2.5px ${theme.colors.marker.border},
+    0 3px 14px rgba(0, 0, 0, 0.22),
+    0 0 4px rgba(0, 0, 0, 0.22);
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -98,21 +161,55 @@ const UnselectedPinInner = styled.div<{ $type?: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  filter: drop-shadow(0px 3px 18px rgba(0, 0, 0, 0.1))
-    drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.15));
+  pointer-events: none;
+  transform: scale(var(--map-pin-compact-scale, 1));
+  transform-origin: center;
 
   ${({ $type }) => $type === "residential" && residentialPinStyles}
   ${({ $type }) => $type === "community" && communityPinStyles}
   ${({ $type }) => $type === "business" && businessPinStyles}
 `;
 
+const CompactPinIcon = styled.div`
+  display: flex;
+  opacity: var(--map-pin-icon-opacity, 1);
+  transform: scale(var(--map-pin-icon-scale, 1));
+`;
+
+const SelectedPinRingLayer = styled(PinLayer)<{ $selected?: boolean }>`
+  visibility: ${({ $selected }) => ($selected ? "visible" : "hidden")};
+  opacity: ${({ $selected }) => ($selected ? 1 : 0)};
+  transform: scale(
+    ${({ $selected }) => ($selected ? 1 : PIN_OPEN_ENTER_SCALE)}
+  );
+  transition:
+    visibility 0ms
+      ${({ $selected }) => ($selected ? "0ms" : `${PIN_MORPH_COLLAPSE_MS}ms`)},
+    opacity
+      ${({ $selected }) =>
+        $selected
+          ? `${PIN_MORPH_REVEAL_MS}ms ease-out ${PIN_MORPH_REVEAL_DELAY_MS}ms`
+          : `1ms linear ${PIN_MORPH_COLLAPSE_MS}ms`},
+    transform
+      ${({ $selected }) =>
+        $selected
+          ? `${PIN_MORPH_POP_MS}ms ${PIN_ANIMATION_CURVE} ${PIN_MORPH_DOT_HOLD_MS}ms`
+          : `${PIN_MORPH_COLLAPSE_MS}ms ease-in`};
+  will-change: ${({ $selected }) => ($selected ? "transform" : "auto")};
+  z-index: 1;
+`;
+
 const SelectedPinRing = styled.div<{ $type?: string }>`
   width: 80px;
   height: 80px;
+  position: absolute;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
+  z-index: 0;
+  transform: scale(var(--map-pin-halo-scale, 1));
 
   ${({ $type }) => {
     if ($type === "community") return communitySelectedRingStyles;
@@ -124,26 +221,60 @@ const SelectedPinRing = styled.div<{ $type?: string }>`
 const SelectedPinDot = styled.div`
   width: 0.5rem;
   height: 0.5rem;
+  position: relative;
+  z-index: 1;
   border-radius: 50%;
   background-color: ${theme.colors.marker.dot};
   box-shadow: 0 0 1px 1px ${theme.colors.border.elevated};
+  transition: transform 120ms ease-out;
 `;
 
-const SelectedPin = styled.div`
-  display: flex;
+const OpenPinLayer = styled(PinLayer)<{ $selected?: boolean }>`
+  visibility: ${({ $selected }) => ($selected ? "visible" : "hidden")};
+  opacity: ${({ $selected }) => ($selected ? 1 : 0)};
+  pointer-events: ${({ $selected }) => ($selected ? "auto" : "none")};
   cursor: pointer;
+  transform: translateY(
+      ${({ $selected }) => ($selected ? "-0.375rem" : "0.125rem")}
+    )
+    scale(${({ $selected }) => ($selected ? 1 : PIN_OPEN_ENTER_SCALE)});
+  transition:
+    visibility 0ms
+      ${({ $selected }) => ($selected ? "0ms" : `${PIN_MORPH_COLLAPSE_MS}ms`)},
+    opacity
+      ${({ $selected }) =>
+        $selected
+          ? `${PIN_MORPH_REVEAL_MS}ms ease-out ${PIN_MORPH_REVEAL_DELAY_MS}ms`
+          : `1ms linear ${PIN_MORPH_COLLAPSE_MS}ms`},
+    transform
+      ${({ $selected }) =>
+        $selected
+          ? `${PIN_MORPH_POP_MS}ms ${PIN_ANIMATION_CURVE} ${PIN_MORPH_DOT_HOLD_MS}ms`
+          : `${PIN_MORPH_COLLAPSE_MS}ms ease-in`};
+  will-change: ${({ $selected }) => ($selected ? "transform" : "auto")};
+  z-index: 3;
 
-  ${SelectedPinDot},
-  ${SelectedPinRing} {
-    transition: transform 75ms ease-in-out;
+  @media (hover: hover) {
+    ${PinRoot}:hover & {
+      transform: translateY(
+          ${({ $selected }) => ($selected ? "-0.5rem" : "0.125rem")}
+        )
+        scale(${({ $selected }) => ($selected ? 1.025 : PIN_OPEN_ENTER_SCALE)});
+    }
   }
+`;
 
-  &:hover ${SelectedPinDot} {
-    transform: scale(1.05);
-  }
+const SelectedPinHalo = styled.div`
+  display: contents;
 
-  &:hover ${SelectedPinRing} {
-    transform: scale(1.25);
+  @media (hover: hover) {
+    ${PinRoot}:hover & ${SelectedPinRing} {
+      transform: scale(calc(var(--map-pin-halo-scale, 1) * 1.035));
+    }
+
+    ${PinRoot}:hover & ${SelectedPinDot} {
+      transform: scale(1.08);
+    }
   }
 `;
 
@@ -157,8 +288,8 @@ const SelectedPinIcon = styled.svg<{ $type?: string }>`
   top: -0.2rem;
   left: 0;
   transform: translate(calc(40px - 1.625rem), -50%);
-  filter: drop-shadow(0px 3px 18px rgba(0, 0, 0, 0.12))
-    drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.14))
+    drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.2));
   transition: transform 110ms ease-in-out;
   transform-origin: center;
 
@@ -187,30 +318,43 @@ function isListingPinType(value: string | undefined): value is ListingType {
   );
 }
 
-function MapPin({ selected = false, type }: MapPinProps) {
+function MapPin({ onClick, selected = false, markerId, type }: MapPinProps) {
   const IconComponent = isListingPinType(type) ? iconMap[type] : null;
 
-  if (selected) {
-    return (
-      <SelectedPin>
-        <SelectedPinRing $type={type}>
+  return (
+    <PinRoot
+      $selected={selected}
+      data-map-pin-id={markerId}
+      data-map-pin-state={selected ? "open" : "compact"}
+      data-testid="map-pin"
+    >
+      <SelectedPinRingLayer $selected={selected} data-testid="map-pin-halo">
+        <SelectedPinHalo>
+          <SelectedPinRing $type={type} />
           <SelectedPinDot />
-        </SelectedPinRing>
+        </SelectedPinHalo>
+      </SelectedPinRingLayer>
 
+      <CompactPinLayer $selected={selected} data-testid="map-pin-compact-layer">
+        <CompactPinHitTarget onClick={onClick} />
+        <CompactPinInner $type={type ?? ""} data-testid="map-pin-compact-dot">
+          <CompactPinIcon data-testid="map-pin-compact-icon">
+            {IconComponent && <IconComponent size="normal" />}
+          </CompactPinIcon>
+        </CompactPinInner>
+      </CompactPinLayer>
+
+      <OpenPinLayer
+        $selected={selected}
+        data-testid="map-pin-open-layer"
+        onClick={onClick}
+      >
         <SelectedPinIcon viewBox="0 0 20 24" $type={type}>
           <path d={ICON} />
         </SelectedPinIcon>
         {IconComponent && <IconComponent size="large" />}
-      </SelectedPin>
-    );
-  }
-
-  return (
-    <UnselectedPin>
-      <UnselectedPinInner $type={type ?? ""}>
-        {IconComponent && <IconComponent size="normal" />}
-      </UnselectedPinInner>
-    </UnselectedPin>
+      </OpenPinLayer>
+    </PinRoot>
   );
 }
 
