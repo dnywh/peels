@@ -69,3 +69,42 @@ test("profile locale change persists after refresh", async ({ page }) => {
     timeout: 15_000,
   });
 });
+
+test("signed-in preference overrides guest footer locale cookie", async ({
+  page,
+}) => {
+  await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
+
+  await page.getByTestId("profile-account-language-edit").click();
+  await page.getByTestId("profile-account-language-input").selectOption("en");
+  await page.getByTestId("profile-account-language-submit").click();
+  await expect(page.getByTestId("profile-account-language-value")).toHaveText(
+    localeLabels.en
+  );
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en", {
+    timeout: 15_000,
+  });
+
+  await Promise.all([
+    page.waitForURL((url) => url.pathname === "/"),
+    page.getByRole("button", { name: /sign out/i }).click(),
+  ]);
+
+  const localeSelect = page.getByTestId("locale-picker-select");
+  await expect(localeSelect).toBeVisible();
+  await localeSelect.selectOption("de");
+  await expect(page.locator("html")).toHaveAttribute("lang", "de", {
+    timeout: 15_000,
+  });
+
+  await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "en", {
+    timeout: 15_000,
+  });
+  await expect(page.getByTestId("profile-account-language-value")).toHaveText(
+    localeLabels.en
+  );
+});

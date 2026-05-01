@@ -19,17 +19,13 @@ export async function getUserLocale() {
     cookieStore.get(localeCookieName)?.value ?? null
   );
 
-  if (cookieLocale) {
-    return cookieLocale;
-  }
-
   const headersList = await headers();
   const acceptedLocales = parseAcceptLanguageHeader(
     headersList.get("accept-language")
   );
 
   if (!hasSupabaseAuthCookie(cookieStore.getAll())) {
-    return acceptedLocales[0] ?? defaultLocale;
+    return cookieLocale ?? acceptedLocales[0] ?? defaultLocale;
   }
 
   const supabase = await createClient();
@@ -38,15 +34,6 @@ export async function getUserLocale() {
   } = await supabase.auth.getUser();
 
   if (user?.id) {
-    const metadataLocale = normaliseLocale(
-      typeof user.user_metadata?.preferred_locale === "string"
-        ? user.user_metadata.preferred_locale
-        : null
-    );
-    if (metadataLocale) {
-      return metadataLocale;
-    }
-
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("preferred_locale")
@@ -64,13 +51,18 @@ export async function getUserLocale() {
     if (profileLocale) {
       return profileLocale;
     }
+
+    const metadataLocale = normaliseLocale(
+      typeof user.user_metadata?.preferred_locale === "string"
+        ? user.user_metadata.preferred_locale
+        : null
+    );
+    if (metadataLocale) {
+      return metadataLocale;
+    }
   }
 
-  if (acceptedLocales.length > 0) {
-    return acceptedLocales[0];
-  }
-
-  return defaultLocale;
+  return cookieLocale ?? acceptedLocales[0] ?? defaultLocale;
 }
 
 // Used in an explicit component, like a language picker:
