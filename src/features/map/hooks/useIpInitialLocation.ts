@@ -7,10 +7,12 @@ import { ZOOM_LEVEL_DEFAULT } from "../lib/mapUtils";
 import {
   NEUTRAL_INITIAL_COORDINATES,
   readStoredInitialMapCoordinates,
+  saveStoredInitialMapCoordinates,
   type InitialMapCoordinates,
 } from "../lib/mapInitialView";
 
 type UseIpInitialLocationArgs = {
+  initialCoordinates?: InitialMapCoordinates | null;
   // Skip when the page already has a listing slug (deep-linked selections
   // centre on the listing instead of the user's IP location).
   skip?: boolean;
@@ -44,20 +46,26 @@ const INITIAL_LOCATION_TIMEOUT_MS = 1500;
 // One-time initial centre. Prefer the user's last viewed map area, otherwise
 // wait briefly for IP location before falling back to a neutral world view.
 export function useIpInitialLocation({
+  initialCoordinates: initialCoordinatesFromServer = null,
   skip = false,
 }: UseIpInitialLocationArgs = {}): UseIpInitialLocationResult {
-  const shouldApplyIpCoordinatesRef = useRef(false);
+  const shouldApplyIpCoordinatesRef = useRef(
+    !skip && initialCoordinatesFromServer === null
+  );
   const [initialCoordinates, setInitialCoordinates] =
     useState<InitialMapCoordinates | null>(() => {
       if (skip) return NEUTRAL_INITIAL_COORDINATES;
-      const storedCoordinates = readStoredInitialMapCoordinates();
-      shouldApplyIpCoordinatesRef.current = storedCoordinates === null;
-      return storedCoordinates;
+      // Keep the first render tied to the server-readable cookie snapshot.
+      // Reading localStorage here would help old cookie-less sessions mount a
+      // beat earlier, but it would also let the client hydrate different map
+      // markup from the server whenever cookies are missing or blocked.
+      return initialCoordinatesFromServer;
     });
   const [countryCode, setCountryCode] = useState<string | null>(null);
 
   useEffect(() => {
     if (skip) {
+      shouldApplyIpCoordinatesRef.current = false;
       // Deep-linked selections centre on the listing when possible. Otherwise
       // the neutral fallback keeps the map mountable.
       setInitialCoordinates(
@@ -69,19 +77,24 @@ export function useIpInitialLocation({
     ensureMapTilerConfig();
 
     let cancelled = false;
-
-    if (!shouldApplyIpCoordinatesRef.current) {
-      async function initializeCountryCode() {
-        try {
-          const response = (await geolocation.info()) as MapTilerIpLocation;
-          if (!cancelled) {
-            setCountryCode(response.country_code ?? null);
-          }
-        } catch {
-          // The stored map view is enough to render; country-code narrowing is
-          // a best-effort enhancement for search.
+    async function initializeCountryCode() {
+      try {
+        const response = (await geolocation.info()) as MapTilerIpLocation;
+        if (!cancelled) {
+          setCountryCode(response.country_code ?? null);
         }
+      } catch {
+        // The stored/server map view is enough to render; country-code
+        // narrowing is a best-effort enhancement for search.
       }
+    }
+
+    const storedCoordinates = readStoredInitialMapCoordinates();
+
+    if (storedCoordinates) {
+      shouldApplyIpCoordinatesRef.current = false;
+      setInitialCoordinates(storedCoordinates);
+      saveStoredInitialMapCoordinates(storedCoordinates);
 
       initializeCountryCode();
 
@@ -89,6 +102,20 @@ export function useIpInitialLocation({
         cancelled = true;
       };
     }
+
+    if (initialCoordinatesFromServer) {
+      shouldApplyIpCoordinatesRef.current = false;
+      setInitialCoordinates(initialCoordinatesFromServer);
+      saveStoredInitialMapCoordinates(initialCoordinatesFromServer);
+
+      initializeCountryCode();
+
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    shouldApplyIpCoordinatesRef.current = true;
 
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -167,7 +194,7 @@ export function useIpInitialLocation({
         timeoutId = null;
       }
     };
-  }, [skip]);
+  }, [initialCoordinatesFromServer, skip]);
 
   return { initialCoordinates, countryCode };
 }

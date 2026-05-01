@@ -2,7 +2,7 @@
 import { theme } from "@/styles/theme.yak";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import type { ComponentType, CSSProperties } from "react";
+import type { CSSProperties } from "react";
 
 import Map, {
   NavigationControl,
@@ -33,6 +33,7 @@ import {
 import { useListingsInView } from "../hooks/useListingsInView";
 import { useMapCenter } from "../hooks/useMapCenter";
 import { usePreferredMapFlavor } from "../hooks/usePreferredMapFlavor";
+import { handleMapError } from "../lib/mapErrors";
 import { createProtomapsStyle } from "../lib/protomapsStyle";
 import {
   NEUTRAL_INITIAL_COORDINATES,
@@ -52,7 +53,6 @@ type MapViewProps = {
   initialCoordinates: InitialMapCoordinates | null;
   onMapClick: () => void;
   onMarkerClick: (listing: ListingMarker) => void;
-  DrawerTrigger: ComponentType<{ children?: React.ReactNode }>;
   isDesktop: boolean;
   countryCode: string | null;
 };
@@ -95,7 +95,7 @@ const LoadingChip = styled.div`
 `;
 
 const attributionControlMobileStyle: CSSProperties = {
-  marginRight: `calc(clamp(var(--spacing-tabBar-marginX), calc(((100vw - var(--spacing-tabBar-maxWidth)) / 2)), 100vw) + 4px)`,
+  marginRight: "0.75rem",
   marginBottom: "5.25rem",
   opacity: 0.875,
 };
@@ -116,6 +116,56 @@ const searchStyle: CSSProperties = {
 const STORE_MAP_VIEW_DELAY_MS = 300;
 const STORE_MAP_VIEW_DELTA = 0.000001;
 const STORE_MAP_ZOOM_DELTA = 0.01;
+const PIN_DETAIL_MIN_ZOOM = 7.25;
+const PIN_DETAIL_MAX_ZOOM = 8.25;
+const PIN_ICON_MIN_ZOOM = 7.75;
+const PIN_HALO_MIN_ZOOM = 8;
+const PIN_HALO_MIN_SCALE = 0.18;
+const PIN_HALO_FULL_ZOOM = MAP_MAX_ZOOM;
+const PIN_HALO_GROWTH_EXPONENT = 2.2;
+
+type MapPinZoomStyle = CSSProperties & {
+  "--map-pin-compact-scale": string;
+  "--map-pin-detail-scale": string;
+  "--map-pin-icon-opacity": string;
+  "--map-pin-icon-scale": string;
+  "--map-pin-halo-scale": string;
+};
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getZoomProgress(zoom: number, minZoom: number, maxZoom: number) {
+  return clamp((zoom - minZoom) / (maxZoom - minZoom), 0, 1);
+}
+
+function resolveMapPinZoomVariables(zoom: number): MapPinZoomStyle {
+  const detailScale = getZoomProgress(
+    zoom,
+    PIN_DETAIL_MIN_ZOOM,
+    PIN_DETAIL_MAX_ZOOM
+  );
+  const haloProgress = getZoomProgress(
+    zoom,
+    PIN_HALO_MIN_ZOOM,
+    PIN_HALO_FULL_ZOOM
+  );
+  const easedHaloProgress = Math.pow(haloProgress, PIN_HALO_GROWTH_EXPONENT);
+  const haloScale =
+    PIN_HALO_MIN_SCALE + (1 - PIN_HALO_MIN_SCALE) * easedHaloProgress;
+  const iconOpacity = zoom >= PIN_ICON_MIN_ZOOM ? 1 : 0;
+  const iconScale = zoom >= PIN_ICON_MIN_ZOOM ? 0.5 + detailScale * 0.5 : 0;
+  const compactScale = (10 + 14 * detailScale) / 24;
+
+  return {
+    "--map-pin-compact-scale": compactScale.toFixed(3),
+    "--map-pin-detail-scale": detailScale.toFixed(3),
+    "--map-pin-icon-opacity": iconOpacity.toFixed(3),
+    "--map-pin-icon-scale": iconScale.toFixed(3),
+    "--map-pin-halo-scale": haloScale.toFixed(3),
+  };
+}
 
 function resolveInitialViewState(
   selectedListing: SelectedListing | null,
@@ -148,7 +198,6 @@ export default function MapView({
   initialCoordinates,
   onMapClick,
   onMarkerClick,
-  DrawerTrigger,
   isDesktop,
   countryCode,
 }: MapViewProps) {
@@ -156,6 +205,11 @@ export default function MapView({
   const locale = useLocale();
   const mapFlavor = usePreferredMapFlavor();
   const mapRef = useRef<MapRef | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapPinZoomStyleRef = useRef<MapPinZoomStyle | null>(null);
+  const initialMapPinZoomStyleRef = useRef<MapPinZoomStyle | null>(null);
+  const pendingPinZoomRef = useRef<number | null>(null);
+  const pinZoomAnimationFrameRef = useRef<number | null>(null);
   const saveMapViewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
@@ -170,6 +224,12 @@ export default function MapView({
     () => resolveInitialViewState(selectedListing, initialCoordinates),
     [initialCoordinates, selectedListing]
   );
+
+  if (initialMapPinZoomStyleRef.current === null) {
+    initialMapPinZoomStyleRef.current = resolveMapPinZoomVariables(
+      initialViewState.zoom
+    );
+  }
 
   const { listings, isFetching, requestBounds } = useListingsInView();
 
@@ -191,13 +251,75 @@ export default function MapView({
     [requestBounds]
   );
 
+  const applyMapPinZoomVariables = useCallback((zoom: number) => {
+    const container = mapContainerRef.current;
+    if (!container) return;
+
+    const variables = resolveMapPinZoomVariables(zoom);
+    const previousVariables = mapPinZoomStyleRef.current;
+    if (
+      previousVariables &&
+      previousVariables["--map-pin-compact-scale"] ===
+        variables["--map-pin-compact-scale"] &&
+      previousVariables["--map-pin-detail-scale"] ===
+        variables["--map-pin-detail-scale"] &&
+      previousVariables["--map-pin-icon-opacity"] ===
+        variables["--map-pin-icon-opacity"] &&
+      previousVariables["--map-pin-icon-scale"] ===
+        variables["--map-pin-icon-scale"] &&
+      previousVariables["--map-pin-halo-scale"] ===
+        variables["--map-pin-halo-scale"]
+    ) {
+      return;
+    }
+
+    mapPinZoomStyleRef.current = variables;
+    container.style.setProperty(
+      "--map-pin-compact-scale",
+      variables["--map-pin-compact-scale"]
+    );
+    container.style.setProperty(
+      "--map-pin-detail-scale",
+      variables["--map-pin-detail-scale"]
+    );
+    container.style.setProperty(
+      "--map-pin-icon-opacity",
+      variables["--map-pin-icon-opacity"]
+    );
+    container.style.setProperty(
+      "--map-pin-icon-scale",
+      variables["--map-pin-icon-scale"]
+    );
+    container.style.setProperty(
+      "--map-pin-halo-scale",
+      variables["--map-pin-halo-scale"]
+    );
+  }, []);
+
+  const scheduleMapPinZoomUpdate = useCallback(
+    (zoom: number) => {
+      pendingPinZoomRef.current = zoom;
+
+      if (pinZoomAnimationFrameRef.current !== null) return;
+
+      pinZoomAnimationFrameRef.current = window.requestAnimationFrame(() => {
+        pinZoomAnimationFrameRef.current = null;
+
+        if (pendingPinZoomRef.current === null) return;
+        applyMapPinZoomVariables(pendingPinZoomRef.current);
+      });
+    },
+    [applyMapPinZoomVariables]
+  );
+
   const handleLoad = useCallback(() => {
     handleMapLoad();
     const map = mapRef.current?.getMap();
     if (map) {
+      applyMapPinZoomVariables(map.getZoom());
       emitBoundsChange(map.getBounds());
     }
-  }, [emitBoundsChange, handleMapLoad]);
+  }, [applyMapPinZoomVariables, emitBoundsChange, handleMapLoad]);
 
   useEffect(() => {
     if (initialCoordinates) {
@@ -243,8 +365,19 @@ export default function MapView({
       if (saveMapViewTimeoutRef.current !== null) {
         clearTimeout(saveMapViewTimeoutRef.current);
       }
+
+      if (pinZoomAnimationFrameRef.current !== null) {
+        window.cancelAnimationFrame(pinZoomAnimationFrameRef.current);
+      }
     };
   }, []);
+
+  const handleMove = useCallback(
+    (event: ViewStateChangeEvent) => {
+      scheduleMapPinZoomUpdate(event.viewState.zoom);
+    },
+    [scheduleMapPinZoomUpdate]
+  );
 
   const handleMoveEnd = useCallback(
     (_event: ViewStateChangeEvent) => {
@@ -289,7 +422,11 @@ export default function MapView({
     hasValidCoordinates(selectedListing) || initialCoordinates !== null;
 
   return (
-    <MapContainer data-testid="map-view">
+    <MapContainer
+      ref={mapContainerRef}
+      data-testid="map-view"
+      style={initialMapPinZoomStyleRef.current}
+    >
       {hasInitialPosition ? (
         <>
           <Map
@@ -299,8 +436,11 @@ export default function MapView({
             maxZoom={MAP_MAX_ZOOM}
             renderWorldCopies={true}
             initialViewState={initialViewState}
+            onMove={handleMove}
+            onZoom={handleMove}
             onMoveEnd={handleMoveEnd}
             onLoad={handleLoad}
+            onError={handleMapError}
             onClick={handleMapClickInternal}
           >
             <GeolocateControl showUserLocation={true} />
@@ -318,7 +458,6 @@ export default function MapView({
             <MapPinLayer
               listings={listings}
               selectedListingId={selectedListingId}
-              DrawerTrigger={DrawerTrigger}
               onMarkerClick={onMarkerClick}
             />
           </Map>
