@@ -15,16 +15,9 @@ export type BoundingBox = {
   east: number;
 };
 
-// Default coordinates for Brisbane, Australia — the absolute fallback when
-// IP-based geolocation is unavailable. Pair with `ZOOM_LEVEL_DEFAULT` for
-// the zoom level.
-export const DEFAULT_COORDINATES: ListingCoordinates = {
-  latitude: -27.4683,
-  longitude: 153.0322,
-};
-
 export const ZOOM_LEVEL_DEFAULT = 11;
 export const ZOOM_LEVEL_SELECTED = 14;
+export const MAP_MAX_ZOOM = 15;
 
 // Durations (ms) for the different fly-to flows
 export const FLY_DURATION = {
@@ -85,7 +78,7 @@ export function hasValidCoordinates(
 // the user has panned across the antimeridian), but the `listings_in_view`
 // RPC feeds them into PostGIS' `st_makeenvelope`, which expects canonical
 // longitudes.
-function wrapLongitude(lng: number): number {
+export function wrapLongitude(lng: number): number {
   return ((((lng + 180) % 360) + 360) % 360) - 180;
 }
 
