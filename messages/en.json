@@ -195,10 +195,10 @@
     "subtitle": "Resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
     "metaDescription": "Download Peels sharing resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
     "downloadAll": "Download everything",
-    "downloadHint": "One ZIP with social tiles, print assets, copy examples, and workshop-friendly resources.",
+    "downloadHint": "One ZIP with social tiles, print assets, and workshop-friendly resources.",
     "resources": {
-      "title": "What’s inside",
-      "subtitle": "A simple bundle of ready-to-use materials you can adapt for your local community.",
+      "title": "Inside the ZIP",
+      "subtitle": "A simple bundle of ready-to-use visuals and print materials for your local community.",
       "items": {
         "digital": {
           "title": "Digital tiles",
@@ -207,10 +207,6 @@
         "print": {
           "title": "Print assets",
           "body": "Posters, letterbox drops, signs, and stickers for cafes, libraries, markets, and shared spaces."
-        },
-        "copy": {
-          "title": "Copy examples",
-          "body": "Short, medium, and longer text you can adapt for council pages, emails, social posts, or local guides."
         },
         "workshop": {
           "title": "Workshop resources",
@@ -221,6 +217,7 @@
     "copyExamples": {
       "title": "Copy examples",
       "subtitle": "Please feel free to adapt any of these options to fit your needs. They’re provided simply as starting points, at various lengths.",
+      "listLabel": "Copywriting examples for sharing Peels",
       "items": {
         "shortest": {
           "title": "Shortest",
@@ -235,7 +232,7 @@
           "body": "Looking for a compost drop-off? Find a neighbour or community garden that accepts food scraps via Peels. Can’t produce enough compost of your own, or want to see less food waste go to landfill? Create a listing to accept scraps from neighbours. Learn more at peels.app."
         }
       },
-      "partnersNote": "For real-world examples of how councils and organisations talk about Peels, see our <partners>Partners page</partners>."
+      "partnersNote": "See our <partners>Partners page</partners> for real-world examples of how councils and organisations talk about Peels."
     }
   },
   "SignUp": {

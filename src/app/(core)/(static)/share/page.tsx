@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { styled } from "next-yak";
 
+import FooterBlock from "@/components/FooterBlock";
 import HeaderBlock from "@/components/HeaderBlock";
 import StaticPageHeader from "@/components/StaticPageHeader";
 import StaticPageMain from "@/components/StaticPageMain";
@@ -11,7 +12,7 @@ import { siteConfig } from "@/config/site";
 import { theme } from "@/styles/theme.yak";
 import { getPromoKitUrl } from "@/utils/storage";
 
-const resourceKeys = ["digital", "print", "copy", "workshop"] as const;
+const resourceKeys = ["digital", "print", "workshop"] as const;
 const copyExampleKeys = ["shortest", "medium", "long"] as const;
 
 export async function generateMetadata() {
@@ -71,22 +72,24 @@ export default async function SharePage() {
           <p>{t("copyExamples.subtitle")}</p>
         </HeaderBlock>
 
-        <CopyExampleList>
-          {copyExampleKeys.map((exampleKey) => (
-            <CopyExampleCard key={exampleKey}>
-              <h3>{t(`copyExamples.items.${exampleKey}.title`)}</h3>
+        <CopyExampleList aria-label={t("copyExamples.listLabel")}>
+          {copyExampleKeys.map((exampleKey, index) => (
+            <CopyExampleDetails key={exampleKey} open={index === 0}>
+              <summary>{t(`copyExamples.items.${exampleKey}.title`)}</summary>
               <p>{t(`copyExamples.items.${exampleKey}.body`)}</p>
-            </CopyExampleCard>
+            </CopyExampleDetails>
           ))}
         </CopyExampleList>
 
-        <ExampleNote>
-          {t.rich("copyExamples.partnersNote", {
-            partners: (chunks) => (
-              <Link href={siteConfig.links.partners}>{chunks}</Link>
-            ),
-          })}
-        </ExampleNote>
+        <FooterBlock>
+          <p>
+            {t.rich("copyExamples.partnersNote", {
+              partners: (chunks) => (
+                <Link href={siteConfig.links.partners}>{chunks}</Link>
+              ),
+            })}
+          </p>
+        </FooterBlock>
       </StaticPageSection>
     </StaticPageMain>
   );
@@ -198,41 +201,48 @@ const CopyExampleList = styled.div`
   max-width: ${theme.spacing.container.maxWidth.media};
 `;
 
-const CopyExampleCard = styled.article`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: calc(${theme.spacing.unit} * 3);
+const CopyExampleDetails = styled.details`
   background: ${theme.colors.background.top};
   border: 1px solid ${theme.colors.border.base};
   border-radius: ${theme.corners.base};
+  overflow: hidden;
 
-  & h3 {
+  & summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: calc(${theme.spacing.unit} * 2.5) calc(${theme.spacing.unit} * 3);
+    cursor: pointer;
     color: ${theme.colors.text.primary};
     font-size: 1.125rem;
+    font-weight: 600;
     line-height: ${theme.typography.lineHeight.h};
+    list-style: none;
+
+    &::marker,
+    &::-webkit-details-marker {
+      display: none;
+      content: none;
+    }
+
+    &::after {
+      content: "+";
+      color: ${theme.colors.background.counter};
+      font-size: 1.75rem;
+      font-weight: 200;
+      line-height: 0.8;
+    }
+  }
+
+  &[open] summary::after {
+    content: "-";
   }
 
   & p {
+    padding: 0 calc(${theme.spacing.unit} * 3) calc(${theme.spacing.unit} * 3);
     color: ${theme.colors.text.secondary};
     font-size: ${theme.typography.size.p.lg};
     line-height: ${theme.typography.lineHeight.p.lg};
-  }
-`;
-
-const ExampleNote = styled.p`
-  max-width: ${theme.spacing.container.maxWidth.text};
-  color: ${theme.colors.text.ui.quaternary};
-  font-size: ${theme.typography.size.p.md};
-  line-height: ${theme.typography.lineHeight.p.md};
-  text-align: center;
-
-  & a {
-    color: ${theme.colors.text.brand.primary};
-    font-weight: 500;
-  }
-
-  & a:visited {
-    color: ${theme.colors.text.brand.primary};
   }
 `;

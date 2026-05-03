@@ -195,10 +195,10 @@
     "subtitle": "Materialien für Kommunen, Community-Gruppen, Cafés und Nachbarinnen und Nachbarn, die mehr Menschen Community-Kompostierung finden lassen.",
     "metaDescription": "Lade Peels-Materialien für Kommunen, Community-Gruppen, Cafés und Nachbarinnen und Nachbarn herunter, die mehr Menschen Community-Kompostierung finden lassen.",
     "downloadAll": "Alles herunterladen",
-    "downloadHint": "Ein ZIP mit Social-Media-Grafiken, Druckmaterialien, Textbeispielen und workshop-tauglichen Ressourcen.",
+    "downloadHint": "Ein ZIP mit Social-Media-Grafiken, Druckmaterialien und workshop-tauglichen Ressourcen.",
     "resources": {
-      "title": "Was enthalten ist",
-      "subtitle": "Ein einfaches Paket mit fertigen Materialien, die du für deine lokale Community anpassen kannst.",
+      "title": "Im ZIP enthalten",
+      "subtitle": "Ein einfaches Paket mit fertigen Grafiken und Druckmaterialien für deine lokale Community.",
       "items": {
         "digital": {
           "title": "Digitale Grafiken",
@@ -207,10 +207,6 @@
         "print": {
           "title": "Druckmaterialien",
           "body": "Poster, Briefkasteneinwürfe, Schilder und Sticker für Cafés, Bibliotheken, Märkte und Gemeinschaftsorte."
-        },
-        "copy": {
-          "title": "Textbeispiele",
-          "body": "Kurze, mittlere und längere Texte, die du für kommunale Seiten, E-Mails, Social Posts oder lokale Leitfäden anpassen kannst."
         },
         "workshop": {
           "title": "Workshop-Materialien",
@@ -221,6 +217,7 @@
     "copyExamples": {
       "title": "Textbeispiele",
       "subtitle": "Du kannst diese Optionen gern an deine Bedürfnisse anpassen. Sie sind einfach als Ausgangspunkte in verschiedenen Längen gedacht.",
+      "listLabel": "Textbeispiele zum Teilen von Peels",
       "items": {
         "shortest": {
           "title": "Am kürzesten",
@@ -235,7 +232,7 @@
           "body": "Suchst du eine Abgabestelle für Kompost? Finde über Peels Nachbarinnen, Nachbarn oder Gemeinschaftsgärten, die Lebensmittelreste annehmen. Du kannst selbst nicht genug Kompost herstellen oder möchtest, dass weniger Lebensmittelabfälle auf der Deponie landen? Erstelle einen Eintrag und nimm Reste aus deiner Nachbarschaft an. Mehr unter peels.app."
         }
       },
-      "partnersNote": "Reale Beispiele dafür, wie Kommunen und Organisationen über Peels sprechen, findest du auf unserer <partners>Partnerseite</partners>."
+      "partnersNote": "Sieh dir unsere <partners>Partnerseite</partners> an, um reale Beispiele dafür zu sehen, wie Kommunen und Organisationen über Peels sprechen."
     }
   },
   "SignUp": {

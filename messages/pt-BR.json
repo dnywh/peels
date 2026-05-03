@@ -195,10 +195,10 @@
     "subtitle": "Recursos para conselhos municipais, grupos comunitários, cafés e vizinhos que ajudam mais pessoas a encontrar compostagem comunitária.",
     "metaDescription": "Baixe recursos para divulgar o Peels, feitos para conselhos municipais, grupos comunitários, cafés e vizinhos que ajudam mais pessoas a encontrar compostagem comunitária.",
     "downloadAll": "Baixar tudo",
-    "downloadHint": "Um ZIP com peças para redes sociais, materiais impressos, exemplos de texto e recursos úteis para oficinas.",
+    "downloadHint": "Um ZIP com peças para redes sociais, materiais impressos e recursos úteis para oficinas.",
     "resources": {
-      "title": "O que está incluído",
-      "subtitle": "Um pacote simples de materiais prontos para usar e adaptar à sua comunidade local.",
+      "title": "Dentro do ZIP",
+      "subtitle": "Um pacote simples de materiais visuais e impressos prontos para usar na sua comunidade local.",
       "items": {
         "digital": {
           "title": "Peças digitais",
@@ -207,10 +207,6 @@
         "print": {
           "title": "Materiais impressos",
           "body": "Cartazes, panfletos de caixa de correio, placas e adesivos para cafés, bibliotecas, feiras e espaços compartilhados."
-        },
-        "copy": {
-          "title": "Exemplos de texto",
-          "body": "Textos curtos, médios e longos que você pode adaptar para páginas de conselhos municipais, e-mails, posts sociais ou guias locais."
         },
         "workshop": {
           "title": "Recursos para oficinas",
@@ -221,6 +217,7 @@
     "copyExamples": {
       "title": "Exemplos de texto",
       "subtitle": "Fique à vontade para adaptar qualquer uma destas opções às suas necessidades. Elas são apenas pontos de partida, em diferentes tamanhos.",
+      "listLabel": "Exemplos de texto para divulgar o Peels",
       "items": {
         "shortest": {
           "title": "Mais curto",
@@ -235,7 +232,7 @@
           "body": "Procurando um ponto de entrega para compostagem? Encontre pelo Peels uma pessoa vizinha ou horta comunitária que aceita restos de comida. Não consegue produzir composto suficiente por conta própria, ou quer ver menos desperdício alimentar ir para o aterro? Crie um anúncio para aceitar restos de vizinhos. Saiba mais em peels.app."
         }
       },
-      "partnersNote": "Para ver exemplos reais de como conselhos municipais e organizações falam sobre o Peels, acesse a nossa <partners>página de parceiros</partners>."
+      "partnersNote": "Acesse a nossa <partners>página de parceiros</partners> para ver exemplos reais de como conselhos municipais e organizações falam sobre o Peels."
     }
   },
   "SignUp": {

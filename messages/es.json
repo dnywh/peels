@@ -195,10 +195,10 @@
     "subtitle": "Recursos para ayuntamientos, grupos comunitarios, cafés y vecinos que ayudan a que más personas encuentren compostaje comunitario.",
     "metaDescription": "Descarga recursos para compartir Peels pensados para ayuntamientos, grupos comunitarios, cafés y vecinos que ayudan a más personas a encontrar compostaje comunitario.",
     "downloadAll": "Descargar todo",
-    "downloadHint": "Un ZIP con piezas para redes sociales, recursos impresos, ejemplos de texto y materiales útiles para talleres.",
+    "downloadHint": "Un ZIP con piezas para redes sociales, recursos impresos y materiales útiles para talleres.",
     "resources": {
-      "title": "Qué incluye",
-      "subtitle": "Un paquete sencillo de materiales listos para usar y adaptar a tu comunidad local.",
+      "title": "Dentro del ZIP",
+      "subtitle": "Un paquete sencillo de materiales visuales e impresos listos para usar en tu comunidad local.",
       "items": {
         "digital": {
           "title": "Piezas digitales",
@@ -207,10 +207,6 @@
         "print": {
           "title": "Recursos impresos",
           "body": "Pósteres, buzoneo, carteles y pegatinas para cafés, bibliotecas, mercados y espacios compartidos."
-        },
-        "copy": {
-          "title": "Ejemplos de texto",
-          "body": "Textos cortos, medios y largos que puedes adaptar para páginas de ayuntamientos, correos, publicaciones sociales o guías locales."
         },
         "workshop": {
           "title": "Recursos para talleres",
@@ -221,6 +217,7 @@
     "copyExamples": {
       "title": "Ejemplos de texto",
       "subtitle": "Puedes adaptar cualquiera de estas opciones a tus necesidades. Son simplemente puntos de partida, con distintas extensiones.",
+      "listLabel": "Ejemplos de texto para compartir Peels",
       "items": {
         "shortest": {
           "title": "Más corto",
@@ -235,7 +232,7 @@
           "body": "¿Buscas dónde dejar tus restos para compostar? Encuentra mediante Peels un vecino o huerto comunitario que acepte restos de comida. ¿No produces suficiente compost por tu cuenta, o quieres que menos residuos alimentarios acaben en el vertedero? Crea un anuncio para aceptar restos de tus vecinos. Más información en peels.app."
         }
       },
-      "partnersNote": "Para ver ejemplos reales de cómo ayuntamientos y organizaciones hablan de Peels, visita nuestra <partners>página de socios</partners>."
+      "partnersNote": "Visita nuestra <partners>página de socios</partners> para ver ejemplos reales de cómo ayuntamientos y organizaciones hablan de Peels."
     }
   },
   "SignUp": {

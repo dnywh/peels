@@ -195,10 +195,10 @@
     "subtitle": "Des ressources pour les collectivités, groupes communautaires, cafés et voisin·es qui aident davantage de personnes à trouver du compostage communautaire.",
     "metaDescription": "Téléchargez des ressources Peels pour les collectivités, groupes communautaires, cafés et voisin·es qui aident davantage de personnes à trouver du compostage communautaire.",
     "downloadAll": "Tout télécharger",
-    "downloadHint": "Un ZIP avec des visuels pour les réseaux sociaux, des supports imprimés, des exemples de texte et des ressources adaptées aux ateliers.",
+    "downloadHint": "Un ZIP avec des visuels pour les réseaux sociaux, des supports imprimés et des ressources adaptées aux ateliers.",
     "resources": {
-      "title": "Ce qu’il contient",
-      "subtitle": "Un ensemble simple de supports prêts à l’emploi, à adapter à votre communauté locale.",
+      "title": "Dans le ZIP",
+      "subtitle": "Un ensemble simple de visuels et de supports imprimés prêts à l’emploi pour votre communauté locale.",
       "items": {
         "digital": {
           "title": "Visuels numériques",
@@ -207,10 +207,6 @@
         "print": {
           "title": "Supports imprimés",
           "body": "Affiches, prospectus, panneaux et autocollants pour cafés, bibliothèques, marchés et lieux partagés."
-        },
-        "copy": {
-          "title": "Exemples de texte",
-          "body": "Des textes courts, moyens et longs à adapter pour des pages de collectivités, e-mails, publications sociales ou guides locaux."
         },
         "workshop": {
           "title": "Ressources pour ateliers",
@@ -221,6 +217,7 @@
     "copyExamples": {
       "title": "Exemples de texte",
       "subtitle": "N’hésitez pas à adapter ces propositions à vos besoins. Elles sont simplement fournies comme points de départ, en plusieurs longueurs.",
+      "listLabel": "Exemples de texte pour faire connaître Peels",
       "items": {
         "shortest": {
           "title": "Le plus court",
@@ -235,7 +232,7 @@
           "body": "Vous cherchez un point de dépôt pour le compost ? Trouvez via Peels un·e voisin·e ou un jardin communautaire qui accepte les restes alimentaires. Vous ne produisez pas assez de compost, ou vous voulez voir moins de gaspillage alimentaire finir en décharge ? Créez une annonce pour accepter les restes de vos voisin·es. En savoir plus sur peels.app."
         }
       },
-      "partnersNote": "Pour voir des exemples concrets de la façon dont des collectivités et organisations parlent de Peels, consultez notre <partners>page Partenaires</partners>."
+      "partnersNote": "Consultez notre <partners>page Partenaires</partners> pour voir des exemples concrets de la façon dont des collectivités et organisations parlent de Peels."
     }
   },
   "SignUp": {
