@@ -186,7 +186,36 @@
     },
     "cta": {
       "title": "Vous voulez voir Peels dans votre communauté ?",
-      "body": "Commencez avec le <promoKit>kit promo</promoKit>, ou <email>écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre collectivité, groupe communautaire ou organisation."
+      "body": "Commencez avec <share>Faire connaître Peels</share>, ou <email>écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre collectivité, groupe communautaire ou organisation."
+    }
+  },
+  "Share": {
+    "title": "Faire connaître Peels",
+    "subtitle": "Des ressources pour les collectivités, groupes communautaires, cafés et voisin·es qui aident davantage de personnes à trouver du compostage communautaire.",
+    "metaDescription": "Téléchargez des ressources Peels pour les collectivités, groupes communautaires, cafés et voisin·es qui aident davantage de personnes à trouver du compostage communautaire.",
+    "downloadAll": "Tout télécharger",
+    "downloadHint": "Un ZIP avec des visuels pour les réseaux sociaux, des supports imprimés, des exemples de texte et des ressources adaptées aux ateliers.",
+    "resources": {
+      "title": "Ce qu’il contient",
+      "subtitle": "Un ensemble simple de supports prêts à l’emploi, à adapter à votre communauté locale.",
+      "items": {
+        "digital": {
+          "title": "Visuels numériques",
+          "body": "Des visuels carrés et verticaux pour Instagram, les infolettres et les panneaux communautaires."
+        },
+        "print": {
+          "title": "Supports imprimés",
+          "body": "Affiches, prospectus, panneaux et autocollants pour cafés, bibliothèques, marchés et lieux partagés."
+        },
+        "copy": {
+          "title": "Exemples de texte",
+          "body": "Des textes courts, moyens et longs à adapter pour des pages de collectivités, e-mails, publications sociales ou guides locaux."
+        },
+        "workshop": {
+          "title": "Ressources pour ateliers",
+          "body": "Des supports pour stands, ateliers et événements communautaires où les gens peuvent découvrir Peels en personne."
+        }
+      }
     }
   },
   "SignUp": {
@@ -488,7 +517,7 @@
   "Support": {
     "title": "Aide",
     "metaDescription": "Réponses aux questions fréquentes sur Peels.",
-    "subtitle": "Nous mettons cette page à jour régulièrement avec des réponses aux questions fréquentes. N’hésitez pas à <link>nous contacter</link> pour toute autre chose.",
+    "subtitle": "Trouvez des réponses aux questions fréquentes, ou utilisez les options de contact ci-dessous si vous avez besoin d’aide.",
     "peelsFaq": {
       "title": "À propos de Peels",
       "whosBehind": {
@@ -517,11 +546,11 @@
       },
       "promotion": {
         "question": "Comment puis-je faire connaître Peels dans ma communauté ?",
-        "answer": "<p>Merci d’abord ! Peels ne fonctionne qu’avec une carte vivante pleine d’annonces, donc faire passer le mot est essentiel.</p><p>Consultez notre <promoKit>kit promo</promoKit>, qui comprend des visuels pour les réseaux sociaux et des affiches imprimables aux formats US letter et A4. N’hésitez pas à <email>nous écrire</email> si vous avez besoin de quelque chose de plus spécifique pour votre communauté.</p>"
+        "answer": "<p>Merci d’abord ! Peels ne fonctionne qu’avec une carte vivante pleine d’annonces, donc faire passer le mot est essentiel.</p><p>Rendez-vous sur <share>Faire connaître Peels</share> pour trouver des visuels pour les réseaux sociaux, des affiches imprimables et des exemples de texte à adapter à votre communauté. N’hésitez pas à <email>nous écrire</email> si vous avez besoin de quelque chose de plus spécifique.</p>"
       },
       "government": {
         "question": "Je représente un gouvernement ou une institution. Comment pouvons-nous participer ?",
-        "answer": "<p>Nous souhaitons travailler avec des équipes du secteur public, des organisations communautaires et des personnes du monde éducatif partout où Peels peut aider davantage de personnes à détourner les restes alimentaires de l’enfouissement. Notre <partners>page Partenaires</partners> montre comment d’autres collectivités mentionnent Peels, et le kit promo contient des textes et supports que vous pouvez adapter.</p><p><email>Écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre communauté.</p>"
+        "answer": "<p>Nous souhaitons travailler avec des équipes du secteur public, des organisations communautaires et des personnes du monde éducatif partout où Peels peut aider davantage de personnes à détourner les restes alimentaires de l’enfouissement. Notre <partners>page Partenaires</partners> montre comment d’autres collectivités mentionnent Peels, et <share>Faire connaître Peels</share> contient des textes et supports que vous pouvez adapter.</p><p><email>Écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre communauté.</p>"
       }
     },
     "supportFaq": {
@@ -530,6 +559,10 @@
         "question": "Comment gérer les e-mails que je reçois ?",
         "answer": "<p>Nous n’envoyons que les e-mails nécessaires au bon fonctionnement de Peels. Cela comprend un ou deux e-mails liés au compte et des notifications quand un autre membre de Peels vous envoie un message.</p><p>Les notifications par e-mail sont obligatoires pour les personnes qui hébergent une annonce, car cela signifie qu’une personne intéressée souhaite organiser un dépôt de restes (ou récupérer quelque chose). Les personnes qui ne souhaitent plus recevoir d’e-mails peuvent soit masquer leur annonce de la carte, soit la supprimer entièrement.</p><p>Les personnes sans annonce ne peuvent pas recevoir de messages, et donc pas d’e-mails, à moins d’avoir initié le contact avec une personne hôte.</p><p>Tout le monde peut signaler ou bloquer d’autres membres de Peels via la messagerie. Bloquer quelqu’un l’empêche de vous envoyer d’autres messages ou e-mails.</p>"
       }
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "Choisissez l’adresse la plus adaptée à votre demande et nous vous répondrons."
     }
   },
   "Contact": {

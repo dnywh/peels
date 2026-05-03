@@ -44,6 +44,9 @@ test("partners page shows partner and council mention proof", async ({
   await expect(
     page.getByRole("link", { name: "How to Save Our Planet" })
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Spread the word" })
+  ).toHaveAttribute("href", "/share");
 });
 
 test("homepage and footer link to partners", async ({ page }) => {

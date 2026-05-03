@@ -45,7 +45,6 @@ export default async function SiteFooter() {
         {/* <Link href={siteConfig.links.colophon}>Colophon</Link> */}
         <Link href={siteConfig.links.terms}>{t("Legal.terms")}</Link>
         <Link href={siteConfig.links.privacy}>{t("Legal.privacy")}</Link>
-        <Link href={siteConfig.links.contact}>{t("Contact.title")}</Link>
       </StyledNav>
     </StyledFooter>
   );

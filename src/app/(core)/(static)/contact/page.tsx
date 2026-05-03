@@ -1,40 +1,26 @@
-import { useTranslations } from "next-intl";
-import { siteConfig } from "@/config/site";
-import StaticPageMain from "@/components/StaticPageMain";
-import StaticPageHeader from "@/components/StaticPageHeader";
-import StaticPageSection from "@/components/StaticPageSection";
-import EmailSelector from "@/components/EmailSelector/EmailSelector";
-import { styled } from "next-yak";
-import { theme } from "@/styles/theme.yak";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Contact",
-  description: "Here’s how to reach the Peels team.",
-  openGraph: {
-    title: `Contact · ${siteConfig.name}`,
-    description: "Here’s how to reach the Peels team.",
-  },
+import { siteConfig } from "@/config/site";
+
+type ContactPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default function Contact() {
-  const t = useTranslations("Contact");
+const getFirstValue = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
 
-  return (
-    <StaticPageMain>
-      {/* Nest header and main content together so they visually hug */}
-      <HuggingContent>
-        <StaticPageHeader title={t("title")} subtitle={t("subtitle")} />
-        <EmailSelector />
-      </HuggingContent>
-    </StaticPageMain>
+export default async function Contact({ searchParams }: ContactPageProps) {
+  const params = await searchParams;
+  const query = new URLSearchParams();
+  const address = getFirstValue(params?.address);
+  const via = getFirstValue(params?.via);
+
+  if (address) query.set("address", address);
+  if (via) query.set("via", via);
+
+  const queryString = query.toString();
+
+  redirect(
+    `${siteConfig.links.support}${queryString ? `?${queryString}` : ""}#contact`
   );
 }
-
-const HuggingContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${theme.spacing.gap.section.md};
-  width: 100%;
-  max-width: ${theme.spacing.container.maxWidth.media};
-`;

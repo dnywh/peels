@@ -4,7 +4,6 @@ import FaqContainer from "@/components/FaqContainer";
 import FaqDetails from "@/components/FaqDetails";
 import StrongLink from "@/components/StrongLink";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
-import { getPromoKitUrl } from "@/utils/storage";
 
 async function PeelsFaq() {
   const t = await getTranslations("Support.peelsFaq");
@@ -73,8 +72,8 @@ async function PeelsFaq() {
         <summary>{t("promotion.question")}</summary>
         {t.rich("promotion.answer", {
           p: (chunks) => <p>{chunks}</p>,
-          promoKit: (chunks) => (
-            <StrongLink href={getPromoKitUrl()}>{chunks}</StrongLink>
+          share: (chunks) => (
+            <StrongLink href={siteConfig.links.share}>{chunks}</StrongLink>
           ),
           email: (chunks) => (
             <EncodedEmailLink address={siteConfig.encodedEmail.support}>
@@ -89,6 +88,9 @@ async function PeelsFaq() {
           p: (chunks) => <p>{chunks}</p>,
           partners: (chunks) => (
             <StrongLink href={siteConfig.links.partners}>{chunks}</StrongLink>
+          ),
+          share: (chunks) => (
+            <StrongLink href={siteConfig.links.share}>{chunks}</StrongLink>
           ),
           email: (chunks) => (
             <EncodedEmailLink address={siteConfig.encodedEmail.support}>

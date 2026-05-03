@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
@@ -8,6 +8,7 @@ import StaticPageSection from "@/components/StaticPageSection";
 import SupportFaq from "@/components/SupportFaq";
 import PeelsFaq from "@/components/PeelsFaq";
 import HeaderBlock from "@/components/HeaderBlock";
+import EmailSelector from "@/components/EmailSelector/EmailSelector";
 
 export async function generateMetadata() {
   const t = await getTranslations("Support");
@@ -27,20 +28,7 @@ export default function Support() {
   const t = useTranslations("Support");
   return (
     <StaticPageMain>
-      <StaticPageHeader
-        title={t("title")}
-        subtitle={
-          <>
-            {t.rich("subtitle", {
-              link: (chunks) => (
-                <Link href={`${siteConfig.links.contact}?address=support`}>
-                  {chunks}
-                </Link>
-              ),
-            })}
-          </>
-        }
-      />
+      <StaticPageHeader title={t("title")} subtitle={t("subtitle")} />
 
       <StaticPageSection padding={null}>
         <HeaderBlock>
@@ -54,6 +42,16 @@ export default function Support() {
           <h2>{t("peelsFaq.title")}</h2>
         </HeaderBlock>
         <PeelsFaq />
+      </StaticPageSection>
+
+      <StaticPageSection id="contact">
+        <HeaderBlock>
+          <h2>{t("contact.title")}</h2>
+          <p>{t("contact.subtitle")}</p>
+        </HeaderBlock>
+        <Suspense>
+          <EmailSelector />
+        </Suspense>
       </StaticPageSection>
     </StaticPageMain>
   );

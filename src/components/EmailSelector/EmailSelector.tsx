@@ -86,9 +86,9 @@ export default function EmailSelector() {
       <SubSectionTop>
         {via && <p>{via === "therot" ? t("via.therot") : t("via.general")}</p>}
         <Field>
-          <Label htmlFor="contact">{t("contactLabel")}</Label>
+          <Label htmlFor="contact-address">{t("contactLabel")}</Label>
           <Select
-            id="contact"
+            id="contact-address"
             value={selectedEmailType}
             onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
               setSelectedEmailType(event.target.value as EmailType)

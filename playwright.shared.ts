@@ -1,6 +1,10 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
 
-const baseURL = "http://127.0.0.1:3000";
+const playwrightHost = process.env.PLAYWRIGHT_HOST ?? "127.0.0.1";
+const playwrightPort = process.env.PLAYWRIGHT_PORT ?? "3000";
+const baseURL =
+  process.env.PLAYWRIGHT_BASE_URL ??
+  `http://${playwrightHost}:${playwrightPort}`;
 
 const sharedPlaywrightUse: PlaywrightTestConfig["use"] = {
   baseURL,
@@ -41,3 +45,4 @@ const sharedWebServer = {
 };
 
 export { sharedPlaywrightConfig, sharedWebServer };
+export { playwrightHost, playwrightPort };

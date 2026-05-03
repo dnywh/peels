@@ -16,7 +16,6 @@ import {
 } from "@/content/partnerMentions";
 import { sharedAnchorTagStyles } from "@/styles/commonStyles";
 import { theme } from "@/styles/theme.yak";
-import { getPromoKitUrl } from "@/utils/storage";
 
 export async function generateMetadata() {
   const t = await getTranslations("Partners");
@@ -34,7 +33,6 @@ export async function generateMetadata() {
 
 export default async function PartnersPage() {
   const t = await getTranslations("Partners");
-  const promoKitUrl = getPromoKitUrl();
 
   return (
     <StaticPageMain>
@@ -110,8 +108,8 @@ export default async function PartnersPage() {
           <h2>{t("cta.title")}</h2>
           <p>
             {t.rich("cta.body", {
-              promoKit: (chunks) => (
-                <StrongLink href={promoKitUrl}>{chunks}</StrongLink>
+              share: (chunks) => (
+                <StrongLink href={siteConfig.links.share}>{chunks}</StrongLink>
               ),
               email: (chunks) => (
                 <EncodedEmailLink address={siteConfig.encodedEmail.general}>

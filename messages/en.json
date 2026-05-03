@@ -186,7 +186,36 @@
     },
     "cta": {
       "title": "Want to see Peels in your community?",
-      "body": "Start with the <promoKit>promo kit</promoKit>, or <email>email us</email> if you need something more specific for your council, community group, or organisation."
+      "body": "Start with <share>Spread the word</share>, or <email>email us</email> if you need something more specific for your council, community group, or organisation."
+    }
+  },
+  "Share": {
+    "title": "Spread the word",
+    "subtitle": "Resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
+    "metaDescription": "Download Peels sharing resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
+    "downloadAll": "Download everything",
+    "downloadHint": "One ZIP with social tiles, print assets, copy examples, and workshop-friendly resources.",
+    "resources": {
+      "title": "What’s inside",
+      "subtitle": "A simple bundle of ready-to-use materials you can adapt for your local community.",
+      "items": {
+        "digital": {
+          "title": "Digital tiles",
+          "body": "Square and portrait graphics for Instagram, newsletters, and community noticeboards."
+        },
+        "print": {
+          "title": "Print assets",
+          "body": "Posters, letterbox drops, signs, and stickers for cafes, libraries, markets, and shared spaces."
+        },
+        "copy": {
+          "title": "Copy examples",
+          "body": "Short, medium, and longer text you can adapt for council pages, emails, social posts, or local guides."
+        },
+        "workshop": {
+          "title": "Workshop resources",
+          "body": "Display-friendly pieces for stalls, workshops, and community events where people can learn about Peels in person."
+        }
+      }
     }
   },
   "SignUp": {
@@ -488,7 +517,7 @@
   "Support": {
     "title": "Support",
     "metaDescription": "Answers to common questions about Peels.",
-    "subtitle": "We periodically update this page with answers to common questions. Feel free to <link>contact us</link> for anything else.",
+    "subtitle": "Find answers to common questions, or use the contact options below if you need a hand.",
     "peelsFaq": {
       "title": "About Peels",
       "whosBehind": {
@@ -517,11 +546,11 @@
       },
       "promotion": {
         "question": "How can I promote Peels to my community?",
-        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Check out our <promoKit>promo kit</promoKit> which includes social media tiles and printable posters in both US letter and A4 sizes. Don’t hesitate to <email>reach out</email> if you need something more specific for your community.</p>"
+        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Head to <share>Spread the word</share> for social tiles, printable posters, and copy examples you can adapt for your community. Don’t hesitate to <email>reach out</email> if you need something more specific.</p>"
       },
       "government": {
         "question": "I represent a government or institution. How can we get involved?",
-        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Our <partners>partners page</partners> shows how other councils mention Peels, and the promo kit has copy and assets you can adapt.</p><p>Please <email>email us</email> if you need something more specific for your community.</p>"
+        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Our <partners>partners page</partners> shows how other councils mention Peels, and <share>Spread the word</share> has copy and assets you can adapt.</p><p>Please <email>email us</email> if you need something more specific for your community.</p>"
       }
     },
     "supportFaq": {
@@ -530,6 +559,10 @@
         "question": "How do I manage which emails I receive?",
         "answer": "<p>We only send emails that are necessary to keep Peels working. That includes one or two account-related emails, and emails to notify you whenever a fellow Peels member has sent you message.</p><p>Email notifications are required for listing hosts, as it means a prospective donor has enquired about dropping off scraps (or picking something up). Hosts who longer wish to receive emails can either hide their listing from the map (making it impossible for new donors to reach out) or delete their listing entirely (meaning previous donors can no longer message, either).</p><p>People without listings cannot be messaged (and thus emailed) unless they initiate contact with a host first.</p><p>Anyone can report or block individual Peels members via our messaging system. Blocking someone means they can no longer message or email you.</p>"
       }
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "Choose the best address for what you need and we’ll get back to you."
     }
   },
   "Contact": {
