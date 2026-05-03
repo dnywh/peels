@@ -87,6 +87,9 @@ async function PeelsFaq() {
         <summary>{t("government.question")}</summary>
         {t.rich("government.answer", {
           p: (chunks) => <p>{chunks}</p>,
+          partners: (chunks) => (
+            <StrongLink href={siteConfig.links.partners}>{chunks}</StrongLink>
+          ),
           email: (chunks) => (
             <EncodedEmailLink address={siteConfig.encodedEmail.support}>
               {chunks}

@@ -6,6 +6,7 @@ import LocalePicker from "@/components/LocalePicker";
 import { styled } from "next-yak";
 import { getTranslations } from "next-intl/server";
 import { hasSupabaseAuthCookie } from "@/utils/supabase/authCookies";
+import { createClient } from "@/utils/supabase/server";
 import { theme } from "@/styles/theme.yak";
 
 const currentYear = new Date().getFullYear();
@@ -13,7 +14,19 @@ const currentYear = new Date().getFullYear();
 export default async function SiteFooter() {
   const t = await getTranslations();
   const cookieStore = await cookies();
-  const hasSignedInSession = hasSupabaseAuthCookie(cookieStore.getAll());
+  const hasPossibleSignedInSession = hasSupabaseAuthCookie(
+    cookieStore.getAll()
+  );
+  let hasSignedInSession = false;
+
+  if (hasPossibleSignedInSession) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    hasSignedInSession = Boolean(user?.id);
+  }
 
   return (
     <StyledFooter>
@@ -27,6 +40,7 @@ export default async function SiteFooter() {
       <StyledNav>
         <Link href={siteConfig.links.about}>{t("App.about")}</Link>
         <Link href={siteConfig.links.support}>{t("Support.title")}</Link>
+        <Link href={siteConfig.links.partners}>{t("Partners.title")}</Link>
         <Link href={siteConfig.links.newsletter}>{t("Newsletter.title")}</Link>
         {/* <Link href={siteConfig.links.colophon}>Colophon</Link> */}
         <Link href={siteConfig.links.terms}>{t("Legal.terms")}</Link>

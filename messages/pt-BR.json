@@ -148,10 +148,41 @@
       "subtitle": "Atualizações ocasionais sobre como o Peels apoia a compostagem comunitária em vários lugares do mundo.",
       "footer": "Visite a nossa página de <page>Boletim</page> para ver todas as edições anteriores e saber como se inscrever."
     },
+    "partners": {
+      "title": "Em boa companhia",
+      "subtitle": "O Peels aparece em páginas de conselhos municipais e conta com o apoio de pessoas que fazem a compostagem comunitária crescer de baixo para cima.",
+      "featuredPartner": "Parceiro comunitário: LOCCAL",
+      "listLabel": "Parceiros em destaque e menções de conselhos municipais",
+      "loccalLogoAlt": "Logotipo da LOCCAL",
+      "footer": "<page>Ver todos os parceiros e menções</page>."
+    },
     "faq": {
       "title": "Talvez você esteja se perguntando...",
       "subtitle": "Isso já não existe? Qual é a missão do Peels? Você tem perguntas, e nós temos, esperamos, respostas.",
       "footer": "Visite a nossa página de <page>Suporte</page> se tiver mais perguntas."
+    }
+  },
+  "Partners": {
+    "title": "Parceiros",
+    "subtitle": "Os conselhos municipais e organizações comunitárias que ajudam mais restos de comida a virar compostagem, não aterro.",
+    "metaDescription": "Conheça as organizações comunitárias e conselhos municipais que ajudam o Peels a levar opções práticas de compostagem mais longe.",
+    "communityPartners": {
+      "title": "Parceiros comunitários",
+      "subtitle": "Amigos do Peels que cultivam a mesma cultura local e prática de compostagem.",
+      "visitPartner": "Visitar {name}",
+      "loccal": {
+        "logoAlt": "Logotipo da LOCCAL",
+        "description": "A Local Community Compost Alliance of Australia apoia a compostagem liderada e operada por comunidades em toda a Austrália."
+      }
+    },
+    "councilMentions": {
+      "title": "Mencionado por conselhos municipais",
+      "subtitle": "Estes conselhos municipais e páginas do setor público mencionam o Peels como uma forma de moradores encontrarem ou compartilharem opções de compostagem comunitária.",
+      "listLabel": "Conselhos municipais e páginas do setor público que mencionam o Peels"
+    },
+    "cta": {
+      "title": "Quer listar o Peels para a sua comunidade?",
+      "body": "Comece pelo <promoKit>kit promocional</promoKit> ou <email>envie-nos um e-mail</email> se precisar de algo mais específico para o seu conselho municipal, grupo comunitário ou organização."
     }
   },
   "SignUp": {
@@ -486,7 +517,7 @@
       },
       "government": {
         "question": "Represento um governo local ou regional. Como posso participar?",
-        "answer": "<p>Temos interesse em colaborar com equipes do setor público, organizações comunitárias e pessoas da área da educação em qualquer lugar onde o Peels possa ajudar a desviar mais restos de comida do aterro. <email>Envie um e-mail para nós</email>.</p>"
+        "answer": "<p>Temos interesse em colaborar com equipes do setor público, organizações comunitárias e pessoas da área da educação em qualquer lugar onde o Peels possa ajudar a desviar mais restos de comida do aterro. A nossa <partners>página de parceiros</partners> mostra como outros conselhos municipais mencionam o Peels, e o kit promocional traz textos e materiais que você pode adaptar.</p><p><email>Envie-nos um e-mail</email> se precisar de algo mais específico para a sua comunidade.</p>"
       }
     },
     "supportFaq": {

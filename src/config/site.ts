@@ -6,6 +6,7 @@ export const siteConfig = {
   links: {
     about: "/",
     newsletter: "/newsletter",
+    partners: "/partners",
     terms: "/terms",
     privacy: "/privacy",
     support: "/support",

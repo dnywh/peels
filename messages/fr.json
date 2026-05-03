@@ -148,10 +148,41 @@
       "subtitle": "Des nouvelles occasionnelles sur la façon dont Peels soutient le compostage communautaire dans différents endroits du monde.",
       "footer": "Consultez notre page <page>Infolettre</page> pour voir les anciens numéros et savoir comment vous abonner."
     },
+    "partners": {
+      "title": "Bien entouré",
+      "subtitle": "Peels est cité par des collectivités et soutenu par des personnes qui font grandir le compostage communautaire sur le terrain.",
+      "featuredPartner": "Partenaire communautaire : LOCCAL",
+      "listLabel": "Partenaires mis en avant et mentions par des collectivités",
+      "loccalLogoAlt": "Logo LOCCAL",
+      "footer": "<page>Voir tous les partenaires et mentions</page>."
+    },
     "faq": {
       "title": "Vous vous demandez peut-être...",
       "subtitle": "Ça n’existe pas déjà ? Quelle est votre mission ? Vous avez des questions, nous avons, espérons-le, des réponses.",
       "footer": "Rendez-vous sur notre page <page>Support</page> si vous avez d’autres questions."
+    }
+  },
+  "Partners": {
+    "title": "Partenaires",
+    "subtitle": "Les collectivités et organisations communautaires qui aident davantage de restes alimentaires à finir en compost plutôt qu’en décharge.",
+    "metaDescription": "Découvrez les organisations communautaires et collectivités qui aident Peels à faire connaître des options de compostage concrètes.",
+    "communityPartners": {
+      "title": "Partenaires communautaires",
+      "subtitle": "Des ami·es de Peels qui font vivre la même culture du compostage local et pratique.",
+      "visitPartner": "Visiter {name}",
+      "loccal": {
+        "logoAlt": "Logo LOCCAL",
+        "description": "La Local Community Compost Alliance of Australia soutient le compostage porté et géré par les communautés dans toute l’Australie."
+      }
+    },
+    "councilMentions": {
+      "title": "Mentionné par des collectivités",
+      "subtitle": "Ces collectivités et pages du secteur public mentionnent Peels comme une façon pour leurs habitant·es de trouver ou de partager des options de compostage communautaire.",
+      "listLabel": "Collectivités et pages du secteur public qui mentionnent Peels"
+    },
+    "cta": {
+      "title": "Vous voulez présenter Peels à votre communauté ?",
+      "body": "Commencez avec le <promoKit>kit promo</promoKit>, ou <email>écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre collectivité, groupe communautaire ou organisation."
     }
   },
   "SignUp": {
@@ -486,7 +517,7 @@
       },
       "government": {
         "question": "Je représente une collectivité locale ou régionale. Comment puis-je participer ?",
-        "answer": "<p>Nous souhaitons travailler avec des équipes du secteur public, des organisations communautaires et des personnes du monde éducatif partout où Peels peut aider davantage de personnes à détourner les restes alimentaires de l’enfouissement. Merci de <email>nous écrire</email>.</p>"
+        "answer": "<p>Nous souhaitons travailler avec des équipes du secteur public, des organisations communautaires et des personnes du monde éducatif partout où Peels peut aider davantage de personnes à détourner les restes alimentaires de l’enfouissement. Notre <partners>page Partenaires</partners> montre comment d’autres collectivités mentionnent Peels, et le kit promo contient des textes et supports que vous pouvez adapter.</p><p><email>Écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre communauté.</p>"
       }
     },
     "supportFaq": {

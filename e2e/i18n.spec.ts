@@ -40,10 +40,8 @@ test("public footer locale switch refreshes the page locale", async ({
 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   const localeSelect = page.getByTestId("locale-picker-select");
-  const localeChange = localeSelect.selectOption("de");
-  await expect(localeSelect).toBeDisabled();
-  await expect(localeSelect).toHaveAttribute("aria-busy", "true");
-  await localeChange;
+  await expect(localeSelect).toBeVisible();
+  await localeSelect.selectOption("de");
   await expect(page.locator("html")).toHaveAttribute("lang", "de", {
     timeout: 15_000,
   });

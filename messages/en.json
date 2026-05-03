@@ -148,10 +148,41 @@
       "subtitle": "Occasional updates on how Peels is supporting community composting around the world.",
       "footer": "Check out our <page>Newsletter</page> page for all past issues and how to subscribe."
     },
+    "partners": {
+      "title": "In good company",
+      "subtitle": "Peels is listed by councils and backed by people growing community composting from the ground up.",
+      "featuredPartner": "Community partner: LOCCAL",
+      "listLabel": "Featured partners and council mentions",
+      "loccalLogoAlt": "LOCCAL logo",
+      "footer": "<page>See all partners and mentions</page>."
+    },
     "faq": {
       "title": "You might be wondering...",
       "subtitle": "Doesn’t this already exist? What’s your mission? You’ve got questions, we’ve (hopefully) got answers.",
       "footer": "Head to our <page>Support</page> page if you have more questions."
+    }
+  },
+  "Partners": {
+    "title": "Partners",
+    "subtitle": "The councils and community organisations helping more food scraps find their way into compost, not landfill.",
+    "metaDescription": "Meet the community organisations and councils helping Peels spread practical composting options further.",
+    "communityPartners": {
+      "title": "Community partners",
+      "subtitle": "Friends of Peels who are growing the same kind of local, practical composting culture.",
+      "visitPartner": "Visit {name}",
+      "loccal": {
+        "logoAlt": "LOCCAL logo",
+        "description": "The Local Community Compost Alliance of Australia supports community-led and community-operated composting across Australia."
+      }
+    },
+    "councilMentions": {
+      "title": "Mentioned by councils",
+      "subtitle": "These councils and public-sector pages mention Peels as a way for residents to find or share community composting options.",
+      "listLabel": "Councils and public-sector pages that mention Peels"
+    },
+    "cta": {
+      "title": "Want to list Peels for your community?",
+      "body": "Start with the <promoKit>promo kit</promoKit>, or <email>email us</email> if you need something more specific for your council, community group, or organisation."
     }
   },
   "SignUp": {
@@ -486,7 +517,7 @@
       },
       "government": {
         "question": "I represent local or regional government. How can I get involved?",
-        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Please <email>email us</email>.</p>"
+        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Our <partners>partners page</partners> shows how other councils mention Peels, and the promo kit has copy and assets you can adapt.</p><p>Please <email>email us</email> if you need something more specific for your community.</p>"
       }
     },
     "supportFaq": {
