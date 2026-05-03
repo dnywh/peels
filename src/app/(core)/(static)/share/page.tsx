@@ -31,7 +31,7 @@ export default async function SharePage() {
 
   return (
     <StaticPageMain>
-      <StaticPageHeader title={t("title")} subtitle={t("subtitle")} />
+      <StaticPageHeader title={t("heading")} subtitle={t("subtitle")} />
 
       <StaticPageSection padding={null}>
         <IntroPanel>

@@ -186,11 +186,12 @@
     },
     "cta": {
       "title": "Möchtest du Peels in deiner Community sehen?",
-      "body": "Beginne mit <share>Weitersagen</share> oder <email>schreib uns</email>, wenn du etwas Spezifischeres für deine Kommune, Community-Gruppe oder Organisation brauchst."
+      "body": "Beginne mit unserer <share>Teilen-Seite</share> oder <email>schreib uns</email>, wenn du etwas Spezifischeres für deine Kommune, Community-Gruppe oder Organisation brauchst."
     }
   },
   "Share": {
-    "title": "Weitersagen",
+    "title": "Teilen",
+    "heading": "Weitersagen",
     "subtitle": "Materialien für Kommunen, Community-Gruppen, Cafés und Nachbarinnen und Nachbarn, die mehr Menschen Community-Kompostierung finden lassen.",
     "metaDescription": "Lade Peels-Materialien für Kommunen, Community-Gruppen, Cafés und Nachbarinnen und Nachbarn herunter, die mehr Menschen Community-Kompostierung finden lassen.",
     "downloadAll": "Alles herunterladen",
@@ -515,8 +516,8 @@
     "body": "Entschuldigung, wir konnten die gesuchte Seite nicht finden."
   },
   "Support": {
-    "title": "Support",
-    "metaDescription": "Antworten auf häufige Fragen zu Peels.",
+    "title": "Hilfe",
+    "metaDescription": "Antworten und Kontaktmöglichkeiten, wenn du Hilfe mit Peels brauchst.",
     "subtitle": "Hier findest du Antworten auf häufige Fragen und unten Kontaktmöglichkeiten, wenn du Hilfe brauchst.",
     "peelsFaq": {
       "title": "Über Peels",
@@ -546,11 +547,11 @@
       },
       "promotion": {
         "question": "Wie kann ich Peels in meiner Community bekannt machen?",
-        "answer": "<p>Erst einmal: Danke! Peels funktioniert nur mit einer lebendigen Karte voller Einträge, deshalb ist Weiterempfehlen so wichtig.</p><p>Unter <share>Weitersagen</share> findest du Social-Media-Grafiken, druckbare Poster und Textbeispiele, die du für deine Community anpassen kannst. <email>Melde dich gern</email>, wenn du etwas Spezifischeres brauchst.</p>"
+        "answer": "<p>Erst einmal: Danke! Peels funktioniert nur mit einer lebendigen Karte voller Einträge, deshalb ist Weiterempfehlen so wichtig.</p><p>Auf unserer <share>Teilen-Seite</share> findest du Social-Media-Grafiken, druckbare Poster und Textbeispiele, die du für deine Community anpassen kannst. <email>Melde dich gern</email>, wenn du etwas Spezifischeres brauchst.</p>"
       },
       "government": {
         "question": "Ich vertrete eine Regierung oder Institution. Wie können wir uns einbringen?",
-        "answer": "<p>Wir arbeiten gern mit öffentlichen Stellen, Gemeinschaftsorganisationen und Bildungsinitiativen zusammen, überall dort, wo Peels dabei helfen kann, mehr Lebensmittelreste vor der Deponie zu bewahren. Unsere <partners>Partnerseite</partners> zeigt, wie andere Kommunen Peels erwähnen, und <share>Weitersagen</share> enthält Texte und Materialien, die ihr anpassen könnt.</p><p>Bitte <email>schreib uns</email>, wenn du etwas Spezifischeres für deine Community brauchst.</p>"
+        "answer": "<p>Wir arbeiten gern mit öffentlichen Stellen, Gemeinschaftsorganisationen und Bildungsinitiativen zusammen, überall dort, wo Peels dabei helfen kann, mehr Lebensmittelreste vor der Deponie zu bewahren. Unsere <partners>Partnerseite</partners> zeigt, wie andere Kommunen Peels erwähnen, und unsere <share>Teilen-Seite</share> enthält Texte und Materialien, die ihr anpassen könnt.</p><p>Bitte <email>schreib uns</email>, wenn du etwas Spezifischeres für deine Community brauchst.</p>"
       }
     },
     "supportFaq": {

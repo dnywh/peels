@@ -186,11 +186,12 @@
     },
     "cta": {
       "title": "Want to see Peels in your community?",
-      "body": "Start with <share>Spread the word</share>, or <email>email us</email> if you need something more specific for your council, community group, or organisation."
+      "body": "Start with our <share>Share page</share>, or <email>email us</email> if you need something more specific for your council, community group, or organisation."
     }
   },
   "Share": {
-    "title": "Spread the word",
+    "title": "Share",
+    "heading": "Spread the word",
     "subtitle": "Resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
     "metaDescription": "Download Peels sharing resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
     "downloadAll": "Download everything",
@@ -515,8 +516,8 @@
     "body": "Sorry, we couldn’t find the page you were looking for."
   },
   "Support": {
-    "title": "Support",
-    "metaDescription": "Answers to common questions about Peels.",
+    "title": "Help",
+    "metaDescription": "Answers and contact options for getting help with Peels.",
     "subtitle": "Find answers to common questions, or use the contact options below if you need a hand.",
     "peelsFaq": {
       "title": "About Peels",
@@ -546,11 +547,11 @@
       },
       "promotion": {
         "question": "How can I promote Peels to my community?",
-        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Head to <share>Spread the word</share> for social tiles, printable posters, and copy examples you can adapt for your community. Don’t hesitate to <email>reach out</email> if you need something more specific.</p>"
+        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Head to our <share>Share page</share> for social tiles, printable posters, and copy examples you can adapt for your community. Don’t hesitate to <email>reach out</email> if you need something more specific.</p>"
       },
       "government": {
         "question": "I represent a government or institution. How can we get involved?",
-        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Our <partners>partners page</partners> shows how other councils mention Peels, and <share>Spread the word</share> has copy and assets you can adapt.</p><p>Please <email>email us</email> if you need something more specific for your community.</p>"
+        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Our <partners>partners page</partners> shows how other councils mention Peels, and our <share>Share page</share> has copy and assets you can adapt.</p><p>Please <email>email us</email> if you need something more specific for your community.</p>"
       }
     },
     "supportFaq": {

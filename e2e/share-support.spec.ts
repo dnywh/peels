@@ -6,6 +6,7 @@ test("share page presents the sharing resources download", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Spread the word", exact: true })
   ).toBeVisible();
+  await expect(page).toHaveTitle(/Share · Peels/);
   const downloadLink = page.getByRole("link", { name: "Download everything" });
 
   await expect(downloadLink).toHaveAttribute("href", /promo-kit\.zip/);
@@ -38,7 +39,7 @@ test("support page combines FAQ and contact options", async ({ page }) => {
   await page.goto("/support", { waitUntil: "domcontentloaded" });
 
   await expect(
-    page.getByRole("heading", { name: "Support", exact: true })
+    page.getByRole("heading", { name: "Help", exact: true })
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Using Peels" })
@@ -51,7 +52,7 @@ test("support page combines FAQ and contact options", async ({ page }) => {
   await expect(page.getByLabel("If you want to")).toBeVisible();
 
   await expect(
-    page.getByRole("contentinfo").getByRole("link", { name: "Support" })
+    page.getByRole("contentinfo").getByRole("link", { name: "Help" })
   ).toHaveAttribute("href", "/support");
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Contact" })
@@ -73,7 +74,8 @@ test("support promotion FAQ links to share", async ({ page }) => {
 
   await page.getByText("How can I promote Peels to my community?").click();
 
-  await expect(
-    page.getByRole("link", { name: "Spread the word" })
-  ).toHaveAttribute("href", "/share");
+  await expect(page.getByRole("link", { name: "Share page" })).toHaveAttribute(
+    "href",
+    "/share"
+  );
 });

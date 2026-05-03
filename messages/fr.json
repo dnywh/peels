@@ -186,11 +186,12 @@
     },
     "cta": {
       "title": "Vous voulez voir Peels dans votre communauté ?",
-      "body": "Commencez avec <share>Faire connaître Peels</share>, ou <email>écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre collectivité, groupe communautaire ou organisation."
+      "body": "Commencez avec notre <share>page Partager</share>, ou <email>écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre collectivité, groupe communautaire ou organisation."
     }
   },
   "Share": {
-    "title": "Faire connaître Peels",
+    "title": "Partager",
+    "heading": "Faire connaître Peels",
     "subtitle": "Des ressources pour les collectivités, groupes communautaires, cafés et voisin·es qui aident davantage de personnes à trouver du compostage communautaire.",
     "metaDescription": "Téléchargez des ressources Peels pour les collectivités, groupes communautaires, cafés et voisin·es qui aident davantage de personnes à trouver du compostage communautaire.",
     "downloadAll": "Tout télécharger",
@@ -516,7 +517,7 @@
   },
   "Support": {
     "title": "Aide",
-    "metaDescription": "Réponses aux questions fréquentes sur Peels.",
+    "metaDescription": "Réponses et options de contact pour obtenir de l’aide avec Peels.",
     "subtitle": "Trouvez des réponses aux questions fréquentes, ou utilisez les options de contact ci-dessous si vous avez besoin d’aide.",
     "peelsFaq": {
       "title": "À propos de Peels",
@@ -546,11 +547,11 @@
       },
       "promotion": {
         "question": "Comment puis-je faire connaître Peels dans ma communauté ?",
-        "answer": "<p>Merci d’abord ! Peels ne fonctionne qu’avec une carte vivante pleine d’annonces, donc faire passer le mot est essentiel.</p><p>Rendez-vous sur <share>Faire connaître Peels</share> pour trouver des visuels pour les réseaux sociaux, des affiches imprimables et des exemples de texte à adapter à votre communauté. N’hésitez pas à <email>nous écrire</email> si vous avez besoin de quelque chose de plus spécifique.</p>"
+        "answer": "<p>Merci d’abord ! Peels ne fonctionne qu’avec une carte vivante pleine d’annonces, donc faire passer le mot est essentiel.</p><p>Rendez-vous sur notre <share>page Partager</share> pour trouver des visuels pour les réseaux sociaux, des affiches imprimables et des exemples de texte à adapter à votre communauté. N’hésitez pas à <email>nous écrire</email> si vous avez besoin de quelque chose de plus spécifique.</p>"
       },
       "government": {
         "question": "Je représente un gouvernement ou une institution. Comment pouvons-nous participer ?",
-        "answer": "<p>Nous souhaitons travailler avec des équipes du secteur public, des organisations communautaires et des personnes du monde éducatif partout où Peels peut aider davantage de personnes à détourner les restes alimentaires de l’enfouissement. Notre <partners>page Partenaires</partners> montre comment d’autres collectivités mentionnent Peels, et <share>Faire connaître Peels</share> contient des textes et supports que vous pouvez adapter.</p><p><email>Écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre communauté.</p>"
+        "answer": "<p>Nous souhaitons travailler avec des équipes du secteur public, des organisations communautaires et des personnes du monde éducatif partout où Peels peut aider davantage de personnes à détourner les restes alimentaires de l’enfouissement. Notre <partners>page Partenaires</partners> montre comment d’autres collectivités mentionnent Peels, et notre <share>page Partager</share> contient des textes et supports que vous pouvez adapter.</p><p><email>Écrivez-nous</email> si vous avez besoin de quelque chose de plus spécifique pour votre communauté.</p>"
       }
     },
     "supportFaq": {
