@@ -39,7 +39,7 @@ export default async function SiteFooter() {
 
       <StyledNav>
         <Link href={siteConfig.links.about}>{t("App.about")}</Link>
-        <Link href={siteConfig.links.support}>{t("Support.title")}</Link>
+        <Link href={siteConfig.links.help}>{t("Support.title")}</Link>
         <Link href={siteConfig.links.partners}>{t("Partners.title")}</Link>
         <Link href={siteConfig.links.newsletter}>{t("Newsletter.title")}</Link>
         {/* <Link href={siteConfig.links.colophon}>Colophon</Link> */}

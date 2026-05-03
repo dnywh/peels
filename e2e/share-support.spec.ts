@@ -35,8 +35,8 @@ test("promo-kit redirects to share", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("support page combines FAQ and contact options", async ({ page }) => {
-  await page.goto("/support", { waitUntil: "domcontentloaded" });
+test("help page combines FAQ and contact options", async ({ page }) => {
+  await page.goto("/help", { waitUntil: "domcontentloaded" });
 
   await expect(
     page.getByRole("heading", { name: "Help", exact: true })
@@ -53,24 +53,35 @@ test("support page combines FAQ and contact options", async ({ page }) => {
 
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Help" })
-  ).toHaveAttribute("href", "/support");
+  ).toHaveAttribute("href", "/help");
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Contact" })
   ).toHaveCount(0);
 });
 
-test("contact redirects to the support contact anchor", async ({ page }) => {
+test("contact redirects to the help contact anchor", async ({ page }) => {
   await page.goto("/contact?address=support", {
     waitUntil: "domcontentloaded",
   });
 
-  await expect(page).toHaveURL(/\/support\?address=support#contact$/);
+  await expect(page).toHaveURL(/\/help\?address=support#contact$/);
   await expect(page.locator("#contact")).toBeVisible();
   await expect(page.locator("select#contact-address")).toHaveValue("support");
 });
 
-test("support promotion FAQ links to share", async ({ page }) => {
-  await page.goto("/support", { waitUntil: "domcontentloaded" });
+test("support redirects to help", async ({ page }) => {
+  await page.goto("/support?address=support", {
+    waitUntil: "domcontentloaded",
+  });
+
+  await expect(page).toHaveURL(/\/help\?address=support$/);
+  await expect(
+    page.getByRole("heading", { name: "Help", exact: true })
+  ).toBeVisible();
+});
+
+test("help promotion FAQ links to share", async ({ page }) => {
+  await page.goto("/help", { waitUntil: "domcontentloaded" });
 
   await page.getByText("How can I promote Peels to my community?").click();
 

@@ -1,58 +1,24 @@
-import { Suspense } from "react";
-import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
+
 import { siteConfig } from "@/config/site";
-import StaticPageMain from "@/components/StaticPageMain";
-import StaticPageHeader from "@/components/StaticPageHeader";
-import StaticPageSection from "@/components/StaticPageSection";
-import SupportFaq from "@/components/SupportFaq";
-import PeelsFaq from "@/components/PeelsFaq";
-import HeaderBlock from "@/components/HeaderBlock";
-import EmailSelector from "@/components/EmailSelector/EmailSelector";
 
-export async function generateMetadata() {
-  const t = await getTranslations("Support");
-  const description = t("metaDescription");
+type SupportPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
-  return {
-    title: t("title"),
-    description,
-    openGraph: {
-      title: `${t("title")} · ${siteConfig.name}`,
-      description,
-    },
-  };
-}
+const getFirstValue = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
 
-export default function Support() {
-  const t = useTranslations("Support");
-  return (
-    <StaticPageMain>
-      <StaticPageHeader title={t("title")} subtitle={t("subtitle")} />
+export default async function Support({ searchParams }: SupportPageProps) {
+  const params = await searchParams;
+  const query = new URLSearchParams();
+  const address = getFirstValue(params?.address);
+  const via = getFirstValue(params?.via);
 
-      <StaticPageSection padding={null}>
-        <HeaderBlock>
-          <h2>{t("supportFaq.title")}</h2>
-        </HeaderBlock>
-        <SupportFaq />
-      </StaticPageSection>
+  if (address) query.set("address", address);
+  if (via) query.set("via", via);
 
-      <StaticPageSection>
-        <HeaderBlock>
-          <h2>{t("peelsFaq.title")}</h2>
-        </HeaderBlock>
-        <PeelsFaq />
-      </StaticPageSection>
+  const queryString = query.toString();
 
-      <StaticPageSection id="contact">
-        <HeaderBlock>
-          <h2>{t("contact.title")}</h2>
-          <p>{t("contact.subtitle")}</p>
-        </HeaderBlock>
-        <Suspense>
-          <EmailSelector />
-        </Suspense>
-      </StaticPageSection>
-    </StaticPageMain>
-  );
+  redirect(`${siteConfig.links.help}${queryString ? `?${queryString}` : ""}`);
 }

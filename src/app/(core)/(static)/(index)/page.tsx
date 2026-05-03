@@ -123,7 +123,9 @@ export default function Index() {
         <FooterBlock>
           <p>
             {t.rich("faq.footer", {
-              page: (chunks) => <Link href="/support">{chunks}</Link>,
+              page: (chunks) => (
+                <Link href={siteConfig.links.help}>{chunks}</Link>
+              ),
             })}
           </p>
         </FooterBlock>

@@ -21,6 +21,6 @@ export default async function Contact({ searchParams }: ContactPageProps) {
   const queryString = query.toString();
 
   redirect(
-    `${siteConfig.links.support}${queryString ? `?${queryString}` : ""}#contact`
+    `${siteConfig.links.help}${queryString ? `?${queryString}` : ""}#contact`
   );
 }
