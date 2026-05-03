@@ -1,5 +1,6 @@
 import { ArrowDownToLine } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { styled } from "next-yak";
 
 import HeaderBlock from "@/components/HeaderBlock";
@@ -11,6 +12,7 @@ import { theme } from "@/styles/theme.yak";
 import { getPromoKitUrl } from "@/utils/storage";
 
 const resourceKeys = ["digital", "print", "copy", "workshop"] as const;
+const copyExampleKeys = ["shortest", "medium", "long"] as const;
 
 export async function generateMetadata() {
   const t = await getTranslations("Share");
@@ -61,6 +63,30 @@ export default async function SharePage() {
             </ResourceCard>
           ))}
         </ResourceGrid>
+      </StaticPageSection>
+
+      <StaticPageSection>
+        <HeaderBlock>
+          <h2>{t("copyExamples.title")}</h2>
+          <p>{t("copyExamples.subtitle")}</p>
+        </HeaderBlock>
+
+        <CopyExampleList>
+          {copyExampleKeys.map((exampleKey) => (
+            <CopyExampleCard key={exampleKey}>
+              <h3>{t(`copyExamples.items.${exampleKey}.title`)}</h3>
+              <p>{t(`copyExamples.items.${exampleKey}.body`)}</p>
+            </CopyExampleCard>
+          ))}
+        </CopyExampleList>
+
+        <ExampleNote>
+          {t.rich("copyExamples.partnersNote", {
+            partners: (chunks) => (
+              <Link href={siteConfig.links.partners}>{chunks}</Link>
+            ),
+          })}
+        </ExampleNote>
       </StaticPageSection>
     </StaticPageMain>
   );
@@ -161,5 +187,52 @@ const ResourceCard = styled.article`
     color: ${theme.colors.text.ui.quaternary};
     font-size: ${theme.typography.size.p.md};
     line-height: ${theme.typography.lineHeight.p.md};
+  }
+`;
+
+const CopyExampleList = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: ${theme.spacing.container.maxWidth.media};
+`;
+
+const CopyExampleCard = styled.article`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: calc(${theme.spacing.unit} * 3);
+  background: ${theme.colors.background.top};
+  border: 1px solid ${theme.colors.border.base};
+  border-radius: ${theme.corners.base};
+
+  & h3 {
+    color: ${theme.colors.text.primary};
+    font-size: 1.125rem;
+    line-height: ${theme.typography.lineHeight.h};
+  }
+
+  & p {
+    color: ${theme.colors.text.secondary};
+    font-size: ${theme.typography.size.p.lg};
+    line-height: ${theme.typography.lineHeight.p.lg};
+  }
+`;
+
+const ExampleNote = styled.p`
+  max-width: ${theme.spacing.container.maxWidth.text};
+  color: ${theme.colors.text.ui.quaternary};
+  font-size: ${theme.typography.size.p.md};
+  line-height: ${theme.typography.lineHeight.p.md};
+  text-align: center;
+
+  & a {
+    color: ${theme.colors.text.brand.primary};
+    font-weight: 500;
+  }
+
+  & a:visited {
+    color: ${theme.colors.text.brand.primary};
   }
 `;

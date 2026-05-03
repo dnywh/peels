@@ -217,6 +217,25 @@
           "body": "Des supports pour stands, ateliers et événements communautaires où les gens peuvent découvrir Peels en personne."
         }
       }
+    },
+    "copyExamples": {
+      "title": "Exemples de texte",
+      "subtitle": "N’hésitez pas à adapter ces propositions à vos besoins. Elles sont simplement fournies comme points de départ, en plusieurs longueurs.",
+      "items": {
+        "shortest": {
+          "title": "Le plus court",
+          "body": "Peels met en relation les personnes qui ont des restes alimentaires avec celles qui compostent."
+        },
+        "medium": {
+          "title": "Moyen",
+          "body": "Peels met en relation les personnes qui ont des restes alimentaires avec celles qui peuvent les composter. Rendez-vous sur peels.app pour trouver, ou devenir, un·e voisin·e ou jardin communautaire qui accepte les restes alimentaires près de chez vous."
+        },
+        "long": {
+          "title": "Long",
+          "body": "Vous cherchez un point de dépôt pour le compost ? Trouvez via Peels un·e voisin·e ou un jardin communautaire qui accepte les restes alimentaires. Vous ne produisez pas assez de compost, ou vous voulez voir moins de gaspillage alimentaire finir en décharge ? Créez une annonce pour accepter les restes de vos voisin·es. En savoir plus sur peels.app."
+        }
+      },
+      "partnersNote": "Pour voir des exemples concrets de la façon dont des collectivités et organisations parlent de Peels, consultez notre <partners>page Partenaires</partners>."
     }
   },
   "SignUp": {

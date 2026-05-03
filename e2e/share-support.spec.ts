@@ -18,12 +18,21 @@ test("share page presents the sharing resources download", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Print assets" })
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Copy examples" })
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Shortest" })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Workshop resources" })
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Copy examples" })
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Peels connects folks with food scraps to those who compost."
+    )
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Partners page" })
+  ).toHaveAttribute("href", "/partners");
 });
 
 test("promo-kit redirects to share", async ({ page }) => {

@@ -217,6 +217,25 @@
           "body": "Display-friendly pieces for stalls, workshops, and community events where people can learn about Peels in person."
         }
       }
+    },
+    "copyExamples": {
+      "title": "Copy examples",
+      "subtitle": "Please feel free to adapt any of these options to fit your needs. They’re provided simply as starting points, at various lengths.",
+      "items": {
+        "shortest": {
+          "title": "Shortest",
+          "body": "Peels connects folks with food scraps to those who compost."
+        },
+        "medium": {
+          "title": "Medium",
+          "body": "Peels connects folks with food scraps to those who can compost them. Go to peels.app to find (or become) a neighbour or community garden that accepts food scraps near you."
+        },
+        "long": {
+          "title": "Long",
+          "body": "Looking for a compost drop-off? Find a neighbour or community garden that accepts food scraps via Peels. Can’t produce enough compost of your own, or want to see less food waste go to landfill? Create a listing to accept scraps from neighbours. Learn more at peels.app."
+        }
+      },
+      "partnersNote": "For real-world examples of how councils and organisations talk about Peels, see our <partners>Partners page</partners>."
     }
   },
   "SignUp": {

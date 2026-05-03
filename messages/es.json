@@ -217,6 +217,25 @@
           "body": "Materiales para puestos, talleres y eventos comunitarios donde la gente puede conocer Peels en persona."
         }
       }
+    },
+    "copyExamples": {
+      "title": "Ejemplos de texto",
+      "subtitle": "Puedes adaptar cualquiera de estas opciones a tus necesidades. Son simplemente puntos de partida, con distintas extensiones.",
+      "items": {
+        "shortest": {
+          "title": "Más corto",
+          "body": "Peels conecta a personas con restos de comida con quienes hacen compost."
+        },
+        "medium": {
+          "title": "Medio",
+          "body": "Peels conecta a personas con restos de comida con quienes pueden compostarlos. Ve a peels.app para encontrar, o convertirte en, un vecino o huerto comunitario que acepta restos de comida cerca de ti."
+        },
+        "long": {
+          "title": "Largo",
+          "body": "¿Buscas dónde dejar tus restos para compostar? Encuentra mediante Peels un vecino o huerto comunitario que acepte restos de comida. ¿No produces suficiente compost por tu cuenta, o quieres que menos residuos alimentarios acaben en el vertedero? Crea un anuncio para aceptar restos de tus vecinos. Más información en peels.app."
+        }
+      },
+      "partnersNote": "Para ver ejemplos reales de cómo ayuntamientos y organizaciones hablan de Peels, visita nuestra <partners>página de socios</partners>."
     }
   },
   "SignUp": {
