@@ -13,6 +13,7 @@ import StaticPageSection from "@/components/StaticPageSection";
 import NewsletterIssuesList from "@/components/NewsletterIssuesList";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
+import { homepageCouncilMentions } from "@/content/partnerMentions";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import { sharedCenteredPageStackStyles } from "@/styles/commonStyles";
@@ -73,19 +74,18 @@ export default function Index() {
           <p>{t("partners.subtitle")}</p>
         </HeaderBlock>
         <PartnerProofPanel>
-          <FeaturedPartner href={siteConfig.links.partners}>
+          <FeaturedPartner href={siteConfig.links.partners} title="LOCCAL">
             <Image
-              src="/partners/loccal.png"
+              src="/partners/loccal.webp"
               alt={t("partners.loccalLogoAlt")}
               width={192}
               height={144}
             />
-            <span>{t("partners.featuredPartner")}</span>
           </FeaturedPartner>
           <PartnerProofList aria-label={t("partners.listLabel")}>
-            <li>Merri-bek City Council</li>
-            <li>Northern Beaches Council</li>
-            <li>Waverley Council</li>
+            {homepageCouncilMentions.map((mention) => (
+              <li key={mention.name}>{mention.name}</li>
+            ))}
           </PartnerProofList>
         </PartnerProofPanel>
         <FooterBlock>
@@ -195,7 +195,7 @@ const FeaturedPartner = styled(Link)`
   justify-content: center;
   gap: 0.75rem;
   min-height: 12rem;
-  padding: 2.25rem;
+  padding: 2.75rem;
   text-align: center;
   color: ${theme.colors.text.secondary};
   text-decoration: none;
@@ -216,11 +216,6 @@ const FeaturedPartner = styled(Link)`
     width: min(100%, 10rem);
     height: auto;
     object-fit: contain;
-  }
-
-  & span {
-    font-size: ${theme.typography.size.p.sm};
-    font-weight: 500;
   }
 `;
 
@@ -246,7 +241,7 @@ const PartnerProofList = styled.ul`
   }
 
   @media (min-width: 640px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 
     & li:not(:first-child) {
       border-top: none;

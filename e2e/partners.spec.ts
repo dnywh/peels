@@ -17,7 +17,7 @@ test("partners page shows partner and council mention proof", async ({
   await expect(page.getByAltText("LOCCAL logo")).toBeVisible();
 
   await expect(
-    page.getByRole("heading", { name: "Mentioned by councils" })
+    page.getByRole("heading", { name: "Council mentions" })
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Waverley Council" })
@@ -28,6 +28,22 @@ test("partners page shows partner and council mention proof", async ({
   await expect(
     page.getByRole("link", { name: "Northern Beaches Council" })
   ).toBeVisible();
+
+  await expect(
+    page.getByRole("heading", { name: "Community highlights" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Responsible Cafes" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Sustainable Gardening Australia" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "The Sustainable Occasion" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "How to Save Our Planet" })
+  ).toBeVisible();
 });
 
 test("homepage and footer link to partners", async ({ page }) => {
@@ -37,9 +53,13 @@ test("homepage and footer link to partners", async ({ page }) => {
     page.getByRole("heading", { name: "In good company" })
   ).toBeVisible();
   await expect(page.getByAltText("LOCCAL logo")).toBeVisible();
-  await expect(page.getByText("Community partner: LOCCAL")).toBeVisible();
+  await expect(page.getByText("Community partner: LOCCAL")).toHaveCount(0);
+  await expect(page.getByText("Merri-bek City Council")).toBeVisible();
+  await expect(page.getByText("Northern Beaches Council")).toBeVisible();
+  await expect(page.getByText("Waverley Council")).toBeVisible();
+  await expect(page.getByText("North Sydney Council")).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "See all partners and mentions" })
+    page.getByRole("link", { name: "See all our partners" })
   ).toHaveAttribute("href", "/partners");
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Partners" })

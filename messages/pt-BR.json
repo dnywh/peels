@@ -150,11 +150,10 @@
     },
     "partners": {
       "title": "Em boa companhia",
-      "subtitle": "O Peels aparece em páginas de conselhos municipais e conta com o apoio de pessoas que fazem a compostagem comunitária crescer de baixo para cima.",
-      "featuredPartner": "Parceiro comunitário: LOCCAL",
+      "subtitle": "O Peels aparece em páginas de conselhos municipais e conta com o apoio de pessoas que tornam a compostagem comunitária mais fácil de encontrar.",
       "listLabel": "Parceiros em destaque e menções de conselhos municipais",
       "loccalLogoAlt": "Logotipo da LOCCAL",
-      "footer": "<page>Ver todos os parceiros e menções</page>."
+      "footer": "E muitas outras. <page>Veja todos os nossos parceiros</page> e menções."
     },
     "faq": {
       "title": "Talvez você esteja se perguntando...",
@@ -164,11 +163,11 @@
   },
   "Partners": {
     "title": "Parceiros",
-    "subtitle": "Os conselhos municipais e organizações comunitárias que ajudam mais restos de comida a virar compostagem, não aterro.",
+    "subtitle": "Conselhos municipais e grupos comunitários parceiros que ajudam mais restos de comida a virar compostagem, não aterro.",
     "metaDescription": "Conheça as organizações comunitárias e conselhos municipais que ajudam o Peels a levar opções práticas de compostagem mais longe.",
     "communityPartners": {
       "title": "Parceiros comunitários",
-      "subtitle": "Amigos do Peels que cultivam a mesma cultura local e prática de compostagem.",
+      "subtitle": "Organizações que ajudam mais pessoas a descobrir opções práticas de compostagem lideradas pela comunidade.",
       "visitPartner": "Visitar {name}",
       "loccal": {
         "logoAlt": "Logotipo da LOCCAL",
@@ -176,12 +175,17 @@
       }
     },
     "councilMentions": {
-      "title": "Mencionado por conselhos municipais",
+      "title": "Menções de conselhos municipais",
       "subtitle": "Estes conselhos municipais e páginas do setor público mencionam o Peels como uma forma de moradores encontrarem ou compartilharem opções de compostagem comunitária.",
       "listLabel": "Conselhos municipais e páginas do setor público que mencionam o Peels"
     },
+    "communityMediaMentions": {
+      "title": "Destaques da comunidade",
+      "subtitle": "Estas organizações, boletins e artigos ajudam moradores locais a encontrar o Peels.",
+      "listLabel": "Organizações comunitárias, boletins e artigos que mencionam o Peels"
+    },
     "cta": {
-      "title": "Quer listar o Peels para a sua comunidade?",
+      "title": "Quer ver o Peels na sua comunidade?",
       "body": "Comece pelo <promoKit>kit promocional</promoKit> ou <email>envie-nos um e-mail</email> se precisar de algo mais específico para o seu conselho municipal, grupo comunitário ou organização."
     }
   },
@@ -500,11 +504,11 @@
         "answer": "O Peels é um projeto não comercial, guiado pela comunidade. No futuro, talvez nos formalizemos como organização sem fins lucrativos e aceitemos bolsas ou patrocínios para continuar o desenvolvimento, mas não pretendemos cobrar pelo serviço."
       },
       "fogo": {
-        "question": "Já tenho coleta municipal de restos de comida. A compostagem comunitária continua relevante?",
+        "question": "Já tenho coleta de restos de comida. A compostagem comunitária é relevante?",
         "answer": "Sem dúvida. Muita gente ainda não tem acesso a uma coleta confiável de restos de comida, e a compostagem comunitária também pode ser mais local, social e educativa do que um serviço municipal ou de cidade. O Peels foi pensado para apoiar tanto os lugares que já têm coleta como os que ainda a estão a construir."
       },
       "mapPrivacy": {
-        "question": "Não me sinto confortável em colocar o meu endereço em um mapa. Ainda posso participar?",
+        "question": "Não me sinto confortável em compartilhar o meu endereço. Ainda posso participar?",
         "answer": "<p>Sim! Incentivamos pessoas com anúncios residenciais a deixar a localização mais aproximada, como uma esquina próxima, e a usar um pseudônimo se isso for mais confortável.</p><p>Mesmo que você escolha usar o seu nome real e enviar uma foto, apenas membros do Peels com sessão iniciada conseguem ver esses detalhes.</p>"
       },
       "getInvolved": {
@@ -516,7 +520,7 @@
         "answer": "<p>Antes de mais nada, obrigado! O Peels só funciona com um mapa vivo de anúncios, por isso espalhar a palavra é fundamental.</p><p>Dê uma olhada no nosso <promoKit>kit promocional</promoKit>, que inclui peças para redes sociais e cartazes imprimíveis nos formatos US letter e A4. Fique à vontade para <email>escrever para nós</email> se precisar de algo mais específico para a sua comunidade.</p>"
       },
       "government": {
-        "question": "Represento um governo local ou regional. Como posso participar?",
+        "question": "Represento um governo ou instituição. Como podemos participar?",
         "answer": "<p>Temos interesse em colaborar com equipes do setor público, organizações comunitárias e pessoas da área da educação em qualquer lugar onde o Peels possa ajudar a desviar mais restos de comida do aterro. A nossa <partners>página de parceiros</partners> mostra como outros conselhos municipais mencionam o Peels, e o kit promocional traz textos e materiais que você pode adaptar.</p><p><email>Envie-nos um e-mail</email> se precisar de algo mais específico para a sua comunidade.</p>"
       }
     },
