@@ -259,4 +259,8 @@ const Callout = styled.div`
     ${sharedAnchorTagStyles}
     color: ${theme.colors.text.brand.primary};
   }
+
+  & a:visited {
+    color: ${theme.colors.text.brand.primary};
+  }
 `;
