@@ -563,16 +563,12 @@
     },
     "contact": {
       "title": "Contact",
-      "subtitle": "Choisissez l’adresse la plus adaptée à votre demande et nous vous répondrons."
+      "subtitle": "Nous serions ravi·es d’avoir de vos nouvelles."
     }
   },
   "Contact": {
     "title": "Nous contacter",
     "subtitle": "Voici comment joindre l’équipe Peels.",
-    "via": {
-      "therot": "Bonjour, personne lectrice de The Rot ! Merci d’être passée par ici. Voici un contact direct pour joindre Danny.",
-      "general": "Bonjour ! Voici quelques adresses e-mail pour nous contacter."
-    },
     "contactLabel": "Si vous voulez",
     "contactOptions": {
       "general": "Poser une question générale",

@@ -69,6 +69,15 @@ test("contact redirects to the help contact anchor", async ({ page }) => {
   await expect(page.locator("select#contact-address")).toHaveValue("support");
 });
 
+test("contact ignores old source-specific routes", async ({ page }) => {
+  await page.goto("/contact?via=therot", {
+    waitUntil: "domcontentloaded",
+  });
+
+  await expect(page).toHaveURL(/\/help#contact$/);
+  await expect(page.locator("select#contact-address")).toHaveValue("general");
+});
+
 test("support redirects to help", async ({ page }) => {
   await page.goto("/support?address=support", {
     waitUntil: "domcontentloaded",

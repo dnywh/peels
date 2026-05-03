@@ -20,28 +20,9 @@ type CopyStatus = "idle" | "copying" | "copied" | "error";
 export default function EmailSelector() {
   const searchParams = useSearchParams();
   const t = useTranslations("Contact");
-  // Via search param possible values
-  // therot
-  const via = searchParams.get("via");
-
-  // Address search param possible values
   const address = searchParams.get("address");
 
-  // Map via parameters to their corresponding addresses
-  const viaToAddressMap: Partial<Record<string, EmailType>> = {
-    therot: "dw",
-    // Add more mappings as needed:
-    // podcast: "general",
-    // conference: "dw",
-  };
-
-  // Determine the address: via mapping takes precedence, then address param, then default
-  let finalAddress: string = "general";
-  if (via && viaToAddressMap[via]) {
-    finalAddress = viaToAddressMap[via];
-  } else if (address) {
-    finalAddress = address;
-  }
+  const requestedAddress = address ?? "general";
 
   // Validate the final address against valid options
   const validAddresses: EmailType[] = [
@@ -50,8 +31,10 @@ export default function EmailSelector() {
     "general",
     "newsletter",
   ];
-  const validatedAddress = validAddresses.includes(finalAddress as EmailType)
-    ? (finalAddress as EmailType)
+  const validatedAddress = validAddresses.includes(
+    requestedAddress as EmailType
+  )
+    ? (requestedAddress as EmailType)
     : "general";
 
   const [selectedEmailType, setSelectedEmailType] = useState(validatedAddress);
@@ -84,7 +67,6 @@ export default function EmailSelector() {
     <FormSection>
       <PostageStamp />
       <SubSectionTop>
-        {via && <p>{via === "therot" ? t("via.therot") : t("via.general")}</p>}
         <Field>
           <Label htmlFor="contact-address">{t("contactLabel")}</Label>
           <Select

@@ -13,10 +13,8 @@ export default async function Support({ searchParams }: SupportPageProps) {
   const params = await searchParams;
   const query = new URLSearchParams();
   const address = getFirstValue(params?.address);
-  const via = getFirstValue(params?.via);
 
   if (address) query.set("address", address);
-  if (via) query.set("via", via);
 
   const queryString = query.toString();
 
