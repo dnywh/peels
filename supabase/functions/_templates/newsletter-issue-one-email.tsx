@@ -260,7 +260,7 @@ export const NewsletterIssueOneEmail = ({
         </EmailTextEmphasized>{" "}
         Whether it’s to councils, waste educators, or local networks, any help
         is appreciated. Our{" "}
-        <EmailLink href={`${siteUrl}/promo-kit`}>promo kit</EmailLink> is also a
+        <EmailLink href={`${siteUrl}/share`}>Share page</EmailLink> is also a
         good place to start.
       </EmailParagraph>
 

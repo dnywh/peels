@@ -10,7 +10,7 @@ import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageSection from "@/components/StaticPageSection";
 import { siteConfig } from "@/config/site";
 import { theme } from "@/styles/theme.yak";
-import { getPromoKitUrl } from "@/utils/storage";
+import { getShareResourcesUrl } from "@/utils/storage";
 
 const resourceKeys = ["digital", "print", "workshop"] as const;
 const copyExampleKeys = ["shortest", "medium", "long"] as const;
@@ -39,7 +39,7 @@ export default async function SharePage() {
       <StaticPageSection padding={null}>
         <IntroPanel>
           <DownloadButton
-            href={getPromoKitUrl()}
+            href={getShareResourcesUrl()}
             target="_blank"
             rel="noopener"
           >

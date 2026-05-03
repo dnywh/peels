@@ -9,7 +9,7 @@ test("share page presents the sharing resources download", async ({ page }) => {
   await expect(page).toHaveTitle(/Share · Peels/);
   const downloadLink = page.getByRole("link", { name: "Download everything" });
 
-  await expect(downloadLink).toHaveAttribute("href", /promo-kit\.zip/);
+  await expect(downloadLink).toHaveAttribute("href", /share-peels\.zip/);
   await expect(downloadLink).toHaveAttribute("target", "_blank");
   await expect(downloadLink).toHaveAttribute("rel", "noopener");
   await expect(

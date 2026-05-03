@@ -88,8 +88,8 @@ export const NewsletterIssueTwoEmail = ({
         </EmailListItem>
       </EmailUnorderedList>
       <EmailParagraph>
-        You can see the full list in our{" "}
-        <EmailLink href={`${siteUrl}/promo-kit`}>promo kit</EmailLink>.
+        You can see the full list on our{" "}
+        <EmailLink href={`${siteUrl}/partners`}>Partners page</EmailLink>.
       </EmailParagraph>
       <EmailAside title="About this email">
         {externalAudience ? (
