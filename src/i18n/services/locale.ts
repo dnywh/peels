@@ -3,7 +3,10 @@
 import { cookies, headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
-import { hasSupabaseAuthCookie } from "@/utils/supabase/authCookies";
+import {
+  authStateHeaderName,
+  authStateSignedIn,
+} from "@/utils/supabase/authState";
 import {
   defaultLocale,
   type Locale,
@@ -25,7 +28,7 @@ export async function getUserLocale() {
   );
   const fallbackLocale = cookieLocale ?? acceptedLocales[0] ?? defaultLocale;
 
-  if (!hasSupabaseAuthCookie(cookieStore.getAll())) {
+  if (headersList.get(authStateHeaderName) !== authStateSignedIn) {
     return fallbackLocale;
   }
 

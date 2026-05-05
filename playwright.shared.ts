@@ -1,10 +1,12 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
 
 const playwrightHost = process.env.PLAYWRIGHT_HOST ?? "127.0.0.1";
+const playwrightBaseURLHost =
+  process.env.PLAYWRIGHT_BASE_URL_HOST ?? "127.0.0.1";
 const playwrightPort = process.env.PLAYWRIGHT_PORT ?? "3000";
 const playwrightBaseURL = process.env.PLAYWRIGHT_BASE_URL;
 const baseURL =
-  playwrightBaseURL ?? `http://${playwrightHost}:${playwrightPort}`;
+  playwrightBaseURL ?? `http://${playwrightBaseURLHost}:${playwrightPort}`;
 const shouldStartWebServer = !playwrightBaseURL;
 
 const sharedPlaywrightUse: PlaywrightTestConfig["use"] = {
