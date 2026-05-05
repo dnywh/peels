@@ -48,6 +48,25 @@ test("public footer locale switch refreshes the page locale", async ({
   await expect(localeSelect).toHaveValue("de");
 });
 
+test("public footer locale picker ignores stale auth cookies", async ({
+  baseURL,
+  page,
+}) => {
+  await page.context().addCookies([
+    {
+      name: "sb-stale-auth-token",
+      value: "stale",
+      url: baseURL ?? "http://127.0.0.1:3000",
+      httpOnly: true,
+      sameSite: "Lax",
+    },
+  ]);
+
+  await page.goto("/");
+
+  await expect(page.getByTestId("locale-picker-select")).toBeVisible();
+});
+
 test("profile locale change persists after refresh", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
   await delayProfileActionRequests(page);

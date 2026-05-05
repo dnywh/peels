@@ -1,32 +1,23 @@
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import PeelsLogo from "@/components/PeelsLogo";
 import LocalePicker from "@/components/LocalePicker";
 import { styled } from "next-yak";
 import { getTranslations } from "next-intl/server";
-import { hasSupabaseAuthCookie } from "@/utils/supabase/authCookies";
-import { createClient } from "@/utils/supabase/server";
+import {
+  authStateHeaderName,
+  authStateSignedIn,
+} from "@/utils/supabase/authState";
 import { theme } from "@/styles/theme.yak";
 
 const currentYear = new Date().getFullYear();
 
 export default async function SiteFooter() {
   const t = await getTranslations();
-  const cookieStore = await cookies();
-  const hasPossibleSignedInSession = hasSupabaseAuthCookie(
-    cookieStore.getAll()
-  );
-  let hasSignedInSession = false;
-
-  if (hasPossibleSignedInSession) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    hasSignedInSession = Boolean(user?.id);
-  }
+  const headersList = await headers();
+  const hasSignedInSession =
+    headersList.get(authStateHeaderName) === authStateSignedIn;
 
   return (
     <StyledFooter>
