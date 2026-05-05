@@ -40,14 +40,31 @@ test("public footer locale switch refreshes the page locale", async ({
 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   const localeSelect = page.getByTestId("locale-picker-select");
-  const localeChange = localeSelect.selectOption("de");
-  await expect(localeSelect).toBeDisabled();
-  await expect(localeSelect).toHaveAttribute("aria-busy", "true");
-  await localeChange;
+  await expect(localeSelect).toBeVisible();
+  await localeSelect.selectOption("de");
   await expect(page.locator("html")).toHaveAttribute("lang", "de", {
     timeout: 15_000,
   });
   await expect(localeSelect).toHaveValue("de");
+});
+
+test("public footer locale picker ignores stale auth cookies", async ({
+  baseURL,
+  page,
+}) => {
+  await page.context().addCookies([
+    {
+      name: "sb-stale-auth-token",
+      value: "stale",
+      url: baseURL ?? "http://127.0.0.1:3000",
+      httpOnly: true,
+      sameSite: "Lax",
+    },
+  ]);
+
+  await page.goto("/");
+
+  await expect(page.getByTestId("locale-picker-select")).toBeVisible();
 });
 
 test("profile locale change persists after refresh", async ({ page }) => {

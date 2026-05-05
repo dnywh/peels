@@ -53,8 +53,8 @@ export function getStaticFontUrl(assetPath: string) {
   );
 }
 
-export function getPromoKitUrl() {
-  return getStaticAssetUrl("promo-kit.zip");
+export function getShareResourcesUrl() {
+  return getStaticAssetUrl("share-peels.zip");
 }
 
 export function getNewsletterIssueImageUrl(

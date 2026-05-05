@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { getPromoKitUrl } from "@/utils/storage";
+import { permanentRedirect } from "next/navigation";
+import { siteConfig } from "@/config/site";
 
 export default function PromoKitPage() {
-  redirect(getPromoKitUrl());
+  permanentRedirect(siteConfig.links.share);
 }

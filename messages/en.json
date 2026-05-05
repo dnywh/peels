@@ -148,10 +148,92 @@
       "subtitle": "Occasional updates on how Peels is supporting community composting around the world.",
       "footer": "Check out our <page>Newsletter</page> page for all past issues and how to subscribe."
     },
+    "partners": {
+      "title": "In good company",
+      "subtitle": "Peels is listed by councils and supported by people making community composting easier to find.",
+      "listLabel": "Featured partners and council mentions",
+      "loccalLogoAlt": "LOCCAL logo",
+      "logoLinkLabel": "See all partners and mentions",
+      "footer": "And so many more. <page>See all our partners</page> and mentions."
+    },
     "faq": {
       "title": "You might be wondering...",
       "subtitle": "Doesn’t this already exist? What’s your mission? You’ve got questions, we’ve (hopefully) got answers.",
-      "footer": "Head to our <page>Support</page> page if you have more questions."
+      "footer": "Still have questions? We’re <page>happy to help</page>."
+    }
+  },
+  "Partners": {
+    "title": "Partners",
+    "subtitle": "Fellow councils and community groups who help food scraps find their way into compost, not landfill.",
+    "metaDescription": "Meet the community organisations and councils helping Peels spread practical composting options further.",
+    "communityPartners": {
+      "title": "Community partners",
+      "subtitle": "Organisations helping more people discover practical, community-led composting options.",
+      "visitPartner": "Visit {name}",
+      "loccal": {
+        "logoAlt": "LOCCAL logo",
+        "description": "The Local Community Compost Alliance of Australia supports community-led and community-operated composting across Australia."
+      }
+    },
+    "councilMentions": {
+      "title": "Council mentions",
+      "subtitle": "These councils and public-sector pages mention Peels as a way for residents to find or share community composting options.",
+      "listLabel": "Councils and public-sector pages that mention Peels"
+    },
+    "communityMediaMentions": {
+      "title": "Community highlights",
+      "subtitle": "These organisations, newsletters, and articles help local residents find Peels.",
+      "listLabel": "Community organisations, newsletters, and articles that mention Peels"
+    },
+    "cta": {
+      "title": "Want to see Peels in your community?",
+      "body": "Start with our <share>Share page</share>, or <email>email us</email> if you need something more specific for your council, community group, or organisation."
+    }
+  },
+  "Share": {
+    "title": "Share",
+    "heading": "Spread the word",
+    "subtitle": "Resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
+    "metaDescription": "Download Peels sharing resources for councils, community groups, cafes, and neighbours helping more people find community composting.",
+    "downloadAll": "Download everything",
+    "downloadHint": "One ZIP with social tiles, print assets, and workshop-friendly resources.",
+    "resources": {
+      "title": "Inside the ZIP",
+      "subtitle": "A simple bundle of ready-to-use visuals and print materials for your local community.",
+      "items": {
+        "digital": {
+          "title": "Digital tiles",
+          "body": "Square and portrait graphics for Instagram, newsletters, and community noticeboards."
+        },
+        "print": {
+          "title": "Print assets",
+          "body": "Posters, letterbox drops, signs, and stickers for cafes, libraries, markets, and shared spaces."
+        },
+        "workshop": {
+          "title": "Workshop resources",
+          "body": "Display-friendly pieces for stalls, workshops, and community events where people can learn about Peels in person."
+        }
+      }
+    },
+    "copyExamples": {
+      "title": "Copy examples",
+      "subtitle": "Please feel free to adapt any of these options to fit your needs. They’re provided simply as starting points, at various lengths.",
+      "listLabel": "Copywriting examples for sharing Peels",
+      "items": {
+        "shortest": {
+          "title": "Shortest",
+          "body": "Peels connects folks with food scraps to those who compost."
+        },
+        "medium": {
+          "title": "Medium",
+          "body": "Peels connects folks with food scraps to those who can compost them. Go to peels.app to find (or become) a neighbour or community garden that accepts food scraps near you."
+        },
+        "long": {
+          "title": "Long",
+          "body": "Looking for a compost drop-off? Find a neighbour or community garden that accepts food scraps via Peels. Can’t produce enough compost of your own, or want to see less food waste go to landfill? Create a listing to accept scraps from neighbours. Learn more at peels.app."
+        }
+      },
+      "partnersNote": "See our <partners>Partners page</partners> for real-world examples of how councils and organisations talk about Peels."
     }
   },
   "SignUp": {
@@ -451,9 +533,9 @@
     "body": "Sorry, we couldn’t find the page you were looking for."
   },
   "Support": {
-    "title": "Support",
-    "metaDescription": "Answers to common questions about Peels.",
-    "subtitle": "We periodically update this page with answers to common questions. Feel free to <link>contact us</link> for anything else.",
+    "title": "Help",
+    "metaDescription": "Answers and contact options for getting help with Peels.",
+    "subtitle": "Find answers to common questions, or use the contact options below if you need a hand.",
     "peelsFaq": {
       "title": "About Peels",
       "whosBehind": {
@@ -469,11 +551,11 @@
         "answer": "Peels is a non-commercial, community-led project. We may incorporate as a not-for-profit in the future and accept grant funding or sponsorships for further development, but we never intend to start charging for the service."
       },
       "fogo": {
-        "question": "I already have municipal food-scrap collection. Is community composting still relevant?",
+        "question": "I already have food scrap collection. Is community composting relevant?",
         "answer": "Absolutely. Many people still don’t have access to reliable food-scrap collection, and community composting can also be more local, social, and educational than a council or city-wide service. Peels is designed to support both the places that already have collection and the places still building it."
       },
       "mapPrivacy": {
-        "question": "I’m not comfortable putting my address on a map. Can I still participate?",
+        "question": "I’m not comfortable sharing my address. Can I still participate?",
         "answer": "<p>Yes! We encourage folks with residential listings to ‘roughen’ their location to a nearby street corner or similar, and use a pseudonym if they feel more comfortable doing so.</p><p>Even if you choose to use your real name and upload a photo, only signed in Peels members can see those details.</p>"
       },
       "getInvolved": {
@@ -482,11 +564,11 @@
       },
       "promotion": {
         "question": "How can I promote Peels to my community?",
-        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Check out our <promoKit>promo kit</promoKit> which includes social media tiles and printable posters in both US letter and A4 sizes. Don’t hesitate to <email>reach out</email> if you need something more specific for your community.</p>"
+        "answer": "<p>First off, thank you! Peels only works with a thriving map of listings, so getting the word out is crucial.</p><p>Head to our <share>Share page</share> for social tiles, printable posters, and copy examples you can adapt for your community. Don’t hesitate to <email>reach out</email> if you need something more specific.</p>"
       },
       "government": {
-        "question": "I represent local or regional government. How can I get involved?",
-        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Please <email>email us</email>.</p>"
+        "question": "I represent a government or institution. How can we get involved?",
+        "answer": "<p>We’re keen to work with public-sector teams, community organisations, and educators anywhere Peels can help more people keep food scraps out of landfill. Our <partners>Partners page</partners> shows how other councils mention Peels, and our <share>Share page</share> has copy and assets you can adapt.</p><p>Please <email>email us</email> if you need something more specific for your community.</p>"
       }
     },
     "supportFaq": {
@@ -495,15 +577,15 @@
         "question": "How do I manage which emails I receive?",
         "answer": "<p>We only send emails that are necessary to keep Peels working. That includes one or two account-related emails, and emails to notify you whenever a fellow Peels member has sent you message.</p><p>Email notifications are required for listing hosts, as it means a prospective donor has enquired about dropping off scraps (or picking something up). Hosts who longer wish to receive emails can either hide their listing from the map (making it impossible for new donors to reach out) or delete their listing entirely (meaning previous donors can no longer message, either).</p><p>People without listings cannot be messaged (and thus emailed) unless they initiate contact with a host first.</p><p>Anyone can report or block individual Peels members via our messaging system. Blocking someone means they can no longer message or email you.</p>"
       }
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "We’d love to hear from you."
     }
   },
   "Contact": {
     "title": "Contact",
     "subtitle": "Here’s how to reach the Peels team.",
-    "via": {
-      "therot": "Hello, reader of The Rot! Thanks for stopping by. Here’s a direct line to Danny.",
-      "general": "Hello there! Here are some email addresses you can contact us at."
-    },
     "contactLabel": "If you want to",
     "contactOptions": {
       "general": "Make a general enquiry",

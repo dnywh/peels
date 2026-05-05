@@ -1,6 +1,13 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
 
-const baseURL = "http://127.0.0.1:3000";
+const playwrightHost = process.env.PLAYWRIGHT_HOST ?? "127.0.0.1";
+const playwrightBaseURLHost =
+  process.env.PLAYWRIGHT_BASE_URL_HOST ?? "127.0.0.1";
+const playwrightPort = process.env.PLAYWRIGHT_PORT ?? "3000";
+const playwrightBaseURL = process.env.PLAYWRIGHT_BASE_URL;
+const baseURL =
+  playwrightBaseURL ?? `http://${playwrightBaseURLHost}:${playwrightPort}`;
+const shouldStartWebServer = !playwrightBaseURL;
 
 const sharedPlaywrightUse: PlaywrightTestConfig["use"] = {
   baseURL,
@@ -40,4 +47,5 @@ const sharedWebServer = {
   timeout: 120_000,
 };
 
-export { sharedPlaywrightConfig, sharedWebServer };
+export { sharedPlaywrightConfig, sharedWebServer, shouldStartWebServer };
+export { playwrightHost, playwrightPort };

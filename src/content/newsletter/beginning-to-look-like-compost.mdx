@@ -3,7 +3,6 @@ import Link from "next/link";
 import StrongLink from "@/components/StrongLink";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
 import RemoteImage from "@/components/RemoteImage";
-import { getPromoKitUrl } from "@/utils/storage";
 
 import NewsletterTitle from "@/components/NewsletterTitle";
 import NewsletterAside from "@/components/NewsletterAside";
@@ -36,7 +35,7 @@ Since the start of the year, 25+ local and state governments, industry bodies, a
 - <StrongLink href="https://responsiblecafes.org/peels-replaces-sharewaste/" target="_blank">Responsible Cafes</StrongLink> featured Peels in a community composting guide.
 - <StrongLink href="https://therot.substack.com/p/meet-danny-and-his-compost-app-peels" target="_blank">The Rot</StrongLink> interviewed me about how Peels started.
 
-You can see the full list in our <StrongLink href={getPromoKitUrl()}>promo kit</StrongLink>.
+You can see the full list on our <StrongLink href={siteConfig.links.partners}>partners page</StrongLink>.
 
 <NewsletterAside />
 

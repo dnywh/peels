@@ -20,28 +20,9 @@ type CopyStatus = "idle" | "copying" | "copied" | "error";
 export default function EmailSelector() {
   const searchParams = useSearchParams();
   const t = useTranslations("Contact");
-  // Via search param possible values
-  // therot
-  const via = searchParams.get("via");
-
-  // Address search param possible values
   const address = searchParams.get("address");
 
-  // Map via parameters to their corresponding addresses
-  const viaToAddressMap: Partial<Record<string, EmailType>> = {
-    therot: "dw",
-    // Add more mappings as needed:
-    // podcast: "general",
-    // conference: "dw",
-  };
-
-  // Determine the address: via mapping takes precedence, then address param, then default
-  let finalAddress: string = "general";
-  if (via && viaToAddressMap[via]) {
-    finalAddress = viaToAddressMap[via];
-  } else if (address) {
-    finalAddress = address;
-  }
+  const requestedAddress = address ?? "general";
 
   // Validate the final address against valid options
   const validAddresses: EmailType[] = [
@@ -50,8 +31,10 @@ export default function EmailSelector() {
     "general",
     "newsletter",
   ];
-  const validatedAddress = validAddresses.includes(finalAddress as EmailType)
-    ? (finalAddress as EmailType)
+  const validatedAddress = validAddresses.includes(
+    requestedAddress as EmailType
+  )
+    ? (requestedAddress as EmailType)
     : "general";
 
   const [selectedEmailType, setSelectedEmailType] = useState(validatedAddress);
@@ -84,11 +67,10 @@ export default function EmailSelector() {
     <FormSection>
       <PostageStamp />
       <SubSectionTop>
-        {via && <p>{via === "therot" ? t("via.therot") : t("via.general")}</p>}
         <Field>
-          <Label htmlFor="contact">{t("contactLabel")}</Label>
+          <Label htmlFor="contact-address">{t("contactLabel")}</Label>
           <Select
-            id="contact"
+            id="contact-address"
             value={selectedEmailType}
             onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
               setSelectedEmailType(event.target.value as EmailType)
@@ -103,8 +85,8 @@ export default function EmailSelector() {
         </Field>
       </SubSectionTop>
       <SubSectionBottom>
-        <Field>
-          <Label>{t("emailLabel")}</Label>
+        <EmailLabelText>{t("emailLabel")}</EmailLabelText>
+        <EmailActionRow>
           <EncodedEmailLink
             address={siteConfig.encodedEmail[selectedEmailType]}
           >
@@ -112,18 +94,18 @@ export default function EmailSelector() {
               {siteConfig.encodedEmail[selectedEmailType]}
             </DecodedSpan>
           </EncodedEmailLink>
-        </Field>
-        <Button
-          onClick={handleCopy}
-          loading={copyStatus === "copying"}
-          loadingText={t("copyButton.copying")}
-        >
-          {copyStatus === "copied"
-            ? t("copyButton.copied")
-            : copyStatus === "error"
-              ? t("copyButton.copyFailed")
-              : t("copyButton.copyAddress")}
-        </Button>
+          <Button
+            onClick={handleCopy}
+            loading={copyStatus === "copying"}
+            loadingText={t("copyButton.copying")}
+          >
+            {copyStatus === "copied"
+              ? t("copyButton.copied")
+              : copyStatus === "error"
+                ? t("copyButton.copyFailed")
+                : t("copyButton.copyAddress")}
+          </Button>
+        </EmailActionRow>
       </SubSectionBottom>
     </FormSection>
   );
@@ -155,18 +137,38 @@ const SubSectionBottom = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: ${theme.spacing.forms.gap.field};
+
   & a {
     font-weight: 600;
     font-size: 1.5rem;
   }
+
+  @media (min-width: 768px) {
+    width: 100%;
+
+    & a {
+      font-size: 1.75rem;
+    }
+  }
+`;
+
+const EmailLabelText = styled.p`
+  color: ${theme.colors.text.ui.primary};
+  font-weight: 500;
+`;
+
+const EmailActionRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+
   @media (min-width: 768px) {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    & a {
-      font-size: 1.75rem;
-    }
   }
 `;

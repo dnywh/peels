@@ -148,10 +148,92 @@
       "subtitle": "Actualizaciones ocasionales sobre cómo Peels apoya el compostaje comunitario en todo el mundo.",
       "footer": "Visita nuestra página de <page>Boletines</page> para ver ediciones anteriores y cómo suscribirte."
     },
+    "partners": {
+      "title": "En buena compañía",
+      "subtitle": "Peels aparece en páginas de ayuntamientos y cuenta con el apoyo de personas que hacen que el compostaje comunitario sea más fácil de encontrar.",
+      "listLabel": "Socios destacados y menciones de ayuntamientos",
+      "loccalLogoAlt": "Logotipo de LOCCAL",
+      "logoLinkLabel": "Ver todos los socios y menciones",
+      "footer": "Y muchas más. <page>Ver todos nuestros socios</page> y menciones."
+    },
     "faq": {
       "title": "Quizás te preguntes...",
       "subtitle": "¿Esto no existe ya? ¿Cuál es nuestra misión? Tienes preguntas, y (esperamos) tenemos respuestas.",
-      "footer": "Visita nuestra página de <page>Ayuda</page> si tienes más preguntas."
+      "footer": "¿Te queda alguna pregunta? <page>Estamos para ayudarte</page>."
+    }
+  },
+  "Partners": {
+    "title": "Socios",
+    "subtitle": "Ayuntamientos y grupos comunitarios afines que ayudan a que más restos de comida acaben en compost y no en vertederos.",
+    "metaDescription": "Conoce las organizaciones comunitarias y ayuntamientos que ayudan a Peels a llevar opciones prácticas de compostaje más lejos.",
+    "communityPartners": {
+      "title": "Socios comunitarios",
+      "subtitle": "Organizaciones que ayudan a más personas a descubrir opciones prácticas de compostaje impulsadas por la comunidad.",
+      "visitPartner": "Visitar {name}",
+      "loccal": {
+        "logoAlt": "Logotipo de LOCCAL",
+        "description": "La Local Community Compost Alliance of Australia apoya el compostaje liderado y gestionado por comunidades en toda Australia."
+      }
+    },
+    "councilMentions": {
+      "title": "Menciones de ayuntamientos",
+      "subtitle": "Estos ayuntamientos y páginas del sector público mencionan Peels como una forma para que sus residentes encuentren o compartan opciones de compostaje comunitario.",
+      "listLabel": "Ayuntamientos y páginas del sector público que mencionan Peels"
+    },
+    "communityMediaMentions": {
+      "title": "Destacados comunitarios",
+      "subtitle": "Estas organizaciones, boletines y artículos ayudan a residentes locales a encontrar Peels.",
+      "listLabel": "Organizaciones comunitarias, boletines y artículos que mencionan Peels"
+    },
+    "cta": {
+      "title": "¿Quieres ver Peels en tu comunidad?",
+      "body": "Empieza con nuestra <share>página Compartir</share> o <email>escríbenos</email> si necesitas algo más específico para tu ayuntamiento, grupo comunitario u organización."
+    }
+  },
+  "Share": {
+    "title": "Compartir",
+    "heading": "Comparte Peels",
+    "subtitle": "Recursos para ayuntamientos, grupos comunitarios, cafés y vecinos que ayudan a que más personas encuentren compostaje comunitario.",
+    "metaDescription": "Descarga recursos para compartir Peels pensados para ayuntamientos, grupos comunitarios, cafés y vecinos que ayudan a más personas a encontrar compostaje comunitario.",
+    "downloadAll": "Descargar todo",
+    "downloadHint": "Un ZIP con piezas para redes sociales, recursos impresos y materiales útiles para talleres.",
+    "resources": {
+      "title": "Dentro del ZIP",
+      "subtitle": "Un paquete sencillo de materiales visuales e impresos listos para usar en tu comunidad local.",
+      "items": {
+        "digital": {
+          "title": "Piezas digitales",
+          "body": "Gráficos cuadrados y verticales para Instagram, boletines y tablones comunitarios."
+        },
+        "print": {
+          "title": "Recursos impresos",
+          "body": "Pósteres, buzoneo, carteles y pegatinas para cafés, bibliotecas, mercados y espacios compartidos."
+        },
+        "workshop": {
+          "title": "Recursos para talleres",
+          "body": "Materiales para puestos, talleres y eventos comunitarios donde la gente puede conocer Peels en persona."
+        }
+      }
+    },
+    "copyExamples": {
+      "title": "Ejemplos de texto",
+      "subtitle": "Puedes adaptar cualquiera de estas opciones a tus necesidades. Son simplemente puntos de partida, con distintas extensiones.",
+      "listLabel": "Ejemplos de texto para compartir Peels",
+      "items": {
+        "shortest": {
+          "title": "Más corto",
+          "body": "Peels conecta a personas con restos de comida con quienes hacen compost."
+        },
+        "medium": {
+          "title": "Medio",
+          "body": "Peels conecta a personas con restos de comida con quienes pueden compostarlos. Ve a peels.app para encontrar, o convertirte en, un vecino o huerto comunitario que acepta restos de comida cerca de ti."
+        },
+        "long": {
+          "title": "Largo",
+          "body": "¿Buscas dónde dejar tus restos para compostar? Encuentra mediante Peels un vecino o huerto comunitario que acepte restos de comida. ¿No produces suficiente compost por tu cuenta, o quieres que menos residuos alimentarios acaben en el vertedero? Crea un anuncio para aceptar restos de tus vecinos. Más información en peels.app."
+        }
+      },
+      "partnersNote": "Visita nuestra <partners>página de socios</partners> para ver ejemplos reales de cómo ayuntamientos y organizaciones hablan de Peels."
     }
   },
   "SignUp": {
@@ -451,9 +533,9 @@
     "body": "Lo sentimos, no pudimos encontrar la página que buscabas."
   },
   "Support": {
-    "title": "Soporte",
-    "metaDescription": "Respuestas a preguntas frecuentes sobre Peels.",
-    "subtitle": "Actualizamos esta página periódicamente con respuestas a preguntas comunes. Si necesitas algo más, puedes <link>contactarnos</link>.",
+    "title": "Ayuda",
+    "metaDescription": "Respuestas y opciones de contacto para recibir ayuda con Peels.",
+    "subtitle": "Encuentra respuestas a preguntas frecuentes, o usa las opciones de contacto más abajo si necesitas ayuda.",
     "peelsFaq": {
       "title": "Acerca de Peels",
       "whosBehind": {
@@ -469,11 +551,11 @@
         "answer": "Peels es un proyecto no comercial dirigido por la comunidad. Podemos incorporar como una organización sin ánimo de lucro en el futuro y aceptar subvenciones o patrocinios para futuros desarrollos pero nunca pretendemos empezar a cobrar por el servicio."
       },
       "fogo": {
-        "question": "Ya tengo recogida municipal de restos de comida. ¿Sigue siendo relevante el compostaje comunitario?",
+        "question": "Ya tengo recogida de restos de comida. ¿Sigue siendo relevante el compostaje comunitario?",
         "answer": "Sí. Mucha gente todavía no tiene acceso a un servicio fiable de recogida de restos de comida, y el compostaje comunitario también puede ser más local, social y educativo que un servicio municipal o de ciudad. Peels está pensado para apoyar tanto a los lugares que ya cuentan con recogida como a los que todavía la están construyendo."
       },
       "mapPrivacy": {
-        "question": "No me siento cómodo poniendo mi dirección en un mapa. ¿Puedo participar todavía?",
+        "question": "No me siento cómodo compartiendo mi dirección. ¿Puedo participar?",
         "answer": "<p>¡Sí! Recomendamos a quienes tienen anuncios residenciales que hagan su ubicación más aproximada, por ejemplo moviéndola a una esquina cercana o a un punto similar, y que usen un seudónimo si así se sienten más cómodos.</p><p>Incluso si decides usar tu nombre real y subir una foto, solo los miembros de Peels que hayan iniciado sesión podrán ver esos detalles.</p>"
       },
       "getInvolved": {
@@ -482,11 +564,11 @@
       },
       "promotion": {
         "question": "¿Cómo puedo promocionar Peels a mi comunidad?",
-        "answer": "<p>Antes que nada, ¡gracias! Peels solo funciona con un mapa vivo de anuncios, así que correr la voz es fundamental.</p><p>Echa un vistazo a nuestro <promoKit>kit promocional</promoKit>, que incluye piezas para redes sociales y pósteres imprimibles en tamaños A4 y US letter. No dudes en <email>escribirnos</email> si necesitas algo más específico para tu comunidad.</p>"
+        "answer": "<p>Antes que nada, ¡gracias! Peels solo funciona con un mapa vivo de anuncios, así que correr la voz es fundamental.</p><p>Ve a nuestra <share>página Compartir</share> para encontrar piezas para redes sociales, pósteres imprimibles y ejemplos de texto que puedes adaptar para tu comunidad. No dudes en <email>escribirnos</email> si necesitas algo más específico.</p>"
       },
       "government": {
-        "question": "Represento a un gobierno local o regional. ¿Cómo puedo participar?",
-        "answer": "<p>Nos interesa colaborar con equipos del sector público, organizaciones comunitarias y personas dedicadas a la educación ambiental allí donde Peels pueda ayudar a desviar más restos de comida del vertedero. <email>Escríbenos</email>.</p>"
+        "question": "Represento a un gobierno o una institución. ¿Cómo podemos participar?",
+        "answer": "<p>Nos interesa colaborar con equipos del sector público, organizaciones comunitarias y personas dedicadas a la educación ambiental allí donde Peels pueda ayudar a desviar más restos de comida del vertedero. Nuestra <partners>página de Socios</partners> muestra cómo otros ayuntamientos mencionan Peels, y nuestra <share>página Compartir</share> incluye textos y recursos que puedes adaptar.</p><p><email>Escríbenos</email> si necesitas algo más específico para tu comunidad.</p>"
       }
     },
     "supportFaq": {
@@ -495,15 +577,15 @@
         "question": "¿Cómo puedo administrar qué correos electrónicos recibo?",
         "answer": "<p>Solo enviamos los correos necesarios para que Peels funcione. Eso incluye uno o dos correos relacionados con la cuenta y avisos cuando otro miembro de Peels te ha enviado un mensaje.</p><p>Las notificaciones por correo son obligatorias para quienes alojan anuncios, ya que significan que una persona interesada ha preguntado por dejar restos o por recoger algo. Si una persona anfitriona ya no quiere recibir correos, puede ocultar su anuncio del mapa o eliminarlo por completo.</p><p>Las personas sin anuncios no pueden recibir mensajes, y por tanto tampoco correos, a menos que inicien el contacto con una persona anfitriona primero.</p><p>Cualquier persona puede denunciar o bloquear a otros miembros de Peels mediante nuestro sistema de mensajería. Bloquear a alguien significa que ya no podrá enviarte mensajes ni correos.</p>"
       }
+    },
+    "contact": {
+      "title": "Contacto",
+      "subtitle": "Nos encantará saber de ti."
     }
   },
   "Contact": {
     "title": "Contacto",
     "subtitle": "Así puedes contactar con el equipo de Peels.",
-    "via": {
-      "therot": "Hola, lector de The Rot. Gracias por pasar por aquí. Esta es una línea directa con Danny.",
-      "general": "Hola. Aquí tienes algunas direcciones de correo para contactarnos."
-    },
     "contactLabel": "Si quieres",
     "contactOptions": {
       "general": "Hacer una consulta general",
