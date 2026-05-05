@@ -74,7 +74,11 @@ export default function Index() {
           <p>{t("partners.subtitle")}</p>
         </HeaderBlock>
         <PartnerProofPanel>
-          <FeaturedPartner href={siteConfig.links.partners} title="LOCCAL">
+          <FeaturedPartner
+            href={siteConfig.links.partners}
+            aria-label={t("partners.logoLinkLabel")}
+            title="LOCCAL"
+          >
             <Image
               src="/partners/loccal.webp"
               alt={t("partners.loccalLogoAlt")}

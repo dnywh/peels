@@ -63,6 +63,9 @@ test("homepage and footer link to partners", async ({ page }) => {
   await expect(page.getByText("Waverley Council")).toBeVisible();
   await expect(page.getByText("North Sydney Council")).toBeVisible();
   await expect(
+    page.getByRole("link", { name: "See all partners and mentions" })
+  ).toHaveAttribute("href", "/partners");
+  await expect(
     page.getByRole("link", { name: "See all our partners" })
   ).toHaveAttribute("href", "/partners");
   await expect(

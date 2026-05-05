@@ -79,20 +79,25 @@ test("help page combines FAQ and contact options", async ({ page }) => {
 });
 
 test("contact redirects to the help contact anchor", async ({ page }) => {
-  const redirectResponse = await page.request.get("/contact?address=support", {
-    maxRedirects: 0,
-  });
+  const redirectResponse = await page.request.get(
+    "/contact?address=support&utm_source=old-contact",
+    {
+      maxRedirects: 0,
+    }
+  );
 
   expect(redirectResponse.status()).toBe(308);
   expect(redirectResponse.headers().location).toMatch(
-    /\/help\?address=support#contact$/
+    /\/help\?address=support&utm_source=old-contact#contact$/
   );
 
-  await page.goto("/contact?address=support", {
+  await page.goto("/contact?address=support&utm_source=old-contact", {
     waitUntil: "domcontentloaded",
   });
 
-  await expect(page).toHaveURL(/\/help\?address=support#contact$/);
+  await expect(page).toHaveURL(
+    /\/help\?address=support&utm_source=old-contact#contact$/
+  );
   await expect(page.locator("#contact")).toBeVisible();
   await expect(page.locator("select#contact-address")).toHaveValue("support");
 });
@@ -102,25 +107,30 @@ test("contact ignores old source-specific routes", async ({ page }) => {
     waitUntil: "domcontentloaded",
   });
 
-  await expect(page).toHaveURL(/\/help#contact$/);
+  await expect(page).toHaveURL(/\/help\?via=therot#contact$/);
   await expect(page.locator("select#contact-address")).toHaveValue("general");
 });
 
 test("support redirects to help", async ({ page }) => {
-  const redirectResponse = await page.request.get("/support?address=support", {
-    maxRedirects: 0,
-  });
+  const redirectResponse = await page.request.get(
+    "/support?address=support&utm_source=old-support",
+    {
+      maxRedirects: 0,
+    }
+  );
 
   expect(redirectResponse.status()).toBe(308);
   expect(redirectResponse.headers().location).toMatch(
-    /\/help\?address=support$/
+    /\/help\?address=support&utm_source=old-support$/
   );
 
-  await page.goto("/support?address=support", {
+  await page.goto("/support?address=support&utm_source=old-support", {
     waitUntil: "domcontentloaded",
   });
 
-  await expect(page).toHaveURL(/\/help\?address=support$/);
+  await expect(page).toHaveURL(
+    /\/help\?address=support&utm_source=old-support$/
+  );
   await expect(
     page.getByRole("heading", { name: "Help", exact: true })
   ).toBeVisible();
