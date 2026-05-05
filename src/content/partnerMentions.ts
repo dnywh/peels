@@ -87,12 +87,28 @@ export const councilMentions = [
   },
 ] as const;
 
-export const homepageCouncilMentions = [
-  councilMentions[6],
-  councilMentions[2],
-  councilMentions[0],
-  councilMentions[1],
+const homepageCouncilMentionNames = [
+  "Merri-bek City Council",
+  "Northern Beaches Council",
+  "Waverley Council",
+  "North Sydney Council",
 ] as const;
+
+function getCouncilMentionByName(
+  councilName: (typeof homepageCouncilMentionNames)[number]
+) {
+  const mention = councilMentions.find(({ name }) => name === councilName);
+
+  if (!mention) {
+    throw new Error(`Missing homepage council mention: ${councilName}`);
+  }
+
+  return mention;
+}
+
+export const homepageCouncilMentions = homepageCouncilMentionNames.map(
+  getCouncilMentionByName
+);
 
 export const communityMediaMentions = [
   {

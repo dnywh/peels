@@ -4,12 +4,15 @@ import {
   playwrightPort,
   sharedPlaywrightConfig,
   sharedWebServer,
+  shouldStartWebServer,
 } from "./playwright.shared";
 
 export default defineConfig({
   ...sharedPlaywrightConfig,
-  webServer: {
-    ...sharedWebServer,
-    command: `npm run dev -- --hostname ${playwrightHost} --port ${playwrightPort}`,
-  },
+  webServer: shouldStartWebServer
+    ? {
+        ...sharedWebServer,
+        command: `npm run dev -- --hostname ${playwrightHost} --port ${playwrightPort}`,
+      }
+    : undefined,
 });

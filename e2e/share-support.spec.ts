@@ -39,6 +39,13 @@ test("share page presents the sharing resources download", async ({ page }) => {
 });
 
 test("promo-kit redirects to share", async ({ page }) => {
+  const redirectResponse = await page.request.get("/promo-kit", {
+    maxRedirects: 0,
+  });
+
+  expect(redirectResponse.status()).toBe(308);
+  expect(redirectResponse.headers().location).toMatch(/\/share$/);
+
   await page.goto("/promo-kit", { waitUntil: "domcontentloaded" });
 
   await expect(page).toHaveURL(/\/share$/);
@@ -72,6 +79,15 @@ test("help page combines FAQ and contact options", async ({ page }) => {
 });
 
 test("contact redirects to the help contact anchor", async ({ page }) => {
+  const redirectResponse = await page.request.get("/contact?address=support", {
+    maxRedirects: 0,
+  });
+
+  expect(redirectResponse.status()).toBe(308);
+  expect(redirectResponse.headers().location).toMatch(
+    /\/help\?address=support#contact$/
+  );
+
   await page.goto("/contact?address=support", {
     waitUntil: "domcontentloaded",
   });
@@ -91,6 +107,15 @@ test("contact ignores old source-specific routes", async ({ page }) => {
 });
 
 test("support redirects to help", async ({ page }) => {
+  const redirectResponse = await page.request.get("/support?address=support", {
+    maxRedirects: 0,
+  });
+
+  expect(redirectResponse.status()).toBe(308);
+  expect(redirectResponse.headers().location).toMatch(
+    /\/help\?address=support$/
+  );
+
   await page.goto("/support?address=support", {
     waitUntil: "domcontentloaded",
   });

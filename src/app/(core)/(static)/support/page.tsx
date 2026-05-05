@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 
@@ -18,5 +18,7 @@ export default async function Support({ searchParams }: SupportPageProps) {
 
   const queryString = query.toString();
 
-  redirect(`${siteConfig.links.help}${queryString ? `?${queryString}` : ""}`);
+  permanentRedirect(
+    `${siteConfig.links.help}${queryString ? `?${queryString}` : ""}`
+  );
 }

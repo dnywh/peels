@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 
@@ -18,7 +18,7 @@ export default async function Contact({ searchParams }: ContactPageProps) {
 
   const queryString = query.toString();
 
-  redirect(
+  permanentRedirect(
     `${siteConfig.links.help}${queryString ? `?${queryString}` : ""}#contact`
   );
 }
