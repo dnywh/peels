@@ -10,6 +10,7 @@ import {
 } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { usePathname } from "next/navigation";
+import { getChatThreadIdFromPathname } from "@/features/chat/chatRoutes";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 
 type ThreadReadStatus = Record<string, boolean>;
@@ -32,10 +33,6 @@ const UnreadMessagesContext = createContext<
   UnreadMessagesContextValue | undefined
 >(undefined);
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
-
-function getThreadIdFromPathname(pathname: string) {
-  return pathname.match(/\/chats\/([^/]+)/)?.[1] ?? null;
-}
 
 export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -166,7 +163,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
               return;
             }
 
-            const threadIdInPath = getThreadIdFromPathname(currentPath);
+            const threadIdInPath = getChatThreadIdFromPathname(currentPath);
 
             if (threadIdInPath !== message.thread_id) {
               setUnreadCount((previousCount) => previousCount + 1);

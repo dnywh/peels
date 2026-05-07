@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 import { useTabBar } from "@/contexts/TabBarContext";
+import { getChatThreadIdFromPathname } from "@/features/chat/chatRoutes";
 
 import ThreadsList from "@/components/ThreadsList";
 import ChatWindow from "@/components/ChatWindow";
@@ -63,10 +64,6 @@ export const ChatWindowEmptyState = styled.div`
   }
 `;
 
-function getThreadIdFromPathname(pathname: string) {
-  return pathname.match(/\/chats\/([^/]+)/)?.[1] ?? null;
-}
-
 export default function ChatPageClient({
   user,
   initialThreads,
@@ -77,8 +74,9 @@ export default function ChatPageClient({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const currentThreadId = getThreadIdFromPathname(pathname);
+  const currentThreadId = getChatThreadIdFromPathname(pathname);
   const { setTabBarProps } = useTabBar();
+  const t = useTranslations("Chat");
 
   useEffect(() => {
     setTabBarProps((prev) => ({
@@ -102,7 +100,20 @@ export default function ChatPageClient({
         currentThreadId={currentThreadId}
       />
 
-      <ChatWindowWrapper>{children}</ChatWindowWrapper>
+      <ChatWindowWrapper>
+        {currentThreadId ? (
+          children
+        ) : (
+          <ChatWindowEmptyState>
+            <PeelsLogo size={64} color="emptyState" />
+            <p>
+              {initialThreads.length > 0
+                ? t("emptyStateSelectThread")
+                : t("emptyStateFirstHost")}
+            </p>
+          </ChatWindowEmptyState>
+        )}
+      </ChatWindowWrapper>
     </ChatPageLayout>
   );
 }
