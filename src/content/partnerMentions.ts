@@ -128,6 +128,10 @@ export const communityMediaMentions = [
     href: "https://www.urbananchors.org/drop-off-sites",
   },
   {
+    name: "Urban Revolution",
+    href: "https://www.urbanrevolution.com.au/blogs/articles/perth-recycling-guide",
+  },
+  {
     name: "Canberra Environment Centre",
     href: "https://www.canberraenvironment.org/media/international-compost-awareness-week",
   },
