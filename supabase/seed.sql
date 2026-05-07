@@ -68,6 +68,27 @@ values
     '',
     false,
     false
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    'authenticated',
+    'authenticated',
+    'demo-neighbour@peels.local',
+    '$2a$10$lyW9fBTRH9ArXpWTMVbIAe8CudAvmToBbIuMIrIAloEqw.ExDcKsS',
+    timezone('utc', now()),
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    '{"first_name":"Morgan","email_verified":true}'::jsonb,
+    timezone('utc', now()),
+    timezone('utc', now()),
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false
   )
 on conflict (id) do update
 set
@@ -104,6 +125,16 @@ values
     '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
     '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
     '{"sub":"9a0c62fc-bf50-4f45-ba6c-5b9051c2712a","email":"demo-donor@peels.local","email_verified":false,"phone_verified":false}'::jsonb,
+    'email',
+    timezone('utc', now()),
+    timezone('utc', now()),
+    timezone('utc', now())
+  ),
+  (
+    'b1d8c1e9-81d5-49ea-9340-f52cf9386c9f',
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    '{"sub":"6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921","email":"demo-neighbour@peels.local","email_verified":false,"phone_verified":false}'::jsonb,
     'email',
     timezone('utc', now()),
     timezone('utc', now()),
@@ -145,6 +176,18 @@ values
     '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
     'Riley',
     'demo/sunflowers.jpg',
+    false,
+    'http://127.0.0.1:3000',
+    'local-seed',
+    'cli',
+    'fresh-computer',
+    false,
+    false
+  ),
+  (
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    'Morgan',
+    'demo/mayo.jpg',
     false,
     'http://127.0.0.1:3000',
     'local-seed',
@@ -275,6 +318,25 @@ values
     false,
     false,
     '{}'::integer[]
+  ),
+  (
+    1006,
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    'Camperdown Community Garden',
+    'A small garden crew accepting easy kitchen scraps for a shared neighbourhood compost bay.',
+    extensions.st_setsrid(extensions.st_makepoint(151.1787, -33.8874), 4326)::extensions.geography,
+    array['Fruit scraps', 'Vegetable peels', 'Coffee grounds'],
+    array['Meat', 'Dairy', 'Plastic bags'],
+    array['demo/caddy.jpg', 'demo/garden.jpg'],
+    array['https://www.peels.app/help'],
+    true,
+    'community',
+    'demo/farm.jpg',
+    'AU',
+    'Camperdown',
+    false,
+    false,
+    '{}'::integer[]
   )
 on conflict (id) do update
 set
@@ -302,10 +364,11 @@ set slug = case id
   when 1003 then 'demo-newtown-worm-farm'
   when 1004 then 'demo-tempe-share-shed'
   when 1005 then 'demo-stanmore-bakery'
+  when 1006 then 'demo-camperdown-community-garden'
 end
-where id in (1001, 1002, 1003, 1004, 1005);
+where id in (1001, 1002, 1003, 1004, 1005, 1006);
 
-select setval('public.listings_id_seq', 1005, true);
+select setval('public.listings_id_seq', 1006, true);
 
 insert into public.chat_threads (
   id,
@@ -314,13 +377,28 @@ insert into public.chat_threads (
   initiator_id,
   owner_id
 )
-values (
-  '33333333-3333-4333-8333-333333333333',
-  timezone('utc', now()) - interval '2 hours',
-  1001,
-  '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
-  '2c9ae20c-2469-4e60-84b3-39268697717c'
-)
+values
+  (
+    '33333333-3333-4333-8333-333333333333',
+    timezone('utc', now()) - interval '2 hours',
+    1001,
+    '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
+    '2c9ae20c-2469-4e60-84b3-39268697717c'
+  ),
+  (
+    '77777777-7777-4777-8777-777777777777',
+    timezone('utc', now()) - interval '50 minutes',
+    1006,
+    '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921'
+  ),
+  (
+    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    timezone('utc', now()) - interval '25 minutes',
+    1002,
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    '2c9ae20c-2469-4e60-84b3-39268697717c'
+  )
 on conflict (id) do update
 set
   created_at = excluded.created_at,
@@ -364,6 +442,38 @@ values
     '33333333-3333-4333-8333-333333333333',
     '2c9ae20c-2469-4e60-84b3-39268697717c',
     'Yes, absolutely. Small sealed containers are perfect.',
+    null
+  ),
+  (
+    '88888888-8888-4888-8888-888888888888',
+    timezone('utc', now()) - interval '45 minutes',
+    '77777777-7777-4777-8777-777777777777',
+    '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
+    'Hi Morgan, are banana peels okay if they are chopped up?',
+    timezone('utc', now()) - interval '40 minutes'
+  ),
+  (
+    '99999999-9999-4999-8999-999999999999',
+    timezone('utc', now()) - interval '35 minutes',
+    '77777777-7777-4777-8777-777777777777',
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    'Yes please. Chopped scraps break down much faster in this bay.',
+    null
+  ),
+  (
+    'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+    timezone('utc', now()) - interval '20 minutes',
+    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    '6f8e3c35-9b7f-42b0-ae3a-9b14bf7f8921',
+    'Hi Avery, can the cafe take a few buckets from our community garden working bee?',
+    timezone('utc', now()) - interval '15 minutes'
+  ),
+  (
+    'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+    timezone('utc', now()) - interval '10 minutes',
+    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    '2c9ae20c-2469-4e60-84b3-39268697717c',
+    'Yes, drop them by after 3 pm and I''ll add them to the cafe pickup.',
     null
   )
 on conflict (id) do update

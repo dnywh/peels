@@ -2,6 +2,7 @@
 import { theme } from "@/styles/theme.yak";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 
 import { useTabBar } from "@/contexts/TabBarContext";
 
@@ -11,9 +12,10 @@ import PeelsLogo from "@/components/PeelsLogo";
 
 import { styled } from "next-yak";
 import type { User } from "@supabase/supabase-js";
+import type { ReactNode } from "react";
 import type { ChatThreadListItem, ChatThreadView } from "@/types/chat";
 
-const ChatPageLayout = styled.main`
+export const ChatPageLayout = styled.main`
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -21,7 +23,7 @@ const ChatPageLayout = styled.main`
   width: 100%;
 `;
 
-const ChatWindowWrapper = styled.div`
+export const ChatWindowWrapper = styled.div`
   flex: 1;
   [data-thread-selected="true"] & {
     height: 100dvh;
@@ -39,7 +41,7 @@ const ChatWindowWrapper = styled.div`
   }
 `;
 
-const ChatWindowEmptyState = styled.div`
+export const ChatWindowEmptyState = styled.div`
   height: 100%;
   flex: 1;
   display: flex;
@@ -61,67 +63,80 @@ const ChatWindowEmptyState = styled.div`
   }
 `;
 
+function getThreadIdFromPathname(pathname: string) {
+  return pathname.match(/\/chats\/([^/]+)/)?.[1] ?? null;
+}
+
 export default function ChatPageClient({
   user,
   initialThreads,
-  initialThreadId,
-  selectedThread,
-  referenceNow,
+  children,
 }: {
   user: User;
   initialThreads: ChatThreadListItem[];
-  initialThreadId?: string | null;
-  selectedThread?: ChatThreadView | null;
-  referenceNow: string;
+  children: ReactNode;
 }) {
-  const t = useTranslations("Chat");
+  const pathname = usePathname();
+  const currentThreadId = getThreadIdFromPathname(pathname);
   const { setTabBarProps } = useTabBar();
 
-  // Hide TabBar when thread is selected
   useEffect(() => {
     setTabBarProps((prev) => ({
       ...prev,
-      visible: !initialThreadId,
+      visible: !currentThreadId,
     }));
 
-    // Restore visibility on unmount
     return () => {
       setTabBarProps((prev) => ({
         ...prev,
         visible: true,
       }));
     };
-  }, [initialThreadId, setTabBarProps]);
+  }, [currentThreadId, setTabBarProps]);
 
   return (
-    <ChatPageLayout data-thread-selected={!!initialThreadId}>
+    <ChatPageLayout data-thread-selected={!!currentThreadId}>
       <ThreadsList
         user={user}
         threads={initialThreads}
-        currentThreadId={initialThreadId}
+        currentThreadId={currentThreadId}
       />
 
-      <ChatWindowWrapper>
-        {selectedThread?.listing ? (
-          <ChatWindow
-            user={user}
-            listing={selectedThread.listing}
-            existingThread={selectedThread}
-            referenceNow={referenceNow}
-          />
-        ) : (
-          <ChatWindowEmptyState>
-            <PeelsLogo size={64} color="emptyState" />
-            <p>
-              {initialThreadId
-                ? t("emptyStateUnavailable")
-                : initialThreads.length === 0
-                  ? t("emptyStateFirstHost")
-                  : t("emptyStateSelectThread")}
-            </p>
-          </ChatWindowEmptyState>
-        )}
-      </ChatWindowWrapper>
+      <ChatWindowWrapper>{children}</ChatWindowWrapper>
     </ChatPageLayout>
+  );
+}
+
+export function ChatConversationClient({
+  user,
+  hasThreads,
+  selectedThread,
+  referenceNow,
+}: {
+  user: User;
+  hasThreads: boolean;
+  selectedThread?: ChatThreadView | null;
+  referenceNow: string;
+}) {
+  const t = useTranslations("Chat");
+
+  if (selectedThread?.listing) {
+    return (
+      <ChatWindow
+        user={user}
+        listing={selectedThread.listing}
+        existingThread={selectedThread}
+        referenceNow={referenceNow}
+      />
+    );
+  }
+
+  return (
+    <ChatWindowEmptyState>
+      <PeelsLogo size={64} color="emptyState" />
+      <p>
+        {hasThreads ? t("emptyStateSelectThread") : t("emptyStateFirstHost")}
+      </p>
+    </ChatWindowEmptyState>
   );
 }

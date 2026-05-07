@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createClient } from "@/utils/supabase/client";
 import { usePathname } from "next/navigation";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
@@ -185,29 +192,40 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
     };
   }, [supabase, userId]);
 
-  function markThreadAsRead(threadId: string) {
-    setThreadReadStatus((previousStatus) => ({
-      ...previousStatus,
-      [threadId]: true,
-    }));
-  }
+  const markThreadAsRead = useCallback((threadId: string) => {
+    setThreadReadStatus((previousStatus) => {
+      if (previousStatus[threadId] === true) {
+        return previousStatus;
+      }
 
-  function isThreadRead(threadId: string) {
-    return threadReadStatus[threadId] === true;
-  }
+      return {
+        ...previousStatus,
+        [threadId]: true,
+      };
+    });
+  }, []);
+
+  const isThreadRead = useCallback(
+    (threadId: string) => {
+      return threadReadStatus[threadId] === true;
+    },
+    [threadReadStatus]
+  );
 
   const shouldShowUnreadIndicator = !hasViewedChats && unreadCount > 0;
+  const contextValue = useMemo(
+    () => ({
+      unreadCount,
+      setUnreadCount,
+      markThreadAsRead,
+      isThreadRead,
+      shouldShowUnreadIndicator,
+    }),
+    [unreadCount, markThreadAsRead, isThreadRead, shouldShowUnreadIndicator]
+  );
 
   return (
-    <UnreadMessagesContext.Provider
-      value={{
-        unreadCount,
-        setUnreadCount,
-        markThreadAsRead,
-        isThreadRead,
-        shouldShowUnreadIndicator,
-      }}
-    >
+    <UnreadMessagesContext.Provider value={contextValue}>
       {children}
     </UnreadMessagesContext.Provider>
   );

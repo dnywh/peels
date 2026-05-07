@@ -4,6 +4,9 @@ export const HOST_EMAIL = "demo-host@peels.local";
 export const DONOR_EMAIL = "demo-donor@peels.local";
 export const SEEDED_PASSWORD = "peels-demo-password";
 export const SEEDED_THREAD_ID = "33333333-3333-4333-8333-333333333333";
+export const SECOND_SEEDED_THREAD_ID = "77777777-7777-4777-8777-777777777777";
+export const HOST_SECOND_SEEDED_THREAD_ID =
+  "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 export const PROFILE_RENDER_TIMEOUT_MS = 15_000;
 
 export async function signIn(
