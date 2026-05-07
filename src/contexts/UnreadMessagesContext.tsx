@@ -125,7 +125,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   }, [supabase, userId]);
 
   useEffect(() => {
-    if (pathname === "/chats") {
+    if (pathname.startsWith("/chats")) {
       setHasViewedChats(true);
     }
   }, [pathname]);
@@ -158,8 +158,9 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
               return;
             }
 
+            setHasViewedChats(true);
+
             if (currentPath === "/chats") {
-              setHasViewedChats(true);
               return;
             }
 
@@ -167,7 +168,6 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
 
             if (threadIdInPath !== message.thread_id) {
               setUnreadCount((previousCount) => previousCount + 1);
-              setHasViewedChats(false);
               return;
             }
 
