@@ -1,7 +1,6 @@
+import "server-only";
+
 import { createClient } from "@/utils/supabase/server";
-import ChatPageClient from "@/components/ChatPageClient";
-import { redirect } from "next/navigation";
-import type { Metadata } from "next";
 import type {
   ChatMessageRecord,
   ChatThreadListItem,
@@ -10,21 +9,13 @@ import type {
   ChatThreadView,
 } from "@/types/chat";
 
-type ChatsPageProps = {
-  params: Promise<{
-    threadId?: string[];
-  }>;
-};
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 type UnreadThreadRow = {
   thread_id: string | null;
 };
 
-export const metadata: Metadata = {
-  title: "Chats",
-};
-
-function isUuid(value: string) {
+export function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     value
   );
@@ -81,82 +72,38 @@ function toChatThreadListItem(
   };
 }
 
-export default async function ChatsPage({ params }: ChatsPageProps) {
-  const { threadId: threadIdSegments } = await params;
-  const threadId = threadIdSegments?.[0] ?? null;
-  const redirectPath = threadId ? `/chats/${threadId}` : "/chats";
-  const referenceNow = new Date().toISOString();
+function getThreadParticipantFilter(userId: string) {
+  return `initiator_id.eq.${userId},owner_id.eq.${userId}`;
+}
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect(`/sign-in?redirect_to=${redirectPath}`);
-  }
-
-  if (threadId && !isUuid(threadId)) {
-    redirect("/chats");
-  }
-
-  const threadParticipantFilter = `initiator_id.eq.${user.id},owner_id.eq.${user.id}`;
-
-  const [threadsResult, selectedThreadResult] = await Promise.all([
-    supabase
-      .from("chat_threads_with_participants")
-      .select(
-        `
-          id,
-          initiator_id,
-          initiator_first_name,
-          initiator_avatar,
-          owner_id,
-          owner_first_name,
-          latest_message_id,
-          latest_message_content,
-          latest_message_created_at,
-          latest_message_read_at,
-          latest_message_sender_id,
-          listing:listings_private_data (*)
-        `
-      )
-      .or(threadParticipantFilter)
-      .order("created_at", { ascending: false }),
-    threadId
-      ? supabase
-          .from("chat_threads_with_participants")
-          .select(
-            `
-              id,
-              initiator_id,
-              initiator_first_name,
-              initiator_avatar,
-              owner_id,
-              owner_first_name,
-              listing:listings_private_data (*),
-              chat_messages_with_senders (
-                id,
-                content,
-                created_at,
-                read_at,
-                sender_id,
-                thread_id
-              )
-            `
-          )
-          .or(threadParticipantFilter)
-          .eq("id", threadId)
-          .maybeSingle()
-      : Promise.resolve({ data: null, error: null }),
-  ]);
+export async function getChatThreads(
+  supabase: SupabaseServerClient,
+  userId: string
+) {
+  const threadParticipantFilter = getThreadParticipantFilter(userId);
+  const threadsResult = await supabase
+    .from("chat_threads_with_participants")
+    .select(
+      `
+        id,
+        initiator_id,
+        initiator_first_name,
+        initiator_avatar,
+        owner_id,
+        owner_first_name,
+        latest_message_id,
+        latest_message_content,
+        latest_message_created_at,
+        latest_message_read_at,
+        latest_message_sender_id,
+        listing:listings_private_data (*)
+      `
+    )
+    .or(threadParticipantFilter)
+    .order("created_at", { ascending: false });
 
   if (threadsResult.error) {
     throw new Error(threadsResult.error.message);
-  }
-
-  if (selectedThreadResult.error) {
-    throw new Error(selectedThreadResult.error.message);
   }
 
   const previewThreads = (threadsResult.data ??
@@ -180,26 +127,49 @@ export default async function ChatsPage({ params }: ChatsPageProps) {
         Boolean(messageThreadId)
       )
   );
-  const typedThreads = previewThreads.map((thread) =>
+
+  return previewThreads.map((thread) =>
     toChatThreadListItem(thread, unreadThreadIds)
   );
-  const selectedThreadRecord =
-    selectedThreadResult.data as ChatThreadRecord | null;
-  const selectedThread = selectedThreadRecord
-    ? toChatThreadView(selectedThreadRecord)
-    : null;
+}
 
-  if (threadId && !selectedThread) {
-    redirect("/chats");
+export async function getSelectedChatThread(
+  supabase: SupabaseServerClient,
+  userId: string,
+  threadId: string
+) {
+  const threadParticipantFilter = getThreadParticipantFilter(userId);
+  const selectedThreadResult = await supabase
+    .from("chat_threads_with_participants")
+    .select(
+      `
+        id,
+        initiator_id,
+        initiator_first_name,
+        initiator_avatar,
+        owner_id,
+        owner_first_name,
+        listing:listings_private_data (*),
+        chat_messages_with_senders (
+          id,
+          content,
+          created_at,
+          read_at,
+          sender_id,
+          thread_id
+        )
+      `
+    )
+    .or(threadParticipantFilter)
+    .eq("id", threadId)
+    .maybeSingle();
+
+  if (selectedThreadResult.error) {
+    throw new Error(selectedThreadResult.error.message);
   }
 
-  return (
-    <ChatPageClient
-      user={user}
-      initialThreads={typedThreads}
-      initialThreadId={threadId}
-      selectedThread={selectedThread}
-      referenceNow={referenceNow}
-    />
-  );
+  const selectedThreadRecord =
+    selectedThreadResult.data as ChatThreadRecord | null;
+
+  return selectedThreadRecord ? toChatThreadView(selectedThreadRecord) : null;
 }

@@ -4,6 +4,7 @@ import {
   authStateHeaderName,
   authStateSignedIn,
   authStateSignedOut,
+  currentPathHeaderName,
 } from "@/utils/supabase/authState";
 
 export const updateSession = async (request: NextRequest) => {
@@ -11,6 +12,8 @@ export const updateSession = async (request: NextRequest) => {
   // Feel free to remove once you have Supabase connected.
   try {
     const requestHeaders = new Headers(request.headers);
+    const currentPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+    requestHeaders.set(currentPathHeaderName, currentPath);
     let response = NextResponse.next({
       request: {
         headers: requestHeaders,
@@ -66,12 +69,9 @@ export const updateSession = async (request: NextRequest) => {
     const protectedRoutes = ["/profile", "/chats"];
     for (const route of protectedRoutes) {
       if (request.nextUrl.pathname.startsWith(route) && user.error) {
-        return NextResponse.redirect(
-          new URL(
-            `/sign-in?redirect_to=${request.nextUrl.pathname}`,
-            request.url
-          )
-        );
+        const signInUrl = new URL("/sign-in", request.url);
+        signInUrl.searchParams.set("redirect_to", currentPath);
+        return NextResponse.redirect(signInUrl);
       }
     }
 
@@ -90,6 +90,10 @@ export const updateSession = async (request: NextRequest) => {
     // Check out http://localhost:3000 for Next Steps.
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set(authStateHeaderName, authStateSignedOut);
+    requestHeaders.set(
+      currentPathHeaderName,
+      `${request.nextUrl.pathname}${request.nextUrl.search}`
+    );
 
     return NextResponse.next({
       request: {

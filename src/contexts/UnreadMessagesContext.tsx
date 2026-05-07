@@ -1,8 +1,16 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createClient } from "@/utils/supabase/client";
 import { usePathname } from "next/navigation";
+import { getChatThreadIdFromPathname } from "@/features/chat/chatRoutes";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 
 type ThreadReadStatus = Record<string, boolean>;
@@ -25,10 +33,6 @@ const UnreadMessagesContext = createContext<
   UnreadMessagesContextValue | undefined
 >(undefined);
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
-
-function getThreadIdFromPathname(pathname: string) {
-  return pathname.match(/\/chats\/([^/]+)/)?.[1] ?? null;
-}
 
 export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -121,7 +125,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   }, [supabase, userId]);
 
   useEffect(() => {
-    if (pathname === "/chats") {
+    if (pathname.startsWith("/chats")) {
       setHasViewedChats(true);
     }
   }, [pathname]);
@@ -154,16 +158,16 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
               return;
             }
 
+            setHasViewedChats(true);
+
             if (currentPath === "/chats") {
-              setHasViewedChats(true);
               return;
             }
 
-            const threadIdInPath = getThreadIdFromPathname(currentPath);
+            const threadIdInPath = getChatThreadIdFromPathname(currentPath);
 
             if (threadIdInPath !== message.thread_id) {
               setUnreadCount((previousCount) => previousCount + 1);
-              setHasViewedChats(false);
               return;
             }
 
@@ -185,29 +189,40 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
     };
   }, [supabase, userId]);
 
-  function markThreadAsRead(threadId: string) {
-    setThreadReadStatus((previousStatus) => ({
-      ...previousStatus,
-      [threadId]: true,
-    }));
-  }
+  const markThreadAsRead = useCallback((threadId: string) => {
+    setThreadReadStatus((previousStatus) => {
+      if (previousStatus[threadId] === true) {
+        return previousStatus;
+      }
 
-  function isThreadRead(threadId: string) {
-    return threadReadStatus[threadId] === true;
-  }
+      return {
+        ...previousStatus,
+        [threadId]: true,
+      };
+    });
+  }, []);
+
+  const isThreadRead = useCallback(
+    (threadId: string) => {
+      return threadReadStatus[threadId] === true;
+    },
+    [threadReadStatus]
+  );
 
   const shouldShowUnreadIndicator = !hasViewedChats && unreadCount > 0;
+  const contextValue = useMemo(
+    () => ({
+      unreadCount,
+      setUnreadCount,
+      markThreadAsRead,
+      isThreadRead,
+      shouldShowUnreadIndicator,
+    }),
+    [unreadCount, markThreadAsRead, isThreadRead, shouldShowUnreadIndicator]
+  );
 
   return (
-    <UnreadMessagesContext.Provider
-      value={{
-        unreadCount,
-        setUnreadCount,
-        markThreadAsRead,
-        isThreadRead,
-        shouldShowUnreadIndicator,
-      }}
-    >
+    <UnreadMessagesContext.Provider value={contextValue}>
       {children}
     </UnreadMessagesContext.Provider>
   );
