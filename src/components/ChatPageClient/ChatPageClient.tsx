@@ -146,7 +146,11 @@ export function ChatConversationClient({
     <ChatWindowEmptyState>
       <PeelsLogo size={64} color="emptyState" />
       <p>
-        {hasThreads ? t("emptyStateSelectThread") : t("emptyStateFirstHost")}
+        {selectedThread
+          ? t("emptyStateUnavailable")
+          : hasThreads
+            ? t("emptyStateSelectThread")
+            : t("emptyStateFirstHost")}
       </p>
     </ChatWindowEmptyState>
   );
