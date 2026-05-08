@@ -78,8 +78,6 @@ const FadingAccountButton = styled(Button)<{ $visible: boolean }>`
   transition: opacity 160ms ease-out;
 
   @media (prefers-reduced-motion: reduce) {
-    opacity: 1;
-    pointer-events: auto;
     transition: none;
   }
 `;

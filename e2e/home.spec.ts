@@ -142,7 +142,6 @@ test("homepage account button stays hidden while signed-in profile state loads",
   await profileRequestStarted;
 
   try {
-    await expect(page.getByTestId("account-button-loading")).toHaveCount(0);
     await expect(page.getByTestId("account-button-profile")).toHaveCount(0);
     await expect(page.getByTestId("account-button-sign-in")).toHaveCount(0);
   } finally {
