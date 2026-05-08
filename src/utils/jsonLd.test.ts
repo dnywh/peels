@@ -11,7 +11,7 @@ test("JSON-LD serialization falls back safely for unsupported data", () => {
   const circular: { self?: unknown } = {};
   circular.self = circular;
 
-  assert.equal(serializeJsonLd(1n), "null");
+  assert.equal(serializeJsonLd(BigInt(1)), "null");
   assert.equal(serializeJsonLd(circular), "null");
 });
 

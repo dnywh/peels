@@ -432,6 +432,24 @@
       "localBusiness": "Local business",
       "avatarAlt": "The avatar for this listing"
     },
+    "seo": {
+      "privateHostName": "Private Host",
+      "fallbackListingName": "Listing",
+      "residentialIntro": "{name} accepts food scraps for composting.",
+      "residentialIntroWithLocation": "{name} accepts food scraps for composting in {location}.",
+      "nonResidentialIntro": "{name} helps people compost food scraps.",
+      "nonResidentialIntroWithLocation": "{name} helps people compost food scraps in {location}.",
+      "siteExplainer": "a community platform for connecting folks with food scraps to those who compost",
+      "connect": "Connect with {name} on {siteName}, {explainer}.",
+      "keywords": {
+        "base": "food waste, food scraps, share waste, sharewaste, makesoil, compost near me, compost drop-off, food scrap drop-off",
+        "location": "{location}",
+        "foodScraps": "food scraps in {location}",
+        "compost": "compost {location}",
+        "foodScrapDropOff": "food scrap drop-off {location}",
+        "compostDropOff": "compost drop-off {location}"
+      }
+    },
     "delete": {
       "confirm": "Yes, delete listing",
       "dialog": "Are you sure you want to delete your listing? This is irreversible.",

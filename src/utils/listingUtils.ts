@@ -26,6 +26,25 @@ type ListingUser =
   | null
   | undefined;
 
+export type ListingSeoCopy = {
+  privateHostName: string;
+  fallbackListingName: string;
+  residentialIntro: (values: { name: string; location?: string }) => string;
+  nonResidentialIntro: (values: { name: string; location?: string }) => string;
+  connect: (values: {
+    name: string;
+    siteName: string;
+    explainer: string;
+  }) => string;
+  locationKeywords: (values: { location: string }) => string[];
+  baseKeywords: () => string[];
+};
+
+type ListingSeoOptions = {
+  locale?: string;
+  seoCopy?: ListingSeoCopy;
+};
+
 type AvatarDescriptor = {
   isDemo?: boolean;
   path?: string;
@@ -34,8 +53,27 @@ type AvatarDescriptor = {
   alt: string;
 } | null;
 
-type GenerateListingMetadataOptions = {
+type GenerateListingMetadataOptions = ListingSeoOptions & {
   includeFullMetadata?: boolean;
+};
+
+const defaultListingSeoCopy: ListingSeoCopy = {
+  privateHostName: "Private Host",
+  fallbackListingName: "Listing",
+  residentialIntro: ({ name, location }) =>
+    `${name} accepts food scraps for composting${location ? ` in ${location}` : ""}.`,
+  nonResidentialIntro: ({ name, location }) =>
+    `${name} helps people compost food scraps${location ? ` in ${location}` : ""}.`,
+  connect: ({ name, siteName, explainer }) =>
+    `Connect with ${name} on ${siteName}, ${explainer}.`,
+  locationKeywords: ({ location }) => [
+    location,
+    `food scraps in ${location}`,
+    `compost ${location}`,
+    `food scrap drop-off ${location}`,
+    `compost drop-off ${location}`,
+  ],
+  baseKeywords: () => [...siteConfig.meta.keywords],
 };
 
 function normaliseListingType(
@@ -58,13 +96,33 @@ function compactTextParts(parts: Array<string | null | undefined>) {
     .filter((part): part is string => Boolean(part));
 }
 
-function getListingCountryName(listing: ListingLike | null | undefined) {
+function getListingCountryName(
+  listing: ListingLike | null | undefined,
+  locale?: string
+) {
+  if (listing?.country_code && locale) {
+    try {
+      const countryDisplayName = new Intl.DisplayNames([locale], {
+        type: "region",
+      }).of(listing.country_code);
+
+      if (countryDisplayName) {
+        return countryDisplayName;
+      }
+    } catch {
+      // Fall back to the static English country list below.
+    }
+  }
+
   return countries.find((country) => country.code === listing?.country_code)
     ?.name;
 }
 
-function getListingLocation(listing: ListingLike | null | undefined) {
-  const listingCountryName = getListingCountryName(listing);
+function getListingLocation(
+  listing: ListingLike | null | undefined,
+  locale?: string
+) {
+  const listingCountryName = getListingCountryName(listing, locale);
 
   return compactTextParts([listing?.area_name, listingCountryName]).join(", ");
 }
@@ -103,18 +161,19 @@ function getListingStructuredDataImage(
 
 export function getListingDisplayName(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  seoCopy: ListingSeoCopy = defaultListingSeoCopy
 ) {
   if (!listing) return "";
 
   const listingType = normaliseListingType(listing.type);
 
   if (listingType === "residential") {
-    if (!user) return "Private Host";
-    return listing.owner_first_name || "Private Host";
+    if (!user) return seoCopy.privateHostName;
+    return listing.owner_first_name || seoCopy.privateHostName;
   }
 
-  return listing.name || "Listing";
+  return listing.name || seoCopy.fallbackListingName;
 }
 
 export function getListingAvatar(
@@ -212,32 +271,41 @@ export function getListingDisplayType(listing: ListingLike | null | undefined) {
 
 export function generateListingDescription(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  options: ListingSeoOptions = {}
 ) {
   if (!listing) return "";
 
-  const listingDisplayName = getListingDisplayName(listing, user);
+  const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
   const listingType = normaliseListingType(listing.type);
-  const listingFullLocation = getListingLocation(listing);
+  const listingFullLocation = getListingLocation(listing, options.locale);
   const listingIntro =
     listingType === "residential"
-      ? `${listingDisplayName} accepts food scraps for composting`
-      : `${listingDisplayName} helps people compost food scraps`;
-  const listingLocationSuffix = listingFullLocation
-    ? ` in ${listingFullLocation}.`
-    : ".";
+      ? seoCopy.residentialIntro({
+          name: listingDisplayName,
+          location: listingFullLocation || undefined,
+        })
+      : seoCopy.nonResidentialIntro({
+          name: listingDisplayName,
+          location: listingFullLocation || undefined,
+        });
+  const listingConnectName =
+    listingType === "residential" && !options.seoCopy
+      ? "them"
+      : listing.name || listingDisplayName;
   const listingDescriptionParts = [
-    `${listingIntro}${listingLocationSuffix}`,
+    listingIntro,
     listingType === "residential"
       ? null
       : listing.description?.trim()
         ? listing.description.trim()
         : null,
-    `Connect with ${
-      listingType === "residential"
-        ? "them"
-        : listing.name || listingDisplayName
-    } on ${siteConfig.name}, ${siteConfig.meta.explainer}.`,
+    seoCopy.connect({
+      name: listingConnectName,
+      siteName: siteConfig.name,
+      explainer: siteConfig.meta.explainer,
+    }),
   ];
 
   return compactTextParts(listingDescriptionParts).join(" ");
@@ -254,9 +322,10 @@ export function generateListingMetadata(
     };
   }
 
-  const listingDisplayName = getListingDisplayName(listing, user);
-  const listingFullLocation = getListingLocation(listing);
-  const listingDescription = generateListingDescription(listing, user);
+  const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
+  const listingFullLocation = getListingLocation(listing, options.locale);
+  const listingDescription = generateListingDescription(listing, user, options);
   const listingCanonicalPath = getListingCanonicalPath(listing);
 
   const metadata: Metadata = {
@@ -279,16 +348,10 @@ export function generateListingMetadata(
 
   if (options.includeFullMetadata) {
     const locationKeywords = listingFullLocation
-      ? [
-          listingFullLocation,
-          `food scraps in ${listingFullLocation}`,
-          `compost ${listingFullLocation}`,
-          `food scrap drop-off ${listingFullLocation}`,
-          `compost drop-off ${listingFullLocation}`,
-        ]
+      ? seoCopy.locationKeywords({ location: listingFullLocation })
       : [];
 
-    metadata.keywords = [...locationKeywords, ...siteConfig.meta.keywords];
+    metadata.keywords = [...locationKeywords, ...seoCopy.baseKeywords()];
   }
 
   return metadata;
@@ -296,14 +359,16 @@ export function generateListingMetadata(
 
 export function generateListingJsonLd(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  options: ListingSeoOptions = {}
 ) {
   if (!listing?.slug) return null;
 
-  const listingDisplayName = getListingDisplayName(listing, user);
-  const listingDescription = generateListingDescription(listing, user);
+  const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
+  const listingDescription = generateListingDescription(listing, user, options);
   const listingType = normaliseListingType(listing.type);
-  const listingCountryName = getListingCountryName(listing);
+  const listingCountryName = getListingCountryName(listing, options.locale);
   const listingCanonicalUrl = new URL(
     `/listings/${encodeURIComponent(listing.slug)}`,
     siteConfig.url
@@ -346,6 +411,7 @@ export function generateListingJsonLd(
     url: listingCanonicalUrl,
     name: listingDisplayName,
     description: listingDescription,
+    ...(options.locale ? { inLanguage: options.locale } : {}),
     isPartOf: {
       "@id": `${siteConfig.url}/#website`,
     },

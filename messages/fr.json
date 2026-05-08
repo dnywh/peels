@@ -432,6 +432,24 @@
       "localBusiness": "Commerce local",
       "avatarAlt": "L’avatar de cette annonce"
     },
+    "seo": {
+      "privateHostName": "Hôte privé",
+      "fallbackListingName": "Annonce",
+      "residentialIntro": "{name} accepte les restes alimentaires pour le compostage.",
+      "residentialIntroWithLocation": "{name} accepte les restes alimentaires pour le compostage à {location}.",
+      "nonResidentialIntro": "{name} aide les gens à composter leurs restes alimentaires.",
+      "nonResidentialIntroWithLocation": "{name} aide les gens à composter leurs restes alimentaires à {location}.",
+      "siteExplainer": "une plateforme communautaire qui met en relation les personnes qui ont des restes alimentaires avec celles qui compostent",
+      "connect": "Contactez {name} sur {siteName}, {explainer}.",
+      "keywords": {
+        "base": "déchets alimentaires, restes alimentaires, compostage, compost près de chez moi, point de dépôt compost, dépôt de restes alimentaires",
+        "location": "{location}",
+        "foodScraps": "restes alimentaires à {location}",
+        "compost": "compostage à {location}",
+        "foodScrapDropOff": "dépôt de restes alimentaires à {location}",
+        "compostDropOff": "point de dépôt compost à {location}"
+      }
+    },
     "delete": {
       "confirm": "Oui, supprimer l’annonce",
       "dialog": "Êtes-vous sûr de vouloir supprimer votre annonce ? Cette action est irréversible.",

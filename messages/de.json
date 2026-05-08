@@ -432,6 +432,24 @@
       "localBusiness": "Lokales Unternehmen",
       "avatarAlt": "Der Avatar für diesen Eintrag"
     },
+    "seo": {
+      "privateHostName": "Privater Host",
+      "fallbackListingName": "Eintrag",
+      "residentialIntro": "{name} nimmt Lebensmittelreste zum Kompostieren an.",
+      "residentialIntroWithLocation": "{name} nimmt Lebensmittelreste zum Kompostieren in {location} an.",
+      "nonResidentialIntro": "{name} hilft Menschen, Lebensmittelreste zu kompostieren.",
+      "nonResidentialIntroWithLocation": "{name} hilft Menschen, Lebensmittelreste in {location} zu kompostieren.",
+      "siteExplainer": "eine Community-Plattform, die Menschen mit Lebensmittelresten mit Menschen verbindet, die kompostieren",
+      "connect": "Verbinde dich mit {name} auf {siteName}, {explainer}.",
+      "keywords": {
+        "base": "Lebensmittelabfall, Lebensmittelreste, Essensreste, Kompost, Kompostierung, Kompost in meiner Nähe, Kompost-Abgabestelle, Abgabe von Lebensmittelresten",
+        "location": "{location}",
+        "foodScraps": "Lebensmittelreste in {location}",
+        "compost": "Kompost in {location}",
+        "foodScrapDropOff": "Abgabe von Lebensmittelresten in {location}",
+        "compostDropOff": "Kompost-Abgabestelle in {location}"
+      }
+    },
     "delete": {
       "confirm": "Ja, Eintrag löschen",
       "dialog": "Möchtest du deinen Eintrag wirklich löschen? Das kann nicht rückgängig gemacht werden.",

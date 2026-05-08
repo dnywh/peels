@@ -432,6 +432,24 @@
       "localBusiness": "Negócio local",
       "avatarAlt": "O avatar deste anúncio"
     },
+    "seo": {
+      "privateHostName": "Anfitrião privado",
+      "fallbackListingName": "Anúncio",
+      "residentialIntro": "{name} aceita restos de comida para compostagem.",
+      "residentialIntroWithLocation": "{name} aceita restos de comida para compostagem em {location}.",
+      "nonResidentialIntro": "{name} ajuda pessoas a compostar restos de comida.",
+      "nonResidentialIntroWithLocation": "{name} ajuda pessoas a compostar restos de comida em {location}.",
+      "siteExplainer": "uma plataforma comunitária que conecta pessoas com restos de comida a quem faz compostagem",
+      "connect": "Entre em contato com {name} pelo {siteName}, {explainer}.",
+      "keywords": {
+        "base": "resíduos orgânicos, restos de comida, desperdício de alimentos, compostagem, compostagem perto de mim, ponto de entrega para compostagem, entrega de restos de comida",
+        "location": "{location}",
+        "foodScraps": "restos de comida em {location}",
+        "compost": "compostagem em {location}",
+        "foodScrapDropOff": "entrega de restos de comida em {location}",
+        "compostDropOff": "ponto de entrega para compostagem em {location}"
+      }
+    },
     "delete": {
       "confirm": "Sim, excluir anúncio",
       "dialog": "Tem certeza de que deseja excluir o seu anúncio? Essa ação não pode ser desfeita.",
