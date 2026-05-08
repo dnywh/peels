@@ -577,6 +577,7 @@ export default function ListingWrite({
               setCountryCode={setCountryCode}
               areaName={areaName}
               setAreaName={setAreaName}
+              autoDetectCountry={!initialListing}
               error={errors.location}
             />
 

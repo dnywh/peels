@@ -57,6 +57,7 @@ type LocationSelectProps = {
   areaName: string;
   setAreaName: Dispatch<SetStateAction<string>>;
   initialPlaceholderText?: string;
+  autoDetectCountry?: boolean;
   error?: string;
 };
 
@@ -148,6 +149,7 @@ export default function LocationSelect({
   areaName,
   setAreaName,
   initialPlaceholderText,
+  autoDetectCountry = true,
   error,
 }: LocationSelectProps) {
   const t = useTranslations();
@@ -160,7 +162,7 @@ export default function LocationSelect({
   );
 
   useEffect(() => {
-    if (!countryCode) {
+    if (autoDetectCountry && !countryCode) {
       let isMounted = true; // Track if component is mounted
 
       const initializeLocation = async () => {
@@ -185,7 +187,7 @@ export default function LocationSelect({
         isMounted = false;
       };
     }
-  }, [countryCode, setCountryCode]);
+  }, [autoDetectCountry, countryCode, setCountryCode]);
 
   const handleCountryChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {

@@ -111,7 +111,7 @@ test("listing edit saves and restores seeded business fields", async ({
   await expect(listingWriteForm.locator("#description").first()).toHaveValue(
     updatedDescription
   );
-  await expect(listingWriteForm.locator("#visibility")).toHaveValue(
+  await expect(listingWriteForm.locator("#visibility").first()).toHaveValue(
     updatedVisibility
   );
 
@@ -132,7 +132,7 @@ test("listing edit saves and restores seeded business fields", async ({
   await expect(listingWriteForm.locator("#description").first()).toHaveValue(
     originalDescription
   );
-  await expect(listingWriteForm.locator("#visibility")).toHaveValue(
+  await expect(listingWriteForm.locator("#visibility").first()).toHaveValue(
     originalVisibility
   );
 });

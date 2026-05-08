@@ -52,6 +52,7 @@ export type LocationSelectProps = {
   areaName: string;
   setAreaName: Dispatch<SetStateAction<string>>;
   initialPlaceholderText?: string;
+  autoDetectCountry?: boolean;
   error?: string;
 };
 

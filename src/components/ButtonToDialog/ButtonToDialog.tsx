@@ -67,8 +67,10 @@ const DialogOverlay = styled(Dialog.Overlay)`
   z-index: 3;
 `;
 
+type DialogVariant = Extract<ButtonVariant, "primary" | "secondary" | "danger">;
+
 type ButtonToDialogProps = {
-  variant?: ButtonVariant;
+  variant?: DialogVariant;
   triggerVariant?: ButtonVariant;
   size?: "massive" | "large" | "normal" | "small";
   initialButtonText: ReactNode;
