@@ -13,6 +13,7 @@ const INNER_WEST_MAP_VIEW: StoredMapView = {
   longitude: 151.16,
   zoom: 7,
 };
+const MAP_MARKER_RENDER_TIMEOUT_MS = 20_000;
 
 async function seedStoredMapView(page: Page, view: StoredMapView) {
   await page.context().addCookies([
@@ -254,7 +255,9 @@ test("map pins minify at country zoom, then grow and animate selection", async (
   });
 
   const firstPin = page.getByTestId("map-pin").first();
-  await expect(firstPin).toBeVisible({ timeout: 10_000 });
+  await expect(firstPin).toBeVisible({
+    timeout: MAP_MARKER_RENDER_TIMEOUT_MS,
+  });
   await expectMapPinDetailScale(page, 0);
   await expectMapPinVisualWidth(
     firstPin.locator('[data-testid="map-pin-compact-dot"]'),

@@ -1,7 +1,11 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { generateListingMetadata } from "@/utils/listingUtils";
+import {
+  generateListingJsonLd,
+  generateListingMetadata,
+} from "@/utils/listingUtils";
 import ListingRead from "@/components/ListingRead";
+import JsonLd from "@/components/JsonLd";
 import { styled } from "next-yak";
 import { cache } from "react";
 import { theme } from "@/styles/theme.yak";
@@ -67,10 +71,13 @@ export default async function ListingPage({
     notFound();
   }
 
+  const listingJsonLd = generateListingJsonLd(listing, user);
+
   // TODO: Return 'Success' toast for folks who have just created a new listing and have been redirected to it, here
 
   return (
     <StyledMain>
+      {listingJsonLd ? <JsonLd data={listingJsonLd} /> : null}
       <ListingRead user={user} listing={listing} referenceNow={referenceNow} />
     </StyledMain>
   );

@@ -15,7 +15,7 @@
     "i18n:check": "node scripts/check-i18n-messages.mjs",
     "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
     "check": "npm run i18n:check && npm run format:check && npm run test:unit",
-    "test:unit": "node --test --experimental-strip-types src/utils/dateUtils.test.ts",
+    "test:unit": "node scripts/run-unit-tests.mjs",
     "test:e2e": "playwright test",
     "pretest:e2e:prod": "npm run build",
     "test:e2e:prod": "playwright test --config=playwright.prod.config.ts",
