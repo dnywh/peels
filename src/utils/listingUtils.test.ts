@@ -205,6 +205,10 @@ test("residential public metadata avoids leaking host names", () => {
   assert.deepEqual(metadata.title, {
     absolute: "Private Host",
   });
+  assert.deepEqual(metadata.robots, {
+    index: false,
+    follow: true,
+  });
   assert.match(description, /^Private Host accepts food scraps for composting/);
   assert.doesNotMatch(description, /Sam/);
 });
@@ -235,6 +239,25 @@ test("anonymous residential metadata avoids leaking listing names with localised
   assert.match(description, /Contacta con esta persona en Peels/);
   assert.doesNotMatch(description, /Sam/);
   assert.doesNotMatch(description, /backyard bin/);
+});
+
+test("authenticated residential metadata remains noindex", () => {
+  const residentialListing = {
+    ...communityListing,
+    type: "residential",
+    name: "Sam's backyard bin",
+    owner_first_name: "Sam",
+    slug: "private-host",
+  } satisfies Listing;
+
+  const metadata = generateListingMetadata(residentialListing, {
+    id: "user-1",
+  });
+
+  assert.deepEqual(metadata.robots, {
+    index: false,
+    follow: true,
+  });
 });
 
 test("listing JSON-LD describes the public listing page and place conservatively", () => {
