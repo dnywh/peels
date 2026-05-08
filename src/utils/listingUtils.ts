@@ -1,7 +1,8 @@
-import { siteConfig } from "@/config/site";
-import { countries } from "@/data/countries";
+import { siteConfig } from "../config/site.ts";
+import { countries } from "../data/countries.ts";
+import { getStoragePublicUrl } from "./storage.ts";
 import type { Metadata } from "next";
-import type { ListingType } from "@/types/listing";
+import type { ListingCoordinates, ListingType } from "../types/listing.ts";
 
 type ListingLike = {
   type?: ListingType | string | null;
@@ -10,9 +11,12 @@ type ListingLike = {
   owner_avatar?: string | null;
   avatar?: string | null;
   is_demo?: boolean;
+  slug?: string | null;
   country_code?: string | null;
   area_name?: string | null;
   description?: string | null;
+  photos?: string[] | null;
+  coordinates?: ListingCoordinates | null;
 };
 
 type ListingUser =
@@ -52,6 +56,49 @@ function compactTextParts(parts: Array<string | null | undefined>) {
   return parts
     .map((part) => part?.trim())
     .filter((part): part is string => Boolean(part));
+}
+
+function getListingCountryName(listing: ListingLike | null | undefined) {
+  return countries.find((country) => country.code === listing?.country_code)
+    ?.name;
+}
+
+function getListingLocation(listing: ListingLike | null | undefined) {
+  const listingCountryName = getListingCountryName(listing);
+
+  return compactTextParts([listing?.area_name, listingCountryName]).join(", ");
+}
+
+function getListingCanonicalPath(listing: ListingLike) {
+  if (!listing.slug) return null;
+
+  return `/listings/${encodeURIComponent(listing.slug)}`;
+}
+
+function getListingStructuredDataImage(
+  listing: ListingLike,
+  user: ListingUser
+) {
+  if (normaliseListingType(listing.type) === "residential") {
+    return null;
+  }
+
+  const firstPhoto = listing.photos?.[0];
+  if (firstPhoto) {
+    return getStoragePublicUrl("listing_photos", firstPhoto);
+  }
+
+  const avatar = getListingAvatar(listing, user);
+
+  if (avatar?.path) {
+    return new URL(avatar.path, siteConfig.url).toString();
+  }
+
+  if (avatar?.bucket && avatar.filename) {
+    return getStoragePublicUrl(avatar.bucket, avatar.filename);
+  }
+
+  return null;
 }
 
 export function getListingDisplayName(
@@ -163,6 +210,39 @@ export function getListingDisplayType(listing: ListingLike | null | undefined) {
   return "Local listing";
 }
 
+export function generateListingDescription(
+  listing: ListingLike | null | undefined,
+  user: ListingUser
+) {
+  if (!listing) return "";
+
+  const listingDisplayName = getListingDisplayName(listing, user);
+  const listingType = normaliseListingType(listing.type);
+  const listingFullLocation = getListingLocation(listing);
+  const listingIntro =
+    listingType === "residential"
+      ? `${listingDisplayName} accepts food scraps for composting`
+      : `${listingDisplayName} helps people compost food scraps`;
+  const listingLocationSuffix = listingFullLocation
+    ? ` in ${listingFullLocation}.`
+    : ".";
+  const listingDescriptionParts = [
+    `${listingIntro}${listingLocationSuffix}`,
+    listingType === "residential"
+      ? null
+      : listing.description?.trim()
+        ? listing.description.trim()
+        : null,
+    `Connect with ${
+      listingType === "residential"
+        ? "them"
+        : listing.name || listingDisplayName
+    } on ${siteConfig.name}, ${siteConfig.meta.explainer}.`,
+  ];
+
+  return compactTextParts(listingDescriptionParts).join(" ");
+}
+
 export function generateListingMetadata(
   listing: ListingLike | null | undefined,
   user: ListingUser,
@@ -175,47 +255,27 @@ export function generateListingMetadata(
   }
 
   const listingDisplayName = getListingDisplayName(listing, user);
-  const listingType = normaliseListingType(listing.type);
-  const listingCountryName = countries.find(
-    (country) => country.code === listing.country_code
-  )?.name;
-  const listingLocationParts = compactTextParts([
-    listing.area_name,
-    listingCountryName,
-  ]);
-  const listingFullLocation = listingLocationParts.join(", ");
-  const listingBaseDescriptor =
-    listingType === "residential"
-      ? `${listingDisplayName} is a local resident`
-      : listingType
-        ? `${listingDisplayName} is a ${listingType}`
-        : `${listingDisplayName} is a local listing`;
-  const listingDescriptionParts = [
-    listingBaseDescriptor,
-    listingFullLocation ? `based in ${listingFullLocation}.` : null,
-    listingType === "residential"
-      ? null
-      : listing.description?.trim()
-        ? `${listing.description.trim()}`
-        : null,
-    `Connect with ${
-      listingType === "residential"
-        ? "them"
-        : listing.name || listingDisplayName
-    } on ${siteConfig.name}, ${siteConfig.meta.explainer}.`,
-  ];
-  const listingDescription = compactTextParts(listingDescriptionParts).join(
-    " "
-  );
+  const listingFullLocation = getListingLocation(listing);
+  const listingDescription = generateListingDescription(listing, user);
+  const listingCanonicalPath = getListingCanonicalPath(listing);
 
   const metadata: Metadata = {
-    title: listingDisplayName,
+    title: {
+      absolute: listingDisplayName,
+    },
+    description: listingDescription,
     openGraph: {
       title: listingDisplayName,
       description: listingDescription,
       siteName: siteConfig.name,
     },
   };
+
+  if (listingCanonicalPath) {
+    metadata.alternates = {
+      canonical: listingCanonicalPath,
+    };
+  }
 
   if (options.includeFullMetadata) {
     const locationKeywords = listingFullLocation
@@ -228,9 +288,62 @@ export function generateListingMetadata(
         ]
       : [];
 
-    metadata.description = listingDescription;
     metadata.keywords = [...locationKeywords, ...siteConfig.meta.keywords];
   }
 
   return metadata;
+}
+
+export function generateListingJsonLd(
+  listing: ListingLike | null | undefined,
+  user: ListingUser
+) {
+  if (!listing?.slug) return null;
+
+  const listingDisplayName = getListingDisplayName(listing, user);
+  const listingDescription = generateListingDescription(listing, user);
+  const listingType = normaliseListingType(listing.type);
+  const listingCountryName = getListingCountryName(listing);
+  const listingCanonicalUrl = new URL(
+    `/listings/${encodeURIComponent(listing.slug)}`,
+    siteConfig.url
+  ).toString();
+  const structuredDataImage = getListingStructuredDataImage(listing, user);
+  const canIncludeStructuredLocation = listingType !== "residential" || !!user;
+  const address = {
+    "@type": "PostalAddress",
+    ...(listing.area_name ? { addressLocality: listing.area_name } : {}),
+    ...(listingCountryName ? { addressCountry: listingCountryName } : {}),
+  };
+  const place = {
+    "@type": "Place",
+    name: listingDisplayName,
+    description: listingDescription,
+    ...(canIncludeStructuredLocation && Object.keys(address).length > 1
+      ? { address }
+      : {}),
+    ...(canIncludeStructuredLocation && listing.coordinates
+      ? {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: listing.coordinates.latitude,
+            longitude: listing.coordinates.longitude,
+          },
+        }
+      : {}),
+    ...(structuredDataImage ? { image: structuredDataImage } : {}),
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${listingCanonicalUrl}#webpage`,
+    url: listingCanonicalUrl,
+    name: listingDisplayName,
+    description: listingDescription,
+    isPartOf: {
+      "@id": `${siteConfig.url}/#website`,
+    },
+    about: place,
+  };
 }

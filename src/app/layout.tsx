@@ -14,6 +14,7 @@ import "./theme.css";
 import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
 import AttributionCapture from "@/components/AttributionCapture";
 import AuthHashCompletion from "@/components/AuthHashCompletion";
+import JsonLd from "@/components/JsonLd";
 
 const regularFontUrl = getStaticFontUrl("national-2-regular-subset.woff2");
 const mediumFontUrl = getStaticFontUrl("national-2-medium-subset.woff2");
@@ -43,6 +44,28 @@ const hostedFontFaces = `
     font-display: swap;
   }
 `;
+
+const siteJsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${siteConfig.url}/#organization`,
+    name: siteConfig.name,
+    url: siteConfig.url,
+    logo: `${siteConfig.url}/icon.png`,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${siteConfig.url}/#website`,
+    name: siteConfig.name,
+    alternateName: "Peels.app",
+    url: siteConfig.url,
+    publisher: {
+      "@id": `${siteConfig.url}/#organization`,
+    },
+  },
+];
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -81,6 +104,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} data-scroll-behavior="smooth">
       <body>
+        <JsonLd data={siteJsonLd} />
         {inlineFontFaces ? <style>{inlineFontFaces}</style> : null}
         <AuthHashCompletion />
         <AttributionCapture />

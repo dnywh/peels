@@ -73,18 +73,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly",
       priority: 0.5,
     },
-    {
-      url: `${siteConfig.url}/sign-in`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.5,
-    },
-    {
-      url: `${siteConfig.url}/sign-up`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.5,
-    },
   ];
 
   return [...staticRoutes, ...listingRoutes];

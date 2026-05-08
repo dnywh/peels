@@ -134,11 +134,12 @@ test("listing edit saves and restores seeded business fields", async ({
     .fill(originalDescription);
   await listingWriteForm
     .locator("#visibility")
+    .first()
     .selectOption(originalVisibility);
 
   await Promise.all([
     page.waitForURL(/\/listings\/demo-inner-west-cafe\?status=updated$/),
-    page.getByTestId("listing-write-submit").click(),
+    listingWriteForm.getByTestId("listing-write-submit").first().click(),
   ]);
 
   await page.goto(BUSINESS_LISTING_EDIT_PATH);

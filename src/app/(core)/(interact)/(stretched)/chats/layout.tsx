@@ -5,7 +5,11 @@ import { currentPathHeaderName } from "@/utils/supabase/authState";
 import { normaliseNextPath } from "@/utils/authRedirects";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { noindexFollowMetadata } from "@/utils/seo";
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = noindexFollowMetadata;
 
 export default async function ChatsLayout({
   children,

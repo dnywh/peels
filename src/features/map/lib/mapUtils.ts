@@ -6,7 +6,7 @@ import {
   type ListingCoordinates,
   type ListingMarker,
   type SelectedListing,
-} from "@/types/listing";
+} from "../../../types/listing.ts";
 
 export type BoundingBox = {
   south: number;
@@ -14,6 +14,9 @@ export type BoundingBox = {
   north: number;
   east: number;
 };
+
+const GEOGRAPHY_BOUND_EPSILON = 0.000001;
+const GLOBAL_LONGITUDE_SLICES = [-180, -60, 60, 180] as const;
 
 export const ZOOM_LEVEL_DEFAULT = 11;
 export const ZOOM_LEVEL_SELECTED = 14;
@@ -99,13 +102,19 @@ export function padBounds(bounds: LngLatBounds, factor = 0.3): BoundingBox[] {
   const latPad = latSpan * factor;
   const lngPad = lngSpan * factor;
 
-  const south = Math.max(-90, sw.lat - latPad);
-  const north = Math.min(90, ne.lat + latPad);
+  const south = Math.max(-90 + GEOGRAPHY_BOUND_EPSILON, sw.lat - latPad);
+  const north = Math.min(90 - GEOGRAPHY_BOUND_EPSILON, ne.lat + latPad);
 
   // If the padded viewport already covers the whole globe, just request the
-  // whole world (avoids degenerate envelopes in PostGIS).
+  // world as multiple geography-safe slices. A single `-180..180` envelope can
+  // create antipodal edges when PostGIS casts it to geography.
   if (lngSpan + 2 * lngPad >= 360) {
-    return [{ south, north, west: -180, east: 180 }];
+    return GLOBAL_LONGITUDE_SLICES.slice(0, -1).map((west, index) => ({
+      south,
+      north,
+      west,
+      east: GLOBAL_LONGITUDE_SLICES[index + 1],
+    }));
   }
 
   const west = wrapLongitude(sw.lng - lngPad);

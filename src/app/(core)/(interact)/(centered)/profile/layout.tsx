@@ -1,6 +1,10 @@
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
+import { noindexFollowMetadata } from "@/utils/seo";
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = noindexFollowMetadata;
 
 const ProfilePageLayout = styled.main`
   flex: 1;

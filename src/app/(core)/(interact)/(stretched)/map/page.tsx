@@ -57,6 +57,9 @@ export async function generateMetadata({
   if (!listingSlug) {
     return {
       title: "Map",
+      alternates: {
+        canonical: "/map",
+      },
       openGraph: {
         title: `Map · ${siteConfig.name}`,
       },
@@ -64,6 +67,18 @@ export async function generateMetadata({
   }
 
   const { user, listing } = await getInitialData(listingSlug);
+
+  if (!listing) {
+    return {
+      title: "Map",
+      alternates: {
+        canonical: "/map",
+      },
+      openGraph: {
+        title: `Map · ${siteConfig.name}`,
+      },
+    };
+  }
 
   return generateListingMetadata(listing, user);
 }

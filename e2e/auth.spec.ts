@@ -46,8 +46,10 @@ test("guest chats redirect preserves the requested chat path", async ({
 }) => {
   await page.goto(`/chats/${SEEDED_THREAD_ID}`);
 
-  await expect(page).toHaveURL(
-    new RegExp(`/sign-in\\?redirect_to=/?chats/${SEEDED_THREAD_ID}$`)
+  await expect(page).toHaveURL(/\/sign-in\?/);
+  const redirectedUrl = new URL(page.url());
+  expect(redirectedUrl.searchParams.get("redirect_to")).toBe(
+    `/chats/${SEEDED_THREAD_ID}`
   );
   await expect(page.getByTestId("sign-in-form")).toBeVisible();
 });
