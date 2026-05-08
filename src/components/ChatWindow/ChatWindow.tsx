@@ -1,7 +1,7 @@
 "use client";
 
 import { theme } from "@/styles/theme.yak";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 
 import { createClient } from "@/utils/supabase/client";
@@ -23,6 +23,7 @@ import {
 
 import { styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
+import { useBeforeUnloadWarning } from "@/hooks/useBeforeUnloadWarning";
 import { useInlineMutation } from "@/hooks/useInlineMutation";
 import { useLocale, useTranslations } from "next-intl";
 import type {
@@ -68,6 +69,57 @@ const defaultChatRenderOptions: ChatRenderOptions = {
   timeZone: CHAT_RENDER_TIME_ZONE,
   useRelativeDayLabels: false,
 };
+const CHAT_DRAFT_WRITE_DELAY_MS = 150;
+
+function getChatDraftStorageKey({
+  threadId,
+  userId,
+}: {
+  threadId: string | null | undefined;
+  userId: string | null | undefined;
+}) {
+  if (!threadId || !userId) {
+    return null;
+  }
+
+  return `peels:chat-draft:${userId}:${threadId}`;
+}
+
+function readChatDraft(key: string) {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  try {
+    return window.sessionStorage.getItem(key) || "";
+  } catch {
+    return "";
+  }
+}
+
+function writeChatDraft(key: string, message: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(key, message);
+  } catch {
+    // Ignore storage failures, such as private browsing restrictions.
+  }
+}
+
+function removeChatDraft(key: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch {
+    // Ignore storage failures, such as private browsing restrictions.
+  }
+}
 
 function getClientTimeZone() {
   return (
@@ -159,6 +211,13 @@ const ChatWindow = memo(function ChatWindow({
   const realListing = isDemo ? null : (listing as ChatListing);
   const sendMutation = useInlineMutation<ChatSendResult>();
   const lastReadSignatureRef = useRef<string | null>(null);
+  const draftWriteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const pendingDraftWriteRef = useRef<{
+    key: string;
+    message: string;
+  } | null>(null);
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState<string | null>(
@@ -195,6 +254,16 @@ const ChatWindow = memo(function ChatWindow({
       ),
     [messages, chatRenderOptions.timeZone]
   );
+  const draftStorageKey = isDemo
+    ? null
+    : getChatDraftStorageKey({
+        threadId: existingThread?.id ?? threadId,
+        userId: user?.id,
+      });
+  const hasUnsentMessage = !isDemo && message.trim().length > 0;
+  const hasLocalThread = !existingThread && Boolean(threadId);
+
+  useBeforeUnloadWarning(hasUnsentMessage && !sendMutation.isPending);
 
   function resolveChatErrorMessage(errorMessage: string | null) {
     if (!errorMessage) {
@@ -215,15 +284,99 @@ const ChatWindow = memo(function ChatWindow({
     return errorMessage;
   }
 
+  const clearPendingDraftWrite = useCallback(() => {
+    if (draftWriteTimeoutRef.current) {
+      clearTimeout(draftWriteTimeoutRef.current);
+      draftWriteTimeoutRef.current = null;
+    }
+  }, []);
+
+  const flushPendingDraftWrite = useCallback(() => {
+    clearPendingDraftWrite();
+
+    if (!pendingDraftWriteRef.current) {
+      return;
+    }
+
+    const { key, message } = pendingDraftWriteRef.current;
+    pendingDraftWriteRef.current = null;
+    writeChatDraft(key, message);
+  }, [clearPendingDraftWrite]);
+
+  const scheduleDraftWrite = useCallback(
+    (key: string, nextMessage: string) => {
+      clearPendingDraftWrite();
+      pendingDraftWriteRef.current = {
+        key,
+        message: nextMessage,
+      };
+      draftWriteTimeoutRef.current = setTimeout(() => {
+        flushPendingDraftWrite();
+      }, CHAT_DRAFT_WRITE_DELAY_MS);
+    },
+    [clearPendingDraftWrite, flushPendingDraftWrite]
+  );
+
+  const removeDraftWrite = useCallback(
+    (key: string) => {
+      if (pendingDraftWriteRef.current?.key === key) {
+        clearPendingDraftWrite();
+        pendingDraftWriteRef.current = null;
+      }
+
+      removeChatDraft(key);
+    },
+    [clearPendingDraftWrite]
+  );
+
+  useEffect(() => {
+    const handlePageHide = () => {
+      flushPendingDraftWrite();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        flushPendingDraftWrite();
+      }
+    };
+
+    window.addEventListener("beforeunload", handlePageHide);
+    window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handlePageHide);
+      window.removeEventListener("pagehide", handlePageHide);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [flushPendingDraftWrite]);
+
   useEffect(() => {
     setClientTimeZone(getClientTimeZone());
   }, []);
 
   useEffect(() => {
+    flushPendingDraftWrite();
     setThreadId(existingThread?.id ?? null);
     setMessages(getThreadMessages(existingThread));
     lastReadSignatureRef.current = null;
-  }, [existingThread]);
+  }, [existingThread, flushPendingDraftWrite]);
+
+  useEffect(() => {
+    flushPendingDraftWrite();
+
+    if (hasLocalThread) {
+      return;
+    }
+
+    setMessage(draftStorageKey ? readChatDraft(draftStorageKey) : "");
+  }, [draftStorageKey, flushPendingDraftWrite, hasLocalThread]);
+
+  useEffect(
+    () => () => {
+      flushPendingDraftWrite();
+    },
+    [flushPendingDraftWrite]
+  );
 
   useEffect(() => {
     if (isDemo || !supabase || !threadId || !user?.id) {
@@ -342,6 +495,15 @@ const ChatWindow = memo(function ChatWindow({
           setMessages(threadResult.data.messages);
         }
 
+        const nextDraftStorageKey = getChatDraftStorageKey({
+          threadId: nextThreadId,
+          userId: user.id,
+        });
+
+        if (nextDraftStorageKey) {
+          writeChatDraft(nextDraftStorageKey, messageToSend);
+        }
+
         return sendChatMessage({
           content: messageToSend,
           supabase,
@@ -356,8 +518,16 @@ const ChatWindow = memo(function ChatWindow({
 
     if (result?.success && result.data) {
       const { message: sentMessage, threadId: sentThreadId } = result.data;
+      const sentDraftStorageKey = getChatDraftStorageKey({
+        threadId: sentThreadId,
+        userId: user?.id,
+      });
+
       setThreadId(sentThreadId);
       setMessages((previousMessages) => [...previousMessages, sentMessage]);
+      if (sentDraftStorageKey) {
+        removeDraftWrite(sentDraftStorageKey);
+      }
       setMessage("");
     }
   }
@@ -369,7 +539,19 @@ const ChatWindow = memo(function ChatWindow({
       sendMutation.reset();
     }
 
-    setMessage(event.target.value);
+    const nextMessage = event.target.value;
+
+    setMessage(nextMessage);
+
+    if (!draftStorageKey) {
+      return;
+    }
+
+    if (nextMessage.trim().length > 0) {
+      scheduleDraftWrite(draftStorageKey, nextMessage);
+    } else {
+      removeDraftWrite(draftStorageKey);
+    }
   };
 
   const role = isDemo

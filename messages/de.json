@@ -350,7 +350,11 @@
     },
     "edit": {
       "title": "Eintrag bearbeiten",
-      "notFound": "Eintrag nicht gefunden"
+      "notFound": "Eintrag nicht gefunden",
+      "discardChangesTitle": "Änderungen verwerfen",
+      "discardChangesBody": "Du hast ungespeicherte Änderungen. Möchtest du sie wirklich verwerfen und die Seite verlassen?",
+      "discardChangesCancel": "Nein, zurück",
+      "discardChangesConfirm": "Ja, verwerfen"
     },
     "form": {
       "basics": "Grundlagen",

@@ -125,6 +125,17 @@ test("chat send disables the composer while pending and appends the new message"
   await expect(composerInput).toBeDisabled();
   await expect(messageVisible).toBeVisible();
   await expect(composerInput).toHaveValue("");
+  await expect
+    .poll(async () =>
+      page.evaluate((threadId) => {
+        const draftEntry = Object.entries(sessionStorage).find(([key]) =>
+          key.endsWith(`:${threadId}`)
+        );
+
+        return draftEntry?.[1] ?? null;
+      }, SEEDED_THREAD_ID)
+    )
+    .toBeNull();
 });
 
 test("chat send failures preserve the draft and show inline feedback", async ({
@@ -146,6 +157,103 @@ test("chat send failures preserve the draft and show inline feedback", async ({
 
   await expect(composerInput).toHaveValue(failedMessage);
   await expect(page.getByText("Synthetic chat failure")).toBeVisible();
+});
+
+test("chat preserves unsent drafts when switching threads", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: `/chats/${SEEDED_THREAD_ID}`,
+  });
+
+  const composerInput = page.getByTestId("chat-composer-input");
+  const draftMessage = `Thread switch draft ${Date.now()}`;
+
+  await composerInput.click();
+  await composerInput.pressSequentially(draftMessage);
+  await expect(composerInput).toHaveValue(draftMessage);
+
+  await page.getByTestId(`thread-preview-${SECOND_SEEDED_THREAD_ID}`).click();
+  await expect(page).toHaveURL(
+    new RegExp(`/chats/${SECOND_SEEDED_THREAD_ID}$`)
+  );
+  await expect(page.getByTestId("chat-composer-input")).toHaveValue("");
+
+  await page.getByTestId(`thread-preview-${SEEDED_THREAD_ID}`).click();
+  await expect(page).toHaveURL(new RegExp(`/chats/${SEEDED_THREAD_ID}$`));
+  await expect(page.getByTestId("chat-composer-input")).toHaveValue(
+    draftMessage
+  );
+});
+
+test("chat restores unsent drafts after leaving and returning in the same tab", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: `/chats/${SEEDED_THREAD_ID}`,
+  });
+
+  const draftMessage = `Route return draft ${Date.now()}`;
+
+  await page.getByTestId("chat-composer-input").pressSequentially(draftMessage);
+  await expect(page.getByTestId("chat-composer-input")).toHaveValue(
+    draftMessage
+  );
+
+  page.once("dialog", async (dialog) => {
+    expect(dialog.type()).toBe("beforeunload");
+    await dialog.accept();
+  });
+  await page.goto("/chats");
+  await expect(page.getByTestId("thread-list")).toBeVisible();
+
+  await page.goto(`/chats/${SEEDED_THREAD_ID}`);
+  await expect(
+    page.getByRole("textbox", { name: "Send a message to Avery..." })
+  ).toHaveValue(draftMessage);
+});
+
+test("unsent chat drafts warn before closing or reloading the page", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: `/chats/${SEEDED_THREAD_ID}`,
+  });
+
+  const composerInput = page.getByTestId("chat-composer-input");
+  await composerInput.click();
+  await composerInput.pressSequentially(`Unsent chat draft ${Date.now()}`);
+
+  const dialogPromise = page.waitForEvent("dialog");
+  const reloadPromise = page.reload({ waitUntil: "domcontentloaded" });
+  const dialog = await dialogPromise;
+  expect(dialog.type()).toBe("beforeunload");
+  await dialog.accept();
+  await reloadPromise;
+});
+
+test("empty chat composers reload without an unsaved draft warning", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: `/chats/${SEEDED_THREAD_ID}`,
+  });
+
+  await expect(page.getByTestId("chat-composer-input")).toHaveValue("");
+
+  const dialogMessages: string[] = [];
+  page.once("dialog", async (dialog) => {
+    dialogMessages.push(dialog.message());
+    await dialog.dismiss();
+  });
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  expect(dialogMessages).toEqual([]);
 });
 
 test("invalid chat thread ids redirect back to the chat index", async ({

@@ -350,7 +350,11 @@
     },
     "edit": {
       "title": "Editar anúncio",
-      "notFound": "Anúncio não encontrado"
+      "notFound": "Anúncio não encontrado",
+      "discardChangesTitle": "Descartar alterações",
+      "discardChangesBody": "Você tem alterações não salvas. Tem certeza de que quer descartá-las e sair?",
+      "discardChangesCancel": "Não, voltar",
+      "discardChangesConfirm": "Sim, descartar"
     },
     "form": {
       "basics": "Informações básicas",
