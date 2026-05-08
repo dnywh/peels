@@ -350,7 +350,8 @@
     },
     "edit": {
       "title": "Edit listing",
-      "notFound": "Listing not found"
+      "notFound": "Listing not found",
+      "unsavedViewListingConfirm": "You have unsaved changes. View the saved listing anyway?"
     },
     "form": {
       "basics": "Basics",

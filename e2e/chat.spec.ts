@@ -148,6 +148,47 @@ test("chat send failures preserve the draft and show inline feedback", async ({
   await expect(page.getByText("Synthetic chat failure")).toBeVisible();
 });
 
+test("unsent chat drafts warn before closing or reloading the page", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: `/chats/${SEEDED_THREAD_ID}`,
+  });
+
+  const composerInput = page.getByTestId("chat-composer-input");
+  await composerInput.click();
+  await composerInput.pressSequentially(`Unsent chat draft ${Date.now()}`);
+
+  const dialogPromise = page.waitForEvent("dialog");
+  const reloadPromise = page.reload({ waitUntil: "domcontentloaded" });
+  const dialog = await dialogPromise;
+  expect(dialog.type()).toBe("beforeunload");
+  await dialog.accept();
+  await reloadPromise;
+});
+
+test("empty chat composers reload without an unsaved draft warning", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: `/chats/${SEEDED_THREAD_ID}`,
+  });
+
+  await expect(page.getByTestId("chat-composer-input")).toHaveValue("");
+
+  const dialogMessages: string[] = [];
+  page.once("dialog", async (dialog) => {
+    dialogMessages.push(dialog.message());
+    await dialog.dismiss();
+  });
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  expect(dialogMessages).toEqual([]);
+});
+
 test("invalid chat thread ids redirect back to the chat index", async ({
   page,
 }) => {

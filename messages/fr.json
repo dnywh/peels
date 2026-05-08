@@ -350,7 +350,8 @@
     },
     "edit": {
       "title": "Modifier l’annonce",
-      "notFound": "Annonce introuvable"
+      "notFound": "Annonce introuvable",
+      "unsavedViewListingConfirm": "Vous avez des modifications non enregistrées. Voir quand même l’annonce enregistrée ?"
     },
     "form": {
       "basics": "Informations de base",

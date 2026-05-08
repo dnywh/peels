@@ -137,6 +137,62 @@ test("listing edit saves and restores seeded business fields", async ({
   );
 });
 
+test("dirty listing edit asks before viewing the saved listing", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: BUSINESS_LISTING_EDIT_PATH,
+  });
+
+  const listingWriteForm = page.getByTestId("listing-write-form");
+  await expect(listingWriteForm).toBeVisible();
+  const descriptionInput = listingWriteForm.locator("#description").first();
+  const draftDescription = `Unsaved listing preview draft ${Date.now()}`;
+  const viewListingLink = page.getByRole("link", { name: "View listing" });
+
+  await descriptionInput.fill(draftDescription);
+
+  const cancelDialogPromise = page.waitForEvent("dialog");
+  await viewListingLink.click();
+  const cancelDialog = await cancelDialogPromise;
+  expect(cancelDialog.type()).toBe("confirm");
+  expect(cancelDialog.message()).toContain("unsaved changes");
+  await cancelDialog.dismiss();
+
+  await expect(page).toHaveURL(/\/profile\/listings\/demo-inner-west-cafe$/);
+  await expect(descriptionInput).toHaveValue(draftDescription);
+
+  const confirmDialogPromise = page.waitForEvent("dialog");
+  await viewListingLink.click();
+  const confirmDialog = await confirmDialogPromise;
+  expect(confirmDialog.type()).toBe("confirm");
+  await confirmDialog.accept();
+
+  await expect(page).toHaveURL(/\/listings\/demo-inner-west-cafe$/);
+});
+
+test("clean listing edit views the saved listing without asking", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: BUSINESS_LISTING_EDIT_PATH,
+  });
+
+  await expect(page.getByTestId("listing-write-form")).toBeVisible();
+  const dialogMessages: string[] = [];
+  page.on("dialog", async (dialog) => {
+    dialogMessages.push(dialog.message());
+    await dialog.dismiss();
+  });
+
+  await page.getByRole("link", { name: "View listing" }).click();
+
+  await expect(page).toHaveURL(/\/listings\/demo-inner-west-cafe$/);
+  expect(dialogMessages).toEqual([]);
+});
+
 test("residential listing edit leaves avatar management on the profile page", async ({
   page,
 }) => {

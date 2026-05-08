@@ -23,6 +23,7 @@ import {
 
 import { styled } from "next-yak";
 import { useUnreadMessages } from "@/contexts/UnreadMessagesContext";
+import { useBeforeUnloadWarning } from "@/hooks/useBeforeUnloadWarning";
 import { useInlineMutation } from "@/hooks/useInlineMutation";
 import { useLocale, useTranslations } from "next-intl";
 import type {
@@ -195,6 +196,9 @@ const ChatWindow = memo(function ChatWindow({
       ),
     [messages, chatRenderOptions.timeZone]
   );
+  const hasUnsentMessage = !isDemo && message.trim().length > 0;
+
+  useBeforeUnloadWarning(hasUnsentMessage && !sendMutation.isPending);
 
   function resolveChatErrorMessage(errorMessage: string | null) {
     if (!errorMessage) {

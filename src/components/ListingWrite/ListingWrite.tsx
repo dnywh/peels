@@ -3,10 +3,12 @@
 import { theme } from "@/styles/theme.yak";
 import {
   useEffect,
+  useMemo,
   useState,
   type ChangeEvent,
   type ComponentType,
   type InputHTMLAttributes,
+  type MouseEvent,
 } from "react";
 import { useRouter } from "next/navigation";
 import { FIELD_CONFIGS } from "@/lib/formValidation";
@@ -31,6 +33,7 @@ import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
 import FormMessage from "@/components/FormMessage";
 import SubmitButton from "@/components/SubmitButton";
+import { useBeforeUnloadWarning } from "@/hooks/useBeforeUnloadWarning";
 import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
 import type { User } from "@supabase/supabase-js";
@@ -46,6 +49,7 @@ import {
 import type {
   DeleteListingResult,
   Listing,
+  ListingCoordinates,
   ListingSubmitFailureData,
   ListingSubmitResult,
   ListingType,
@@ -96,6 +100,75 @@ type ListingWriteProps = {
   user: User | null;
   profile: ListingWriteProfile | null;
 };
+
+type ListingWriteSavedValues = {
+  acceptedItems: string[];
+  areaName: string;
+  avatar: string;
+  coordinates: ListingCoordinates | null;
+  countryCode: string;
+  description: string;
+  isStub: boolean;
+  links: string[];
+  name: string;
+  photos: string[];
+  rejectedItems: string[];
+  visibility: boolean;
+};
+
+function normalizeTextList(items: string[] | null | undefined) {
+  return (items ?? []).filter((item) => item.trim() !== "");
+}
+
+function getListingWriteSavedValues({
+  acceptedItems,
+  areaName,
+  avatar,
+  coordinates,
+  countryCode,
+  description,
+  initialListing,
+  isStub,
+  links,
+  listingType,
+  name,
+  photos,
+  profile,
+  rejectedItems,
+  visibility,
+}: {
+  acceptedItems: string[] | null | undefined;
+  areaName: string | null | undefined;
+  avatar: string | null | undefined;
+  coordinates: ListingCoordinates | null;
+  countryCode: string | null | undefined;
+  description: string | null | undefined;
+  initialListing?: Listing | null;
+  isStub: boolean | null | undefined;
+  links: string[] | null | undefined;
+  listingType: ListingType;
+  name: string | null | undefined;
+  photos: string[] | null | undefined;
+  profile: ListingWriteProfile | null;
+  rejectedItems: string[] | null | undefined;
+  visibility: boolean | null | undefined;
+}): ListingWriteSavedValues {
+  return {
+    acceptedItems: normalizeTextList(acceptedItems),
+    areaName: areaName || "",
+    avatar: listingType === "residential" ? "" : avatar || "",
+    coordinates,
+    countryCode: countryCode || "",
+    description: description || "",
+    isStub: Boolean(isStub),
+    links: listingType === "residential" ? [] : normalizeTextList(links),
+    name:
+      listingType === "residential" ? profile?.first_name || "" : name || "",
+    photos: initialListing ? (photos ?? []) : [],
+    rejectedItems: normalizeTextList(rejectedItems),
+    visibility: visibility ?? true,
+  };
+}
 
 export default function ListingWrite({
   initialListing,
@@ -155,6 +228,71 @@ export default function ListingWrite({
   const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
 
   const isMutating = submitMutation.isPending || deleteMutation.isPending;
+  const savedListingValues = useMemo(
+    () =>
+      initialListing
+        ? getListingWriteSavedValues({
+            acceptedItems: initialListing.accepted_items,
+            areaName: initialListing.area_name,
+            avatar: initialListing.avatar,
+            coordinates: initialListing.coordinates,
+            countryCode: initialListing.country_code,
+            description: initialListing.description,
+            initialListing,
+            isStub: initialListing.is_stub,
+            links: initialListing.links,
+            listingType,
+            name: initialListing.name,
+            photos: initialListing.photos,
+            profile,
+            rejectedItems: initialListing.rejected_items,
+            visibility: initialListing.visibility,
+          })
+        : null,
+    [initialListing, listingType, profile]
+  );
+  const currentListingValues = useMemo(
+    () =>
+      initialListing
+        ? getListingWriteSavedValues({
+            acceptedItems,
+            areaName,
+            avatar,
+            coordinates,
+            countryCode,
+            description,
+            initialListing,
+            isStub,
+            links,
+            listingType,
+            name,
+            photos,
+            profile,
+            rejectedItems,
+            visibility,
+          })
+        : null,
+    [
+      acceptedItems,
+      areaName,
+      avatar,
+      coordinates,
+      countryCode,
+      description,
+      initialListing,
+      isStub,
+      links,
+      listingType,
+      name,
+      photos,
+      profile,
+      rejectedItems,
+      visibility,
+    ]
+  );
+  const hasUnsavedChanges =
+    Boolean(savedListingValues && currentListingValues) &&
+    JSON.stringify(savedListingValues) !== JSON.stringify(currentListingValues);
   const errorCount = Object.keys(errors).length;
   const feedbackError =
     deleteMutation.result.error || submitMutation.result.error;
@@ -165,6 +303,20 @@ export default function ListingWrite({
           count: errorCount,
         })
       : null);
+
+  useBeforeUnloadWarning(
+    Boolean(initialListing && hasUnsavedChanges && !isMutating)
+  );
+
+  function handleViewListingClick(event: MouseEvent<HTMLElement>) {
+    if (!hasUnsavedChanges) {
+      return;
+    }
+
+    if (!window.confirm(t("Listings.edit.unsavedViewListingConfirm"))) {
+      event.preventDefault();
+    }
+  }
 
   async function handleDeleteListing(event: FormSubmitEvent) {
     event.preventDefault();
@@ -637,6 +789,7 @@ export default function ListingWrite({
             width="contained"
             href={`/listings/${initialListing.slug}`}
             disabled={isMutating}
+            onClick={handleViewListingClick}
           >
             {t("Actions.viewListing")}
           </Button>

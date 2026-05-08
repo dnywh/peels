@@ -350,7 +350,8 @@
     },
     "edit": {
       "title": "Eintrag bearbeiten",
-      "notFound": "Eintrag nicht gefunden"
+      "notFound": "Eintrag nicht gefunden",
+      "unsavedViewListingConfirm": "Du hast ungespeicherte Änderungen. Trotzdem den gespeicherten Eintrag ansehen?"
     },
     "form": {
       "basics": "Grundlagen",

@@ -350,7 +350,8 @@
     },
     "edit": {
       "title": "Editar anúncio",
-      "notFound": "Anúncio não encontrado"
+      "notFound": "Anúncio não encontrado",
+      "unsavedViewListingConfirm": "Você tem alterações não salvas. Ver o anúncio salvo mesmo assim?"
     },
     "form": {
       "basics": "Informações básicas",
