@@ -495,6 +495,15 @@ const ChatWindow = memo(function ChatWindow({
           setMessages(threadResult.data.messages);
         }
 
+        const nextDraftStorageKey = getChatDraftStorageKey({
+          threadId: nextThreadId,
+          userId: user.id,
+        });
+
+        if (nextDraftStorageKey) {
+          writeChatDraft(nextDraftStorageKey, messageToSend);
+        }
+
         return sendChatMessage({
           content: messageToSend,
           supabase,

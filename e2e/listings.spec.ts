@@ -15,6 +15,19 @@ const RESIDENTIAL_LISTING_EDIT_PATH =
 const ALTERNATE_BUSINESS_DESCRIPTION =
   "A demo business listing with a slightly different description for e2e coverage.";
 
+function requireHref(href: string | null) {
+  expect(
+    href,
+    "Expected listing photo thumbnail to have an href"
+  ).not.toBeNull();
+
+  if (!href) {
+    throw new Error("Expected listing photo thumbnail to have an href");
+  }
+
+  return href;
+}
+
 test("profile loads the seeded host account and listings", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
 
@@ -235,13 +248,13 @@ test("listing photos open in a dedicated photo tab", async ({ page }) => {
   await expect(firstThumbnail).toBeVisible();
   await expect(firstThumbnail).toHaveAttribute("target", "_blank");
 
-  const href = await firstThumbnail.getAttribute("href");
+  const href = requireHref(await firstThumbnail.getAttribute("href"));
   expect(href).toBe(
     "/listings/demo-marrickville-compost/photos/demo/garden.jpg"
   );
 
   const photoPage = await page.context().newPage();
-  await photoPage.goto(new URL(href ?? "", page.url()).toString());
+  await photoPage.goto(new URL(href, page.url()).toString());
   await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
   await expect(photoPage.getByRole("navigation")).toHaveCount(0);
   await expect(page).toHaveURL(PUBLIC_MULTI_PHOTO_LISTING_PATH);
@@ -268,13 +281,13 @@ test("map listing photos open in a dedicated photo tab without disturbing the dr
   await expect(firstThumbnail).toBeVisible();
   await expect(firstThumbnail).toHaveAttribute("target", "_blank");
 
-  const href = await firstThumbnail.getAttribute("href");
+  const href = requireHref(await firstThumbnail.getAttribute("href"));
   expect(href).toBe(
     "/listings/demo-marrickville-compost/photos/demo/garden.jpg"
   );
 
   const photoPage = await page.context().newPage();
-  await photoPage.goto(new URL(href ?? "", page.url()).toString());
+  await photoPage.goto(new URL(href, page.url()).toString());
   await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
   await expect(page).toHaveURL(MAP_MULTI_PHOTO_LISTING_PATH);
   await expect(firstThumbnail).toBeVisible();
