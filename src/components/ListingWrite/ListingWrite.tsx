@@ -2,6 +2,7 @@
 
 import { theme } from "@/styles/theme.yak";
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -224,6 +225,9 @@ export default function ListingWrite({
   );
   const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
   const [hasInteractedWithForm, setHasInteractedWithForm] = useState(false);
+  const markFormInteracted = useCallback(() => {
+    setHasInteractedWithForm(true);
+  }, []);
 
   const isMutating = submitMutation.isPending || deleteMutation.isPending;
   const initialListingValues = useMemo(
@@ -490,14 +494,28 @@ export default function ListingWrite({
     });
   };
 
+  const handlePhotosChange = useCallback(
+    (nextPhotos: string[]) => {
+      markFormInteracted();
+
+      if (initialListing) {
+        setPhotos(nextPhotos);
+        return;
+      }
+
+      setPendingPhotos(nextPhotos);
+    },
+    [initialListing, markFormInteracted]
+  );
+
   return (
     <>
       {initialListing?.is_stub && <Lozenge>{t("Common.stub")}</Lozenge>}
 
       <Form
         onSubmit={handleSubmit}
-        onChange={() => setHasInteractedWithForm(true)}
-        onInput={() => setHasInteractedWithForm(true)}
+        onChange={markFormInteracted}
+        onInput={markFormInteracted}
         data-testid="listing-write-form"
         data-hydrated={isHydrated ? "true" : "false"}
       >
@@ -578,6 +596,7 @@ export default function ListingWrite({
               areaName={areaName}
               setAreaName={setAreaName}
               autoDetectCountry={!initialListing}
+              onLocationInteract={markFormInteracted}
               error={errors.location}
             />
 
@@ -698,7 +717,7 @@ export default function ListingWrite({
               <ListingPhotosManager
                 initialPhotos={initialListing ? photos : pendingPhotos}
                 listingSlug={initialListing?.slug}
-                onPhotosChange={initialListing ? setPhotos : setPendingPhotos}
+                onPhotosChange={handlePhotosChange}
                 isNewListing={!initialListing}
               />
             </FieldsetWithGap>

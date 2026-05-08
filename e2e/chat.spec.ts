@@ -210,9 +210,9 @@ test("chat restores unsent drafts after leaving and returning in the same tab", 
   await expect(page.getByTestId("thread-list")).toBeVisible();
 
   await page.goto(`/chats/${SEEDED_THREAD_ID}`);
-  await expect(page.getByTestId("chat-composer-input")).toHaveValue(
-    draftMessage
-  );
+  await expect(
+    page.getByRole("textbox", { name: "Send a message to Avery..." })
+  ).toHaveValue(draftMessage);
 });
 
 test("unsent chat drafts warn before closing or reloading the page", async ({

@@ -1,7 +1,7 @@
 "use client";
 
 import { theme } from "@/styles/theme.yak";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 
 import { createClient } from "@/utils/supabase/client";
@@ -83,6 +83,42 @@ function getChatDraftStorageKey({
   }
 
   return `peels:chat-draft:${userId}:${threadId}`;
+}
+
+function readChatDraft(key: string) {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  try {
+    return window.sessionStorage.getItem(key) || "";
+  } catch {
+    return "";
+  }
+}
+
+function writeChatDraft(key: string, message: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(key, message);
+  } catch {
+    // Ignore storage failures, such as private browsing restrictions.
+  }
+}
+
+function removeChatDraft(key: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch {
+    // Ignore storage failures, such as private browsing restrictions.
+  }
 }
 
 function getClientTimeZone() {
@@ -247,14 +283,14 @@ const ChatWindow = memo(function ChatWindow({
     return errorMessage;
   }
 
-  function clearPendingDraftWrite() {
+  const clearPendingDraftWrite = useCallback(() => {
     if (draftWriteTimeoutRef.current) {
       clearTimeout(draftWriteTimeoutRef.current);
       draftWriteTimeoutRef.current = null;
     }
-  }
+  }, []);
 
-  function flushPendingDraftWrite() {
+  const flushPendingDraftWrite = useCallback(() => {
     clearPendingDraftWrite();
 
     if (!pendingDraftWriteRef.current) {
@@ -263,28 +299,55 @@ const ChatWindow = memo(function ChatWindow({
 
     const { key, message } = pendingDraftWriteRef.current;
     pendingDraftWriteRef.current = null;
-    sessionStorage.setItem(key, message);
-  }
+    writeChatDraft(key, message);
+  }, [clearPendingDraftWrite]);
 
-  function scheduleDraftWrite(key: string, nextMessage: string) {
-    clearPendingDraftWrite();
-    pendingDraftWriteRef.current = {
-      key,
-      message: nextMessage,
-    };
-    draftWriteTimeoutRef.current = setTimeout(() => {
-      flushPendingDraftWrite();
-    }, CHAT_DRAFT_WRITE_DELAY_MS);
-  }
-
-  function removeDraftWrite(key: string) {
-    if (pendingDraftWriteRef.current?.key === key) {
+  const scheduleDraftWrite = useCallback(
+    (key: string, nextMessage: string) => {
       clearPendingDraftWrite();
-      pendingDraftWriteRef.current = null;
-    }
+      pendingDraftWriteRef.current = {
+        key,
+        message: nextMessage,
+      };
+      draftWriteTimeoutRef.current = setTimeout(() => {
+        flushPendingDraftWrite();
+      }, CHAT_DRAFT_WRITE_DELAY_MS);
+    },
+    [clearPendingDraftWrite, flushPendingDraftWrite]
+  );
 
-    sessionStorage.removeItem(key);
-  }
+  const removeDraftWrite = useCallback(
+    (key: string) => {
+      if (pendingDraftWriteRef.current?.key === key) {
+        clearPendingDraftWrite();
+        pendingDraftWriteRef.current = null;
+      }
+
+      removeChatDraft(key);
+    },
+    [clearPendingDraftWrite]
+  );
+
+  useEffect(() => {
+    const handlePageHide = () => {
+      flushPendingDraftWrite();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        flushPendingDraftWrite();
+      }
+    };
+
+    window.addEventListener("beforeunload", handlePageHide);
+    window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handlePageHide);
+      window.removeEventListener("pagehide", handlePageHide);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [flushPendingDraftWrite]);
 
   useEffect(() => {
     setClientTimeZone(getClientTimeZone());
@@ -294,17 +357,15 @@ const ChatWindow = memo(function ChatWindow({
     flushPendingDraftWrite();
     setThreadId(existingThread?.id ?? null);
     setMessages(getThreadMessages(existingThread));
-    setMessage(
-      draftStorageKey ? sessionStorage.getItem(draftStorageKey) || "" : ""
-    );
+    setMessage(draftStorageKey ? readChatDraft(draftStorageKey) : "");
     lastReadSignatureRef.current = null;
-  }, [draftStorageKey, existingThread]);
+  }, [draftStorageKey, existingThread, flushPendingDraftWrite]);
 
   useEffect(
     () => () => {
       flushPendingDraftWrite();
     },
-    []
+    [flushPendingDraftWrite]
   );
 
   useEffect(() => {
