@@ -435,6 +435,7 @@
     "seo": {
       "privateHostName": "Private Host",
       "fallbackListingName": "Listing",
+      "residentialConnectName": "them",
       "residentialIntro": "{name} accepts food scraps for composting.",
       "residentialIntroWithLocation": "{name} accepts food scraps for composting in {location}.",
       "nonResidentialIntro": "{name} helps people compost food scraps.",

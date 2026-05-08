@@ -435,6 +435,7 @@
     "seo": {
       "privateHostName": "Anfitrião privado",
       "fallbackListingName": "Anúncio",
+      "residentialConnectName": "essa pessoa",
       "residentialIntro": "{name} aceita restos de comida para compostagem.",
       "residentialIntroWithLocation": "{name} aceita restos de comida para compostagem em {location}.",
       "nonResidentialIntro": "{name} ajuda pessoas a compostar restos de comida.",

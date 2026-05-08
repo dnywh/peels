@@ -29,6 +29,7 @@ type ListingUser =
 export type ListingSeoCopy = {
   privateHostName: string;
   fallbackListingName: string;
+  residentialConnectName: string;
   residentialIntro: (values: { name: string; location?: string }) => string;
   nonResidentialIntro: (values: { name: string; location?: string }) => string;
   connect: (values: {
@@ -60,6 +61,7 @@ type GenerateListingMetadataOptions = ListingSeoOptions & {
 const defaultListingSeoCopy: ListingSeoCopy = {
   privateHostName: "Private Host",
   fallbackListingName: "Listing",
+  residentialConnectName: "them",
   residentialIntro: ({ name, location }) =>
     `${name} accepts food scraps for composting${location ? ` in ${location}` : ""}.`,
   nonResidentialIntro: ({ name, location }) =>
@@ -291,8 +293,8 @@ export function generateListingDescription(
           location: listingFullLocation || undefined,
         });
   const listingConnectName =
-    listingType === "residential" && !options.seoCopy
-      ? "them"
+    listingType === "residential" && !user
+      ? seoCopy.residentialConnectName
       : listing.name || listingDisplayName;
   const listingDescriptionParts = [
     listingIntro,

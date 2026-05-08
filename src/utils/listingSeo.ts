@@ -15,6 +15,7 @@ export async function getListingSeoOptions() {
   const seoCopy: ListingSeoCopy = {
     privateHostName: t("privateHostName"),
     fallbackListingName: t("fallbackListingName"),
+    residentialConnectName: t("residentialConnectName"),
     residentialIntro: ({ name, location }) =>
       location
         ? t("residentialIntroWithLocation", { name, location })

@@ -35,6 +35,7 @@ const localisedSeoCopies = {
   es: {
     privateHostName: "Anfitrión privado",
     fallbackListingName: "Anuncio",
+    residentialConnectName: "esta persona",
     residentialIntro: ({ name, location }) =>
       `${name} acepta restos de comida para compostar${location ? ` en ${location}` : ""}.`,
     nonResidentialIntro: ({ name, location }) =>
@@ -57,6 +58,7 @@ const localisedSeoCopies = {
   de: {
     privateHostName: "Privater Host",
     fallbackListingName: "Eintrag",
+    residentialConnectName: "dieser Person",
     residentialIntro: ({ name, location }) =>
       `${name} nimmt Lebensmittelreste zum Kompostieren${location ? ` in ${location}` : ""} an.`,
     nonResidentialIntro: ({ name, location }) =>
@@ -73,6 +75,7 @@ const localisedSeoCopies = {
   "pt-BR": {
     privateHostName: "Anfitrião privado",
     fallbackListingName: "Anúncio",
+    residentialConnectName: "essa pessoa",
     residentialIntro: ({ name, location }) =>
       `${name} aceita restos de comida para compostagem${location ? ` em ${location}` : ""}.`,
     nonResidentialIntro: ({ name, location }) =>
@@ -89,6 +92,7 @@ const localisedSeoCopies = {
   fr: {
     privateHostName: "Hôte privé",
     fallbackListingName: "Annonce",
+    residentialConnectName: "cette personne",
     residentialIntro: ({ name, location }) =>
       `${name} accepte les restes alimentaires pour le compostage${location ? ` à ${location}` : ""}.`,
     nonResidentialIntro: ({ name, location }) =>
@@ -203,6 +207,34 @@ test("residential public metadata avoids leaking host names", () => {
   });
   assert.match(description, /^Private Host accepts food scraps for composting/);
   assert.doesNotMatch(description, /Sam/);
+});
+
+test("anonymous residential metadata avoids leaking listing names with localised SEO copy", () => {
+  const residentialListing = {
+    ...communityListing,
+    type: "residential",
+    name: "Sam's backyard bin",
+    owner_first_name: "Sam",
+    slug: "private-host",
+  } satisfies Listing;
+
+  const metadata = generateListingMetadata(residentialListing, null, {
+    includeFullMetadata: true,
+    locale: "es",
+    seoCopy: localisedSeoCopies.es,
+  });
+  const description = String(metadata.description);
+
+  assert.deepEqual(metadata.title, {
+    absolute: "Anfitrión privado",
+  });
+  assert.match(
+    description,
+    /^Anfitrión privado acepta restos de comida para compostar/
+  );
+  assert.match(description, /Contacta con esta persona en Peels/);
+  assert.doesNotMatch(description, /Sam/);
+  assert.doesNotMatch(description, /backyard bin/);
 });
 
 test("listing JSON-LD describes the public listing page and place conservatively", () => {
