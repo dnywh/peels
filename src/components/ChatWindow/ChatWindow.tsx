@@ -261,6 +261,7 @@ const ChatWindow = memo(function ChatWindow({
         userId: user?.id,
       });
   const hasUnsentMessage = !isDemo && message.trim().length > 0;
+  const hasLocalThread = !existingThread && Boolean(threadId);
 
   useBeforeUnloadWarning(hasUnsentMessage && !sendMutation.isPending);
 
@@ -357,9 +358,18 @@ const ChatWindow = memo(function ChatWindow({
     flushPendingDraftWrite();
     setThreadId(existingThread?.id ?? null);
     setMessages(getThreadMessages(existingThread));
-    setMessage(draftStorageKey ? readChatDraft(draftStorageKey) : "");
     lastReadSignatureRef.current = null;
-  }, [draftStorageKey, existingThread, flushPendingDraftWrite]);
+  }, [existingThread, flushPendingDraftWrite]);
+
+  useEffect(() => {
+    flushPendingDraftWrite();
+
+    if (hasLocalThread) {
+      return;
+    }
+
+    setMessage(draftStorageKey ? readChatDraft(draftStorageKey) : "");
+  }, [draftStorageKey, flushPendingDraftWrite, hasLocalThread]);
 
   useEffect(
     () => () => {
@@ -499,10 +509,15 @@ const ChatWindow = memo(function ChatWindow({
 
     if (result?.success && result.data) {
       const { message: sentMessage, threadId: sentThreadId } = result.data;
+      const sentDraftStorageKey = getChatDraftStorageKey({
+        threadId: sentThreadId,
+        userId: user?.id,
+      });
+
       setThreadId(sentThreadId);
       setMessages((previousMessages) => [...previousMessages, sentMessage]);
-      if (draftStorageKey) {
-        removeDraftWrite(draftStorageKey);
+      if (sentDraftStorageKey) {
+        removeDraftWrite(sentDraftStorageKey);
       }
       setMessage("");
     }
