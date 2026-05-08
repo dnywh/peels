@@ -358,7 +358,6 @@ export function generateListingMetadata(
 
   const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
   const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
-  const listingType = normaliseListingType(listing.type);
   const listingFullLocation = getListingLocation(listing, options.locale);
   const listingDescription = generateListingDescription(listing, user, options);
   const listingCanonicalPath = getListingCanonicalPath(listing);
@@ -374,13 +373,6 @@ export function generateListingMetadata(
       siteName: siteConfig.name,
     },
   };
-
-  if (listingType === "residential") {
-    metadata.robots = {
-      index: false,
-      follow: true,
-    };
-  }
 
   if (listingCanonicalPath) {
     metadata.alternates = {

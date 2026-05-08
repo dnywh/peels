@@ -188,12 +188,18 @@ test("listing metadata supports every configured non-English SEO locale", () => 
   }
 });
 
-test("residential public metadata avoids leaking host names", () => {
+test("anonymous residential metadata emits an indexable teaser without private details", () => {
   const residentialListing = {
     ...communityListing,
     type: "residential",
-    name: null,
+    name: "Sam's backyard bin",
+    description:
+      "Sam's side gate is open after 5pm and the compost bin is beside the shed.",
+    accepted_items: ["Banana peels for Sam's worms"],
+    rejected_items: ["Citrus near Sam's shed"],
+    photos: ["private/sam-backyard.jpg"],
     owner_first_name: "Sam",
+    owner_avatar: "sam.jpg",
     slug: "private-host",
   } satisfies Listing;
 
@@ -205,12 +211,13 @@ test("residential public metadata avoids leaking host names", () => {
   assert.deepEqual(metadata.title, {
     absolute: "Private Host",
   });
-  assert.deepEqual(metadata.robots, {
-    index: false,
-    follow: true,
-  });
-  assert.match(description, /^Private Host accepts food scraps for composting/);
-  assert.doesNotMatch(description, /Sam/);
+  assert.equal(metadata.robots, undefined);
+  assert.match(
+    description,
+    /^Private Host accepts food scraps for composting in Marrickville, Australia\./
+  );
+  assert.match(description, /Connect with them on Peels/);
+  assert.doesNotMatch(description, /Sam|side gate|shed|Banana|Citrus/);
 });
 
 test("anonymous residential metadata avoids leaking listing names with localised SEO copy", () => {
@@ -241,7 +248,7 @@ test("anonymous residential metadata avoids leaking listing names with localised
   assert.doesNotMatch(description, /backyard bin/);
 });
 
-test("authenticated residential metadata remains noindex", () => {
+test("authenticated residential metadata can use private display names", () => {
   const residentialListing = {
     ...communityListing,
     type: "residential",
@@ -254,10 +261,10 @@ test("authenticated residential metadata remains noindex", () => {
     id: "user-1",
   });
 
-  assert.deepEqual(metadata.robots, {
-    index: false,
-    follow: true,
+  assert.deepEqual(metadata.title, {
+    absolute: "Sam",
   });
+  assert.equal(metadata.robots, undefined);
 });
 
 test("listing JSON-LD describes the public listing page and place conservatively", () => {
@@ -315,8 +322,15 @@ test("anonymous residential listing JSON-LD omits structured location details", 
   const residentialListing = {
     ...communityListing,
     type: "residential",
-    name: null,
+    name: "Sam's backyard bin",
+    description:
+      "Sam's side gate is open after 5pm and the compost bin is beside the shed.",
+    accepted_items: ["Banana peels for Sam's worms"],
+    rejected_items: ["Citrus near Sam's shed"],
+    photos: ["private/sam-backyard.jpg"],
+    avatar: "private/sam-listing-avatar.jpg",
     owner_first_name: "Sam",
+    owner_avatar: "sam.jpg",
     slug: "private-host",
   } satisfies Listing;
 
@@ -324,8 +338,17 @@ test("anonymous residential listing JSON-LD omits structured location details", 
 
   assert.ok(jsonLd);
   assert.equal(jsonLd.name, "Private Host");
+  assert.match(
+    jsonLd.description,
+    /^Private Host accepts food scraps for composting in Marrickville, Australia\./
+  );
+  assert.doesNotMatch(
+    JSON.stringify(jsonLd),
+    /Sam|side gate|shed|Banana|Citrus|sam-backyard|sam-listing-avatar/
+  );
   assert.equal(jsonLd.about.address, undefined);
   assert.equal(jsonLd.about.geo, undefined);
+  assert.equal(jsonLd.about.image, undefined);
   assert.equal(jsonLd.about.additionalProperty, undefined);
 });
 
