@@ -89,9 +89,9 @@ export function wrapLongitude(lng: number): number {
 // direction). This lets us fetch a slightly padded area so that small pans
 // reuse already-loaded pins without hitting the network again.
 //
-// Returns 1 or 2 boxes. Two are returned when the padded viewport crosses
-// the antimeridian (e.g. Fiji, NZ → Alaska), so the caller can fetch both
-// halves and merge the results.
+// Returns one or more boxes. Two are returned when the padded viewport crosses
+// the antimeridian (e.g. Fiji, NZ → Alaska), and global viewports are split
+// into geography-safe slices. Callers should fetch each box and merge results.
 export function padBounds(bounds: LngLatBounds, factor = 0.3): BoundingBox[] {
   const sw = bounds.getSouthWest();
   const ne = bounds.getNorthEast();

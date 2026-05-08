@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { HOST_EMAIL, signIn } from "./helpers";
 
 test("homepage hydrates without chat date mismatches", async ({
   browser,
@@ -107,4 +108,58 @@ test("homepage drop-off only shows curated featured hosts", async ({
   await expect(
     page.getByTestId("homepage-featured-host-demo-newtown-worm-farm")
   ).toHaveCount(0);
+});
+
+test("homepage account button stays hidden while signed-in profile state loads", async ({
+  page,
+}) => {
+  await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
+
+  let resolveProfileRequest = () => {};
+  const profileRequestStarted = new Promise<void>((resolve) => {
+    resolveProfileRequest = resolve;
+  });
+  let continueProfileRequest = () => {};
+  const profileRequestCanContinue = new Promise<void>((resolve) => {
+    continueProfileRequest = resolve;
+  });
+
+  await page.route(/\/rest\/v1\/profiles(?:\?|$)/, async (route) => {
+    const request = route.request();
+
+    if (
+      request.method() === "GET" &&
+      request.url().includes("select=first_name")
+    ) {
+      resolveProfileRequest();
+      await profileRequestCanContinue;
+    }
+
+    await route.continue();
+  });
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await profileRequestStarted;
+
+  try {
+    await expect(page.getByTestId("account-button-profile")).toHaveCount(0);
+    await expect(page.getByTestId("account-button-sign-in")).toHaveCount(0);
+  } finally {
+    continueProfileRequest();
+  }
+
+  const profileAccountButton = page.getByTestId("account-button-profile");
+
+  await expect(profileAccountButton).toHaveAttribute("href", "/profile");
+  await expect(profileAccountButton).toHaveCSS("opacity", "1");
+});
+
+test("homepage account button links guests to sign in", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByTestId("account-button-sign-in")).toHaveAttribute(
+    "href",
+    "/sign-in"
+  );
+  await expect(page.getByTestId("account-button-profile")).toHaveCount(0);
 });

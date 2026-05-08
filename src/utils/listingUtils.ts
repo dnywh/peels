@@ -308,8 +308,13 @@ export function generateListingJsonLd(
     `/listings/${encodeURIComponent(listing.slug)}`,
     siteConfig.url
   ).toString();
-  const structuredDataImage = getListingStructuredDataImage(listing, user);
-  const canIncludeStructuredLocation = listingType !== "residential" || !!user;
+  const canIncludePublicStructuredDetails =
+    listingType === "business" || listingType === "community";
+  const canIncludeStructuredLocation =
+    canIncludePublicStructuredDetails || !!user;
+  const structuredDataImage = canIncludePublicStructuredDetails
+    ? getListingStructuredDataImage(listing, user)
+    : null;
   const address = {
     "@type": "PostalAddress",
     ...(listing.area_name ? { addressLocality: listing.area_name } : {}),

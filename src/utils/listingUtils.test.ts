@@ -115,3 +115,18 @@ test("anonymous residential listing JSON-LD omits structured location details", 
   assert.equal(jsonLd.about.address, undefined);
   assert.equal(jsonLd.about.geo, undefined);
 });
+
+test("anonymous listing JSON-LD treats missing listing types as sensitive", () => {
+  const unknownTypeListing = {
+    ...communityListing,
+    type: null,
+    slug: "unknown-type-listing",
+  } satisfies Listing;
+
+  const jsonLd = generateListingJsonLd(unknownTypeListing, null);
+
+  assert.ok(jsonLd);
+  assert.equal(jsonLd.about.address, undefined);
+  assert.equal(jsonLd.about.geo, undefined);
+  assert.equal(jsonLd.about.image, undefined);
+});

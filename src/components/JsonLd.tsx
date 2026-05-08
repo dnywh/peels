@@ -1,3 +1,5 @@
+import { serializeJsonLd } from "@/utils/jsonLd";
+
 type JsonLdProps = {
   data: unknown;
 };
@@ -7,7 +9,7 @@ export default function JsonLd({ data }: JsonLdProps) {
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+        __html: serializeJsonLd(data),
       }}
     />
   );
