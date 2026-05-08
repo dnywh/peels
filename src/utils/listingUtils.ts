@@ -15,6 +15,8 @@ type ListingLike = {
   country_code?: string | null;
   area_name?: string | null;
   description?: string | null;
+  accepted_items?: string[] | null;
+  rejected_items?: string[] | null;
   photos?: string[] | null;
   coordinates?: ListingCoordinates | null;
 };
@@ -96,6 +98,36 @@ function compactTextParts(parts: Array<string | null | undefined>) {
   return parts
     .map((part) => part?.trim())
     .filter((part): part is string => Boolean(part));
+}
+
+function compactTextList(items: string[] | null | undefined) {
+  return items
+    ?.map((item) => item.trim())
+    .filter((item): item is string => Boolean(item));
+}
+
+function getListingItemProperties(listing: ListingLike) {
+  const acceptedItems = compactTextList(listing.accepted_items) ?? [];
+  const rejectedItems = compactTextList(listing.rejected_items) ?? [];
+
+  return [
+    acceptedItems.length
+      ? {
+          "@type": "PropertyValue",
+          name: "Accepted food scraps",
+          propertyID: "acceptedItems",
+          value: acceptedItems.join(", "),
+        }
+      : null,
+    rejectedItems.length
+      ? {
+          "@type": "PropertyValue",
+          name: "Items not accepted",
+          propertyID: "rejectedItems",
+          value: rejectedItems.join(", "),
+        }
+      : null,
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 }
 
 function getListingCountryName(
@@ -390,6 +422,9 @@ export function generateListingJsonLd(
   const structuredDataImage = canIncludePublicStructuredDetails
     ? getListingStructuredDataImage(listing, user)
     : null;
+  const itemProperties = canIncludePublicStructuredDetails
+    ? getListingItemProperties(listing)
+    : [];
   const address = {
     "@type": "PostalAddress",
     ...(listing.area_name ? { addressLocality: listing.area_name } : {}),
@@ -412,6 +447,7 @@ export function generateListingJsonLd(
         }
       : {}),
     ...(structuredDataImage ? { image: structuredDataImage } : {}),
+    ...(itemProperties.length ? { additionalProperty: itemProperties } : {}),
   };
 
   return {

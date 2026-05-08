@@ -15,7 +15,7 @@ const communityListing = {
   description:
     "Households can subscribe to drop off their food scraps at a local community hub.",
   accepted_items: ["Food scraps"],
-  rejected_items: [],
+  rejected_items: ["Meat and dairy"],
   photos: ["demo/community-garden.jpg"],
   links: [],
   type: "community",
@@ -274,6 +274,20 @@ test("listing JSON-LD describes the public listing page and place conservatively
   assert.ok(jsonLd.about.address);
   assert.equal(jsonLd.about.address.addressLocality, "Marrickville");
   assert.equal(jsonLd.about.address.addressCountry, "Australia");
+  assert.deepEqual(jsonLd.about.additionalProperty, [
+    {
+      "@type": "PropertyValue",
+      name: "Accepted food scraps",
+      propertyID: "acceptedItems",
+      value: "Food scraps",
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Items not accepted",
+      propertyID: "rejectedItems",
+      value: "Meat and dairy",
+    },
+  ]);
 });
 
 test("listing JSON-LD can use localised descriptions, country names, and language", () => {
@@ -312,6 +326,7 @@ test("anonymous residential listing JSON-LD omits structured location details", 
   assert.equal(jsonLd.name, "Private Host");
   assert.equal(jsonLd.about.address, undefined);
   assert.equal(jsonLd.about.geo, undefined);
+  assert.equal(jsonLd.about.additionalProperty, undefined);
 });
 
 test("anonymous listing JSON-LD treats missing listing types as sensitive", () => {

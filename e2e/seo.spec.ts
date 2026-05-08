@@ -11,6 +11,17 @@ async function getListingJsonLdScripts(page: import("@playwright/test").Page) {
   return page.locator('script[type="application/ld+json"]').allTextContents();
 }
 
+type ListingJsonLd = {
+  "@id"?: string;
+  about?: {
+    additionalProperty?: unknown;
+  };
+};
+
+function parseJsonLdScripts(scripts: string[]) {
+  return scripts.map((script) => JSON.parse(script) as ListingJsonLd);
+}
+
 async function newLocalePage(
   browser: import("@playwright/test").Browser,
   locale: string,
@@ -53,6 +64,24 @@ test("public listing pages expose crawlable listing metadata", async ({
         script.includes("Marrickville Neighbourhood Compost")
     )
   ).toBeTruthy();
+
+  const listingJsonLd = parseJsonLdScripts(jsonLdScripts).find(
+    (data) =>
+      data["@id"] ===
+      "https://www.peels.app/listings/demo-marrickville-compost#webpage"
+  );
+  expect(listingJsonLd?.about?.additionalProperty).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "Accepted food scraps",
+        value: expect.stringContaining("Fruit and vegetable scraps"),
+      }),
+      expect.objectContaining({
+        name: "Items not accepted",
+        value: expect.stringContaining("Plastic bags"),
+      }),
+    ])
+  );
 });
 
 test("public listing pages localise Spanish SEO metadata", async ({
