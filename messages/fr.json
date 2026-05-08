@@ -350,7 +350,11 @@
     },
     "edit": {
       "title": "Modifier l’annonce",
-      "notFound": "Annonce introuvable"
+      "notFound": "Annonce introuvable",
+      "discardChangesTitle": "Ignorer les modifications",
+      "discardChangesBody": "Vous avez des modifications non enregistrées. Voulez-vous vraiment les ignorer et quitter la page ?",
+      "discardChangesCancel": "Non, revenir",
+      "discardChangesConfirm": "Oui, ignorer"
     },
     "form": {
       "basics": "Informations de base",

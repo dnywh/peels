@@ -79,7 +79,7 @@ export default async function RootLayout({
   const inlineFontFaces = hostedFontFaces.trim();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} data-scroll-behavior="smooth">
       <body>
         {inlineFontFaces ? <style>{inlineFontFaces}</style> : null}
         <AuthHashCompletion />

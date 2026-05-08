@@ -350,7 +350,11 @@
     },
     "edit": {
       "title": "Edit listing",
-      "notFound": "Listing not found"
+      "notFound": "Listing not found",
+      "discardChangesTitle": "Discard changes",
+      "discardChangesBody": "You have unsaved changes. Are you sure you want to discard them and leave?",
+      "discardChangesCancel": "No, go back",
+      "discardChangesConfirm": "Yes, discard"
     },
     "form": {
       "basics": "Basics",

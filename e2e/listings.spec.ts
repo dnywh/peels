@@ -15,6 +15,19 @@ const RESIDENTIAL_LISTING_EDIT_PATH =
 const ALTERNATE_BUSINESS_DESCRIPTION =
   "A demo business listing with a slightly different description for e2e coverage.";
 
+function requireHref(href: string | null) {
+  expect(
+    href,
+    "Expected listing photo thumbnail to have an href"
+  ).not.toBeNull();
+
+  if (!href) {
+    throw new Error("Expected listing photo thumbnail to have an href");
+  }
+
+  return href;
+}
+
 test("profile loads the seeded host account and listings", async ({ page }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
 
@@ -83,7 +96,7 @@ test("listing edit saves and restores seeded business fields", async ({
   const listingWriteForm = page.getByTestId("listing-write-form");
   await expect(listingWriteForm).toBeVisible();
   const descriptionInput = listingWriteForm.locator("#description").first();
-  const visibilityInput = listingWriteForm.locator("#visibility");
+  const visibilityInput = listingWriteForm.locator("#visibility").first();
   const originalDescription = await descriptionInput.inputValue();
   const originalVisibility = await visibilityInput.inputValue();
   const updatedDescription =
@@ -111,7 +124,7 @@ test("listing edit saves and restores seeded business fields", async ({
   await expect(listingWriteForm.locator("#description").first()).toHaveValue(
     updatedDescription
   );
-  await expect(listingWriteForm.locator("#visibility")).toHaveValue(
+  await expect(listingWriteForm.locator("#visibility").first()).toHaveValue(
     updatedVisibility
   );
 
@@ -132,9 +145,85 @@ test("listing edit saves and restores seeded business fields", async ({
   await expect(listingWriteForm.locator("#description").first()).toHaveValue(
     originalDescription
   );
-  await expect(listingWriteForm.locator("#visibility")).toHaveValue(
+  await expect(listingWriteForm.locator("#visibility").first()).toHaveValue(
     originalVisibility
   );
+});
+
+test("dirty listing edit asks before viewing the saved listing", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: BUSINESS_LISTING_EDIT_PATH,
+  });
+
+  const listingWriteForm = page.getByTestId("listing-write-form");
+  await expect(listingWriteForm).toBeVisible();
+  const descriptionInput = listingWriteForm.locator("#description").first();
+  const draftDescription = `Unsaved listing preview draft ${Date.now()}`;
+  const viewListingButton = page.getByRole("button", { name: "View listing" });
+
+  await descriptionInput.fill(draftDescription);
+
+  await viewListingButton.click();
+  await expect(
+    page.getByRole("heading", { name: "Discard changes" })
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "You have unsaved changes. Are you sure you want to discard them and leave?"
+    )
+  ).toBeVisible();
+  await page.getByRole("button", { name: "No, go back" }).click();
+
+  await expect(page).toHaveURL(/\/profile\/listings\/demo-inner-west-cafe$/);
+  await expect(descriptionInput).toHaveValue(draftDescription);
+
+  await viewListingButton.click();
+  await page.getByRole("button", { name: "Yes, discard" }).click();
+
+  await expect(page).toHaveURL(/\/listings\/demo-inner-west-cafe$/);
+});
+
+test("dirty new listing forms warn before closing or reloading the page", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: "/profile/listings/new/business",
+  });
+
+  await expect(page.getByTestId("listing-write-form")).toBeVisible();
+  await page.locator("#name").fill(`Unsaved new listing ${Date.now()}`);
+
+  const dialogPromise = page.waitForEvent("dialog");
+  const reloadPromise = page.reload({ waitUntil: "domcontentloaded" });
+  const dialog = await dialogPromise;
+  expect(dialog.type()).toBe("beforeunload");
+  await dialog.accept();
+  await reloadPromise;
+});
+
+test("clean listing edit views the saved listing without asking", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: BUSINESS_LISTING_EDIT_PATH,
+  });
+
+  await expect(page.getByTestId("listing-write-form")).toBeVisible();
+  const dialogMessages: string[] = [];
+  page.on("dialog", async (dialog) => {
+    dialogMessages.push(dialog.message());
+    await dialog.dismiss();
+  });
+
+  await page.getByRole("link", { name: "View listing" }).click();
+
+  await expect(page).toHaveURL(/\/listings\/demo-inner-west-cafe$/);
+  expect(dialogMessages).toEqual([]);
 });
 
 test("residential listing edit leaves avatar management on the profile page", async ({
@@ -159,13 +248,13 @@ test("listing photos open in a dedicated photo tab", async ({ page }) => {
   await expect(firstThumbnail).toBeVisible();
   await expect(firstThumbnail).toHaveAttribute("target", "_blank");
 
-  const href = await firstThumbnail.getAttribute("href");
+  const href = requireHref(await firstThumbnail.getAttribute("href"));
   expect(href).toBe(
     "/listings/demo-marrickville-compost/photos/demo/garden.jpg"
   );
 
   const photoPage = await page.context().newPage();
-  await photoPage.goto(`http://127.0.0.1:3000${href}`);
+  await photoPage.goto(new URL(href, page.url()).toString());
   await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
   await expect(photoPage.getByRole("navigation")).toHaveCount(0);
   await expect(page).toHaveURL(PUBLIC_MULTI_PHOTO_LISTING_PATH);
@@ -192,13 +281,13 @@ test("map listing photos open in a dedicated photo tab without disturbing the dr
   await expect(firstThumbnail).toBeVisible();
   await expect(firstThumbnail).toHaveAttribute("target", "_blank");
 
-  const href = await firstThumbnail.getAttribute("href");
+  const href = requireHref(await firstThumbnail.getAttribute("href"));
   expect(href).toBe(
     "/listings/demo-marrickville-compost/photos/demo/garden.jpg"
   );
 
   const photoPage = await page.context().newPage();
-  await photoPage.goto(`http://127.0.0.1:3000${href}`);
+  await photoPage.goto(new URL(href, page.url()).toString());
   await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
   await expect(page).toHaveURL(MAP_MULTI_PHOTO_LISTING_PATH);
   await expect(firstThumbnail).toBeVisible();

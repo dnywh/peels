@@ -57,6 +57,8 @@ type LocationSelectProps = {
   areaName: string;
   setAreaName: Dispatch<SetStateAction<string>>;
   initialPlaceholderText?: string;
+  autoDetectCountry?: boolean;
+  onLocationInteract?: () => void;
   error?: string;
 };
 
@@ -148,6 +150,8 @@ export default function LocationSelect({
   areaName,
   setAreaName,
   initialPlaceholderText,
+  autoDetectCountry = true,
+  onLocationInteract,
   error,
 }: LocationSelectProps) {
   const t = useTranslations();
@@ -160,7 +164,7 @@ export default function LocationSelect({
   );
 
   useEffect(() => {
-    if (!countryCode) {
+    if (autoDetectCountry && !countryCode) {
       let isMounted = true; // Track if component is mounted
 
       const initializeLocation = async () => {
@@ -185,16 +189,17 @@ export default function LocationSelect({
         isMounted = false;
       };
     }
-  }, [countryCode, setCountryCode]);
+  }, [autoDetectCountry, countryCode, setCountryCode]);
 
   const handleCountryChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
+      onLocationInteract?.();
       setCountryCode(e.target.value);
       console.log("Country changed, focusing input...");
       setMapShown(false);
       inputRef.current?.focus();
     },
-    [setCountryCode]
+    [onLocationInteract, setCountryCode]
   );
 
   const handleDragStart = useCallback(() => {
@@ -207,6 +212,7 @@ export default function LocationSelect({
   const handleDragEnd = useCallback(
     async (event: any) => {
       console.log("Drag end. Location:", event.lngLat);
+      onLocationInteract?.();
 
       const nextCoordinates = {
         latitude: event.lngLat.lat,
@@ -222,7 +228,7 @@ export default function LocationSelect({
       setAreaName(nextAreaName);
       setPlaceholderText(nextAreaName);
     },
-    [setCoordinates, setAreaName]
+    [onLocationInteract, setCoordinates, setAreaName]
   );
 
   const handlePick = useCallback(
@@ -233,6 +239,7 @@ export default function LocationSelect({
 
       // Otherwise continue as normal
       console.log("Picked:", event, event.feature?.center);
+      onLocationInteract?.();
 
       const nextCoordinates = {
         latitude: event.feature?.center[1],
@@ -267,7 +274,7 @@ export default function LocationSelect({
         setCoordinates(nextCoordinates);
       }
     },
-    [mapShown, coordinates, setCoordinates, setAreaName]
+    [mapShown, coordinates, onLocationInteract, setCoordinates, setAreaName]
   );
 
   return (
