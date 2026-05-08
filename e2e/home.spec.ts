@@ -110,7 +110,7 @@ test("homepage drop-off only shows curated featured hosts", async ({
   ).toHaveCount(0);
 });
 
-test("homepage account button shows a skeleton while signed-in profile state loads", async ({
+test("homepage account button stays hidden while signed-in profile state loads", async ({
   page,
 }) => {
   await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
@@ -141,34 +141,18 @@ test("homepage account button shows a skeleton while signed-in profile state loa
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await profileRequestStarted;
 
-  const loadingAccountButton = page.getByTestId("account-button-loading");
-
   try {
-    await expect(loadingAccountButton).toHaveCount(1);
-    expect(
-      await loadingAccountButton.evaluate((element) => {
-        const { display, opacity, visibility } =
-          window.getComputedStyle(element);
-        const rect = element.getBoundingClientRect();
-
-        return (
-          display !== "none" &&
-          visibility !== "hidden" &&
-          Number(opacity) > 0 &&
-          rect.width > 0 &&
-          rect.height > 0
-        );
-      })
-    ).toBe(true);
+    await expect(page.getByTestId("account-button-loading")).toHaveCount(0);
+    await expect(page.getByTestId("account-button-profile")).toHaveCount(0);
     await expect(page.getByTestId("account-button-sign-in")).toHaveCount(0);
   } finally {
     continueProfileRequest();
   }
 
-  await expect(page.getByTestId("account-button-profile")).toHaveAttribute(
-    "href",
-    "/profile"
-  );
+  const profileAccountButton = page.getByTestId("account-button-profile");
+
+  await expect(profileAccountButton).toHaveAttribute("href", "/profile");
+  await expect(profileAccountButton).toHaveCSS("opacity", "1");
 });
 
 test("homepage account button links guests to sign in", async ({ page }) => {
