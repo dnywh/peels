@@ -40,11 +40,19 @@ export default function AccountButton({ ...props }: AccountButtonProps) {
     return null;
   }
 
+  const hiddenButtonProps = !isReadyToShow
+    ? ({
+        "aria-hidden": true,
+        tabIndex: -1,
+      } satisfies Pick<LinkButtonProps, "aria-hidden" | "tabIndex">)
+    : {};
+
   return user ? (
     <FadingAccountButton
       href="/profile"
       variant="secondary"
       {...props}
+      {...hiddenButtonProps}
       $visible={isReadyToShow}
       data-testid="account-button-profile"
     >
@@ -55,6 +63,7 @@ export default function AccountButton({ ...props }: AccountButtonProps) {
       href="/sign-in"
       variant="secondary"
       {...props}
+      {...hiddenButtonProps}
       $visible={isReadyToShow}
       data-testid="account-button-sign-in"
     >
