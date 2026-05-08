@@ -15,6 +15,7 @@ import {
 } from "react";
 import { useTranslations } from "next-intl";
 import type { FormSubmitHandler } from "@/types/events";
+import type { ButtonVariant } from "@/components/Button";
 
 const DialogContent = styled(Dialog.Content)`
   background: ${theme.colors.background.top};
@@ -67,7 +68,8 @@ const DialogOverlay = styled(Dialog.Overlay)`
 `;
 
 type ButtonToDialogProps = {
-  variant?: "primary" | "secondary" | "danger";
+  variant?: ButtonVariant;
+  triggerVariant?: ButtonVariant;
   size?: "massive" | "large" | "normal" | "small";
   initialButtonText: ReactNode;
   dialogTitle: ReactNode;
@@ -83,6 +85,7 @@ type ButtonToDialogProps = {
 
 function ButtonToDialog({
   variant = "danger",
+  triggerVariant,
   size,
   initialButtonText,
   dialogTitle,
@@ -138,7 +141,7 @@ function ButtonToDialog({
       <Dialog.Trigger asChild>
         <Button
           width="contained"
-          variant={variant}
+          variant={triggerVariant ?? variant}
           size={size}
           disabled={disabled || isPending}
         >

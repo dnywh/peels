@@ -8,7 +8,6 @@ import {
   type ChangeEvent,
   type ComponentType,
   type InputHTMLAttributes,
-  type MouseEvent,
 } from "react";
 import { useRouter } from "next/navigation";
 import { FIELD_CONFIGS } from "@/lib/formValidation";
@@ -127,7 +126,6 @@ function getListingWriteSavedValues({
   coordinates,
   countryCode,
   description,
-  initialListing,
   isStub,
   links,
   listingType,
@@ -143,7 +141,6 @@ function getListingWriteSavedValues({
   coordinates: ListingCoordinates | null;
   countryCode: string | null | undefined;
   description: string | null | undefined;
-  initialListing?: Listing | null;
   isStub: boolean | null | undefined;
   links: string[] | null | undefined;
   listingType: ListingType;
@@ -164,7 +161,7 @@ function getListingWriteSavedValues({
     links: listingType === "residential" ? [] : normalizeTextList(links),
     name:
       listingType === "residential" ? profile?.first_name || "" : name || "",
-    photos: initialListing ? (photos ?? []) : [],
+    photos: photos ?? [],
     rejectedItems: normalizeTextList(rejectedItems),
     visibility: visibility ?? true,
   };
@@ -226,9 +223,10 @@ export default function ListingWrite({
     initialListing?.is_stub ?? false
   );
   const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
+  const [hasInteractedWithForm, setHasInteractedWithForm] = useState(false);
 
   const isMutating = submitMutation.isPending || deleteMutation.isPending;
-  const savedListingValues = useMemo(
+  const initialListingValues = useMemo(
     () =>
       initialListing
         ? getListingWriteSavedValues({
@@ -238,7 +236,6 @@ export default function ListingWrite({
             coordinates: initialListing.coordinates,
             countryCode: initialListing.country_code,
             description: initialListing.description,
-            initialListing,
             isStub: initialListing.is_stub,
             links: initialListing.links,
             listingType,
@@ -248,30 +245,42 @@ export default function ListingWrite({
             rejectedItems: initialListing.rejected_items,
             visibility: initialListing.visibility,
           })
-        : null,
+        : getListingWriteSavedValues({
+            acceptedItems: [""],
+            areaName: "",
+            avatar: "",
+            coordinates: null,
+            countryCode: "",
+            description: "",
+            isStub: false,
+            links: [],
+            listingType,
+            name: listingType === "residential" ? profile?.first_name : "",
+            photos: [],
+            profile,
+            rejectedItems: [],
+            visibility: true,
+          }),
     [initialListing, listingType, profile]
   );
   const currentListingValues = useMemo(
     () =>
-      initialListing
-        ? getListingWriteSavedValues({
-            acceptedItems,
-            areaName,
-            avatar,
-            coordinates,
-            countryCode,
-            description,
-            initialListing,
-            isStub,
-            links,
-            listingType,
-            name,
-            photos,
-            profile,
-            rejectedItems,
-            visibility,
-          })
-        : null,
+      getListingWriteSavedValues({
+        acceptedItems,
+        areaName,
+        avatar,
+        coordinates,
+        countryCode,
+        description,
+        isStub,
+        links,
+        listingType,
+        name,
+        photos: initialListing ? photos : pendingPhotos,
+        profile,
+        rejectedItems,
+        visibility,
+      }),
     [
       acceptedItems,
       areaName,
@@ -284,6 +293,7 @@ export default function ListingWrite({
       links,
       listingType,
       name,
+      pendingPhotos,
       photos,
       profile,
       rejectedItems,
@@ -291,8 +301,8 @@ export default function ListingWrite({
     ]
   );
   const hasUnsavedChanges =
-    Boolean(savedListingValues && currentListingValues) &&
-    JSON.stringify(savedListingValues) !== JSON.stringify(currentListingValues);
+    JSON.stringify(initialListingValues) !==
+    JSON.stringify(currentListingValues);
   const errorCount = Object.keys(errors).length;
   const feedbackError =
     deleteMutation.result.error || submitMutation.result.error;
@@ -304,18 +314,20 @@ export default function ListingWrite({
         })
       : null);
 
-  useBeforeUnloadWarning(
-    Boolean(initialListing && hasUnsavedChanges && !isMutating)
-  );
+  const shouldWarnBeforeUnload = initialListing
+    ? hasUnsavedChanges
+    : hasInteractedWithForm && hasUnsavedChanges;
 
-  function handleViewListingClick(event: MouseEvent<HTMLElement>) {
-    if (!hasUnsavedChanges) {
+  useBeforeUnloadWarning(Boolean(shouldWarnBeforeUnload && !isMutating));
+
+  async function handleDiscardChanges(event: FormSubmitEvent) {
+    event.preventDefault();
+
+    if (!initialListing || isMutating) {
       return;
     }
 
-    if (!window.confirm(t("Listings.edit.unsavedViewListingConfirm"))) {
-      event.preventDefault();
-    }
+    router.push(`/listings/${initialListing.slug}`);
   }
 
   async function handleDeleteListing(event: FormSubmitEvent) {
@@ -475,6 +487,8 @@ export default function ListingWrite({
 
       <Form
         onSubmit={handleSubmit}
+        onChange={() => setHasInteractedWithForm(true)}
+        onInput={() => setHasInteractedWithForm(true)}
         data-testid="listing-write-form"
         data-hydrated={isHydrated ? "true" : "false"}
       >
@@ -784,15 +798,29 @@ export default function ListingWrite({
 
       {initialListing && (
         <AdditionalSettings>
-          <Button
-            variant="secondary"
-            width="contained"
-            href={`/listings/${initialListing.slug}`}
-            disabled={isMutating}
-            onClick={handleViewListingClick}
-          >
-            {t("Actions.viewListing")}
-          </Button>
+          {hasUnsavedChanges ? (
+            <ButtonToDialog
+              variant="danger"
+              triggerVariant="secondary"
+              initialButtonText={t("Actions.viewListing")}
+              dialogTitle={t("Listings.edit.discardChangesTitle")}
+              confirmButtonText={t("Listings.edit.discardChangesConfirm")}
+              cancelButtonText={t("Listings.edit.discardChangesCancel")}
+              disabled={isMutating}
+              onSubmit={handleDiscardChanges}
+            >
+              {t("Listings.edit.discardChangesBody")}
+            </ButtonToDialog>
+          ) : (
+            <Button
+              variant="secondary"
+              width="contained"
+              href={`/listings/${initialListing.slug}`}
+              disabled={isMutating}
+            >
+              {t("Actions.viewListing")}
+            </Button>
+          )}
 
           <ButtonToDialog
             variant="danger"

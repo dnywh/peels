@@ -351,7 +351,10 @@
     "edit": {
       "title": "Editar anuncio",
       "notFound": "Anuncio no encontrado",
-      "unsavedViewListingConfirm": "Tienes cambios sin guardar. ¿Quieres ver el anuncio guardado de todos modos?"
+      "discardChangesTitle": "Descartar cambios",
+      "discardChangesBody": "Tienes cambios sin guardar. ¿Seguro que quieres descartarlos y salir?",
+      "discardChangesCancel": "No, volver",
+      "discardChangesConfirm": "Sí, descartar"
     },
     "form": {
       "basics": "Datos básicos",

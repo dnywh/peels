@@ -70,6 +70,20 @@ const defaultChatRenderOptions: ChatRenderOptions = {
   useRelativeDayLabels: false,
 };
 
+function getChatDraftStorageKey({
+  threadId,
+  userId,
+}: {
+  threadId: string | null | undefined;
+  userId: string | null | undefined;
+}) {
+  if (!threadId || !userId) {
+    return null;
+  }
+
+  return `peels:chat-draft:${userId}:${threadId}`;
+}
+
 function getClientTimeZone() {
   return (
     Intl.DateTimeFormat().resolvedOptions().timeZone ?? CHAT_RENDER_TIME_ZONE
@@ -196,6 +210,12 @@ const ChatWindow = memo(function ChatWindow({
       ),
     [messages, chatRenderOptions.timeZone]
   );
+  const draftStorageKey = isDemo
+    ? null
+    : getChatDraftStorageKey({
+        threadId: existingThread?.id ?? threadId,
+        userId: user?.id,
+      });
   const hasUnsentMessage = !isDemo && message.trim().length > 0;
 
   useBeforeUnloadWarning(hasUnsentMessage && !sendMutation.isPending);
@@ -226,8 +246,11 @@ const ChatWindow = memo(function ChatWindow({
   useEffect(() => {
     setThreadId(existingThread?.id ?? null);
     setMessages(getThreadMessages(existingThread));
+    setMessage(
+      draftStorageKey ? sessionStorage.getItem(draftStorageKey) || "" : ""
+    );
     lastReadSignatureRef.current = null;
-  }, [existingThread]);
+  }, [draftStorageKey, existingThread]);
 
   useEffect(() => {
     if (isDemo || !supabase || !threadId || !user?.id) {
@@ -362,6 +385,9 @@ const ChatWindow = memo(function ChatWindow({
       const { message: sentMessage, threadId: sentThreadId } = result.data;
       setThreadId(sentThreadId);
       setMessages((previousMessages) => [...previousMessages, sentMessage]);
+      if (draftStorageKey) {
+        sessionStorage.removeItem(draftStorageKey);
+      }
       setMessage("");
     }
   }
@@ -373,7 +399,19 @@ const ChatWindow = memo(function ChatWindow({
       sendMutation.reset();
     }
 
-    setMessage(event.target.value);
+    const nextMessage = event.target.value;
+
+    setMessage(nextMessage);
+
+    if (!draftStorageKey) {
+      return;
+    }
+
+    if (nextMessage.trim().length > 0) {
+      sessionStorage.setItem(draftStorageKey, nextMessage);
+    } else {
+      sessionStorage.removeItem(draftStorageKey);
+    }
   };
 
   const role = isDemo

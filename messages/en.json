@@ -351,7 +351,10 @@
     "edit": {
       "title": "Edit listing",
       "notFound": "Listing not found",
-      "unsavedViewListingConfirm": "You have unsaved changes. View the saved listing anyway?"
+      "discardChangesTitle": "Discard changes",
+      "discardChangesBody": "You have unsaved changes. Are you sure you want to discard them and leave?",
+      "discardChangesCancel": "No, go back",
+      "discardChangesConfirm": "Yes, discard"
     },
     "form": {
       "basics": "Basics",

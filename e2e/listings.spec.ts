@@ -83,7 +83,7 @@ test("listing edit saves and restores seeded business fields", async ({
   const listingWriteForm = page.getByTestId("listing-write-form");
   await expect(listingWriteForm).toBeVisible();
   const descriptionInput = listingWriteForm.locator("#description").first();
-  const visibilityInput = listingWriteForm.locator("#visibility");
+  const visibilityInput = listingWriteForm.locator("#visibility").first();
   const originalDescription = await descriptionInput.inputValue();
   const originalVisibility = await visibilityInput.inputValue();
   const updatedDescription =
@@ -149,27 +149,47 @@ test("dirty listing edit asks before viewing the saved listing", async ({
   await expect(listingWriteForm).toBeVisible();
   const descriptionInput = listingWriteForm.locator("#description").first();
   const draftDescription = `Unsaved listing preview draft ${Date.now()}`;
-  const viewListingLink = page.getByRole("link", { name: "View listing" });
+  const viewListingButton = page.getByRole("button", { name: "View listing" });
 
   await descriptionInput.fill(draftDescription);
 
-  const cancelDialogPromise = page.waitForEvent("dialog");
-  await viewListingLink.click();
-  const cancelDialog = await cancelDialogPromise;
-  expect(cancelDialog.type()).toBe("confirm");
-  expect(cancelDialog.message()).toContain("unsaved changes");
-  await cancelDialog.dismiss();
+  await viewListingButton.click();
+  await expect(
+    page.getByRole("heading", { name: "Discard changes" })
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "You have unsaved changes. Are you sure you want to discard them and leave?"
+    )
+  ).toBeVisible();
+  await page.getByRole("button", { name: "No, go back" }).click();
 
   await expect(page).toHaveURL(/\/profile\/listings\/demo-inner-west-cafe$/);
   await expect(descriptionInput).toHaveValue(draftDescription);
 
-  const confirmDialogPromise = page.waitForEvent("dialog");
-  await viewListingLink.click();
-  const confirmDialog = await confirmDialogPromise;
-  expect(confirmDialog.type()).toBe("confirm");
-  await confirmDialog.accept();
+  await viewListingButton.click();
+  await page.getByRole("button", { name: "Yes, discard" }).click();
 
   await expect(page).toHaveURL(/\/listings\/demo-inner-west-cafe$/);
+});
+
+test("dirty new listing forms warn before closing or reloading the page", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: "/profile/listings/new/business",
+  });
+
+  await expect(page.getByTestId("listing-write-form")).toBeVisible();
+  await page.locator("#name").fill(`Unsaved new listing ${Date.now()}`);
+
+  const dialogPromise = page.waitForEvent("dialog");
+  const reloadPromise = page.reload({ waitUntil: "domcontentloaded" });
+  const dialog = await dialogPromise;
+  expect(dialog.type()).toBe("beforeunload");
+  await dialog.accept();
+  await reloadPromise;
 });
 
 test("clean listing edit views the saved listing without asking", async ({
@@ -221,7 +241,7 @@ test("listing photos open in a dedicated photo tab", async ({ page }) => {
   );
 
   const photoPage = await page.context().newPage();
-  await photoPage.goto(`http://127.0.0.1:3000${href}`);
+  await photoPage.goto(new URL(href ?? "", page.url()).toString());
   await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
   await expect(photoPage.getByRole("navigation")).toHaveCount(0);
   await expect(page).toHaveURL(PUBLIC_MULTI_PHOTO_LISTING_PATH);
@@ -254,7 +274,7 @@ test("map listing photos open in a dedicated photo tab without disturbing the dr
   );
 
   const photoPage = await page.context().newPage();
-  await photoPage.goto(`http://127.0.0.1:3000${href}`);
+  await photoPage.goto(new URL(href ?? "", page.url()).toString());
   await expect(photoPage.getByTestId("listing-photo-tab-viewer")).toBeVisible();
   await expect(page).toHaveURL(MAP_MULTI_PHOTO_LISTING_PATH);
   await expect(firstThumbnail).toBeVisible();
