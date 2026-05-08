@@ -300,9 +300,18 @@ export default function ListingWrite({
       visibility,
     ]
   );
-  const hasUnsavedChanges =
-    JSON.stringify(initialListingValues) !==
-    JSON.stringify(currentListingValues);
+  const initialListingValuesJson = useMemo(
+    () => JSON.stringify(initialListingValues),
+    [initialListingValues]
+  );
+  const currentListingValuesJson = useMemo(
+    () => JSON.stringify(currentListingValues),
+    [currentListingValues]
+  );
+  const hasUnsavedChanges = useMemo(
+    () => initialListingValuesJson !== currentListingValuesJson,
+    [currentListingValuesJson, initialListingValuesJson]
+  );
   const errorCount = Object.keys(errors).length;
   const feedbackError =
     deleteMutation.result.error || submitMutation.result.error;

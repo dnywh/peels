@@ -69,6 +69,7 @@ const defaultChatRenderOptions: ChatRenderOptions = {
   timeZone: CHAT_RENDER_TIME_ZONE,
   useRelativeDayLabels: false,
 };
+const CHAT_DRAFT_WRITE_DELAY_MS = 150;
 
 function getChatDraftStorageKey({
   threadId,
@@ -174,6 +175,13 @@ const ChatWindow = memo(function ChatWindow({
   const realListing = isDemo ? null : (listing as ChatListing);
   const sendMutation = useInlineMutation<ChatSendResult>();
   const lastReadSignatureRef = useRef<string | null>(null);
+  const draftWriteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const pendingDraftWriteRef = useRef<{
+    key: string;
+    message: string;
+  } | null>(null);
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState<string | null>(
@@ -239,11 +247,51 @@ const ChatWindow = memo(function ChatWindow({
     return errorMessage;
   }
 
+  function clearPendingDraftWrite() {
+    if (draftWriteTimeoutRef.current) {
+      clearTimeout(draftWriteTimeoutRef.current);
+      draftWriteTimeoutRef.current = null;
+    }
+  }
+
+  function flushPendingDraftWrite() {
+    clearPendingDraftWrite();
+
+    if (!pendingDraftWriteRef.current) {
+      return;
+    }
+
+    const { key, message } = pendingDraftWriteRef.current;
+    pendingDraftWriteRef.current = null;
+    sessionStorage.setItem(key, message);
+  }
+
+  function scheduleDraftWrite(key: string, nextMessage: string) {
+    clearPendingDraftWrite();
+    pendingDraftWriteRef.current = {
+      key,
+      message: nextMessage,
+    };
+    draftWriteTimeoutRef.current = setTimeout(() => {
+      flushPendingDraftWrite();
+    }, CHAT_DRAFT_WRITE_DELAY_MS);
+  }
+
+  function removeDraftWrite(key: string) {
+    if (pendingDraftWriteRef.current?.key === key) {
+      clearPendingDraftWrite();
+      pendingDraftWriteRef.current = null;
+    }
+
+    sessionStorage.removeItem(key);
+  }
+
   useEffect(() => {
     setClientTimeZone(getClientTimeZone());
   }, []);
 
   useEffect(() => {
+    flushPendingDraftWrite();
     setThreadId(existingThread?.id ?? null);
     setMessages(getThreadMessages(existingThread));
     setMessage(
@@ -251,6 +299,13 @@ const ChatWindow = memo(function ChatWindow({
     );
     lastReadSignatureRef.current = null;
   }, [draftStorageKey, existingThread]);
+
+  useEffect(
+    () => () => {
+      flushPendingDraftWrite();
+    },
+    []
+  );
 
   useEffect(() => {
     if (isDemo || !supabase || !threadId || !user?.id) {
@@ -386,7 +441,7 @@ const ChatWindow = memo(function ChatWindow({
       setThreadId(sentThreadId);
       setMessages((previousMessages) => [...previousMessages, sentMessage]);
       if (draftStorageKey) {
-        sessionStorage.removeItem(draftStorageKey);
+        removeDraftWrite(draftStorageKey);
       }
       setMessage("");
     }
@@ -408,9 +463,9 @@ const ChatWindow = memo(function ChatWindow({
     }
 
     if (nextMessage.trim().length > 0) {
-      sessionStorage.setItem(draftStorageKey, nextMessage);
+      scheduleDraftWrite(draftStorageKey, nextMessage);
     } else {
-      sessionStorage.removeItem(draftStorageKey);
+      removeDraftWrite(draftStorageKey);
     }
   };
 
