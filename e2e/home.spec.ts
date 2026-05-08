@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { HOST_EMAIL, signIn } from "./helpers";
 
 test("homepage hydrates without chat date mismatches", async ({
   browser,
@@ -107,4 +108,75 @@ test("homepage drop-off only shows curated featured hosts", async ({
   await expect(
     page.getByTestId("homepage-featured-host-demo-newtown-worm-farm")
   ).toHaveCount(0);
+});
+
+test("homepage account button shows a skeleton while signed-in profile state loads", async ({
+  page,
+}) => {
+  await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
+
+  let resolveProfileRequest = () => {};
+  const profileRequestStarted = new Promise<void>((resolve) => {
+    resolveProfileRequest = resolve;
+  });
+  let continueProfileRequest = () => {};
+  const profileRequestCanContinue = new Promise<void>((resolve) => {
+    continueProfileRequest = resolve;
+  });
+
+  await page.route(/\/rest\/v1\/profiles(?:\?|$)/, async (route) => {
+    const request = route.request();
+
+    if (
+      request.method() === "GET" &&
+      request.url().includes("select=first_name")
+    ) {
+      resolveProfileRequest();
+      await profileRequestCanContinue;
+    }
+
+    await route.continue();
+  });
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await profileRequestStarted;
+
+  const loadingAccountButton = page.getByTestId("account-button-loading");
+
+  try {
+    await expect(loadingAccountButton).toHaveCount(1);
+    expect(
+      await loadingAccountButton.evaluate((element) => {
+        const { display, opacity, visibility } =
+          window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+
+        return (
+          display !== "none" &&
+          visibility !== "hidden" &&
+          Number(opacity) > 0 &&
+          rect.width > 0 &&
+          rect.height > 0
+        );
+      })
+    ).toBe(true);
+    await expect(page.getByTestId("account-button-sign-in")).toHaveCount(0);
+  } finally {
+    continueProfileRequest();
+  }
+
+  await expect(page.getByTestId("account-button-profile")).toHaveAttribute(
+    "href",
+    "/profile"
+  );
+});
+
+test("homepage account button links guests to sign in", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByTestId("account-button-sign-in")).toHaveAttribute(
+    "href",
+    "/sign-in"
+  );
+  await expect(page.getByTestId("account-button-profile")).toHaveCount(0);
 });
