@@ -335,7 +335,9 @@ test("authenticated residential metadata can use private display names", () => {
     String(metadata.description),
     /^Sam accepts food scraps for composting in Marrickville, Australia\./
   );
+  assert.match(String(metadata.description), /Connect with Sam on Peels/);
   assert.doesNotMatch(String(metadata.description), /helps people compost/);
+  assert.doesNotMatch(String(metadata.description), /Sam's backyard bin/);
   assert.equal(metadata.robots, undefined);
 });
 

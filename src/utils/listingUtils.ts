@@ -407,7 +407,9 @@ export function generateListingDescription(
       });
   const listingConnectName = isSensitiveAnonymous
     ? seoCopy.residentialConnectName
-    : listing.name || listingDisplayName;
+    : listingType === "residential"
+      ? listingDisplayName
+      : listing.name || listingDisplayName;
   const listingDescriptionParts = [
     listingIntro,
     shouldOmitListingDescription
