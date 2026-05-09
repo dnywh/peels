@@ -4,17 +4,25 @@ import StrongLink from "@/components/StrongLink";
 import SignInForm from "@/components/SignInForm";
 import FormFooter from "@/components/FormFooter";
 import { getTranslations } from "next-intl/server";
+import { createPeelsMetadata, noindexFollowMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Auth.signIn");
+  const t = await getTranslations();
 
-  return {
-    title: t("title"),
+  const title = t("Actions.signIn");
+
+  return createPeelsMetadata({
+    ...noindexFollowMetadata,
+    canonicalPath: "/sign-in",
+    title,
     openGraph: {
-      title: `${t("title")} · ${siteConfig.name}`,
+      title: `${title} · ${siteConfig.name}`,
     },
-  };
+    twitter: {
+      title: `${title} · ${siteConfig.name}`,
+    },
+  });
 }
 
 export default async function SignIn(props: {

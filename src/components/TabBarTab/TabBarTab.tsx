@@ -45,6 +45,7 @@ export default function TabBarTab({
   active = false,
   unreadDot = false,
   tone = "default",
+  ariaLabel,
 }: {
   title?: ReactNode;
   href?: string;
@@ -52,9 +53,15 @@ export default function TabBarTab({
   active?: boolean;
   unreadDot?: boolean;
   tone?: "default" | "brand";
+  ariaLabel?: string;
 }) {
   return (
-    <StyledTabBarTab href={href} $active={active} $tone={tone}>
+    <StyledTabBarTab
+      href={href}
+      aria-label={ariaLabel}
+      $active={active}
+      $tone={tone}
+    >
       <StyledTabBarTabIcon>
         {icon}
         {unreadDot && <UnreadDot />}

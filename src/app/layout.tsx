@@ -1,7 +1,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
-import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { createPeelsMetadata } from "@/utils/seo";
 import { getStaticFontUrl } from "@/utils/storage";
 
 import Link from "next/link";
@@ -45,31 +45,28 @@ const hostedFontFaces = `
   }
 `;
 
-const siteJsonLd = {
+const organizationJsonLd = {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${siteConfig.url}/#organization`,
-      name: siteConfig.name,
-      url: siteConfig.url,
-      logo: `${siteConfig.url}/icon.png`,
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${siteConfig.url}/#website`,
-      name: siteConfig.name,
-      alternateName: "Peels.app",
-      url: siteConfig.url,
-      publisher: {
-        "@id": `${siteConfig.url}/#organization`,
-      },
-    },
-  ],
+  "@type": "Organization",
+  "@id": `${siteConfig.url}/#organization`,
+  name: siteConfig.name,
+  url: siteConfig.url,
+  logo: `${siteConfig.url}/icon.png`,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${siteConfig.url}/#website`,
+  name: siteConfig.name,
+  alternateName: "Peels.app",
+  url: siteConfig.url,
+  publisher: {
+    "@id": `${siteConfig.url}/#organization`,
+  },
+};
+
+export const metadata = createPeelsMetadata({
   title: {
     default: siteConfig.name,
     template: `%s · ${siteConfig.name}`,
@@ -78,9 +75,6 @@ export const metadata: Metadata = {
   keywords: [...siteConfig.meta.keywords],
   openGraph: {
     title: siteConfig.name,
-    type: "website",
-    description: siteConfig.description,
-    siteName: siteConfig.name,
   },
   alternates: {
     types: {
@@ -92,7 +86,7 @@ export const metadata: Metadata = {
       ],
     },
   },
-};
+});
 
 export default async function RootLayout({
   children,
@@ -105,7 +99,8 @@ export default async function RootLayout({
   return (
     <html lang={locale} data-scroll-behavior="smooth">
       <body>
-        <JsonLd data={siteJsonLd} />
+        <JsonLd data={organizationJsonLd} />
+        <JsonLd data={websiteJsonLd} />
         {inlineFontFaces ? <style>{inlineFontFaces}</style> : null}
         <AuthHashCompletion />
         <AttributionCapture />

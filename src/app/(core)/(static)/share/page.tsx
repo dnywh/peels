@@ -10,6 +10,7 @@ import StaticPageMain from "@/components/StaticPageMain";
 import StaticPageSection from "@/components/StaticPageSection";
 import { siteConfig } from "@/config/site";
 import { theme } from "@/styles/theme.yak";
+import { createPeelsMetadata } from "@/utils/seo";
 import { getShareResourcesUrl } from "@/utils/storage";
 
 const resourceKeys = ["digital", "print", "workshop"] as const;
@@ -19,14 +20,21 @@ export async function generateMetadata() {
   const t = await getTranslations("Share");
   const description = t("metaDescription");
 
-  return {
-    title: t("title"),
+  const title = t("title");
+
+  return createPeelsMetadata({
+    canonicalPath: "/share",
+    title,
     description,
     openGraph: {
-      title: `${t("title")} · ${siteConfig.name}`,
+      title: `${title} · ${siteConfig.name}`,
       description,
     },
-  };
+    twitter: {
+      title: `${title} · ${siteConfig.name}`,
+      description,
+    },
+  });
 }
 
 export default async function SharePage() {

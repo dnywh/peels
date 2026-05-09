@@ -1,6 +1,7 @@
 import { siteConfig } from "../config/site.ts";
 import { countries } from "../data/countries.ts";
 import { getStoragePublicUrl } from "./storage.ts";
+import { createPeelsMetadata } from "./seo.ts";
 import type { Metadata } from "next";
 import type { ListingCoordinates, ListingType } from "../types/listing.ts";
 
@@ -443,23 +444,20 @@ export function generateListingMetadata(
   const listingDescription = generateListingDescription(listing, user, options);
   const listingCanonicalPath = getListingCanonicalPath(listing);
 
-  const metadata: Metadata = {
-    title: {
-      absolute: listingDisplayName,
-    },
+  const metadata: Metadata = createPeelsMetadata({
+    title: listingDisplayName,
     description: listingDescription,
+    canonicalPath: listingCanonicalPath || undefined,
     openGraph: {
       title: listingDisplayName,
       description: listingDescription,
       siteName: siteConfig.name,
     },
-  };
-
-  if (listingCanonicalPath) {
-    metadata.alternates = {
-      canonical: listingCanonicalPath,
-    };
-  }
+    twitter: {
+      title: listingDisplayName,
+      description: listingDescription,
+    },
+  });
 
   if (options.includeFullMetadata) {
     const locationKeywords = listingFullLocation

@@ -8,6 +8,7 @@ import {
   getAnonymousSensitiveListingTeaser,
   getListingAvatar,
 } from "./listingUtils.ts";
+import { createPeelsMetadata } from "./seo.ts";
 import type { Listing } from "../types/listing.ts";
 import type { ListingSeoCopy } from "./listingUtils.ts";
 
@@ -129,15 +130,39 @@ const localisedSeoCopies = {
   },
 } satisfies Record<string, ListingSeoCopy>;
 
-test("listing metadata uses the listing name as the absolute title", () => {
+test("listing metadata uses the listing name with the site title template", () => {
   const metadata = generateListingMetadata(communityListing, null, {
     includeFullMetadata: true,
   });
 
-  assert.deepEqual(metadata.title, {
-    absolute: "Neighbourhood compost drop-off",
-  });
+  assert.equal(metadata.title, "Neighbourhood compost drop-off");
   assert.equal(metadata.openGraph?.title, "Neighbourhood compost drop-off");
+  assert.match(
+    JSON.stringify(metadata.openGraph?.images),
+    /opengraph-image\.jpg/
+  );
+  assert.match(
+    JSON.stringify(metadata.twitter?.images),
+    /opengraph-image\.jpg/
+  );
+});
+
+test("root metadata canonical matches the sitemap homepage URL", () => {
+  const metadata = createPeelsMetadata({ canonicalPath: "/" });
+
+  assert.equal(metadata.alternates?.canonical, "https://www.peels.app");
+  assert.equal(metadata.openGraph?.url, "https://www.peels.app");
+});
+
+test("shared metadata uses the page title for social previews", () => {
+  const metadata = createPeelsMetadata({
+    canonicalPath: "/chats",
+    title: "Chats",
+  });
+
+  assert.equal(metadata.title, "Chats");
+  assert.equal(metadata.openGraph?.title, "Chats");
+  assert.equal(metadata.twitter?.title, "Chats");
 });
 
 test("listing descriptions lead with compost and food-scrap intent", () => {
@@ -168,7 +193,11 @@ test("listing metadata includes the canonical listing path", () => {
 
   assert.equal(
     metadata.alternates?.canonical,
-    "/listings/test-community-compost"
+    "https://www.peels.app/listings/test-community-compost"
+  );
+  assert.equal(
+    metadata.openGraph?.url,
+    "https://www.peels.app/listings/test-community-compost"
   );
 });
 
@@ -240,9 +269,7 @@ test("anonymous residential metadata emits an indexable teaser without private d
   });
   const description = String(metadata.description);
 
-  assert.deepEqual(metadata.title, {
-    absolute: "Private Host",
-  });
+  assert.equal(metadata.title, "Private Host");
   assert.equal(metadata.robots, undefined);
   assert.match(
     description,
@@ -268,9 +295,7 @@ test("anonymous residential metadata avoids leaking profile names with localised
   });
   const description = String(metadata.description);
 
-  assert.deepEqual(metadata.title, {
-    absolute: "Anfitrión privado",
-  });
+  assert.equal(metadata.title, "Anfitrión privado");
   assert.match(
     description,
     /^Anfitrión privado acepta restos de comida para compostar/
@@ -299,9 +324,7 @@ test("anonymous unknown-type metadata emits a private teaser", () => {
   const description = String(metadata.description);
   const teaser = getAnonymousSensitiveListingTeaser(unknownTypeListing, null);
 
-  assert.deepEqual(metadata.title, {
-    absolute: "Private Host",
-  });
+  assert.equal(metadata.title, "Private Host");
   assert.match(
     description,
     /^Private Host accepts food scraps for composting in Marrickville, Australia\./
@@ -327,9 +350,7 @@ test("authenticated residential metadata can use private display names", () => {
     id: "user-1",
   });
 
-  assert.deepEqual(metadata.title, {
-    absolute: "Sam",
-  });
+  assert.equal(metadata.title, "Sam");
   assert.match(
     String(metadata.description),
     /^Sam accepts food scraps for composting in Marrickville, Australia\./

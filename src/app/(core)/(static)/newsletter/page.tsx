@@ -10,6 +10,7 @@ import StaticPageMain from "@/components/StaticPageMain";
 import { styled } from "next-yak";
 import { getLocale, getTranslations } from "next-intl/server";
 import { defaultLocale } from "@/i18n/config";
+import { createPeelsMetadata } from "@/utils/seo";
 import { theme } from "@/styles/theme.yak";
 
 export async function generateMetadata() {
@@ -17,14 +18,21 @@ export async function generateMetadata() {
   const t = await getTranslations({ locale, namespace: "Newsletter" });
   const description = t("description");
 
-  return {
-    title: t("title"),
+  const title = t("title");
+
+  return createPeelsMetadata({
+    canonicalPath: "/newsletter",
+    title,
     description,
     openGraph: {
-      title: `${t("title")} · ${siteConfig.name}`,
+      title: `${title} · ${siteConfig.name}`,
       description,
     },
-  };
+    twitter: {
+      title: `${title} · ${siteConfig.name}`,
+      description,
+    },
+  });
 }
 
 export default async function NewsletterPage() {
