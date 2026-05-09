@@ -5,6 +5,7 @@ import {
   generateListingDescription,
   generateListingJsonLd,
   generateListingMetadata,
+  getAnonymousResidentialListingTeaser,
 } from "./listingUtils.ts";
 import type { Listing } from "../types/listing.ts";
 import type { ListingSeoCopy } from "./listingUtils.ts";
@@ -256,6 +257,41 @@ test("anonymous residential metadata avoids leaking listing names with localised
   assert.doesNotMatch(description, /backyard bin/);
 });
 
+test("anonymous unknown-type metadata emits a private teaser", () => {
+  const unknownTypeListing = {
+    ...communityListing,
+    type: null,
+    name: "Sam's untyped backyard bin",
+    description: "Sam's side gate is open and the bin is beside the shed.",
+    accepted_items: ["Banana peels for Sam's worms"],
+    rejected_items: ["Citrus near Sam's shed"],
+    photos: ["private/sam-backyard.jpg"],
+    owner_first_name: "Sam",
+    owner_avatar: "sam.jpg",
+    slug: "unknown-type-listing",
+  } satisfies Listing;
+
+  const metadata = generateListingMetadata(unknownTypeListing, null, {
+    includeFullMetadata: true,
+  });
+  const description = String(metadata.description);
+  const teaser = getAnonymousResidentialListingTeaser(unknownTypeListing, null);
+
+  assert.deepEqual(metadata.title, {
+    absolute: "Private Host",
+  });
+  assert.match(
+    description,
+    /^Private Host accepts food scraps for composting in Marrickville, Australia\./
+  );
+  assert.match(description, /Connect with them on Peels/);
+  assert.doesNotMatch(description, /Sam|side gate|shed|Banana|Citrus/);
+  assert.equal(teaser.name, null);
+  assert.equal(teaser.description, null);
+  assert.equal(teaser.accepted_items, null);
+  assert.equal(teaser.coordinates, null);
+});
+
 test("authenticated residential metadata can use private display names", () => {
   const residentialListing = {
     ...communityListing,
@@ -378,13 +414,30 @@ test("anonymous listing JSON-LD treats missing listing types as sensitive", () =
   const unknownTypeListing = {
     ...communityListing,
     type: null,
+    name: "Sam's untyped backyard bin",
+    description: "Sam's side gate is open and the bin is beside the shed.",
+    accepted_items: ["Banana peels for Sam's worms"],
+    rejected_items: ["Citrus near Sam's shed"],
+    photos: ["private/sam-backyard.jpg"],
+    owner_first_name: "Sam",
+    owner_avatar: "sam.jpg",
     slug: "unknown-type-listing",
   } satisfies Listing;
 
   const jsonLd = generateListingJsonLd(unknownTypeListing, null);
 
   assert.ok(jsonLd);
+  assert.equal(jsonLd.name, "Private Host");
+  assert.match(
+    jsonLd.description,
+    /^Private Host accepts food scraps for composting in Marrickville, Australia\./
+  );
+  assert.doesNotMatch(
+    JSON.stringify(jsonLd),
+    /Sam|side gate|shed|Banana|Citrus|sam-backyard/
+  );
   assert.equal(jsonLd.about.address, undefined);
   assert.equal(jsonLd.about.geo, undefined);
   assert.equal(jsonLd.about.image, undefined);
+  assert.equal(jsonLd.about.additionalProperty, undefined);
 });

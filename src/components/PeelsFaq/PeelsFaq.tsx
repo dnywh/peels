@@ -4,9 +4,10 @@ import FaqContainer from "@/components/FaqContainer";
 import FaqDetails from "@/components/FaqDetails";
 import StrongLink from "@/components/StrongLink";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
+import type { PeelsFaqVariant } from "@/utils/faqJsonLd";
 
 type PeelsFaqProps = {
-  variant?: "summary" | "about" | "community" | "full";
+  variant?: PeelsFaqVariant;
 };
 
 async function PeelsFaq({ variant = "full" }: PeelsFaqProps) {

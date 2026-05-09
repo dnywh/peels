@@ -122,6 +122,17 @@ function normaliseListingType(
   return null;
 }
 
+function isPublicListingType(listingType: ListingType | null) {
+  return listingType === "business" || listingType === "community";
+}
+
+function isSensitiveAnonymousListing(
+  listingType: ListingType | null,
+  user: ListingUser
+) {
+  return !user && !isPublicListingType(listingType);
+}
+
 function compactTextParts(parts: Array<string | null | undefined>) {
   return parts
     .map((part) => part?.trim())
@@ -233,6 +244,10 @@ export function getListingDisplayName(
 
   const listingType = normaliseListingType(listing.type);
 
+  if (isSensitiveAnonymousListing(listingType, user)) {
+    return seoCopy.privateHostName;
+  }
+
   if (listingType === "residential") {
     if (!user) return seoCopy.privateHostName;
     return listing.owner_first_name || seoCopy.privateHostName;
@@ -248,27 +263,30 @@ export function getListingAvatar(
   if (!listing) return null;
 
   const listingType = normaliseListingType(listing.type);
-  const listingDisplayName = getListingDisplayName(listing, user);
 
   if (listing.is_demo) {
     const demoAvatarFilename = listing.avatar?.split("/").pop();
+    const demoListingDisplayName =
+      listing.name || listing.owner_first_name || "Listing";
 
     return {
       isDemo: true,
       path: `/avatars/demo/${demoAvatarFilename}`,
-      alt: `${listingDisplayName} avatar`,
+      alt: `${demoListingDisplayName} avatar`,
+    };
+  }
+
+  const listingDisplayName = getListingDisplayName(listing, user);
+
+  if (isSensitiveAnonymousListing(listingType, user)) {
+    return {
+      bucket: "public",
+      filename: "avatars/default/private.jpg",
+      alt: "A blurred avatar for Private Host. Sign in to see their full information.",
     };
   }
 
   if (listingType === "residential") {
-    if (!user) {
-      return {
-        bucket: "public",
-        filename: "avatars/default/private.jpg",
-        alt: "A blurred avatar for Private Host. Sign in to see their full information.",
-      };
-    }
-
     return {
       bucket: "avatars",
       filename: listing.owner_avatar || null,
@@ -306,7 +324,9 @@ export function getAnonymousResidentialListingTeaser<T extends ListingLike>(
   listing: T,
   user: ListingUser
 ): T | AnonymousResidentialListingTeaser<T> {
-  if (user || normaliseListingType(listing.type) !== "residential") {
+  const listingType = normaliseListingType(listing.type);
+
+  if (!isSensitiveAnonymousListing(listingType, user)) {
     return listing;
   }
 
@@ -367,24 +387,23 @@ export function generateListingDescription(
   const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
   const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
   const listingType = normaliseListingType(listing.type);
+  const isSensitiveAnonymous = isSensitiveAnonymousListing(listingType, user);
   const listingFullLocation = getListingLocation(listing, options.locale);
-  const listingIntro =
-    listingType === "residential"
-      ? seoCopy.residentialIntro({
-          name: listingDisplayName,
-          location: listingFullLocation || undefined,
-        })
-      : seoCopy.nonResidentialIntro({
-          name: listingDisplayName,
-          location: listingFullLocation || undefined,
-        });
-  const listingConnectName =
-    listingType === "residential" && !user
-      ? seoCopy.residentialConnectName
-      : listing.name || listingDisplayName;
+  const listingIntro = isSensitiveAnonymous
+    ? seoCopy.residentialIntro({
+        name: listingDisplayName,
+        location: listingFullLocation || undefined,
+      })
+    : seoCopy.nonResidentialIntro({
+        name: listingDisplayName,
+        location: listingFullLocation || undefined,
+      });
+  const listingConnectName = isSensitiveAnonymous
+    ? seoCopy.residentialConnectName
+    : listing.name || listingDisplayName;
   const listingDescriptionParts = [
     listingIntro,
-    listingType === "residential"
+    isSensitiveAnonymous
       ? null
       : listing.description?.trim()
         ? listing.description.trim()
