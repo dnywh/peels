@@ -14,6 +14,17 @@ These instructions apply to the whole repository.
 - For React form submit handlers, use the shared `FormSubmitEvent` / `FormSubmitHandler` types from `src/types/events.ts`, which wrap React 19's `SubmitEvent`. Avoid deprecated `FormEvent`, `FormEventHandler`, and `React.FormEvent`; keep `ChangeEvent` for input/select/textarea change handlers.
 - In MDX prose, if an inline component inside a Markdown list item is formatted onto multiple lines and changes rendered spacing, use a targeted `{/* prettier-ignore */}` before that list rather than disabling formatting for the whole file.
 
+## Auth, Sessions, and Public-Page Performance
+
+- `src/proxy.ts` intentionally does not refresh Supabase auth on every request. Public pages should use `createSignedOutResponse()` so their initial response does not wait on `supabase.auth.getUser()`.
+- Only add paths to `authRequiredPathPrefixes` when the first server response must know auth state, such as protected routes, auth callbacks, and guest-only auth pages. Adding public routes there can regress TTFB, FCP, and LCP.
+- Server components that branch on auth should treat `authStateHeaderName` as a forwarded proxy hint, not proof that public routes have performed a fresh auth lookup. Public pages are deliberately signed-out on the initial server render until client auth resolves.
+- Keep auth-aware public UI in small client slots or enhancements, such as `AccountButton`, `FooterLocaleSlot`, and unread chat dots. It is acceptable for these to appear or update after first paint.
+- Keep `UnreadMessagesProvider` scoped to tab-bar and chat layouts rather than the root layout. It should not make public HTML wait on Supabase, and its initial auth/unread check should remain idle or otherwise deferred.
+- For signed-in preferred locale, public pages should use the locale cookie for the initial render. Profile-backed locale lookup belongs on authenticated/private flows.
+- Chat route data shared by layout, metadata, and page should go through cached helpers in `src/features/chat/chatPageData.ts` to avoid duplicate Supabase work.
+- For more detail, see `docs/auth-session-architecture.md`.
+
 ## Testing
 
 - Add or update Playwright e2e coverage when changing important user flows such as auth, listings, locale switching, chat, or other multi-step interactions.

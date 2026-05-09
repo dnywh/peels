@@ -57,7 +57,7 @@ peels/
 │   ├── app/               # Next.js app router pages
 │   ├── components/        # React components
 │   ├── lib/               # Utility functions and shared logic
-│   └── middleware.ts      # Next.js middleware for auth
+│   └── proxy.ts           # Next.js proxy for auth-aware routing
 ├── public/                # Static assets
 ├── supabase/              # Supabase configurations and migrations
 └── package.json           # Project dependencies and scripts
@@ -89,6 +89,8 @@ Peels intentionally uses the `54331`-`54334` local port range so it can run alon
 If you need to serve [Supabase edge functions](https://github.com/dnywh/peels/blob/main/supabase/functions) locally, copy `supabase/.env.example` to `supabase/.env` and add only the secrets you actually need. Production secrets should remain dashboard-managed for now.
 
 For the fuller operational walkthrough, including GitHub/Vercel dashboard setup and fresh-computer bootstrap, see [docs/supabase-local-first.md](./docs/supabase-local-first.md).
+
+For how auth/session forwarding, public-page performance, footer locale state, unread chat dots, and deferred homepage demos fit together, see [docs/auth-session-architecture.md](./docs/auth-session-architecture.md).
 
 ### Usage
 
