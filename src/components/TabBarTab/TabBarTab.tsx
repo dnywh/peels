@@ -64,7 +64,7 @@ export default function TabBarTab({
     >
       <StyledTabBarTabIcon>
         {icon}
-        {unreadDot && <UnreadDot />}
+        {unreadDot && <UnreadDot data-testid="tab-unread-dot" />}
       </StyledTabBarTabIcon>
       {title && <StyledTabBarTabTitle>{title}</StyledTabBarTabTitle>}
     </StyledTabBarTab>

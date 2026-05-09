@@ -1,5 +1,6 @@
 import TabBar from "@/components/TabBar";
 import { TabBarProvider } from "@/contexts/TabBarContext";
+import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import type { ReactNode } from "react";
@@ -22,11 +23,13 @@ const CenteredPage = styled.div`
 export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <TabBarProvider>
-      <CenteredPage>
-        <TabBar breakpoint="md" position="dynamic" />
-        {children}
-        <TabBar breakpoint="sm" />
-      </CenteredPage>
+      <UnreadMessagesProvider>
+        <CenteredPage>
+          <TabBar breakpoint="md" position="dynamic" />
+          {children}
+          <TabBar breakpoint="sm" />
+        </CenteredPage>
+      </UnreadMessagesProvider>
     </TabBarProvider>
   );
 }

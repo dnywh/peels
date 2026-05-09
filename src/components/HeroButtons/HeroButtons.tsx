@@ -15,17 +15,23 @@ export default function HeroButtons() {
         {t("browseMap")}
       </HeroActionButton>
       {user ? (
-        <HeroActionButton
+        <SecondaryHeroActionButton
           href="/profile/listings/new"
           variant="secondary"
           size="massive"
+          data-testid="hero-secondary-action"
         >
           {t("addListing")}
-        </HeroActionButton>
+        </SecondaryHeroActionButton>
       ) : (
-        <HeroActionButton href="/sign-up" variant="secondary" size="massive">
+        <SecondaryHeroActionButton
+          href="/sign-up"
+          variant="secondary"
+          size="massive"
+          data-testid="hero-secondary-action"
+        >
           {t("signUp")}
-        </HeroActionButton>
+        </SecondaryHeroActionButton>
       )}
     </ButtonContainer>
   );
@@ -38,6 +44,12 @@ const HeroActionButton = styled(Button)`
   @media (min-width: 768px) {
     width: auto;
     align-self: center;
+  }
+`;
+
+const SecondaryHeroActionButton = styled(HeroActionButton)`
+  @media (min-width: 768px) {
+    min-width: 13.5rem;
   }
 `;
 

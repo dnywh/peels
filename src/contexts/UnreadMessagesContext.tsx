@@ -11,6 +11,7 @@ import {
 import { createClient } from "@/utils/supabase/client";
 import { usePathname } from "next/navigation";
 import { getChatThreadIdFromPathname } from "@/features/chat/chatRoutes";
+import { scheduleIdleTask } from "@/utils/scheduleIdleTask";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 
 type ThreadReadStatus = Record<string, boolean>;
@@ -64,7 +65,9 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
       });
     }
 
-    void loadUserId();
+    const cancelInitialLoad = scheduleIdleTask(() => {
+      void loadUserId();
+    });
 
     if (isAuthDebugEnabled) {
       console.log("Setting up auth listener");
@@ -83,6 +86,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
 
     return () => {
       isActive = false;
+      cancelInitialLoad();
       subscription.unsubscribe();
     };
   }, [supabase]);
@@ -101,7 +105,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
 
         const { count, error } = await supabase
           .from("chat_messages")
-          .select("*", { count: "exact", head: true })
+          .select("id", { count: "exact", head: true })
           .neq("sender_id", userId)
           .is("read_at", null);
 

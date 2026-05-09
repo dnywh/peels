@@ -1,23 +1,15 @@
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
-import { headers } from "next/headers";
 import PeelsLogo from "@/components/PeelsLogo";
-import LocalePicker from "@/components/LocalePicker";
+import FooterLocaleSlot from "@/components/FooterLocaleSlot";
 import { styled } from "next-yak";
 import { getTranslations } from "next-intl/server";
-import {
-  authStateHeaderName,
-  authStateSignedIn,
-} from "@/utils/supabase/authState";
 import { theme } from "@/styles/theme.yak";
 
 const currentYear = new Date().getFullYear();
 
 export default async function SiteFooter() {
   const t = await getTranslations();
-  const headersList = await headers();
-  const hasSignedInSession =
-    headersList.get(authStateHeaderName) === authStateSignedIn;
 
   return (
     <StyledFooter>
@@ -26,7 +18,7 @@ export default async function SiteFooter() {
         © {currentYear} {siteConfig.name}
       </p>
 
-      {!hasSignedInSession && <LocalePicker compact={true} />}
+      <FooterLocaleSlot />
 
       <StyledNav>
         <Link href={siteConfig.links.about}>{t("App.about")}</Link>

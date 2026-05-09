@@ -1,8 +1,7 @@
-import { createClient } from "@/utils/supabase/server";
 import { ChatConversationClient } from "@/components/ChatPageClient";
-import { getSelectedChatThread, isUuid } from "@/features/chat/chatData";
+import { isUuid } from "@/features/chat/chatData";
+import { getCurrentSelectedChatThread } from "@/features/chat/chatPageData";
 import { redirect } from "next/navigation";
-import { cache } from "react";
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { createPeelsMetadata, noindexFollowMetadata } from "@/utils/seo";
@@ -13,33 +12,10 @@ type ChatThreadPageProps = {
   }>;
 };
 
-const getChatThreadPageData = cache(async (threadId: string) => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return {
-      user: null,
-      selectedThread: null,
-    };
-  }
-
-  const selectedThread = await getSelectedChatThread(
-    supabase,
-    user.id,
-    threadId
-  );
-
-  return {
-    user,
-    selectedThread,
-  };
-});
-
 function getChatThreadTitle(
-  selectedThread: Awaited<ReturnType<typeof getSelectedChatThread>>,
+  selectedThread: Awaited<
+    ReturnType<typeof getCurrentSelectedChatThread>
+  >["selectedThread"],
   userId: string
 ) {
   if (!selectedThread) return "Chats";
@@ -65,7 +41,7 @@ export async function generateMetadata({
     });
   }
 
-  const { user, selectedThread } = await getChatThreadPageData(threadId);
+  const { user, selectedThread } = await getCurrentSelectedChatThread(threadId);
 
   if (!user) {
     return createPeelsMetadata({
@@ -98,7 +74,7 @@ export default async function ChatThreadPage({ params }: ChatThreadPageProps) {
     redirect("/chats");
   }
 
-  const { user, selectedThread } = await getChatThreadPageData(threadId);
+  const { user, selectedThread } = await getCurrentSelectedChatThread(threadId);
 
   if (!user) {
     redirect(`/sign-in?redirect_to=/chats/${threadId}`);

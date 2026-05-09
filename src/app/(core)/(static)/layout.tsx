@@ -1,5 +1,6 @@
 import TabBar from "@/components/TabBar";
 import { TabBarProvider } from "@/contexts/TabBarContext";
+import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
 import SiteFooter from "@/components/SiteFooter";
 import { styled } from "next-yak";
 import AccountButton from "@/components/AccountButton";
@@ -25,13 +26,15 @@ const StaticPage = styled.div`
 export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <TabBarProvider>
-      <StaticPage>
-        <StyledAccountButton />
-        <TabBar breakpoint="md" position="fixed" />
-        {children}
-        <SiteFooter />
-        <TabBar breakpoint="sm" />
-      </StaticPage>
+      <UnreadMessagesProvider>
+        <StaticPage>
+          <StyledAccountButton />
+          <TabBar breakpoint="md" position="fixed" />
+          {children}
+          <SiteFooter />
+          <TabBar breakpoint="sm" />
+        </StaticPage>
+      </UnreadMessagesProvider>
     </TabBarProvider>
   );
 }
