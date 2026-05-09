@@ -32,7 +32,7 @@ This means the first paint can briefly look signed-out on public pages. That is 
 
 `UnreadMessagesProvider` belongs near the UI that displays or consumes unread state, such as tab-bar and chat layouts. It should not wrap the root layout.
 
-The unread check should stay deferred so it does not delay public HTML. If the unread dot disappears entirely, check the provider scope, the idle auth check, the `chat_threads` query, and the `unread_chat_thread_ids` RPC before moving the provider back to the root.
+The unread check should stay deferred so it does not delay public HTML. If the unread dot disappears entirely, check the provider scope, the idle auth check, and the unread `chat_messages` count before moving the provider back to the root.
 
 ## Homepage First Paint
 

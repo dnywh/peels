@@ -146,9 +146,14 @@ test("homepage account button stays hidden while signed-in profile state loads",
   }
 
   const profileAccountButton = page.getByTestId("account-button-profile");
+  const heroSecondaryAction = page.getByTestId("hero-secondary-action");
 
   await expect(profileAccountButton).toHaveAttribute("href", "/profile");
   await expect(profileAccountButton).toHaveCSS("opacity", "1");
+  await expect(heroSecondaryAction).toHaveAttribute(
+    "href",
+    "/profile/listings/new"
+  );
   await expect(page.getByTestId("locale-picker-select")).toHaveCount(0);
 });
 
@@ -160,14 +165,20 @@ test("homepage account button links guests to sign in", async ({ page }) => {
     "/sign-in"
   );
   await expect(page.getByTestId("account-button-profile")).toHaveCount(0);
+  await expect(page.getByTestId("hero-secondary-action")).toHaveAttribute(
+    "href",
+    "/sign-up"
+  );
   await expect(page.getByTestId("locale-picker-select")).toBeVisible();
 });
 
 test("homepage unread chat dot appears after scoped unread check", async ({
   page,
 }) => {
-  await page.route(/\/rest\/v1\/chat_threads(?:\?|$)/, async (route) => {
-    if (route.request().method() !== "GET") {
+  await page.route(/\/rest\/v1\/chat_messages(?:\?|$)/, async (route) => {
+    const method = route.request().method();
+
+    if (method !== "GET" && method !== "HEAD") {
       await route.continue();
       return;
     }
@@ -175,21 +186,13 @@ test("homepage unread chat dot appears after scoped unread check", async ({
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify([{ id: "33333333-3333-4333-8333-333333333333" }]),
+      headers: {
+        "content-range": "0-0/1",
+        "access-control-expose-headers": "content-range",
+      },
+      body: method === "HEAD" ? "" : JSON.stringify([]),
     });
   });
-  await page.route(
-    /\/rest\/v1\/rpc\/unread_chat_thread_ids(?:\?|$)/,
-    async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify([
-          { thread_id: "33333333-3333-4333-8333-333333333333" },
-        ]),
-      });
-    }
-  );
 
   await signIn(page, { email: DONOR_EMAIL, redirectTo: "/" });
 

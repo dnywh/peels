@@ -45,6 +45,8 @@ function shouldUpdateSession(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest) {
+  // Public routes deliberately skip Supabase auth refresh for first-paint
+  // performance. Auth-aware client slots converge after hydration.
   const response = shouldUpdateSession(request)
     ? await updateSession(request)
     : createSignedOutResponse(request);

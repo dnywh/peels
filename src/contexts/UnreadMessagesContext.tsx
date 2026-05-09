@@ -21,14 +21,6 @@ type ChatMessagePayload = {
   thread_id: string | null;
 };
 
-type ChatThreadRow = {
-  id: string;
-};
-
-type UnreadThreadRow = {
-  thread_id: string | null;
-};
-
 type UnreadMessagesContextValue = {
   unreadCount: number;
   setUnreadCount: Dispatch<SetStateAction<number>>;
@@ -133,39 +125,19 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
           return;
         }
 
-        const { data: threads, error: threadsError } = await supabase
-          .from("chat_threads")
-          .select("id")
-          .or(`initiator_id.eq.${userId},owner_id.eq.${userId}`);
+        const { count, error } = await supabase
+          .from("chat_messages")
+          .select("id", { count: "exact", head: true })
+          .neq("sender_id", userId)
+          .is("read_at", null);
 
-        if (threadsError) {
-          console.error("Error checking chat threads:", threadsError);
+        if (error) {
+          console.error("Error checking unread messages:", error);
           return;
         }
-
-        const threadIds = ((threads as ChatThreadRow[] | null) ?? []).map(
-          (thread) => thread.id
-        );
-        const { data: unreadThreads, error: unreadThreadsError } =
-          threadIds.length > 0
-            ? await supabase.rpc("unread_chat_thread_ids", {
-                thread_ids: threadIds,
-              })
-            : { data: [], error: null };
-
-        if (unreadThreadsError) {
-          console.error("Error checking unread messages:", unreadThreadsError);
-          return;
-        }
-
-        const unreadThreadIds = new Set(
-          ((unreadThreads as UnreadThreadRow[] | null) ?? [])
-            .map((thread) => thread.thread_id)
-            .filter((threadId): threadId is string => Boolean(threadId))
-        );
 
         if (!isActive) return;
-        setUnreadCount(unreadThreadIds.size);
+        setUnreadCount(count ?? 0);
       } catch (error) {
         console.error("Error in checkUnreadMessages:", error);
       }
