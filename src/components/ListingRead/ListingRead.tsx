@@ -139,13 +139,20 @@ const ListingRead = memo(function Listing({
   }, [listingId, listingOwnerId, userId, isDemo, supabase]);
 
   const initialZoomLevel = 14;
+  const listingDisplayNameCopy = useMemo(
+    () => ({
+      privateHostName: t("Listings.seo.privateHostName"),
+      fallbackListingName: t("Listings.seo.fallbackListingName"),
+    }),
+    [t]
+  );
 
   const listingDisplayName: string =
     providedListingDisplayName ??
     (isDemo
       ? (demoListing?.name ?? demoListing?.owner_first_name ?? "")
       : realListing
-        ? getListingDisplayName(realListing, user)
+        ? getListingDisplayName(realListing, user, listingDisplayNameCopy)
         : "");
 
   const coordinates = realListing?.coordinates ?? null;

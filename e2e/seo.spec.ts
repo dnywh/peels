@@ -345,6 +345,35 @@ test("map listing URLs localise metadata without changing canonical", async ({
   }
 });
 
+test("map listing drawer localises anonymous residential fallback copy", async ({
+  browser,
+}) => {
+  const { context, page } = await newLocalePage(
+    browser,
+    "es-MX",
+    "es-MX,es;q=0.9,en;q=0.8"
+  );
+
+  try {
+    await page.goto("/map?listing=demo-newtown-worm-farm", {
+      waitUntil: "domcontentloaded",
+    });
+
+    await expect(page.locator("html")).toHaveAttribute("lang", "es");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Anfitrión privado" })
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(
+      page.getByRole("heading", { level: 3, name: "Anfitrión privado" })
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(
+      page.getByRole("heading", { name: "Private Host" })
+    ).toHaveCount(0);
+  } finally {
+    await context.close();
+  }
+});
+
 test("auth utility pages are noindex and omitted from the sitemap", async ({
   page,
   request,

@@ -46,6 +46,11 @@ export type ListingSeoCopy = {
   baseKeywords: () => string[];
 };
 
+type ListingDisplayNameCopy = Pick<
+  ListingSeoCopy,
+  "privateHostName" | "fallbackListingName"
+>;
+
 type ListingSeoOptions = {
   locale?: string;
   seoCopy?: ListingSeoCopy;
@@ -222,7 +227,7 @@ function getListingStructuredDataImage(
 export function getListingDisplayName(
   listing: ListingLike | null | undefined,
   user: ListingUser,
-  seoCopy: ListingSeoCopy = defaultListingSeoCopy
+  seoCopy: ListingDisplayNameCopy = defaultListingSeoCopy
 ) {
   if (!listing) return "";
 
