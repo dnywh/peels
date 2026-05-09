@@ -49,7 +49,9 @@ export type ListingSeoCopy = {
 type ListingDisplayNameCopy = Pick<
   ListingSeoCopy,
   "privateHostName" | "fallbackListingName"
->;
+> & {
+  privateHostAvatarAlt?: string;
+};
 
 type ListingSeoOptions = {
   locale?: string;
@@ -258,7 +260,8 @@ export function getListingDisplayName(
 
 export function getListingAvatar(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  seoCopy: ListingDisplayNameCopy = defaultListingSeoCopy
 ): AvatarDescriptor {
   if (!listing) return null;
 
@@ -276,13 +279,15 @@ export function getListingAvatar(
     };
   }
 
-  const listingDisplayName = getListingDisplayName(listing, user);
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
 
   if (isSensitiveAnonymousListing(listingType, user)) {
     return {
       bucket: "public",
       filename: "avatars/default/private.jpg",
-      alt: "A blurred avatar for Private Host. Sign in to see their full information.",
+      alt:
+        seoCopy.privateHostAvatarAlt ??
+        `A blurred avatar for ${seoCopy.privateHostName}. Sign in to see their full information.`,
     };
   }
 
@@ -290,7 +295,7 @@ export function getListingAvatar(
     return {
       bucket: "avatars",
       filename: listing.owner_avatar || null,
-      alt: `${listing.owner_first_name || "Private Host"} avatar`,
+      alt: `${listing.owner_first_name || seoCopy.privateHostName} avatar`,
     };
   }
 
@@ -388,8 +393,12 @@ export function generateListingDescription(
   const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
   const listingType = normaliseListingType(listing.type);
   const isSensitiveAnonymous = isSensitiveAnonymousListing(listingType, user);
+  const shouldUseResidentialIntro =
+    listingType === "residential" || isSensitiveAnonymous;
+  const shouldOmitListingDescription =
+    listingType === "residential" || isSensitiveAnonymous;
   const listingFullLocation = getListingLocation(listing, options.locale);
-  const listingIntro = isSensitiveAnonymous
+  const listingIntro = shouldUseResidentialIntro
     ? seoCopy.residentialIntro({
         name: listingDisplayName,
         location: listingFullLocation || undefined,
@@ -403,7 +412,7 @@ export function generateListingDescription(
     : listing.name || listingDisplayName;
   const listingDescriptionParts = [
     listingIntro,
-    isSensitiveAnonymous
+    shouldOmitListingDescription
       ? null
       : listing.description?.trim()
         ? listing.description.trim()

@@ -6,6 +6,7 @@ import {
   generateListingJsonLd,
   generateListingMetadata,
   getAnonymousResidentialListingTeaser,
+  getListingAvatar,
 } from "./listingUtils.ts";
 import type { Listing } from "../types/listing.ts";
 import type { ListingSeoCopy } from "./listingUtils.ts";
@@ -308,7 +309,35 @@ test("authenticated residential metadata can use private display names", () => {
   assert.deepEqual(metadata.title, {
     absolute: "Sam",
   });
+  assert.match(
+    String(metadata.description),
+    /^Sam accepts food scraps for composting in Marrickville, Australia\./
+  );
+  assert.doesNotMatch(String(metadata.description), /helps people compost/);
   assert.equal(metadata.robots, undefined);
+});
+
+test("anonymous residential avatars can use localised private-host alt text", () => {
+  const residentialListing = {
+    ...communityListing,
+    type: "residential",
+    name: "Sam's backyard bin",
+    owner_first_name: "Sam",
+    slug: "private-host",
+  } satisfies Listing;
+
+  const avatar = getListingAvatar(residentialListing, null, {
+    privateHostName: "Anfitrión privado",
+    fallbackListingName: "Anuncio",
+    privateHostAvatarAlt:
+      "Un avatar difuminado de Anfitrión privado. Inicia sesión para ver la información completa.",
+  });
+
+  assert.equal(
+    avatar?.alt,
+    "Un avatar difuminado de Anfitrión privado. Inicia sesión para ver la información completa."
+  );
+  assert.doesNotMatch(avatar?.alt ?? "", /Private Host/);
 });
 
 test("listing JSON-LD describes the public listing page and place conservatively", () => {

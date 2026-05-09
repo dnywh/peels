@@ -430,7 +430,8 @@
       "localCommunity": "Lokale Gemeinschaft",
       "businessIn": "Unternehmen in {area}",
       "localBusiness": "Lokales Unternehmen",
-      "avatarAlt": "Der Avatar für diesen Eintrag"
+      "avatarAlt": "Der Avatar für diesen Eintrag",
+      "privateHostAvatarAlt": "Ein verschwommener Avatar für {name}. Melde dich an, um die vollständigen Informationen zu sehen."
     },
     "seo": {
       "privateHostName": "Privater Host",

@@ -430,7 +430,8 @@
       "localCommunity": "Local community",
       "businessIn": "Business in {area}",
       "localBusiness": "Local business",
-      "avatarAlt": "The avatar for this listing"
+      "avatarAlt": "The avatar for this listing",
+      "privateHostAvatarAlt": "A blurred avatar for {name}. Sign in to see their full information."
     },
     "seo": {
       "privateHostName": "Private Host",

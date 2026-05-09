@@ -430,7 +430,8 @@
       "localCommunity": "Communauté locale",
       "businessIn": "Commerce à {area}",
       "localBusiness": "Commerce local",
-      "avatarAlt": "L’avatar de cette annonce"
+      "avatarAlt": "L’avatar de cette annonce",
+      "privateHostAvatarAlt": "Un avatar flouté pour {name}. Connectez-vous pour voir les informations complètes."
     },
     "seo": {
       "privateHostName": "Hôte privé",
