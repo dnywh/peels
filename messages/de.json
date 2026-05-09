@@ -442,6 +442,8 @@
       "nonResidentialIntroWithLocation": "{name} hilft Menschen, Lebensmittelreste in {location} zu kompostieren.",
       "siteExplainer": "eine Community-Plattform, die Menschen mit Lebensmittelresten mit Menschen verbindet, die kompostieren",
       "connect": "Verbinde dich mit {name} auf {siteName}, {explainer}.",
+      "acceptedItemsLabel": "Akzeptierte Lebensmittelreste",
+      "rejectedItemsLabel": "Nicht akzeptierte Dinge",
       "keywords": {
         "base": "Lebensmittelabfall, Lebensmittelreste, Essensreste, Kompost, Kompostierung, Kompost in meiner Nähe, Kompost-Abgabestelle, Abgabe von Lebensmittelresten",
         "location": "{location}",

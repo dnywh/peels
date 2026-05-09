@@ -40,6 +40,8 @@ export type ListingSeoCopy = {
     siteName: string;
     explainer: string;
   }) => string;
+  acceptedItemsLabel: string;
+  rejectedItemsLabel: string;
   locationKeywords: (values: { location: string }) => string[];
   baseKeywords: () => string[];
 };
@@ -89,6 +91,8 @@ const defaultListingSeoCopy: ListingSeoCopy = {
     `${name} helps people compost food scraps${location ? ` in ${location}` : ""}.`,
   connect: ({ name, siteName, explainer }) =>
     `Connect with ${name} on ${siteName}, ${explainer}.`,
+  acceptedItemsLabel: "Accepted food scraps",
+  rejectedItemsLabel: "Items not accepted",
   locationKeywords: ({ location }) => [
     location,
     `food scraps in ${location}`,
@@ -125,7 +129,10 @@ function compactTextList(items: string[] | null | undefined) {
     .filter((item): item is string => Boolean(item));
 }
 
-function getListingItemProperties(listing: ListingLike) {
+function getListingItemProperties(
+  listing: ListingLike,
+  seoCopy: ListingSeoCopy
+) {
   const acceptedItems = compactTextList(listing.accepted_items) ?? [];
   const rejectedItems = compactTextList(listing.rejected_items) ?? [];
 
@@ -133,7 +140,7 @@ function getListingItemProperties(listing: ListingLike) {
     acceptedItems.length
       ? {
           "@type": "PropertyValue",
-          name: "Accepted food scraps",
+          name: seoCopy.acceptedItemsLabel,
           propertyID: "acceptedItems",
           value: acceptedItems.join(", "),
         }
@@ -141,7 +148,7 @@ function getListingItemProperties(listing: ListingLike) {
     rejectedItems.length
       ? {
           "@type": "PropertyValue",
-          name: "Items not accepted",
+          name: seoCopy.rejectedItemsLabel,
           propertyID: "rejectedItems",
           value: rejectedItems.join(", "),
         }
@@ -457,7 +464,7 @@ export function generateListingJsonLd(
     ? getListingStructuredDataImage(listing, user)
     : null;
   const itemProperties = canIncludePublicStructuredDetails
-    ? getListingItemProperties(listing)
+    ? getListingItemProperties(listing, seoCopy)
     : [];
   const address = {
     "@type": "PostalAddress",

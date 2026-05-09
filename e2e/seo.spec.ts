@@ -233,6 +233,22 @@ test("public listing pages localise Spanish SEO metadata", async ({
           script.includes("ayuda a compostar restos de comida")
       )
     ).toBeTruthy();
+
+    const listingJsonLd = parseJsonLdScripts(jsonLdScripts).find(
+      (data) =>
+        data["@id"] ===
+        "https://www.peels.app/listings/demo-marrickville-compost#webpage"
+    );
+    expect(listingJsonLd?.about?.additionalProperty).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "Restos de comida aceptados",
+        }),
+        expect.objectContaining({
+          name: "Elementos no aceptados",
+        }),
+      ])
+    );
   } finally {
     await context.close();
   }

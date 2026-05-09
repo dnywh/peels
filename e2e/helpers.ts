@@ -28,7 +28,7 @@ export async function signIn(
   await page.locator("#email").fill(email);
   await page.locator("#password").fill(SEEDED_PASSWORD);
 
-  const expectedUrl = new URL(expectedPath, "http://127.0.0.1:3000");
+  const expectedUrl = new URL(expectedPath, page.url());
 
   await Promise.all([
     page.waitForURL(

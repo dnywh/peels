@@ -26,6 +26,8 @@ export async function getListingSeoOptions() {
         : t("nonResidentialIntro", { name }),
     connect: ({ name, siteName }) =>
       t("connect", { name, siteName, explainer: t("siteExplainer") }),
+    acceptedItemsLabel: t("acceptedItemsLabel"),
+    rejectedItemsLabel: t("rejectedItemsLabel"),
     locationKeywords: ({ location }) => [
       t("keywords.location", { location }),
       t("keywords.foodScraps", { location }),

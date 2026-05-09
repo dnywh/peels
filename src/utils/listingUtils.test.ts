@@ -42,6 +42,8 @@ const localisedSeoCopies = {
       `${name} ayuda a compostar restos de comida${location ? ` en ${location}` : ""}.`,
     connect: ({ name, siteName, explainer }) =>
       `Contacta con ${name} en ${siteName}, ${explainer}.`,
+    acceptedItemsLabel: "Restos de comida aceptados",
+    rejectedItemsLabel: "Elementos no aceptados",
     locationKeywords: ({ location }) => [
       location,
       `restos de comida en ${location}`,
@@ -65,6 +67,8 @@ const localisedSeoCopies = {
       `${name} hilft Menschen, Lebensmittelreste${location ? ` in ${location}` : ""} zu kompostieren.`,
     connect: ({ name, siteName, explainer }) =>
       `Verbinde dich mit ${name} auf ${siteName}, ${explainer}.`,
+    acceptedItemsLabel: "Akzeptierte Lebensmittelreste",
+    rejectedItemsLabel: "Nicht akzeptierte Dinge",
     locationKeywords: ({ location }) => [
       location,
       `Lebensmittelreste in ${location}`,
@@ -82,6 +86,8 @@ const localisedSeoCopies = {
       `${name} ajuda pessoas a compostar restos de comida${location ? ` em ${location}` : ""}.`,
     connect: ({ name, siteName, explainer }) =>
       `Entre em contato com ${name} pelo ${siteName}, ${explainer}.`,
+    acceptedItemsLabel: "Restos de comida aceitos",
+    rejectedItemsLabel: "Itens não aceitos",
     locationKeywords: ({ location }) => [
       location,
       `restos de comida em ${location}`,
@@ -99,6 +105,8 @@ const localisedSeoCopies = {
       `${name} aide les gens à composter leurs restes alimentaires${location ? ` à ${location}` : ""}.`,
     connect: ({ name, siteName, explainer }) =>
       `Contactez ${name} sur ${siteName}, ${explainer}.`,
+    acceptedItemsLabel: "Restes alimentaires acceptés",
+    rejectedItemsLabel: "Éléments non acceptés",
     locationKeywords: ({ location }) => [
       location,
       `restes alimentaires à ${location}`,
@@ -316,6 +324,20 @@ test("listing JSON-LD can use localised descriptions, country names, and languag
   );
   assert.ok(jsonLd.about.address);
   assert.equal(jsonLd.about.address.addressCountry, "Nueva Zelanda");
+  assert.deepEqual(jsonLd.about.additionalProperty, [
+    {
+      "@type": "PropertyValue",
+      name: "Restos de comida aceptados",
+      propertyID: "acceptedItems",
+      value: "Food scraps",
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Elementos no aceptados",
+      propertyID: "rejectedItems",
+      value: "Meat and dairy",
+    },
+  ]);
 });
 
 test("anonymous residential listing JSON-LD omits structured location details", () => {

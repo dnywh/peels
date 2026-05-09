@@ -15,12 +15,22 @@ const INNER_WEST_MAP_VIEW: StoredMapView = {
 };
 const MAP_MARKER_RENDER_TIMEOUT_MS = 20_000;
 
+function getMapCookieUrl() {
+  const baseURL = test.info().project.use.baseURL;
+
+  if (typeof baseURL !== "string") {
+    throw new Error("Expected Playwright baseURL to be configured");
+  }
+
+  return new URL("/map", baseURL).toString();
+}
+
 async function seedStoredMapView(page: Page, view: StoredMapView) {
   await page.context().addCookies([
     {
       name: STORED_MAP_VIEW_KEY,
       value: encodeURIComponent(JSON.stringify(view)),
-      url: "http://127.0.0.1:3000/map",
+      url: getMapCookieUrl(),
     },
   ]);
 
@@ -54,7 +64,7 @@ async function readStoredMapView(page: Page) {
 }
 
 async function readStoredMapViewCookie(page: Page) {
-  const cookies = await page.context().cookies("http://127.0.0.1:3000/map");
+  const cookies = await page.context().cookies(getMapCookieUrl());
   const cookie = cookies.find(({ name }) => name === STORED_MAP_VIEW_KEY);
 
   return cookie

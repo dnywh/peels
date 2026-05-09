@@ -442,6 +442,8 @@
       "nonResidentialIntroWithLocation": "{name} ajuda pessoas a compostar restos de comida em {location}.",
       "siteExplainer": "uma plataforma comunitária que conecta pessoas com restos de comida a quem faz compostagem",
       "connect": "Entre em contato com {name} pelo {siteName}, {explainer}.",
+      "acceptedItemsLabel": "Restos de comida aceitos",
+      "rejectedItemsLabel": "Itens não aceitos",
       "keywords": {
         "base": "resíduos orgânicos, restos de comida, desperdício de alimentos, compostagem, compostagem perto de mim, ponto de entrega para compostagem, entrega de restos de comida",
         "location": "{location}",

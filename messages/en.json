@@ -442,6 +442,8 @@
       "nonResidentialIntroWithLocation": "{name} helps people compost food scraps in {location}.",
       "siteExplainer": "a community platform for connecting folks with food scraps to those who compost",
       "connect": "Connect with {name} on {siteName}, {explainer}.",
+      "acceptedItemsLabel": "Accepted food scraps",
+      "rejectedItemsLabel": "Items not accepted",
       "keywords": {
         "base": "food waste, food scraps, share waste, sharewaste, makesoil, compost near me, compost drop-off, food scrap drop-off",
         "location": "{location}",
