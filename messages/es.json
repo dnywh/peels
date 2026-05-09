@@ -56,7 +56,7 @@
     "password": "Contraseña",
     "photos": "Fotos",
     "source": "Fuente",
-    "stub": "Borrador",
+    "stub": "Ficha preliminar",
     "subscribed": "Suscrito"
   },
   "Status": {
@@ -69,7 +69,7 @@
     "sending": "Enviando...",
     "signingIn": "Iniciando sesión...",
     "signingOut": "Cerrando sesión...",
-    "signingUp": "Registrando...",
+    "signingUp": "Registrando cuenta...",
     "updating": "Actualizando...",
     "uploading": "Subiendo...",
     "verifying": "Verificando...",
@@ -86,15 +86,15 @@
     "emailRequired": "El correo electrónico es obligatorio",
     "failedDeleteListing": "No se pudo eliminar el anuncio.",
     "failedDeletePhoto": "No se pudo eliminar la foto. Inténtalo de nuevo.",
-    "generic": "Hmm, algo no está bien. ¿Puedes intentarlo de nuevo?",
-    "genericLater": "Algo salió mal. Inténtalo de nuevo más tarde.",
+    "generic": "Mmm, algo no está bien. ¿Puedes intentarlo de nuevo?",
+    "genericLater": "Algo salió mal. Vuelve a intentarlo más tarde.",
     "missingLocation": "Selecciona una ubicación.",
     "missingSignUpFields": "El nombre, el correo electrónico y la contraseña son obligatorios.",
     "passwordMismatch": "Las contraseñas no coinciden.",
     "photoUploadFailed": "Hubo un error al subir tus fotos. Inténtalo de nuevo.",
     "avatarUploadFailed": "Hubo un error al subir tu foto. Inténtalo de nuevo.",
     "requiredPasswordFields": "Ambos campos son obligatorios.",
-    "resetPasswordDenied": "Hmm, algo no está bien. Puede que no tengas permiso para restablecer esta contraseña o que hayas intentado reutilizar una contraseña reciente.",
+    "resetPasswordDenied": "Mmm, algo no está bien. Puede que no tengas permiso para restablecer esta contraseña o que hayas intentado reutilizar una contraseña reciente.",
     "resetPasswordSuccess": "Tu contraseña ha sido actualizada. ¡Volvamos al compostaje!",
     "savePhotosFailed": "Se creó el anuncio, pero no se pudieron guardar las fotos.",
     "signUpFailed": "No se pudo completar el registro",
@@ -106,7 +106,7 @@
     "firstNameNotAllowed": "Ese nombre no está permitido en Peels.",
     "firstNameInvalidChars": "El nombre solo puede incluir letras, espacios, guiones y apóstrofos.",
     "disposableEmailNotAllowed": "Usa una dirección de correo de largo plazo en lugar de un buzón desechable.",
-    "updateEmailFailed": "Hmm, algo no está bien. Revisa tu correo o inténtalo de nuevo.",
+    "updateEmailFailed": "Mmm, algo no está bien. Revisa tu correo o inténtalo de nuevo.",
     "updateFirstNameFailed": "Lo sentimos, no pudimos actualizar tu nombre.",
     "updateNewsletterFailed": "Lo sentimos, no pudimos actualizar tu preferencia del boletín.",
     "unexpected": "Ocurrió un error inesperado. Inténtalo de nuevo más tarde.",
@@ -119,8 +119,8 @@
     "title": "Encuentra un hogar para tus restos de comida, estés donde estés",
     "subtitle": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
     "metaDescription": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
-    "metaKeywords": "desperdicio alimentario, restos de comida, compost, compost cerca de mí, punto de compostaje, entrega de restos de comida",
-    "hostAvatarAlt": "El avatar de un anfitrión de Peels",
+    "metaKeywords": "residuos orgánicos, restos de comida, desperdicio alimentario, compostaje, compost cerca de mí, punto de compostaje, entrega de restos de comida",
+    "hostAvatarAlt": "El avatar de una persona anfitriona en Peels",
     "buttons": {
       "browseMap": "Explorar el mapa",
       "signUp": "Registrarse en Peels",
@@ -129,18 +129,18 @@
     "howItWorks": {
       "title": "Así funciona",
       "subtitle": "Compartir restos de comida con vecinos, huertas comunitarias o incluso negocios locales es fácil. Te contamos cómo.",
-      "footer": "¡Eso es todo lo que hay que hacer! <page>Sal ahí</page> y conoce a tus vecinos.",
+      "footer": "Eso es todo. <page>Sal</page> y conoce a tus vecinos.",
       "findAHost": {
-        "title": "Buscar un host",
+        "title": "Busca una persona anfitriona",
         "subtitle": "Selecciona un marcador en el mapa para ver quién está cerca."
       },
       "contact": {
         "title": "Contacto",
-        "subtitle": "Organiza la entrega o la recogida de tus restos por chat."
+        "subtitle": "Organiza la entrega o recolección de tus restos por chat."
       },
       "dropOff": {
         "title": "Entregar",
-        "subtitle": " O recógelos, si has contactado con un negocio local que tiene restos de comida para regalar."
+        "subtitle": "O retíralos, si contactaste con un negocio local que tiene restos de comida para donar."
       }
     },
     "newsletter": {
@@ -150,8 +150,8 @@
     },
     "partners": {
       "title": "En buena compañía",
-      "subtitle": "Peels aparece en páginas de ayuntamientos y cuenta con el apoyo de personas que hacen que el compostaje comunitario sea más fácil de encontrar.",
-      "listLabel": "Socios destacados y menciones de ayuntamientos",
+      "subtitle": "Peels aparece en páginas de gobiernos locales y cuenta con el apoyo de personas que hacen que el compostaje comunitario sea más fácil de encontrar.",
+      "listLabel": "Socios destacados y menciones de gobiernos locales",
       "loccalLogoAlt": "Logotipo de LOCCAL",
       "logoLinkLabel": "Ver todos los socios y menciones",
       "footer": "Y muchas más. <page>Ver todos nuestros socios</page> y menciones."
@@ -164,8 +164,8 @@
   },
   "Partners": {
     "title": "Socios",
-    "subtitle": "Ayuntamientos y grupos comunitarios afines que ayudan a que más restos de comida acaben en compost y no en vertederos.",
-    "metaDescription": "Conoce las organizaciones comunitarias y ayuntamientos que ayudan a Peels a llevar opciones prácticas de compostaje más lejos.",
+    "subtitle": "Gobiernos locales y grupos comunitarios aliados que ayudan a que más restos de comida terminen en compost y no en vertederos.",
+    "metaDescription": "Conoce las organizaciones comunitarias y los gobiernos locales que ayudan a Peels a llevar opciones prácticas de compostaje más lejos.",
     "communityPartners": {
       "title": "Socios comunitarios",
       "subtitle": "Organizaciones que ayudan a más personas a descubrir opciones prácticas de compostaje impulsadas por la comunidad.",
@@ -176,9 +176,9 @@
       }
     },
     "councilMentions": {
-      "title": "Menciones de ayuntamientos",
-      "subtitle": "Estos ayuntamientos y páginas del sector público mencionan Peels como una forma para que sus residentes encuentren o compartan opciones de compostaje comunitario.",
-      "listLabel": "Ayuntamientos y páginas del sector público que mencionan Peels"
+      "title": "Menciones de gobiernos locales",
+      "subtitle": "Estos gobiernos locales y páginas del sector público mencionan Peels como una forma para que sus residentes encuentren o compartan opciones de compostaje comunitario.",
+      "listLabel": "Gobiernos locales y páginas del sector público que mencionan Peels"
     },
     "communityMediaMentions": {
       "title": "Destacados comunitarios",
@@ -187,14 +187,14 @@
     },
     "cta": {
       "title": "¿Quieres ver Peels en tu comunidad?",
-      "body": "Empieza con nuestra <share>página Compartir</share> o <email>escríbenos</email> si necesitas algo más específico para tu ayuntamiento, grupo comunitario u organización."
+      "body": "Empieza con nuestra <share>página Compartir</share> o <email>escríbenos</email> si necesitas algo más específico para tu gobierno local, grupo comunitario u organización."
     }
   },
   "Share": {
     "title": "Compartir",
     "heading": "Comparte Peels",
-    "subtitle": "Recursos para ayuntamientos, grupos comunitarios, cafés y vecinos que ayudan a que más personas encuentren compostaje comunitario.",
-    "metaDescription": "Descarga recursos para compartir Peels pensados para ayuntamientos, grupos comunitarios, cafés y vecinos que ayudan a más personas a encontrar compostaje comunitario.",
+    "subtitle": "Recursos para gobiernos locales, grupos comunitarios, cafés y vecinos que ayudan a que más personas encuentren compostaje comunitario.",
+    "metaDescription": "Descarga recursos para compartir Peels pensados para gobiernos locales, grupos comunitarios, cafés y vecinos que ayudan a más personas a encontrar compostaje comunitario.",
     "downloadAll": "Descargar todo",
     "downloadHint": "Un ZIP con piezas para redes sociales, recursos impresos y materiales útiles para talleres.",
     "resources": {
@@ -233,18 +233,18 @@
           "body": "¿Buscas dónde dejar tus restos para compostar? Encuentra mediante Peels un vecino o huerto comunitario que acepte restos de comida. ¿No produces suficiente compost por tu cuenta, o quieres que menos residuos alimentarios acaben en el vertedero? Crea un anuncio para aceptar restos de tus vecinos. Más información en peels.app."
         }
       },
-      "partnersNote": "Visita nuestra <partners>página de socios</partners> para ver ejemplos reales de cómo ayuntamientos y organizaciones hablan de Peels."
+      "partnersNote": "Visita nuestra <partners>página de socios</partners> para ver ejemplos reales de cómo gobiernos locales y organizaciones hablan de Peels."
     }
   },
   "SignUp": {
     "header": {
       "signUpTo": "Registrarse en",
-      "contactHosts": "contactar con anfitriones",
+      "contactHosts": "contactar a anfitriones",
       "startComposting": "empezar a hacer compost",
       "checkYourEmail": "Revisa tu correo"
     },
     "body": {
-      "thanks": "¡Gracias por registrarte{name, select, empty {} other {, {name}}}¡ Por favor revisa tu bandeja de entrada y spam para ver el enlace de verificación. Este enlace caducará dentro de una hora."
+      "thanks": "¡Gracias por registrarte{name, select, empty {} other {, {name}}}! Revisa tu bandeja de entrada y la carpeta de spam para ver el enlace de verificación. Este enlace caducará dentro de una hora."
     },
     "footer": {
       "nextSteps": "Revisa tu bandeja de entrada y la carpeta de spam para el enlace de verificación. Este enlace caduca en una hora.",
@@ -269,7 +269,7 @@
       "firstName": "Nombre",
       "firstNameHint": "Usa tu nombre o un apodo.",
       "emailSuccess": "Revisa tu correo para ver el enlace de verificación.",
-      "emailHint": "Enviaremos un enlace de verificación a este correo.",
+      "emailHint": "Enviaremos un enlace de verificación a esta dirección.",
       "languageHint": "Elige el idioma predeterminado que quieres que usen Peels y los correos de tu cuenta.",
       "newsletterSubscribedHint": "Te enviaremos actualizaciones ocasionales por correo sobre Peels.",
       "newsletterNotSubscribedHint": "Solo te enviaremos correos necesarios relacionados con tu cuenta o tus anuncios."
@@ -312,7 +312,7 @@
     "signUp": {
       "firstName": "Nombre",
       "newPassword": "Tu nueva contraseña",
-      "newsletterOptIn": "Envíenme actualizaciones ocasionales por correo sobre Peels",
+      "newsletterOptIn": "Quiero recibir actualizaciones ocasionales por correo sobre Peels",
       "errorWithSupport": "{error} Si crees que puede ser un error, <link>envíanos un correo</link>."
     },
     "turnstile": {
@@ -326,7 +326,7 @@
   "Listings": {
     "new": {
       "listingTypeTitle": "¿Qué tipo de anuncio?",
-      "hostTypeTitle": "¿Dónde aceptarás restos de comida?",
+      "hostTypeTitle": "¿Dónde recibirás restos de comida?",
       "listingTypeLabel": "Tipo de anuncio",
       "hostTypeLabel": "Tipo de anfitrión",
       "options": {
@@ -336,11 +336,11 @@
         },
         "business": {
           "title": "Mi negocio dona restos",
-          "description": "Otras personas pueden recoger café usado de tu cafetería, lúpulo de tu cervecería o algo similar"
+          "description": "Otras personas pueden recoger borra de café de tu cafetería, lúpulo de tu cervecería o algo similar"
         },
         "residential": {
           "title": "En mi casa",
-          "description": "Acepto restos en una dirección residencial"
+          "description": "Acepto restos de comida en una dirección residencial"
         },
         "community": {
           "title": "En un espacio comunitario",
@@ -372,23 +372,23 @@
       "residentialAddress": "Tu calle o barrio",
       "donationDetails": "Detalles de la donación",
       "donationDetailsPlaceholder": "Detalles de tu donación",
-      "donationDetailsHint": "Qué tipo de restos tienes para donar y los detalles de recogida. Guarda los enlaces para la sección dedicada, más abajo.",
+      "donationDetailsHint": "Qué tipo de restos tienes para donar y cómo se pueden retirar. Guarda los enlaces para la sección dedicada, más abajo.",
       "descriptionLabel": "Descripción breve o instrucciones",
       "descriptionPlaceholder": "{type, select, residential {Acerca de tu anuncio} community {Acerca de tu comunidad} business {Acerca de tu negocio} other {Acerca de tu anuncio}}",
-      "communityDescriptionHint": "Horarios de apertura e instalaciones de compostaje. Guarda los restos que aceptas y cualquier enlace para las secciones dedicadas, más abajo.",
+      "communityDescriptionHint": "Horarios de atención e instalaciones de compostaje. Guarda los restos que aceptas y cualquier enlace para las secciones dedicadas, más abajo.",
       "residentialDescriptionHint": "Tu sistema de compostaje y disponibilidad general. Guarda los restos que aceptas para la sección dedicada, más abajo.",
       "compostingDetails": "Detalles de compostaje",
-      "compostingDetailsHint": "Sé específico para que la gente sepa exactamente qué evitar. Ingresa los elementos por separado para que sean más fáciles de leer.",
+      "compostingDetailsHint": "Sé específico para que la gente sepa exactamente qué evitar. Ingresa cada elemento por separado para que sea más fácil de leer.",
       "acceptedLabel": "¿Qué restos aceptas?",
       "rejectedLabel": "¿Qué restos no aceptas?",
-      "addItem": "Agregar un elemento",
-      "addAnotherItem": "Agregar otro elemento",
-      "acceptedPlaceholder": "Un elemento que aceptas (p. ej. ‘cáscaras de fruta’)",
-      "acceptedSecondaryPlaceholder": "Otro elemento que aceptas",
-      "rejectedPlaceholder": "Un elemento que no aceptas (p. ej. ‘carne’)",
-      "rejectedSecondaryPlaceholder": "Otro elemento que no aceptas",
+      "addItem": "Agregar un ítem",
+      "addAnotherItem": "Agregar otro ítem",
+      "acceptedPlaceholder": "Un ítem que aceptas (por ejemplo, ‘cáscaras de fruta’)",
+      "acceptedSecondaryPlaceholder": "Otro ítem que aceptas",
+      "rejectedPlaceholder": "Un ítem que no aceptas (por ejemplo, ‘carne’)",
+      "rejectedSecondaryPlaceholder": "Otro ítem que no aceptas",
       "media": "Multimedia",
-      "mediaHint": "Opcionalmente muestra {subject} a miembros de Peels.",
+      "mediaHint": "Opcionalmente, muestra {subject} a miembros de Peels.",
       "mediaResidential": "un poco más sobre tu anuncio",
       "mediaCommunity": "un poco más sobre tu proyecto comunitario",
       "mediaBusiness": "tu negocio",
@@ -401,9 +401,9 @@
       "showOnMap": "Mostrar este anuncio en el mapa",
       "hideFromMap": "Ocultar este anuncio del mapa",
       "adminHint": "Controles solo para administradores de este anuncio.",
-      "stubSettings": "Configuración de borrador",
+      "stubSettings": "Configuración de ficha preliminar",
       "regularListing": "Este es un anuncio normal de tu propiedad",
-      "stubListing": "Este anuncio es un borrador que otras personas pueden reclamar",
+      "stubListing": "Este anuncio es una ficha preliminar que otras personas pueden reclamar",
       "stubActiveHint": "Este anuncio no contendrá tu información de contacto. Otras personas pueden reclamarlo como propio y hacerse cargo.",
       "stubInactiveHint": "Este anuncio se presentará como cualquier otro."
     },
@@ -415,13 +415,13 @@
       "rejected": "Qué no",
       "location": "Ubicación",
       "residentialLocation": "{name} vive en {area}. Pídele su ubicación exacta cuando coordinen la entrega de restos de comida.",
-      "nonResidentialLocation": "{name} es {type} ubicada en {area}.",
+      "nonResidentialLocation": "{name} es {type} ubicado en {area}.",
       "thisArea": "esta zona",
       "businessType": "un negocio",
       "communityType": "un espacio comunitario",
-      "signInForPhotos": "<link>Inicia sesión</link> para ver las fotos de este anfitrión.",
-      "ownerNote": "Este es tu propio anuncio{stub, select, true {, marcado como borrador} other {}}. {visibility, select, true {¡Se ve bien!} other {Lo has ocultado del mapa, así que solo tú puedes verlo ahora.}}",
-      "stubNote": "Este es un borrador creado por el equipo de Peels. Comprueba la información del anuncio antes de visitar.",
+      "signInForPhotos": "<link>Inicia sesión</link> para ver las fotos de esta persona anfitriona.",
+      "ownerNote": "Este es tu propio anuncio{stub, select, true {, marcado como ficha preliminar} other {}}. {visibility, select, true {¡Se ve bien!} other {Lo ocultaste del mapa, así que solo tú puedes verlo ahora.}}",
+      "stubNote": "Esta es una ficha preliminar creada por el equipo de Peels. Revisa la información del anuncio antes de visitar.",
       "stubClaim": "¿Eres el propietario? <link>Contáctanos</link> para reclamar este anuncio o pedir cambios.",
       "firstTime": "¿Primera vez por aquí? <link>Regístrate</link>",
       "residentOf": "Residente de {area}",
@@ -430,7 +430,29 @@
       "localCommunity": "Comunidad local",
       "businessIn": "Negocio en {area}",
       "localBusiness": "Negocio local",
-      "avatarAlt": "El avatar de este anuncio"
+      "avatarAlt": "El avatar de este anuncio",
+      "privateHostAvatarAlt": "Un avatar difuminado de {name}. Inicia sesión para ver la información completa."
+    },
+    "seo": {
+      "privateHostName": "Anfitrión privado",
+      "fallbackListingName": "Anuncio",
+      "residentialConnectName": "esta persona",
+      "residentialIntro": "{name} acepta restos de comida para compostar.",
+      "residentialIntroWithLocation": "{name} acepta restos de comida para compostar en {location}.",
+      "businessIntro": "{name} comparte materiales compostables para compostaje.",
+      "businessIntroWithLocation": "{name} comparte materiales compostables para compostaje en {location}.",
+      "siteExplainer": "una plataforma comunitaria que conecta a personas con restos de comida con quienes hacen compost",
+      "connect": "Contacta con {name} en {siteName}, {explainer}.",
+      "acceptedItemsLabel": "Restos de comida aceptados",
+      "rejectedItemsLabel": "Elementos no aceptados",
+      "keywords": {
+        "base": "residuos orgánicos, restos de comida, desperdicio alimentario, compostaje, compost cerca de mí, punto de compostaje, entrega de restos de comida",
+        "location": "{location}",
+        "foodScraps": "restos de comida en {location}",
+        "compost": "compostaje en {location}",
+        "foodScrapDropOff": "entrega de restos de comida en {location}",
+        "compostDropOff": "punto de compostaje en {location}"
+      }
     },
     "delete": {
       "confirm": "Sí, eliminar anuncio",
@@ -462,7 +484,7 @@
     "placeholder": "Enviar un mensaje{name, select, empty {} other { a {name}}}...",
     "empty": "Aún no hay mensajes",
     "emptyStateUnavailable": "Este chat ya no está disponible",
-    "emptyStateFirstHost": "Prueba a contactar con tu primer anfitrión",
+    "emptyStateFirstHost": "Prueba a contactar con tu primera persona anfitriona",
     "emptyStateSelectThread": "Selecciona un chat de la izquierda",
     "threadsTitle": "Chats",
     "noChats": "Aún no hay chats",
@@ -479,7 +501,7 @@
     "drawerTitle": "Detalles del anuncio",
     "drawerDescription": "Detalles del anuncio seleccionado.",
     "emptyTitle": "No encontramos nada",
-    "emptyBody": "El anuncio que buscas no existe o fue eliminado. Sentimos decepcionarte.",
+    "emptyBody": "El anuncio que buscas no existe o fue eliminado.",
     "searchPlaceholder": "Buscar",
     "searchError": "Algo salió mal. ¿Intentarlo de nuevo?",
     "searchNoResults": "Sin resultados. Sigue escribiendo o ajusta tu búsqueda",
@@ -489,7 +511,7 @@
     "didYouKnow": "¿Sabías que?",
     "steps": {
       "find": {
-        "title": "Busca un anfitrión",
+        "title": "Busca una persona anfitriona",
         "description": "Selecciona un marcador en el mapa."
       },
       "contact": {
@@ -534,37 +556,54 @@
     }
   },
   "NotFound": {
-    "body": "Lo sentimos, no pudimos encontrar la página que buscabas."
+    "body": "No pudimos encontrar la página que buscabas."
   },
   "Support": {
     "title": "Ayuda",
     "metaDescription": "Respuestas y opciones de contacto para recibir ayuda con Peels.",
-    "subtitle": "Encuentra respuestas a preguntas frecuentes, o usa las opciones de contacto más abajo si necesitas ayuda.",
+    "subtitle": "Encuentra respuestas a preguntas frecuentes o usa las opciones de contacto más abajo si necesitas ayuda.",
     "peelsFaq": {
       "title": "Acerca de Peels",
+      "communityTitle": "Comunidad y socios",
+      "whatIsPeels": {
+        "question": "¿Qué es Peels?",
+        "answer": "Peels es un mapa de compostaje comunitario que ayuda a las personas a encontrar lugares cercanos donde dejar restos de comida, o a crear un anuncio si pueden aceptar restos de sus vecinos. Es un proyecto comunitario, gratuito y no comercial para conectar a quienes tienen restos de comida con quienes hacen compost."
+      },
       "whosBehind": {
-        "question": "¿Quién está detrás de Peels?",
-        "answer": "<p>Peels es un proyecto liderado por <danny>Danny White</danny>, un diseñador de productos con 10 años de experiencia trabajando en productos incluyendo Airbnb, ChatGPT, Kickstarter y Facebook. Ayudó a iniciar el programa de composición en Pocket City Farms y previamente construyó una guía de viajero para reducir los residuos de alimentos.</p><p>Queremos que los pelos estén por el largo trayecto, así tiene <opensource>de código abierto</opensource> el proyecto y agradece sus contribuciones.</p>"
+        "question": "¿Quién mantiene Peels?",
+        "answer": "<p>Peels es mantenido por personas voluntarias y colaboradoras que quieren ayudar a que más restos de comida se conviertan en compost en vez de acabar en el vertedero.</p><p>El proyecto fue iniciado por <danny>Danny White</danny>, quien ayudó a poner en marcha el programa de compostaje de Pocket City Farms. Peels es <opensource>de código abierto</opensource>, y las contribuciones son bienvenidas.</p>"
       },
       "howDifferent": {
-        "question": "¿Cómo difieren los Peels de ShareWaste?",
-        "answer": "<p>ShareWaste era un precursor de Peels con una idea similar: conectar a la gente localmente para desviar material orgánico del vertedero. Lamentablemente, ShareWaste cerró a finales de 2024.</p><p>Ahora mismo, estamos tratando de llenar el hueco que dejó ShareWase. Puedes pensar en Peels como un reemplazo directo de ShareWaste.</p><p>Tenemos muchas otras ideas en el pipeline, incluyendo guías de área general para el compostaje. Estate atento a estas.</p>"
+        "question": "¿En qué se diferencia Peels de ShareWaste?",
+        "answer": "<p>ShareWaste cerró a finales de 2024, pero ayudó a popularizar una idea similar: conectar a personas con restos de comida con personas cercanas que hacen compost. Peels continúa esa idea como una plataforma de código abierto mantenida activamente.</p><p>Todavía puedes encontrar anfitriones de compostaje en un mapa, crear un anuncio y coordinar entregas o recogidas de restos de comida con miembros cercanos.</p>"
+      },
+      "findDropOff": {
+        "question": "¿Cómo encuentro un punto de compostaje cerca de mí?",
+        "answer": "<p><map>Abre el mapa de Peels</map> y busca una persona anfitriona o un huerto comunitario cercano que acepte restos de comida. Selecciona un anuncio para ver qué acepta, dónde está y cómo contactar.</p>"
+      },
+      "noGarden": {
+        "question": "¿Puedo compostar restos de comida si no tengo jardín ni compostera?",
+        "answer": "Sí. Peels está pensado para personas que tienen restos de comida pero no tienen una forma práctica de compostarlos. Puedes usar Peels para encontrar a alguien cerca que ya haga compost y esté dispuesto a recibir restos."
+      },
+      "businesses": {
+        "question": "¿Pueden las empresas usar Peels para donar restos de comida?",
+        "answer": "<p>Sí. Cafés, restaurantes, oficinas, tiendas de alimentos y otros negocios pueden usar Peels si tienen restos de comida que personas compostadoras cercanas podrían recoger. <join>Crea un anuncio de negocio</join> para que la gente vea qué tienes, dónde estás y cómo coordinar la recogida.</p>"
       },
       "financialModel": {
-        "question": "¿Cuál es el modelo financiero? ¿Es usted sin ánimo de lucro?",
-        "answer": "Peels es un proyecto no comercial dirigido por la comunidad. Podemos incorporar como una organización sin ánimo de lucro en el futuro y aceptar subvenciones o patrocinios para futuros desarrollos pero nunca pretendemos empezar a cobrar por el servicio."
+        "question": "¿Cuál es el modelo financiero? ¿Peels es una organización sin fines de lucro?",
+        "answer": "Peels es un proyecto comunitario y no comercial. En el futuro podríamos constituirnos como organización sin fines de lucro y aceptar subvenciones o patrocinios para seguir desarrollándolo, pero no tenemos intención de empezar a cobrar por el servicio."
       },
       "fogo": {
-        "question": "Ya tengo recogida de restos de comida. ¿Sigue siendo relevante el compostaje comunitario?",
-        "answer": "Sí. Mucha gente todavía no tiene acceso a un servicio fiable de recogida de restos de comida, y el compostaje comunitario también puede ser más local, social y educativo que un servicio municipal o de ciudad. Peels está pensado para apoyar tanto a los lugares que ya cuentan con recogida como a los que todavía la están construyendo."
+        "question": "Ya tengo recolección de restos de comida. ¿Sigue siendo relevante el compostaje comunitario?",
+        "answer": "Sí. El compostaje comunitario significa que los restos de comida se compostan a través de vecinos, huertos comunitarios, negocios locales u otros proyectos locales, no mediante procesos industriales ni en vertederos. Mucha gente todavía no tiene acceso a un servicio fiable de recolección de restos de comida, y el compostaje comunitario también puede ser más local, social y educativo que un servicio municipal o de ciudad. Peels está pensado para apoyar tanto a los lugares que ya cuentan con recolección como a los que todavía la están construyendo."
       },
       "mapPrivacy": {
         "question": "No me siento cómodo compartiendo mi dirección. ¿Puedo participar?",
-        "answer": "<p>¡Sí! Recomendamos a quienes tienen anuncios residenciales que hagan su ubicación más aproximada, por ejemplo moviéndola a una esquina cercana o a un punto similar, y que usen un seudónimo si así se sienten más cómodos.</p><p>Incluso si decides usar tu nombre real y subir una foto, solo los miembros de Peels que hayan iniciado sesión podrán ver esos detalles.</p>"
+        "answer": "<p>¡Sí! Recomendamos a quienes tienen anuncios residenciales que hagan su ubicación más aproximada, por ejemplo moviéndola a una esquina cercana o a un punto similar, y que usen un seudónimo si se sienten más cómodos.</p><p>Incluso si decides usar tu nombre real y subir una foto, solo los miembros de Peels que hayan iniciado sesión podrán ver esos detalles.</p>"
       },
       "getInvolved": {
-        "question": "Me gustaría ayudar a construir Peels. ¿Cómo me desentiendo?",
-        "answer": "<p>Eres genial. Gracias.</p><p>Si te apetece ayudar en el lado técnico, echa un vistazo a nuestro <repo>repositorio en GitHub</repo>. Allí encontrarás información sobre cómo contribuir y también algunos asuntos abiertos a los que les vendría bien tu mirada.</p><p>La organización comunitaria también es una parte importante de hacer crecer Peels. No dudes en <email>escribirnos</email> si crees que podrías ayudar con eso.</p>"
+        "question": "Me gustaría ayudar a construir Peels. ¿Cómo puedo participar?",
+        "answer": "<p>Muchas gracias.</p><p>Si quieres ayudar en la parte técnica, echa un vistazo a nuestro <repo>repositorio en GitHub</repo>. Allí encontrarás información sobre cómo contribuir y algunos asuntos abiertos que podrían necesitar tu ayuda.</p><p>La organización comunitaria también es una parte importante de hacer crecer Peels. No dudes en <email>escribirnos</email> si crees que podrías ayudar con eso.</p>"
       },
       "promotion": {
         "question": "¿Cómo puedo promocionar Peels a mi comunidad?",
@@ -572,14 +611,14 @@
       },
       "government": {
         "question": "Represento a un gobierno o una institución. ¿Cómo podemos participar?",
-        "answer": "<p>Nos interesa colaborar con equipos del sector público, organizaciones comunitarias y personas dedicadas a la educación ambiental allí donde Peels pueda ayudar a desviar más restos de comida del vertedero. Nuestra <partners>página de Socios</partners> muestra cómo otros ayuntamientos mencionan Peels, y nuestra <share>página Compartir</share> incluye textos y recursos que puedes adaptar.</p><p><email>Escríbenos</email> si necesitas algo más específico para tu comunidad.</p>"
+        "answer": "<p>Nos interesa colaborar con equipos del sector público, organizaciones comunitarias y personas dedicadas a la educación ambiental allí donde Peels pueda ayudar a desviar más restos de comida del vertedero. Nuestra <partners>página de Socios</partners> muestra cómo otros gobiernos locales mencionan Peels, y nuestra <share>página Compartir</share> incluye textos y recursos que puedes adaptar.</p><p><email>Escríbenos</email> si necesitas algo más específico para tu comunidad.</p>"
       }
     },
     "supportFaq": {
-      "title": "Usando Peels",
+      "title": "Usar Peels",
       "manageEmails": {
-        "question": "¿Cómo puedo administrar qué correos electrónicos recibo?",
-        "answer": "<p>Solo enviamos los correos necesarios para que Peels funcione. Eso incluye uno o dos correos relacionados con la cuenta y avisos cuando otro miembro de Peels te ha enviado un mensaje.</p><p>Las notificaciones por correo son obligatorias para quienes alojan anuncios, ya que significan que una persona interesada ha preguntado por dejar restos o por recoger algo. Si una persona anfitriona ya no quiere recibir correos, puede ocultar su anuncio del mapa o eliminarlo por completo.</p><p>Las personas sin anuncios no pueden recibir mensajes, y por tanto tampoco correos, a menos que inicien el contacto con una persona anfitriona primero.</p><p>Cualquier persona puede denunciar o bloquear a otros miembros de Peels mediante nuestro sistema de mensajería. Bloquear a alguien significa que ya no podrá enviarte mensajes ni correos.</p>"
+        "question": "¿Cómo puedo administrar qué correos recibo?",
+        "answer": "<p>Peels envía correos de cuenta y mensajes necesarios para que el servicio funcione, incluidos correos de inicio de sesión y avisos cuando otro miembro te envía un mensaje.</p><p>El boletín es separado y opcional. Puedes suscribirte o cancelar la suscripción en cualquier momento desde tu página de Perfil.</p><p>Si tienes un anuncio, las notificaciones de mensajes son necesarias para que las personas interesadas puedan contactarte. Puedes detener nuevas consultas ocultando tu anuncio del mapa o eliminándolo.</p><p>También puedes denunciar o bloquear a otros miembros de Peels desde el sistema de mensajería.</p>"
       }
     },
     "contact": {

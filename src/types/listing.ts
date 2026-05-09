@@ -24,7 +24,7 @@ export type ListingDraftInput = {
   owner_id: string;
   type: ListingType;
   avatar?: string;
-  name?: string;
+  name?: string | null;
   description: string;
   location: string;
   area_name: string;

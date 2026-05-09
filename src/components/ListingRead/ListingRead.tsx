@@ -6,7 +6,10 @@ import type { User } from "@supabase/supabase-js";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { getListingDisplayName } from "@/utils/listingUtils";
+import {
+  getAnonymousSensitiveListingTeaser,
+  getListingDisplayName,
+} from "@/utils/listingUtils";
 import { parseTextWithLinks } from "@/utils/linkUtils";
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
@@ -30,6 +33,7 @@ type ListingReadListing = Listing | DemoListing;
 type SharedListingReadProps = {
   user: User | null;
   listing: ListingReadListing | null;
+  listingDisplayName?: string;
 };
 
 type DemoListingReadProps = SharedListingReadProps & {
@@ -63,6 +67,7 @@ function requireReferenceNow(referenceNow: string | undefined) {
 const ListingRead = memo(function Listing({
   user,
   listing,
+  listingDisplayName: providedListingDisplayName,
   presentation = "full",
   referenceNow,
 }: ListingReadProps) {
@@ -88,8 +93,12 @@ const ListingRead = memo(function Listing({
   const isDemo = presentation === "demo";
   const nonDemoReferenceNow = !isDemo ? referenceNow : undefined;
   const demoListing = isDemoListing(listing) ? listing : null;
-  const realListing =
+  const rawRealListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
+  const realListing = rawRealListing
+    ? getAnonymousSensitiveListingTeaser(rawRealListing, user)
+    : null;
+  const listingForDisplay = demoListing ?? realListing;
 
   // Load existing thread if any (only if not in demo mode). Depend on the
   // specific listing fields used inside the effect so a new `realListing`
@@ -130,12 +139,21 @@ const ListingRead = memo(function Listing({
   }, [listingId, listingOwnerId, userId, isDemo, supabase]);
 
   const initialZoomLevel = 14;
+  const listingDisplayNameCopy = useMemo(
+    () => ({
+      privateHostName: t("Listings.seo.privateHostName"),
+      fallbackListingName: t("Listings.seo.fallbackListingName"),
+    }),
+    [t]
+  );
 
-  const listingDisplayName: string = isDemo
-    ? (demoListing?.name ?? demoListing?.owner_first_name ?? "")
-    : realListing
-      ? getListingDisplayName(realListing, user)
-      : "";
+  const listingDisplayName: string =
+    providedListingDisplayName ??
+    (isDemo
+      ? (demoListing?.name ?? demoListing?.owner_first_name ?? "")
+      : realListing
+        ? getListingDisplayName(realListing, user, listingDisplayNameCopy)
+        : "");
 
   const coordinates = realListing?.coordinates ?? null;
 
@@ -175,7 +193,7 @@ const ListingRead = memo(function Listing({
       <ColumnMain $presentation={presentation}>
         <ListingHeader
           presentation={presentation}
-          listing={listing}
+          listing={listingForDisplay}
           listingName={listingDisplayName}
           user={user}
         />
@@ -183,30 +201,38 @@ const ListingRead = memo(function Listing({
         {listingAction}
 
         <ListingContents $presentation={presentation}>
-          {listing?.description && (
+          {listingForDisplay?.description && (
             <ListingSection>
               <h3>
-                {listing.type === "business"
+                {listingForDisplay.type === "business"
                   ? t("Listings.read.donationDetails")
                   : t("Listings.read.about")}
               </h3>
-              <MultiParagraphCluster text={listing.description} />
+              <MultiParagraphCluster text={listingForDisplay.description} />
             </ListingSection>
           )}
 
-          {listing?.accepted_items && listing.accepted_items.length > 0 && (
-            <ListingSection>
-              <h3>{t("Listings.read.accepted")}</h3>
-              <ListingItemList items={listing.accepted_items} type="accepted" />
-            </ListingSection>
-          )}
+          {listingForDisplay?.accepted_items &&
+            listingForDisplay.accepted_items.length > 0 && (
+              <ListingSection>
+                <h3>{t("Listings.read.accepted")}</h3>
+                <ListingItemList
+                  items={listingForDisplay.accepted_items}
+                  type="accepted"
+                />
+              </ListingSection>
+            )}
 
-          {listing?.rejected_items && listing.rejected_items.length > 0 && (
-            <ListingSection>
-              <h3>{t("Listings.read.rejected")}</h3>
-              <ListingItemList items={listing.rejected_items} type="rejected" />
-            </ListingSection>
-          )}
+          {listingForDisplay?.rejected_items &&
+            listingForDisplay.rejected_items.length > 0 && (
+              <ListingSection>
+                <h3>{t("Listings.read.rejected")}</h3>
+                <ListingItemList
+                  items={listingForDisplay.rejected_items}
+                  type="rejected"
+                />
+              </ListingSection>
+            )}
         </ListingContents>
       </ColumnMain>
 

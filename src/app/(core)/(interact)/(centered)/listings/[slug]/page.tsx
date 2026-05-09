@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import {
   generateListingJsonLd,
   generateListingMetadata,
+  getAnonymousSensitiveListingTeaser,
+  getListingDisplayName,
 } from "@/utils/listingUtils";
+import { getListingSeoOptions } from "@/utils/listingSeo";
 import ListingRead from "@/components/ListingRead";
 import JsonLd from "@/components/JsonLd";
 import { styled } from "next-yak";
@@ -54,8 +57,12 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const { user, listing } = await getListingData(slug);
+  const listingSeoOptions = await getListingSeoOptions();
   // Use shared utility to generate metadata
-  return generateListingMetadata(listing, user, { includeFullMetadata: true });
+  return generateListingMetadata(listing, user, {
+    ...listingSeoOptions,
+    includeFullMetadata: true,
+  });
 }
 
 export default async function ListingPage({
@@ -71,14 +78,26 @@ export default async function ListingPage({
     notFound();
   }
 
-  const listingJsonLd = generateListingJsonLd(listing, user);
+  const listingSeoOptions = await getListingSeoOptions();
+  const listingJsonLd = generateListingJsonLd(listing, user, listingSeoOptions);
+  const listingForRead = getAnonymousSensitiveListingTeaser(listing, user);
+  const listingDisplayName = getListingDisplayName(
+    listingForRead,
+    user,
+    listingSeoOptions.seoCopy
+  );
 
   // TODO: Return 'Success' toast for folks who have just created a new listing and have been redirected to it, here
 
   return (
     <StyledMain>
       {listingJsonLd ? <JsonLd data={listingJsonLd} /> : null}
-      <ListingRead user={user} listing={listing} referenceNow={referenceNow} />
+      <ListingRead
+        user={user}
+        listing={listingForRead}
+        listingDisplayName={listingDisplayName}
+        referenceNow={referenceNow}
+      />
     </StyledMain>
   );
 }

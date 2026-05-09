@@ -9,6 +9,7 @@ import SupportFaq from "@/components/SupportFaq";
 import PeelsFaq from "@/components/PeelsFaq";
 import HeaderBlock from "@/components/HeaderBlock";
 import EmailSelector from "@/components/EmailSelector/EmailSelector";
+import { HelpFaqJsonLd } from "@/components/FaqJsonLd/FaqJsonLd";
 
 export async function generateMetadata() {
   const t = await getTranslations("Support");
@@ -28,6 +29,7 @@ export default function Help() {
   const t = useTranslations("Support");
   return (
     <StaticPageMain>
+      <HelpFaqJsonLd />
       <StaticPageHeader title={t("title")} subtitle={t("subtitle")} />
 
       <StaticPageSection padding={null}>
@@ -41,7 +43,14 @@ export default function Help() {
         <HeaderBlock>
           <h2>{t("peelsFaq.title")}</h2>
         </HeaderBlock>
-        <PeelsFaq />
+        <PeelsFaq variant="about" />
+      </StaticPageSection>
+
+      <StaticPageSection>
+        <HeaderBlock>
+          <h2>{t("peelsFaq.communityTitle")}</h2>
+        </HeaderBlock>
+        <PeelsFaq variant="community" />
       </StaticPageSection>
 
       <StaticPageSection id="contact">

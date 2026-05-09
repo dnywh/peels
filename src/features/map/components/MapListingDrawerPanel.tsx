@@ -242,6 +242,10 @@ export default function MapListingDrawerPanel({
   drawerContentRef,
 }: MapListingDrawerPanelProps) {
   const t = useTranslations();
+  const listingDisplayNameCopy = {
+    privateHostName: t("Listings.seo.privateHostName"),
+    fallbackListingName: t("Listings.seo.fallbackListingName"),
+  };
 
   const showErrorPanel = isListingError(selectedListing);
   const listingForDisplay =
@@ -285,7 +289,11 @@ export default function MapListingDrawerPanel({
                 <>
                   <h3 style={{ fontSize: "0.85rem" }}>
                     {listingForDisplay
-                      ? getListingDisplayName(listingForDisplay, user)
+                      ? getListingDisplayName(
+                          listingForDisplay,
+                          user,
+                          listingDisplayNameCopy
+                        )
                       : ""}
                   </h3>
                   <p>

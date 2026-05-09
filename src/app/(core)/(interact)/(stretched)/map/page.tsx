@@ -5,6 +5,7 @@ import type { Metadata } from "next/types";
 import { createClient } from "@/utils/supabase/server";
 import { siteConfig } from "@/config/site";
 import { generateListingMetadata } from "@/utils/listingUtils";
+import { getListingSeoOptions } from "@/utils/listingSeo";
 import MapPageClient from "@/features/map";
 import type { Listing } from "@/types/listing";
 import { parseStoredInitialMapCoordinates } from "@/features/map/lib/mapInitialView";
@@ -80,7 +81,9 @@ export async function generateMetadata({
     };
   }
 
-  return generateListingMetadata(listing, user);
+  const listingSeoOptions = await getListingSeoOptions();
+
+  return generateListingMetadata(listing, user, listingSeoOptions);
 }
 
 export default async function Page({ searchParams }: MapPageProps) {

@@ -52,11 +52,15 @@ test("public footer locale picker ignores stale auth cookies", async ({
   baseURL,
   page,
 }) => {
+  if (typeof baseURL !== "string") {
+    throw new Error("Expected Playwright baseURL to be configured");
+  }
+
   await page.context().addCookies([
     {
       name: "sb-stale-auth-token",
       value: "stale",
-      url: baseURL ?? "http://127.0.0.1:3000",
+      url: baseURL,
       httpOnly: true,
       sameSite: "Lax",
     },

@@ -49,6 +49,13 @@ export function useMapListingUrl({
 }: UseMapListingUrlArgs): UseMapListingUrlResult {
   const t = useTranslations();
   const supabase = useMemo(() => createClient(), []);
+  const listingDisplayNameCopy = useMemo(
+    () => ({
+      privateHostName: t("Listings.seo.privateHostName"),
+      fallbackListingName: t("Listings.seo.fallbackListingName"),
+    }),
+    [t]
+  );
 
   const tableName = user ? "listings_private_data" : "listings_public_data";
   const [listingSlug, setListingSlug] = useState<string | null>(
@@ -164,13 +171,13 @@ export function useMapListingUrl({
       if (typeof document === "undefined") return;
 
       const listingName = listing
-        ? getListingDisplayName(listing, user ?? null)
+        ? getListingDisplayName(listing, user ?? null, listingDisplayNameCopy)
         : "";
       document.title = listingName
         ? `${listingName} · ${siteConfig.name}`
         : MAP_TITLE;
     },
-    [user]
+    [listingDisplayNameCopy, user]
   );
 
   const fetchBySlug = useCallback(

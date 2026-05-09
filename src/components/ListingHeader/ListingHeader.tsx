@@ -130,7 +130,14 @@ function ListingHeader({
   user?: any;
 }) {
   const t = useTranslations();
-  const avatarProps = getListingAvatar(listing, user);
+  const privateHostName = t("Listings.seo.privateHostName");
+  const avatarProps = getListingAvatar(listing, user, {
+    privateHostName,
+    fallbackListingName: t("Listings.seo.fallbackListingName"),
+    privateHostAvatarAlt: t("Listings.read.privateHostAvatarAlt", {
+      name: privateHostName,
+    }),
+  });
 
   return (
     <StyledListingHeader $presentation={presentation}>

@@ -15,6 +15,9 @@ type ListingLike = {
   country_code?: string | null;
   area_name?: string | null;
   description?: string | null;
+  accepted_items?: string[] | null;
+  rejected_items?: string[] | null;
+  links?: string[] | null;
   photos?: string[] | null;
   coordinates?: ListingCoordinates | null;
 };
@@ -26,6 +29,31 @@ type ListingUser =
   | null
   | undefined;
 
+export type ListingSeoCopy = {
+  privateHostName: string;
+  fallbackListingName: string;
+  residentialConnectName: string;
+  residentialIntro: (values: { name: string; location?: string }) => string;
+  businessIntro: (values: { name: string; location?: string }) => string;
+  connect: (values: { name: string; siteName: string }) => string;
+  acceptedItemsLabel: string;
+  rejectedItemsLabel: string;
+  locationKeywords: (values: { location: string }) => string[];
+  baseKeywords: () => string[];
+};
+
+type ListingDisplayNameCopy = Pick<
+  ListingSeoCopy,
+  "privateHostName" | "fallbackListingName"
+> & {
+  privateHostAvatarAlt?: string;
+};
+
+type ListingSeoOptions = {
+  locale?: string;
+  seoCopy?: ListingSeoCopy;
+};
+
 type AvatarDescriptor = {
   isDemo?: boolean;
   path?: string;
@@ -34,8 +62,48 @@ type AvatarDescriptor = {
   alt: string;
 } | null;
 
-type GenerateListingMetadataOptions = {
+type AnonymousSensitiveListingTeaserField =
+  | "name"
+  | "owner_first_name"
+  | "owner_avatar"
+  | "avatar"
+  | "description"
+  | "accepted_items"
+  | "rejected_items"
+  | "photos"
+  | "links"
+  | "coordinates";
+
+type AnonymousSensitiveListingTeaser<T extends ListingLike> = Omit<
+  T,
+  AnonymousSensitiveListingTeaserField
+> &
+  Record<AnonymousSensitiveListingTeaserField, null>;
+
+type GenerateListingMetadataOptions = ListingSeoOptions & {
   includeFullMetadata?: boolean;
+};
+
+const defaultListingSeoCopy: ListingSeoCopy = {
+  privateHostName: "Private Host",
+  fallbackListingName: "Listing",
+  residentialConnectName: "them",
+  residentialIntro: ({ name, location }) =>
+    `${name} accepts food scraps for composting${location ? ` in ${location}` : ""}.`,
+  businessIntro: ({ name, location }) =>
+    `${name} shares compostable material for composting${location ? ` in ${location}` : ""}.`,
+  connect: ({ name, siteName }) =>
+    `Connect with ${name} on ${siteName}, ${siteConfig.meta.explainer}.`,
+  acceptedItemsLabel: "Accepted food scraps",
+  rejectedItemsLabel: "Items not accepted",
+  locationKeywords: ({ location }) => [
+    location,
+    `food scraps in ${location}`,
+    `compost ${location}`,
+    `food scrap drop-off ${location}`,
+    `compost drop-off ${location}`,
+  ],
+  baseKeywords: () => [...siteConfig.meta.keywords],
 };
 
 function normaliseListingType(
@@ -52,19 +120,83 @@ function normaliseListingType(
   return null;
 }
 
+function isPublicListingType(listingType: ListingType | null) {
+  return listingType === "business" || listingType === "community";
+}
+
+function isSensitiveAnonymousListing(
+  listingType: ListingType | null,
+  user: ListingUser
+) {
+  return !user && !isPublicListingType(listingType);
+}
+
 function compactTextParts(parts: Array<string | null | undefined>) {
   return parts
     .map((part) => part?.trim())
     .filter((part): part is string => Boolean(part));
 }
 
-function getListingCountryName(listing: ListingLike | null | undefined) {
+function compactTextList(items: string[] | null | undefined) {
+  return items
+    ?.map((item) => item.trim())
+    .filter((item): item is string => Boolean(item));
+}
+
+function getListingItemProperties(
+  listing: ListingLike,
+  seoCopy: ListingSeoCopy
+) {
+  const acceptedItems = compactTextList(listing.accepted_items) ?? [];
+  const rejectedItems = compactTextList(listing.rejected_items) ?? [];
+
+  return [
+    acceptedItems.length
+      ? {
+          "@type": "PropertyValue",
+          name: seoCopy.acceptedItemsLabel,
+          propertyID: "acceptedItems",
+          value: acceptedItems.join(", "),
+        }
+      : null,
+    rejectedItems.length
+      ? {
+          "@type": "PropertyValue",
+          name: seoCopy.rejectedItemsLabel,
+          propertyID: "rejectedItems",
+          value: rejectedItems.join(", "),
+        }
+      : null,
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
+}
+
+function getListingCountryName(
+  listing: ListingLike | null | undefined,
+  locale?: string
+) {
+  if (listing?.country_code && locale) {
+    try {
+      const countryDisplayName = new Intl.DisplayNames([locale], {
+        type: "region",
+      }).of(listing.country_code);
+
+      if (countryDisplayName) {
+        return countryDisplayName;
+      }
+    } catch {
+      // Fall back to the static English country list below.
+    }
+  }
+
   return countries.find((country) => country.code === listing?.country_code)
     ?.name;
 }
 
-function getListingLocation(listing: ListingLike | null | undefined) {
-  const listingCountryName = getListingCountryName(listing);
+function getListingLocation(
+  listing: ListingLike | null | undefined,
+  locale?: string
+) {
+  const listingCountryName = getListingCountryName(listing, locale);
 
   return compactTextParts([listing?.area_name, listingCountryName]).join(", ");
 }
@@ -103,52 +235,63 @@ function getListingStructuredDataImage(
 
 export function getListingDisplayName(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  seoCopy: ListingDisplayNameCopy = defaultListingSeoCopy
 ) {
   if (!listing) return "";
 
   const listingType = normaliseListingType(listing.type);
 
-  if (listingType === "residential") {
-    if (!user) return "Private Host";
-    return listing.owner_first_name || "Private Host";
+  if (isSensitiveAnonymousListing(listingType, user)) {
+    return seoCopy.privateHostName;
   }
 
-  return listing.name || "Listing";
+  if (listingType === "residential") {
+    if (!user) return seoCopy.privateHostName;
+    return listing.owner_first_name || seoCopy.privateHostName;
+  }
+
+  return listing.name || seoCopy.fallbackListingName;
 }
 
 export function getListingAvatar(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  seoCopy: ListingDisplayNameCopy = defaultListingSeoCopy
 ): AvatarDescriptor {
   if (!listing) return null;
 
   const listingType = normaliseListingType(listing.type);
-  const listingDisplayName = getListingDisplayName(listing, user);
 
   if (listing.is_demo) {
     const demoAvatarFilename = listing.avatar?.split("/").pop();
+    const demoListingDisplayName =
+      listing.name || listing.owner_first_name || seoCopy.fallbackListingName;
 
     return {
       isDemo: true,
       path: `/avatars/demo/${demoAvatarFilename}`,
-      alt: `${listingDisplayName} avatar`,
+      alt: `${demoListingDisplayName} avatar`,
+    };
+  }
+
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
+
+  if (isSensitiveAnonymousListing(listingType, user)) {
+    return {
+      bucket: "public",
+      filename: "avatars/default/private.jpg",
+      alt:
+        seoCopy.privateHostAvatarAlt ??
+        `A blurred avatar for ${seoCopy.privateHostName}. Sign in to see their full information.`,
     };
   }
 
   if (listingType === "residential") {
-    if (!user) {
-      return {
-        bucket: "public",
-        filename: "avatars/default/private.jpg",
-        alt: "A blurred avatar for Private Host. Sign in to see their full information.",
-      };
-    }
-
     return {
       bucket: "avatars",
       filename: listing.owner_avatar || null,
-      alt: `${listing.owner_first_name || "Private Host"} avatar`,
+      alt: `${listing.owner_first_name || seoCopy.privateHostName} avatar`,
     };
   }
 
@@ -176,6 +319,31 @@ export function getListingOwnerAvatar(
     filename: listing.owner_avatar || null,
     alt: `${listing.owner_first_name || "Listing owner"} avatar`,
   };
+}
+
+export function getAnonymousSensitiveListingTeaser<T extends ListingLike>(
+  listing: T,
+  user: ListingUser
+): T | AnonymousSensitiveListingTeaser<T> {
+  const listingType = normaliseListingType(listing.type);
+
+  if (!isSensitiveAnonymousListing(listingType, user)) {
+    return listing;
+  }
+
+  return {
+    ...listing,
+    name: null,
+    owner_first_name: null,
+    owner_avatar: null,
+    avatar: null,
+    description: null,
+    accepted_items: null,
+    rejected_items: null,
+    photos: null,
+    links: null,
+    coordinates: null,
+  } as AnonymousSensitiveListingTeaser<T>;
 }
 
 export function getProfileAvatarSource(
@@ -212,32 +380,47 @@ export function getListingDisplayType(listing: ListingLike | null | undefined) {
 
 export function generateListingDescription(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  options: ListingSeoOptions = {}
 ) {
   if (!listing) return "";
 
-  const listingDisplayName = getListingDisplayName(listing, user);
+  const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
   const listingType = normaliseListingType(listing.type);
-  const listingFullLocation = getListingLocation(listing);
-  const listingIntro =
-    listingType === "residential"
-      ? `${listingDisplayName} accepts food scraps for composting`
-      : `${listingDisplayName} helps people compost food scraps`;
-  const listingLocationSuffix = listingFullLocation
-    ? ` in ${listingFullLocation}.`
-    : ".";
+  const isSensitiveAnonymous = isSensitiveAnonymousListing(listingType, user);
+  const shouldUseResidentialIntro =
+    listingType === "residential" ||
+    listingType === "community" ||
+    isSensitiveAnonymous;
+  const shouldOmitListingDescription =
+    listingType === "residential" || isSensitiveAnonymous;
+  const listingFullLocation = getListingLocation(listing, options.locale);
+  const listingIntro = shouldUseResidentialIntro
+    ? seoCopy.residentialIntro({
+        name: listingDisplayName,
+        location: listingFullLocation || undefined,
+      })
+    : seoCopy.businessIntro({
+        name: listingDisplayName,
+        location: listingFullLocation || undefined,
+      });
+  const listingConnectName = isSensitiveAnonymous
+    ? seoCopy.residentialConnectName
+    : listingType === "residential"
+      ? listingDisplayName
+      : listing.name || listingDisplayName;
   const listingDescriptionParts = [
-    `${listingIntro}${listingLocationSuffix}`,
-    listingType === "residential"
+    listingIntro,
+    shouldOmitListingDescription
       ? null
       : listing.description?.trim()
         ? listing.description.trim()
         : null,
-    `Connect with ${
-      listingType === "residential"
-        ? "them"
-        : listing.name || listingDisplayName
-    } on ${siteConfig.name}, ${siteConfig.meta.explainer}.`,
+    seoCopy.connect({
+      name: listingConnectName,
+      siteName: siteConfig.name,
+    }),
   ];
 
   return compactTextParts(listingDescriptionParts).join(" ");
@@ -254,9 +437,10 @@ export function generateListingMetadata(
     };
   }
 
-  const listingDisplayName = getListingDisplayName(listing, user);
-  const listingFullLocation = getListingLocation(listing);
-  const listingDescription = generateListingDescription(listing, user);
+  const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
+  const listingFullLocation = getListingLocation(listing, options.locale);
+  const listingDescription = generateListingDescription(listing, user, options);
   const listingCanonicalPath = getListingCanonicalPath(listing);
 
   const metadata: Metadata = {
@@ -279,16 +463,10 @@ export function generateListingMetadata(
 
   if (options.includeFullMetadata) {
     const locationKeywords = listingFullLocation
-      ? [
-          listingFullLocation,
-          `food scraps in ${listingFullLocation}`,
-          `compost ${listingFullLocation}`,
-          `food scrap drop-off ${listingFullLocation}`,
-          `compost drop-off ${listingFullLocation}`,
-        ]
+      ? seoCopy.locationKeywords({ location: listingFullLocation })
       : [];
 
-    metadata.keywords = [...locationKeywords, ...siteConfig.meta.keywords];
+    metadata.keywords = [...locationKeywords, ...seoCopy.baseKeywords()];
   }
 
   return metadata;
@@ -296,14 +474,16 @@ export function generateListingMetadata(
 
 export function generateListingJsonLd(
   listing: ListingLike | null | undefined,
-  user: ListingUser
+  user: ListingUser,
+  options: ListingSeoOptions = {}
 ) {
   if (!listing?.slug) return null;
 
-  const listingDisplayName = getListingDisplayName(listing, user);
-  const listingDescription = generateListingDescription(listing, user);
+  const seoCopy = options.seoCopy ?? defaultListingSeoCopy;
+  const listingDisplayName = getListingDisplayName(listing, user, seoCopy);
+  const listingDescription = generateListingDescription(listing, user, options);
   const listingType = normaliseListingType(listing.type);
-  const listingCountryName = getListingCountryName(listing);
+  const listingCountryName = getListingCountryName(listing, options.locale);
   const listingCanonicalUrl = new URL(
     `/listings/${encodeURIComponent(listing.slug)}`,
     siteConfig.url
@@ -315,6 +495,9 @@ export function generateListingJsonLd(
   const structuredDataImage = canIncludePublicStructuredDetails
     ? getListingStructuredDataImage(listing, user)
     : null;
+  const itemProperties = canIncludePublicStructuredDetails
+    ? getListingItemProperties(listing, seoCopy)
+    : [];
   const address = {
     "@type": "PostalAddress",
     ...(listing.area_name ? { addressLocality: listing.area_name } : {}),
@@ -337,6 +520,7 @@ export function generateListingJsonLd(
         }
       : {}),
     ...(structuredDataImage ? { image: structuredDataImage } : {}),
+    ...(itemProperties.length ? { additionalProperty: itemProperties } : {}),
   };
 
   return {
@@ -346,6 +530,7 @@ export function generateListingJsonLd(
     url: listingCanonicalUrl,
     name: listingDisplayName,
     description: listingDescription,
+    ...(options.locale ? { inLanguage: options.locale } : {}),
     isPartOf: {
       "@id": `${siteConfig.url}/#website`,
     },
