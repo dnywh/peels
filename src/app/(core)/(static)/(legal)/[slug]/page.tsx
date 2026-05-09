@@ -9,6 +9,7 @@ import {
   getLegalPageMetadata,
   getLegalPageModule,
 } from "@/lib/content/handlers/legal";
+import { createPeelsMetadata } from "@/utils/seo";
 import { getLocale, getTranslations } from "next-intl/server";
 
 type LegalPageProps = {
@@ -23,13 +24,20 @@ export async function generateMetadata({
   const { metadata } = await getLegalPageMetadata(slug, locale);
 
   if (metadata) {
-    return {
+    return createPeelsMetadata({
       ...metadata,
+      canonicalPath: `/${slug}`,
       openGraph: {
         ...metadata.openGraph,
+        title: metadata.title,
+        description: metadata.description,
         type: "article",
       },
-    };
+      twitter: {
+        title: metadata.title,
+        description: metadata.description,
+      },
+    });
   } else {
     throw new Error(`No metadata found for text page: ${slug}`);
   }

@@ -16,19 +16,27 @@ import {
 } from "@/content/partnerMentions";
 import { sharedAnchorTagStyles } from "@/styles/commonStyles";
 import { theme } from "@/styles/theme.yak";
+import { createPeelsMetadata } from "@/utils/seo";
 
 export async function generateMetadata() {
   const t = await getTranslations("Partners");
   const description = t("metaDescription");
 
-  return {
-    title: t("title"),
+  const title = t("title");
+
+  return createPeelsMetadata({
+    canonicalPath: "/partners",
+    title,
     description,
     openGraph: {
-      title: `${t("title")} · ${siteConfig.name}`,
+      title: `${title} · ${siteConfig.name}`,
       description,
     },
-  };
+    twitter: {
+      title: `${title} · ${siteConfig.name}`,
+      description,
+    },
+  });
 }
 
 export default async function PartnersPage() {

@@ -33,6 +33,7 @@ test("chat loads the seeded thread and composer for a signed-in donor", async ({
   });
 
   await expect(page).toHaveURL(new RegExp(`/chats/${SEEDED_THREAD_ID}$`));
+  await expect(page).toHaveTitle("Avery · Chats · Peels");
   await expect(page.getByTestId("chat-window")).toBeVisible();
   await expect(page.getByTestId("chat-message-list")).toContainText(
     "Hey Avery, do you take coffee grounds from a small home espresso machine?"
@@ -50,6 +51,7 @@ test("chat loads the seeded thread and composer for a signed-in donor", async ({
   await expect(page).toHaveURL(
     new RegExp(`/chats/${SECOND_SEEDED_THREAD_ID}$`)
   );
+  await expect(page).toHaveTitle("Morgan · Chats · Peels");
   await expect(page.getByTestId("thread-list")).toHaveAttribute(
     "data-persist-check",
     "true"
@@ -63,6 +65,7 @@ test("chat loads the seeded thread and composer for a signed-in donor", async ({
 
   await page.getByTestId(`thread-preview-${SEEDED_THREAD_ID}`).click();
   await expect(page).toHaveURL(new RegExp(`/chats/${SEEDED_THREAD_ID}$`));
+  await expect(page).toHaveTitle("Avery · Chats · Peels");
   await expect(page.getByTestId("chat-message-list")).toContainText(
     "Yes, absolutely. Small sealed containers are perfect."
   );

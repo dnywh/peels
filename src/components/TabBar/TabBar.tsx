@@ -125,6 +125,7 @@ function TabBar({
   position?: Exclude<TabBarPosition, "inherit">;
 } & HTMLAttributes<HTMLDivElement>) {
   const t = useTranslations("App");
+  const actionsT = useTranslations("Actions");
   const pathname = usePathname();
   const { tabBarProps } = useTabBar();
   const { shouldShowUnreadIndicator } = useUnreadMessages();
@@ -150,7 +151,9 @@ function TabBar({
     >
       <StyledTabBarNav>
         {/* Show 'home' AKA 'about' as the first tab item on larger breakpoints */}
-        {breakpoint === "md" && <PeelsTab size={32} />}
+        {breakpoint === "md" && (
+          <PeelsTab ariaLabel={actionsT("home")} size={32} />
+        )}
         {NAVIGATION_ITEMS.map(({ title, Icon, href }) => (
           <TabBarTab
             key={href}

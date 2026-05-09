@@ -14,6 +14,7 @@ import StaticPageSection from "@/components/StaticPageSection";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import { getNewsletterIssueImageUrl } from "@/utils/storage";
+import { createPeelsMetadata } from "@/utils/seo";
 import TranslationNotice from "@/components/TranslationNotice";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getLocaleFromSearchParams } from "@/utils/authRedirects";
@@ -44,22 +45,28 @@ export async function generateMetadata({
   );
 
   if (metadata) {
-    return {
+    const image = {
+      url: getNewsletterIssueImageUrl(
+        customMetadata.issueNumber,
+        customMetadata.ogImage
+      ),
+    };
+
+    return createPeelsMetadata({
       ...metadata,
+      canonicalPath: `/newsletter/${slug}`,
       openGraph: {
         ...metadata.openGraph,
-        images: [
-          {
-            url: getNewsletterIssueImageUrl(
-              customMetadata.issueNumber,
-              customMetadata.ogImage
-            ),
-          },
-        ],
+        images: [image],
         type: "article",
         authors: metadata.authors,
       },
-    };
+      twitter: {
+        title: metadata.title,
+        description: metadata.description,
+        images: [image],
+      },
+    });
   } else {
     throw new Error(`No metadata found for newsletter issue: ${slug}`);
   }

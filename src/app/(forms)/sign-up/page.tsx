@@ -6,17 +6,25 @@ import FormFooter from "@/components/FormFooter";
 import StrongLink from "@/components/StrongLink";
 import EncodedEmailLink from "@/components/EncodedEmailLink";
 import SignUpForm from "@/components/SignUpForm";
+import { createPeelsMetadata, noindexFollowMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
 
-  return {
-    title: t("Actions.signUp"),
+  const title = t("Actions.signUp");
+
+  return createPeelsMetadata({
+    ...noindexFollowMetadata,
+    canonicalPath: "/sign-up",
+    title,
     openGraph: {
-      title: `${t("Actions.signUp")} · ${siteConfig.name}`,
+      title: `${title} · ${siteConfig.name}`,
     },
-  };
+    twitter: {
+      title: `${title} · ${siteConfig.name}`,
+    },
+  });
 }
 
 export default async function SignUp(props: {

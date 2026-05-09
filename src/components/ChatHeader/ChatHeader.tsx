@@ -39,7 +39,7 @@ const TitleBlock = styled.div`
   flex-direction: column;
   align-items: stretch;
 
-  & h1 {
+  & :is(h1, h3) {
     font-size: 1rem;
     line-height: 120%;
     color: ${theme.colors.text.ui.primary};
@@ -52,12 +52,12 @@ const TitleBlock = styled.div`
   }
 
   @media (min-width: 768px) {
-    & h1,
+    & :is(h1, h3),
     & h2 {
       text-align: left;
     }
 
-    & h1 {
+    & :is(h1, h3) {
       font-size: 1.25rem;
     }
 
@@ -182,6 +182,7 @@ function ChatHeader({
       ? listing.owner_first_name || ""
       : thread?.initiator_first_name || "";
   const listingSummary = getListingSummary(listing, role, t);
+  const HeadingTag = isDemo ? "h3" : "h1";
 
   return (
     <StyledChatHeader>
@@ -228,7 +229,7 @@ function ChatHeader({
         </AvatarContainer>
 
         <TitleBlock>
-          <h1>{otherPersonName}</h1>
+          <HeadingTag>{otherPersonName}</HeadingTag>
           {listingSummary && <p>{listingSummary}</p>}
         </TitleBlock>
       </MainContents>

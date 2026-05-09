@@ -10,19 +10,27 @@ import PeelsFaq from "@/components/PeelsFaq";
 import HeaderBlock from "@/components/HeaderBlock";
 import EmailSelector from "@/components/EmailSelector/EmailSelector";
 import { HelpFaqJsonLd } from "@/components/FaqJsonLd/FaqJsonLd";
+import { createPeelsMetadata } from "@/utils/seo";
 
 export async function generateMetadata() {
   const t = await getTranslations("Support");
   const description = t("metaDescription");
 
-  return {
-    title: t("title"),
+  const title = t("title");
+
+  return createPeelsMetadata({
+    canonicalPath: "/help",
+    title,
     description,
     openGraph: {
-      title: `${t("title")} · ${siteConfig.name}`,
+      title: `${title} · ${siteConfig.name}`,
       description,
     },
-  };
+    twitter: {
+      title: `${title} · ${siteConfig.name}`,
+      description,
+    },
+  });
 }
 
 export default function Help() {

@@ -20,6 +20,7 @@ import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
 import { defaultLocale, normaliseLocale } from "@/i18n/config";
 import { redirect } from "next/navigation";
+import { createPeelsMetadata, noindexFollowMetadata } from "@/utils/seo";
 import type { ListingType } from "@/types/listing";
 import {
   sharedSectionHeadingStyles,
@@ -27,14 +28,20 @@ import {
 } from "@/styles/commonStyles";
 
 export async function generateMetadata() {
-  const t = await getTranslations("Profile.sections");
+  const t = await getTranslations("App");
+  const title = t("profile");
 
-  return {
-    title: t("account"),
+  return createPeelsMetadata({
+    ...noindexFollowMetadata,
+    canonicalPath: "/profile",
+    title,
     openGraph: {
-      title: `${t("account")} · ${siteConfig.name}`,
+      title: `${title} · ${siteConfig.name}`,
     },
-  };
+    twitter: {
+      title: `${title} · ${siteConfig.name}`,
+    },
+  });
 }
 
 // Keep URL-based feedback in a client leaf so server rendering is driven by auth/data only.

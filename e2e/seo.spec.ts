@@ -1,8 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { DONOR_EMAIL, SEEDED_THREAD_ID, signIn } from "./helpers";
 
 const LISTING_PATH = "/listings/demo-marrickville-compost";
 const MAP_LISTING_PATH = "/map?listing=demo-marrickville-compost";
 const RESIDENTIAL_LISTING_PATH = "/listings/demo-newtown-worm-farm";
+const SITE_URL = "https://www.peels.app";
+const DEFAULT_OG_IMAGE_PATTERN =
+  /^https:\/\/www\.peels\.app\/opengraph-image\.jpg/;
 
 async function getMetaDescription(page: import("@playwright/test").Page) {
   return page.locator('head meta[name="description"]').getAttribute("content");
@@ -10,6 +14,35 @@ async function getMetaDescription(page: import("@playwright/test").Page) {
 
 async function getListingJsonLdScripts(page: import("@playwright/test").Page) {
   return page.locator('script[type="application/ld+json"]').allTextContents();
+}
+
+async function expectSharedSocialMetadata(
+  page: import("@playwright/test").Page,
+  canonicalPath: string
+) {
+  const canonicalUrl =
+    canonicalPath === "/" ? SITE_URL : `${SITE_URL}${canonicalPath}`;
+
+  await expect(page.locator('head link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    canonicalUrl
+  );
+  await expect(page.locator('head meta[property="og:url"]')).toHaveAttribute(
+    "content",
+    canonicalUrl
+  );
+  await expect(page.locator('head meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    DEFAULT_OG_IMAGE_PATTERN
+  );
+  await expect(page.locator('head meta[name="twitter:card"]')).toHaveAttribute(
+    "content",
+    "summary_large_image"
+  );
+  await expect(page.locator('head meta[name="twitter:image"]')).toHaveAttribute(
+    "content",
+    DEFAULT_OG_IMAGE_PATTERN
+  );
 }
 
 type ListingJsonLd = {
@@ -57,25 +90,73 @@ test("homepage emits object-shaped site JSON-LD", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
   const jsonLdScripts = await getListingJsonLdScripts(page);
-  const siteJsonLd = parseJsonLdScripts(jsonLdScripts).find((data) =>
-    Array.isArray(data["@graph"])
+  const siteJsonLd = parseJsonLdScripts(jsonLdScripts);
+  const organizationJsonLd = siteJsonLd.find(
+    (data) => data["@type"] === "Organization"
   );
+  const websiteJsonLd = siteJsonLd.find((data) => data["@type"] === "WebSite");
 
-  expect(siteJsonLd).toEqual(
+  expect(organizationJsonLd).toEqual(
     expect.objectContaining({
       "@context": "https://schema.org",
-      "@graph": expect.arrayContaining([
-        expect.objectContaining({
-          "@type": "Organization",
-          name: "Peels",
-        }),
-        expect.objectContaining({
-          "@type": "WebSite",
-          name: "Peels",
-        }),
-      ]),
+      "@type": "Organization",
+      name: "Peels",
     })
   );
+  expect(websiteJsonLd).toEqual(
+    expect.objectContaining({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Peels",
+    })
+  );
+});
+
+test("homepage exposes canonical social metadata and one primary H1", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await expect(page).toHaveTitle(
+    "Peels: Find a home for your food scraps, wherever you are"
+  );
+  await expectSharedSocialMetadata(page, "/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText([
+    "Find a home for your food scraps, wherever you are",
+  ]);
+
+  const emptyLinks = await page.locator("a").evaluateAll((links) =>
+    links
+      .filter((link) => {
+        const text = link.textContent?.trim();
+        const ariaLabel = link.getAttribute("aria-label")?.trim();
+        const imageAlts = Array.from(link.querySelectorAll("img"))
+          .map((image) => image.getAttribute("alt")?.trim())
+          .filter(Boolean);
+
+        return !text && !ariaLabel && imageAlts.length === 0;
+      })
+      .map((link) => link.outerHTML)
+  );
+
+  expect(emptyLinks).toEqual([]);
+});
+
+test("public static pages expose canonical social metadata", async ({
+  page,
+}) => {
+  for (const { path, title } of [
+    { path: "/map", title: "Map · Peels" },
+    { path: "/newsletter", title: "Newsletter · Peels" },
+    { path: "/help", title: "Help · Peels" },
+    { path: "/partners", title: "Partners · Peels" },
+    { path: "/share", title: "Share · Peels" },
+  ]) {
+    await page.goto(path, { waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveTitle(title);
+    await expectSharedSocialMetadata(page, path);
+  }
 });
 
 test("homepage emits summary FAQPage JSON-LD", async ({ page }) => {
@@ -104,11 +185,8 @@ test("public listing pages expose crawlable listing metadata", async ({
 }) => {
   await page.goto(LISTING_PATH, { waitUntil: "domcontentloaded" });
 
-  await expect(page).toHaveTitle("Marrickville Neighbourhood Compost");
-  await expect(page.locator('head link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    /\/listings\/demo-marrickville-compost$/
-  );
+  await expect(page).toHaveTitle("Marrickville Neighbourhood Compost · Peels");
+  await expectSharedSocialMetadata(page, LISTING_PATH);
 
   const description = await getMetaDescription(page);
   expect(description).toContain(
@@ -148,11 +226,8 @@ test("anonymous residential listing pages expose an indexable private-host tease
 }) => {
   await page.goto(RESIDENTIAL_LISTING_PATH, { waitUntil: "domcontentloaded" });
 
-  await expect(page).toHaveTitle("Private Host");
-  await expect(page.locator('head link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    /\/listings\/demo-newtown-worm-farm$/
-  );
+  await expect(page).toHaveTitle("Private Host · Peels");
+  await expectSharedSocialMetadata(page, RESIDENTIAL_LISTING_PATH);
   await expect(page.locator('head meta[name="robots"]')).toHaveCount(0);
 
   const description = await getMetaDescription(page);
@@ -213,7 +288,9 @@ test("public listing pages localise Spanish SEO metadata", async ({
     await page.goto(LISTING_PATH, { waitUntil: "domcontentloaded" });
 
     await expect(page.locator("html")).toHaveAttribute("lang", "es");
-    await expect(page).toHaveTitle("Marrickville Neighbourhood Compost");
+    await expect(page).toHaveTitle(
+      "Marrickville Neighbourhood Compost · Peels"
+    );
     await expect(page.locator('head link[rel="canonical"]')).toHaveAttribute(
       "href",
       /\/listings\/demo-marrickville-compost$/
@@ -269,7 +346,7 @@ test("anonymous residential listing pages localise the private-host teaser", asy
     });
 
     await expect(page.locator("html")).toHaveAttribute("lang", "es");
-    await expect(page).toHaveTitle("Anfitrión privado");
+    await expect(page).toHaveTitle("Anfitrión privado · Peels");
     await expect(
       page.getByRole("heading", { name: "Anfitrión privado" })
     ).toBeVisible();
@@ -313,10 +390,7 @@ test("map listing URLs canonicalise to the static listing sibling", async ({
 }) => {
   await page.goto(MAP_LISTING_PATH, { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator('head link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    /\/listings\/demo-marrickville-compost$/
-  );
+  await expectSharedSocialMetadata(page, LISTING_PATH);
 });
 
 test("map listing URLs localise metadata without changing canonical", async ({
@@ -331,10 +405,7 @@ test("map listing URLs localise metadata without changing canonical", async ({
   try {
     await page.goto(MAP_LISTING_PATH, { waitUntil: "domcontentloaded" });
 
-    await expect(page.locator('head link[rel="canonical"]')).toHaveAttribute(
-      "href",
-      /\/listings\/demo-marrickville-compost$/
-    );
+    await expectSharedSocialMetadata(page, LISTING_PATH);
 
     const description = await getMetaDescription(page);
     expect(description).toContain(
@@ -380,10 +451,12 @@ test("auth utility pages are noindex and omitted from the sitemap", async ({
 }) => {
   await page.goto("/sign-in", { waitUntil: "domcontentloaded" });
 
+  await expect(page).toHaveTitle("Sign in · Peels");
   await expect(page.locator('head meta[name="robots"]')).toHaveAttribute(
     "content",
     /noindex,\s*follow/
   );
+  await expectSharedSocialMetadata(page, "/sign-in");
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBeTruthy();
@@ -392,6 +465,37 @@ test("auth utility pages are noindex and omitted from the sitemap", async ({
   expect(sitemapXml).not.toContain("/sign-in");
   expect(sitemapXml).not.toContain("/sign-up");
   expect(sitemapXml).toContain("/listings/demo-marrickville-compost");
+});
+
+test("signed-in private pages keep noindex metadata and route-specific titles", async ({
+  page,
+}) => {
+  await signIn(page, { email: DONOR_EMAIL, redirectTo: "/profile" });
+
+  await expect(page).toHaveTitle("Profile · Peels");
+  await expect(page.locator('head meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex,\s*follow/
+  );
+  await expectSharedSocialMetadata(page, "/profile");
+
+  await page.goto("/chats", { waitUntil: "domcontentloaded" });
+  await expect(page).toHaveTitle("Chats · Peels");
+  await expect(page.locator('head meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex,\s*follow/
+  );
+  await expectSharedSocialMetadata(page, "/chats");
+
+  await page.goto(`/chats/${SEEDED_THREAD_ID}`, {
+    waitUntil: "domcontentloaded",
+  });
+  await expect(page).toHaveTitle("Avery · Chats · Peels");
+  await expect(page.locator('head meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex,\s*follow/
+  );
+  await expectSharedSocialMetadata(page, `/chats/${SEEDED_THREAD_ID}`);
 });
 
 test("help page emits FAQPage JSON-LD for visible help questions", async ({

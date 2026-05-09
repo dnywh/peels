@@ -49,7 +49,7 @@ const titleBlockStyles = {
   flexDirection: "column",
   gap: "0.25rem",
   alignItems: "flex-start",
-  "& h1, & p": {
+  "& :is(h1, h2, h3), & p": {
     textAlign: "left",
   },
 };
@@ -59,12 +59,12 @@ const fullTitleBlockStyles = css`
   align-items: center;
   gap: 0.5rem;
 
-  & h1,
+  & :is(h1, h2, h3),
   & p {
     text-align: center;
   }
 
-  & h1 {
+  & :is(h1, h2, h3) {
     font-size: 2rem;
   }
 
@@ -74,12 +74,12 @@ const fullTitleBlockStyles = css`
     gap: ${titleBlockStyles.gap};
     align-items: ${titleBlockStyles.alignItems};
 
-    & h1,
+    & :is(h1, h2, h3),
     & p {
       text-align: left;
     }
 
-    & h1 {
+    & :is(h1, h2, h3) {
       font-size: 1.5rem;
     }
   }
@@ -91,12 +91,12 @@ const TitleBlock = styled.div<{ $presentation?: ListingHeaderPresentation }>`
   gap: ${titleBlockStyles.gap};
   align-items: ${titleBlockStyles.alignItems};
 
-  & h1,
+  & :is(h1, h2, h3),
   & p {
     text-align: left;
   }
 
-  & h1 {
+  & :is(h1, h2, h3) {
     font-size: 1.35rem;
     line-height: 120%;
     overflow-wrap: break-word;
@@ -131,6 +131,7 @@ function ListingHeader({
 }) {
   const t = useTranslations();
   const privateHostName = t("Listings.seo.privateHostName");
+  const HeadingTag = presentation === "demo" ? "h3" : "h1";
   const avatarProps = getListingAvatar(listing, user, {
     privateHostName,
     fallbackListingName: t("Listings.seo.fallbackListingName"),
@@ -152,7 +153,7 @@ function ListingHeader({
       />
 
       <TitleBlock $presentation={presentation}>
-        <h1>{listingName}</h1>
+        <HeadingTag>{listingName}</HeadingTag>
 
         {/* Use getListingDisplayType() here? Or is it too limiting? */}
         {listing?.type === "residential" && (

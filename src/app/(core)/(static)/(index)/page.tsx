@@ -15,6 +15,7 @@ import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
 import { PeelsFaqJsonLd } from "@/components/FaqJsonLd/FaqJsonLd";
 import { homepageCouncilMentions } from "@/content/partnerMentions";
+import { createPeelsMetadata } from "@/utils/seo";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import { sharedCenteredPageStackStyles } from "@/styles/commonStyles";
@@ -27,21 +28,24 @@ export async function generateMetadata() {
     .map((keyword) => keyword.trim())
     .filter(Boolean);
 
-  return {
+  const title = `${siteConfig.name}: ${t("title")}`;
+
+  return createPeelsMetadata({
+    canonicalPath: "/",
     title: {
-      absolute: `${siteConfig.name}: ${t("title")}`,
+      absolute: title,
     },
     description,
     keywords,
     openGraph: {
-      title: `${siteConfig.name}: ${t("title")}`,
+      title,
       description,
     },
     twitter: {
-      title: `${siteConfig.name}: ${t("title")}`,
+      title,
       description,
     },
-  };
+  });
 }
 
 export default function Index() {
