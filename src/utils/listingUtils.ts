@@ -35,11 +35,7 @@ export type ListingSeoCopy = {
   residentialConnectName: string;
   residentialIntro: (values: { name: string; location?: string }) => string;
   businessIntro: (values: { name: string; location?: string }) => string;
-  connect: (values: {
-    name: string;
-    siteName: string;
-    explainer: string;
-  }) => string;
+  connect: (values: { name: string; siteName: string }) => string;
   acceptedItemsLabel: string;
   rejectedItemsLabel: string;
   locationKeywords: (values: { location: string }) => string[];
@@ -96,8 +92,8 @@ const defaultListingSeoCopy: ListingSeoCopy = {
     `${name} accepts food scraps for composting${location ? ` in ${location}` : ""}.`,
   businessIntro: ({ name, location }) =>
     `${name} shares compostable material for composting${location ? ` in ${location}` : ""}.`,
-  connect: ({ name, siteName, explainer }) =>
-    `Connect with ${name} on ${siteName}, ${explainer}.`,
+  connect: ({ name, siteName }) =>
+    `Connect with ${name} on ${siteName}, ${siteConfig.meta.explainer}.`,
   acceptedItemsLabel: "Accepted food scraps",
   rejectedItemsLabel: "Items not accepted",
   locationKeywords: ({ location }) => [
@@ -422,7 +418,6 @@ export function generateListingDescription(
     seoCopy.connect({
       name: listingConnectName,
       siteName: siteConfig.name,
-      explainer: siteConfig.meta.explainer,
     }),
   ];
 

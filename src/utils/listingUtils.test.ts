@@ -53,8 +53,8 @@ const localisedSeoCopies = {
       `${name} acepta restos de comida para compostar${location ? ` en ${location}` : ""}.`,
     businessIntro: ({ name, location }) =>
       `${name} comparte materiales compostables para compostaje${location ? ` en ${location}` : ""}.`,
-    connect: ({ name, siteName, explainer }) =>
-      `Contacta con ${name} en ${siteName}, ${explainer}.`,
+    connect: ({ name, siteName }) =>
+      `Contacta con ${name} en ${siteName}, una plataforma comunitaria que conecta a personas con restos de comida con quienes hacen compost.`,
     acceptedItemsLabel: "Restos de comida aceptados",
     rejectedItemsLabel: "Elementos no aceptados",
     locationKeywords: ({ location }) => [
@@ -78,8 +78,8 @@ const localisedSeoCopies = {
       `${name} nimmt Lebensmittelreste zum Kompostieren${location ? ` in ${location}` : ""} an.`,
     businessIntro: ({ name, location }) =>
       `${name} gibt kompostierbares Material zum Kompostieren${location ? ` in ${location}` : ""} ab.`,
-    connect: ({ name, siteName, explainer }) =>
-      `Verbinde dich mit ${name} auf ${siteName}, ${explainer}.`,
+    connect: ({ name, siteName }) =>
+      `Verbinde dich mit ${name} auf ${siteName}, eine Community-Plattform, die Menschen mit Lebensmittelresten mit Menschen verbindet, die kompostieren.`,
     acceptedItemsLabel: "Akzeptierte Lebensmittelreste",
     rejectedItemsLabel: "Nicht akzeptierte Dinge",
     locationKeywords: ({ location }) => [
@@ -97,8 +97,8 @@ const localisedSeoCopies = {
       `${name} aceita restos de comida para compostagem${location ? ` em ${location}` : ""}.`,
     businessIntro: ({ name, location }) =>
       `${name} disponibiliza materiais compostáveis para compostagem${location ? ` em ${location}` : ""}.`,
-    connect: ({ name, siteName, explainer }) =>
-      `Entre em contato com ${name} pelo ${siteName}, ${explainer}.`,
+    connect: ({ name, siteName }) =>
+      `Entre em contato com ${name} pelo ${siteName}, uma plataforma comunitária que conecta pessoas com restos de comida a quem faz compostagem.`,
     acceptedItemsLabel: "Restos de comida aceitos",
     rejectedItemsLabel: "Itens não aceitos",
     locationKeywords: ({ location }) => [
@@ -116,8 +116,8 @@ const localisedSeoCopies = {
       `${name} accepte les restes alimentaires pour le compostage${location ? ` à ${location}` : ""}.`,
     businessIntro: ({ name, location }) =>
       `${name} propose des matières compostables pour le compostage${location ? ` à ${location}` : ""}.`,
-    connect: ({ name, siteName, explainer }) =>
-      `Contactez ${name} sur ${siteName}, ${explainer}.`,
+    connect: ({ name, siteName }) =>
+      `Contactez ${name} sur ${siteName}, une plateforme communautaire qui met en relation les personnes qui ont des restes alimentaires avec celles qui compostent.`,
     acceptedItemsLabel: "Restes alimentaires acceptés",
     rejectedItemsLabel: "Éléments non acceptés",
     locationKeywords: ({ location }) => [
