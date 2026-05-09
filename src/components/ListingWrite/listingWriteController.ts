@@ -149,7 +149,7 @@ export function buildListingDraft({
     type: listingType,
     ...(listingType !== "residential" &&
       values.avatar && { avatar: values.avatar }),
-    ...(listingType !== "residential" && { name: validatedName }),
+    name: listingType === "residential" ? null : validatedName,
     description: values.description,
     location: `POINT(${values.coordinates.longitude} ${values.coordinates.latitude})`,
     area_name: values.areaName,

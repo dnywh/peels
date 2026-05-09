@@ -224,7 +224,7 @@ test("anonymous residential metadata emits an indexable teaser without private d
   const residentialListing = {
     ...communityListing,
     type: "residential",
-    name: "Sam's backyard bin",
+    name: null,
     description:
       "Sam's side gate is open after 5pm and the compost bin is beside the shed.",
     accepted_items: ["Banana peels for Sam's worms"],
@@ -252,11 +252,11 @@ test("anonymous residential metadata emits an indexable teaser without private d
   assert.doesNotMatch(description, /Sam|side gate|shed|Banana|Citrus/);
 });
 
-test("anonymous residential metadata avoids leaking listing names with localised SEO copy", () => {
+test("anonymous residential metadata avoids leaking profile names with localised SEO copy", () => {
   const residentialListing = {
     ...communityListing,
     type: "residential",
-    name: "Sam's backyard bin",
+    name: null,
     owner_first_name: "Sam",
     slug: "private-host",
   } satisfies Listing;
@@ -277,7 +277,6 @@ test("anonymous residential metadata avoids leaking listing names with localised
   );
   assert.match(description, /Contacta con esta persona en Peels/);
   assert.doesNotMatch(description, /Sam/);
-  assert.doesNotMatch(description, /backyard bin/);
 });
 
 test("anonymous unknown-type metadata emits a private teaser", () => {
@@ -319,7 +318,7 @@ test("authenticated residential metadata can use private display names", () => {
   const residentialListing = {
     ...communityListing,
     type: "residential",
-    name: "Sam's backyard bin",
+    name: null,
     owner_first_name: "Sam",
     slug: "private-host",
   } satisfies Listing;
@@ -337,7 +336,7 @@ test("authenticated residential metadata can use private display names", () => {
   );
   assert.match(String(metadata.description), /Connect with Sam on Peels/);
   assert.doesNotMatch(String(metadata.description), /helps people compost/);
-  assert.doesNotMatch(String(metadata.description), /Sam's backyard bin/);
+  assert.equal(residentialListing.name, null);
   assert.equal(metadata.robots, undefined);
 });
 
@@ -345,7 +344,7 @@ test("anonymous residential avatars can use localised private-host alt text", ()
   const residentialListing = {
     ...communityListing,
     type: "residential",
-    name: "Sam's backyard bin",
+    name: null,
     owner_first_name: "Sam",
     slug: "private-host",
   } satisfies Listing;
@@ -433,7 +432,7 @@ test("anonymous residential listing JSON-LD omits structured location details", 
   const residentialListing = {
     ...communityListing,
     type: "residential",
-    name: "Sam's backyard bin",
+    name: null,
     description:
       "Sam's side gate is open after 5pm and the compost bin is beside the shed.",
     accepted_items: ["Banana peels for Sam's worms"],
