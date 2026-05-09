@@ -155,7 +155,7 @@ const exitingMarkerStyles = css`
   animation: ${exitMarkerAnimation} ${ANIMATION.TIMING.EXIT} forwards;
 `;
 
-function IntroHeader() {
+function IntroHeaderRotator() {
   const t = useTranslations("Index");
   const [itemIndex, setItemIndex] = useState(0);
   const [prevItemIndex, setPrevItemIndex] = useState<number | null>(null);
@@ -204,7 +204,7 @@ function IntroHeader() {
   );
 }
 
-export default IntroHeader;
+export default IntroHeaderRotator;
 
 const StyledAvatar = styled(Avatar)<{ $isExiting?: boolean }>`
   position: absolute;
