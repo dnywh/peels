@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import type { ListingSeoCopy } from "./listingUtils";
+import type { ListingSeoCopy } from "./listingUtils.ts";
 
 function splitKeywordList(value: string) {
   return value
