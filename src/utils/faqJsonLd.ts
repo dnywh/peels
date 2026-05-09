@@ -5,7 +5,7 @@ type FaqEntry = {
 
 export type PeelsFaqVariant = "summary" | "about" | "community" | "full";
 
-type FaqMessageSource =
+export type FaqMessageSource =
   | {
       namespace: "Support.peelsFaq";
       key:
@@ -27,7 +27,9 @@ type FaqMessageSource =
       key: "manageEmails";
     };
 
-type FaqTranslator = {
+export type FaqNamespace = FaqMessageSource["namespace"];
+
+export type FaqTranslator = {
   raw: (key: string) => unknown;
 };
 
@@ -87,11 +89,13 @@ export function stripMessageMarkup(message: string) {
 
 export function getFaqEntries(
   sources: FaqMessageSource[],
-  translators: Record<FaqMessageSource["namespace"], FaqTranslator>
+  translators: Partial<Record<FaqNamespace, FaqTranslator>>
 ): FaqEntry[] {
   return sources
     .map(({ namespace, key }) => {
       const t = translators[namespace];
+      if (!t) return null;
+
       const question = stripMessageMarkup(
         stringifyMessage(t.raw(`${key}.question`))
       );

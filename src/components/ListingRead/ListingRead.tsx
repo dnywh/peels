@@ -33,6 +33,7 @@ type ListingReadListing = Listing | DemoListing;
 type SharedListingReadProps = {
   user: User | null;
   listing: ListingReadListing | null;
+  listingDisplayName?: string;
 };
 
 type DemoListingReadProps = SharedListingReadProps & {
@@ -66,6 +67,7 @@ function requireReferenceNow(referenceNow: string | undefined) {
 const ListingRead = memo(function Listing({
   user,
   listing,
+  listingDisplayName: providedListingDisplayName,
   presentation = "full",
   referenceNow,
 }: ListingReadProps) {
@@ -138,11 +140,13 @@ const ListingRead = memo(function Listing({
 
   const initialZoomLevel = 14;
 
-  const listingDisplayName: string = isDemo
-    ? (demoListing?.name ?? demoListing?.owner_first_name ?? "")
-    : realListing
-      ? getListingDisplayName(realListing, user)
-      : "";
+  const listingDisplayName: string =
+    providedListingDisplayName ??
+    (isDemo
+      ? (demoListing?.name ?? demoListing?.owner_first_name ?? "")
+      : realListing
+        ? getListingDisplayName(realListing, user)
+        : "");
 
   const coordinates = realListing?.coordinates ?? null;
 

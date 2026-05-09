@@ -6,18 +6,26 @@ import {
   getHelpFaqSources,
   getPeelsFaqSources,
 } from "@/utils/faqJsonLd";
-import type { PeelsFaqVariant } from "@/utils/faqJsonLd";
+import type {
+  FaqMessageSource,
+  FaqNamespace,
+  FaqTranslator,
+  PeelsFaqVariant,
+} from "@/utils/faqJsonLd";
 
-async function getFaqTranslators() {
-  const [peelsT, supportT] = await Promise.all([
-    getTranslations("Support.peelsFaq"),
-    getTranslations("Support.supportFaq"),
-  ]);
+async function getFaqTranslators(sources: FaqMessageSource[]) {
+  const namespaces = [...new Set(sources.map((source) => source.namespace))];
+  const translatorEntries = await Promise.all(
+    namespaces.map(async (namespace) => {
+      const t = await getTranslations(namespace);
 
-  return {
-    "Support.peelsFaq": peelsT,
-    "Support.supportFaq": supportT,
-  };
+      return [namespace, t] as const;
+    })
+  );
+
+  return Object.fromEntries(translatorEntries) as Partial<
+    Record<FaqNamespace, FaqTranslator>
+  >;
 }
 
 export async function PeelsFaqJsonLd({
@@ -25,17 +33,16 @@ export async function PeelsFaqJsonLd({
 }: {
   variant: PeelsFaqVariant;
 }) {
-  const entries = getFaqEntries(
-    getPeelsFaqSources(variant),
-    await getFaqTranslators()
-  );
+  const sources = getPeelsFaqSources(variant);
+  const entries = getFaqEntries(sources, await getFaqTranslators(sources));
   const jsonLd = generateFaqJsonLd(entries);
 
   return jsonLd ? <JsonLd data={jsonLd} /> : null;
 }
 
 export async function HelpFaqJsonLd() {
-  const entries = getFaqEntries(getHelpFaqSources(), await getFaqTranslators());
+  const sources = getHelpFaqSources();
+  const entries = getFaqEntries(sources, await getFaqTranslators(sources));
   const jsonLd = generateFaqJsonLd(entries);
 
   return jsonLd ? <JsonLd data={jsonLd} /> : null;

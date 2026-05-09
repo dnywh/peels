@@ -238,6 +238,36 @@ test("public listing pages localise Spanish SEO metadata", async ({
   }
 });
 
+test("anonymous residential listing pages localise the private-host teaser", async ({
+  browser,
+}) => {
+  const { context, page } = await newLocalePage(
+    browser,
+    "es-MX",
+    "es-MX,es;q=0.9,en;q=0.8"
+  );
+
+  try {
+    await page.goto(RESIDENTIAL_LISTING_PATH, {
+      waitUntil: "domcontentloaded",
+    });
+
+    await expect(page.locator("html")).toHaveAttribute("lang", "es");
+    await expect(page).toHaveTitle("Anfitrión privado");
+    await expect(
+      page.getByRole("heading", { name: "Anfitrión privado" })
+    ).toBeVisible();
+
+    const description = await getMetaDescription(page);
+    expect(description).toContain(
+      "Anfitrión privado acepta restos de comida para compostar"
+    );
+    expect(description).not.toContain("Private Host");
+  } finally {
+    await context.close();
+  }
+});
+
 test("public listing pages localise Brazilian Portuguese SEO metadata", async ({
   browser,
 }) => {

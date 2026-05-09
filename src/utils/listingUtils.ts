@@ -57,6 +57,24 @@ type AvatarDescriptor = {
   alt: string;
 } | null;
 
+type AnonymousResidentialListingTeaserField =
+  | "name"
+  | "owner_first_name"
+  | "owner_avatar"
+  | "avatar"
+  | "description"
+  | "accepted_items"
+  | "rejected_items"
+  | "photos"
+  | "links"
+  | "coordinates";
+
+type AnonymousResidentialListingTeaser<T extends ListingLike> = Omit<
+  T,
+  AnonymousResidentialListingTeaserField
+> &
+  Record<AnonymousResidentialListingTeaserField, null>;
+
 type GenerateListingMetadataOptions = ListingSeoOptions & {
   includeFullMetadata?: boolean;
 };
@@ -275,7 +293,7 @@ export function getListingOwnerAvatar(
 export function getAnonymousResidentialListingTeaser<T extends ListingLike>(
   listing: T,
   user: ListingUser
-): T {
+): T | AnonymousResidentialListingTeaser<T> {
   if (user || normaliseListingType(listing.type) !== "residential") {
     return listing;
   }
@@ -292,7 +310,7 @@ export function getAnonymousResidentialListingTeaser<T extends ListingLike>(
     photos: null,
     links: null,
     coordinates: null,
-  };
+  } as AnonymousResidentialListingTeaser<T>;
 }
 
 export function getProfileAvatarSource(

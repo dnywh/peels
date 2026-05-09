@@ -4,6 +4,7 @@ import {
   generateListingJsonLd,
   generateListingMetadata,
   getAnonymousResidentialListingTeaser,
+  getListingDisplayName,
 } from "@/utils/listingUtils";
 import { getListingSeoOptions } from "@/utils/listingSeo";
 import ListingRead from "@/components/ListingRead";
@@ -80,6 +81,11 @@ export default async function ListingPage({
   const listingSeoOptions = await getListingSeoOptions();
   const listingJsonLd = generateListingJsonLd(listing, user, listingSeoOptions);
   const listingForRead = getAnonymousResidentialListingTeaser(listing, user);
+  const listingDisplayName = getListingDisplayName(
+    listingForRead,
+    user,
+    listingSeoOptions.seoCopy
+  );
 
   // TODO: Return 'Success' toast for folks who have just created a new listing and have been redirected to it, here
 
@@ -89,6 +95,7 @@ export default async function ListingPage({
       <ListingRead
         user={user}
         listing={listingForRead}
+        listingDisplayName={listingDisplayName}
         referenceNow={referenceNow}
       />
     </StyledMain>
