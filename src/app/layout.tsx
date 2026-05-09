@@ -11,7 +11,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "./theme.css";
 
-import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
 import AttributionCapture from "@/components/AttributionCapture";
 import AuthHashCompletion from "@/components/AuthHashCompletion";
 import JsonLd from "@/components/JsonLd";
@@ -104,9 +103,7 @@ export default async function RootLayout({
         {inlineFontFaces ? <style>{inlineFontFaces}</style> : null}
         <AuthHashCompletion />
         <AttributionCapture />
-        <NextIntlClientProvider>
-          <UnreadMessagesProvider>{children}</UnreadMessagesProvider>
-        </NextIntlClientProvider>
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
         <Analytics />
         <SpeedInsights />
       </body>

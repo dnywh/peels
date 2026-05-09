@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import PeelsMapDemo from "@/components/PeelsMapDemo";
-import PeelsChatDemo from "@/components/PeelsChatDemo";
-import PeelsFeaturedHostsPhotos from "@/components/PeelsFeaturedHostsPhotos";
+import DeferredPeelsMapDemo from "@/components/DeferredPeelsMapDemo";
+import DeferredPeelsChatDemo from "@/components/DeferredPeelsChatDemo";
+import DeferredPeelsFeaturedHostsPhotos from "@/components/DeferredPeelsFeaturedHostsPhotos";
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import type { LiHTMLAttributes, ReactNode } from "react";
@@ -12,14 +12,11 @@ function PeelsHowItWorks() {
   return (
     <OrderedList>
       <Step>
-        <PeelsMapDemo
-          stepHeader={
-            <StepHeader>
-              <h3>{t("findAHost.title")}</h3>
-              <p>{t("findAHost.subtitle")}</p>
-            </StepHeader>
-          }
-        />
+        <StepHeader>
+          <h3>{t("findAHost.title")}</h3>
+          <p>{t("findAHost.subtitle")}</p>
+        </StepHeader>
+        <DeferredPeelsMapDemo />
       </Step>
 
       <Step anchor="left" id="contact">
@@ -27,7 +24,7 @@ function PeelsHowItWorks() {
           <h3>{t("contact.title")}</h3>
           <p>{t("contact.subtitle")}</p>
         </StepHeader>
-        <PeelsChatDemo />
+        <DeferredPeelsChatDemo />
       </Step>
 
       <Step id="drop-off">
@@ -36,7 +33,7 @@ function PeelsHowItWorks() {
           <p>{t("dropOff.subtitle")}</p>
         </StepHeader>
 
-        <PeelsFeaturedHostsPhotos />
+        <DeferredPeelsFeaturedHostsPhotos />
 
         <StepFooter>
           <p>
@@ -79,6 +76,7 @@ const StyledStep = styled.li<{ $anchor?: "left" }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1rem;
 
   ${({ $anchor }) => $anchor === "left" && anchoredStepStyles}
 `;

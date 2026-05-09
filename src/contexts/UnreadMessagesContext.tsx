@@ -21,6 +21,14 @@ type ChatMessagePayload = {
   thread_id: string | null;
 };
 
+type ChatThreadRow = {
+  id: string;
+};
+
+type UnreadThreadRow = {
+  thread_id: string | null;
+};
+
 type UnreadMessagesContextValue = {
   unreadCount: number;
   setUnreadCount: Dispatch<SetStateAction<number>>;
@@ -33,6 +41,29 @@ const UnreadMessagesContext = createContext<
   UnreadMessagesContextValue | undefined
 >(undefined);
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
+
+type IdleWindow = Window & {
+  requestIdleCallback?: (
+    callback: () => void,
+    options?: { timeout?: number }
+  ) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
+
+function scheduleIdleTask(callback: () => void) {
+  const idleWindow = window as IdleWindow;
+
+  if (typeof idleWindow.requestIdleCallback === "function") {
+    const idleCallbackId = idleWindow.requestIdleCallback(callback, {
+      timeout: 2_000,
+    });
+
+    return () => idleWindow.cancelIdleCallback?.(idleCallbackId);
+  }
+
+  const timeoutId = globalThis.setTimeout(callback, 250);
+  return () => globalThis.clearTimeout(timeoutId);
+}
 
 export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -64,7 +95,9 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
       });
     }
 
-    void loadUserId();
+    const cancelInitialLoad = scheduleIdleTask(() => {
+      void loadUserId();
+    });
 
     if (isAuthDebugEnabled) {
       console.log("Setting up auth listener");
@@ -83,6 +116,7 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
 
     return () => {
       isActive = false;
+      cancelInitialLoad();
       subscription.unsubscribe();
     };
   }, [supabase]);
@@ -99,19 +133,39 @@ export function UnreadMessagesProvider({ children }: PropsWithChildren) {
           return;
         }
 
-        const { count, error } = await supabase
-          .from("chat_messages")
-          .select("*", { count: "exact", head: true })
-          .neq("sender_id", userId)
-          .is("read_at", null);
+        const { data: threads, error: threadsError } = await supabase
+          .from("chat_threads")
+          .select("id")
+          .or(`initiator_id.eq.${userId},owner_id.eq.${userId}`);
 
-        if (error) {
-          console.error("Error checking unread messages:", error);
+        if (threadsError) {
+          console.error("Error checking chat threads:", threadsError);
           return;
         }
 
+        const threadIds = ((threads as ChatThreadRow[] | null) ?? []).map(
+          (thread) => thread.id
+        );
+        const { data: unreadThreads, error: unreadThreadsError } =
+          threadIds.length > 0
+            ? await supabase.rpc("unread_chat_thread_ids", {
+                thread_ids: threadIds,
+              })
+            : { data: [], error: null };
+
+        if (unreadThreadsError) {
+          console.error("Error checking unread messages:", unreadThreadsError);
+          return;
+        }
+
+        const unreadThreadIds = new Set(
+          ((unreadThreads as UnreadThreadRow[] | null) ?? [])
+            .map((thread) => thread.thread_id)
+            .filter((threadId): threadId is string => Boolean(threadId))
+        );
+
         if (!isActive) return;
-        setUnreadCount(count ?? 0);
+        setUnreadCount(unreadThreadIds.size);
       } catch (error) {
         console.error("Error in checkUnreadMessages:", error);
       }

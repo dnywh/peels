@@ -7,6 +7,25 @@ import {
   currentPathHeaderName,
 } from "@/utils/supabase/authState";
 
+function createForwardedResponse(request: NextRequest, authState: string) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(
+    currentPathHeaderName,
+    `${request.nextUrl.pathname}${request.nextUrl.search}`
+  );
+  requestHeaders.set(authStateHeaderName, authState);
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+}
+
+export function createSignedOutResponse(request: NextRequest) {
+  return createForwardedResponse(request, authStateSignedOut);
+}
+
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
   // Feel free to remove once you have Supabase connected.
@@ -88,17 +107,6 @@ export const updateSession = async (request: NextRequest) => {
     // If you are here, a Supabase client could not be created!
     // This is likely because you have not set up environment variables.
     // Check out http://localhost:3000 for Next Steps.
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set(authStateHeaderName, authStateSignedOut);
-    requestHeaders.set(
-      currentPathHeaderName,
-      `${request.nextUrl.pathname}${request.nextUrl.search}`
-    );
-
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
+    return createSignedOutResponse(request);
   }
 };

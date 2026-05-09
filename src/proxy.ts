@@ -1,5 +1,8 @@
 import { type NextRequest } from "next/server";
-import { updateSession } from "@/utils/supabase/middleware";
+import {
+  createSignedOutResponse,
+  updateSession,
+} from "@/utils/supabase/middleware";
 
 const INITIAL_REFERRER_COOKIE = "initial_referrer";
 const INITIAL_REFERRER_MAX_AGE = 60 * 60 * 24 * 90;
@@ -26,8 +29,25 @@ function getExternalReferrer(request: NextRequest) {
   }
 }
 
+const authRequiredPathPrefixes = [
+  "/auth",
+  "/chats",
+  "/forgot-password",
+  "/profile",
+  "/sign-in",
+  "/sign-up",
+];
+
+function shouldUpdateSession(request: NextRequest) {
+  return authRequiredPathPrefixes.some((pathPrefix) =>
+    request.nextUrl.pathname.startsWith(pathPrefix)
+  );
+}
+
 export async function proxy(request: NextRequest) {
-  const response = await updateSession(request);
+  const response = shouldUpdateSession(request)
+    ? await updateSession(request)
+    : createSignedOutResponse(request);
   const hasInitialReferrerCookie = request.cookies.get(INITIAL_REFERRER_COOKIE);
   const externalReferrer = getExternalReferrer(request);
 

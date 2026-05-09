@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { HOST_EMAIL, signIn } from "./helpers";
+import { DONOR_EMAIL, HOST_EMAIL, signIn } from "./helpers";
 
-test("homepage hydrates without chat date mismatches", async ({
+test("homepage renders static content before deferred chat demo hydrates", async ({
   browser,
   page,
 }) => {
@@ -42,9 +42,6 @@ test("homepage hydrates without chat date mismatches", async ({
   const serverDayLabels = await serverPage
     .getByTestId("chat-day-label")
     .allTextContents();
-  const serverTimestamps = await serverPage
-    .getByTestId("chat-message-timestamp")
-    .allTextContents();
   await serverContext.close();
 
   await page.waitForLoadState("networkidle");
@@ -59,9 +56,9 @@ test("homepage hydrates without chat date mismatches", async ({
     .getByTestId("chat-message-timestamp")
     .allTextContents();
 
-  expect(serverDayLabels).toEqual(["Thu, May 1", "Fri, May 2"]);
+  expect(serverDayLabels).toEqual([]);
   expect(hydratedDayLabels).toEqual(["Yesterday", "Today"]);
-  expect(hydratedTimestamps).toEqual(serverTimestamps);
+  expect(hydratedTimestamps).toHaveLength(2);
   expect(
     pageErrors.some((message) => message.includes("Minified React error #418"))
   ).toBeFalsy();
@@ -152,6 +149,7 @@ test("homepage account button stays hidden while signed-in profile state loads",
 
   await expect(profileAccountButton).toHaveAttribute("href", "/profile");
   await expect(profileAccountButton).toHaveCSS("opacity", "1");
+  await expect(page.getByTestId("locale-picker-select")).toHaveCount(0);
 });
 
 test("homepage account button links guests to sign in", async ({ page }) => {
@@ -162,4 +160,40 @@ test("homepage account button links guests to sign in", async ({ page }) => {
     "/sign-in"
   );
   await expect(page.getByTestId("account-button-profile")).toHaveCount(0);
+  await expect(page.getByTestId("locale-picker-select")).toBeVisible();
+});
+
+test("homepage unread chat dot appears after scoped unread check", async ({
+  page,
+}) => {
+  await page.route(/\/rest\/v1\/chat_threads(?:\?|$)/, async (route) => {
+    if (route.request().method() !== "GET") {
+      await route.continue();
+      return;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([{ id: "33333333-3333-4333-8333-333333333333" }]),
+    });
+  });
+  await page.route(
+    /\/rest\/v1\/rpc\/unread_chat_thread_ids(?:\?|$)/,
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          { thread_id: "33333333-3333-4333-8333-333333333333" },
+        ]),
+      });
+    }
+  );
+
+  await signIn(page, { email: DONOR_EMAIL, redirectTo: "/" });
+
+  await expect(page.getByTestId("tab-unread-dot").first()).toBeVisible({
+    timeout: 15_000,
+  });
 });

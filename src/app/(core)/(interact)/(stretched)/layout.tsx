@@ -1,5 +1,6 @@
 import TabBar from "@/components/TabBar";
 import { TabBarProvider } from "@/contexts/TabBarContext";
+import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import type { ReactNode } from "react";
@@ -20,11 +21,13 @@ const StretchedPage = styled.div`
 export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <TabBarProvider>
-      <StretchedPage>
-        <TabBar breakpoint="md" />
-        {children}
-        <TabBar breakpoint="sm" />
-      </StretchedPage>
+      <UnreadMessagesProvider>
+        <StretchedPage>
+          <TabBar breakpoint="md" />
+          {children}
+          <TabBar breakpoint="sm" />
+        </StretchedPage>
+      </UnreadMessagesProvider>
     </TabBarProvider>
   );
 }
