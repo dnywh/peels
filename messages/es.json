@@ -561,13 +561,30 @@
     "subtitle": "Encuentra respuestas a preguntas frecuentes o usa las opciones de contacto más abajo si necesitas ayuda.",
     "peelsFaq": {
       "title": "Acerca de Peels",
+      "communityTitle": "Comunidad y socios",
+      "whatIsPeels": {
+        "question": "¿Qué es Peels?",
+        "answer": "Peels es un mapa de compostaje comunitario que ayuda a las personas a encontrar lugares cercanos donde dejar restos de comida, o a crear un anuncio si pueden aceptar restos de sus vecinos. Es un proyecto comunitario, gratuito y no comercial para conectar a quienes tienen restos de comida con quienes hacen compost."
+      },
       "whosBehind": {
-        "question": "¿Quién está detrás de Peels?",
-        "answer": "<p>Peels es un proyecto liderado por <danny>Danny White</danny>, diseñador de producto con 10 años de experiencia trabajando en productos como Airbnb, ChatGPT, Kickstarter y Facebook. Ayudó a iniciar el programa de compostaje de Pocket City Farms y antes creó una guía para viajeros sobre cómo reducir el desperdicio de alimentos.</p><p>Queremos que Peels exista por mucho tiempo, por eso el proyecto es <opensource>de código abierto</opensource> y recibimos con gusto tus contribuciones.</p>"
+        "question": "¿Quién mantiene Peels?",
+        "answer": "<p>Peels es mantenido por personas voluntarias y colaboradoras que quieren ayudar a que más restos de comida se conviertan en compost en vez de acabar en el vertedero.</p><p>El proyecto fue iniciado por <danny>Danny White</danny>, quien ayudó a poner en marcha el programa de compostaje de Pocket City Farms. Peels es <opensource>de código abierto</opensource>, y las contribuciones son bienvenidas.</p>"
       },
       "howDifferent": {
         "question": "¿En qué se diferencia Peels de ShareWaste?",
-        "answer": "<p>ShareWaste fue un precursor de Peels con una idea similar: conectar a personas localmente para desviar material orgánico del vertedero. Lamentablemente, ShareWaste cerró a finales de 2024.</p><p>Ahora mismo, intentamos llenar el vacío que dejó ShareWaste. Puedes pensar en Peels como un reemplazo directo de ShareWaste.</p><p>También tenemos muchas otras ideas en marcha, incluidas guías locales sobre compostaje. Mantente al tanto.</p>"
+        "answer": "<p>ShareWaste cerró a finales de 2024, pero ayudó a popularizar una idea similar: conectar a personas con restos de comida con personas cercanas que hacen compost. Peels continúa esa idea como una plataforma de código abierto mantenida activamente.</p><p>Todavía puedes encontrar anfitriones de compostaje en un mapa, crear un anuncio y coordinar entregas o recogidas de restos de comida con miembros cercanos.</p>"
+      },
+      "findDropOff": {
+        "question": "¿Cómo encuentro un punto de compostaje cerca de mí?",
+        "answer": "<p><map>Abre el mapa de Peels</map> y busca una persona anfitriona o un huerto comunitario cercano que acepte restos de comida. Selecciona un anuncio para ver qué acepta, dónde está y cómo contactar.</p>"
+      },
+      "noGarden": {
+        "question": "¿Puedo compostar restos de comida si no tengo jardín ni compostera?",
+        "answer": "Sí. Peels está pensado para personas que tienen restos de comida pero no tienen una forma práctica de compostarlos. Puedes usar Peels para encontrar a alguien cerca que ya haga compost y esté dispuesto a recibir restos."
+      },
+      "businesses": {
+        "question": "¿Pueden las empresas usar Peels para donar restos de comida?",
+        "answer": "<p>Sí. Cafés, restaurantes, oficinas, tiendas de alimentos y otros negocios pueden usar Peels si tienen restos de comida que personas compostadoras cercanas podrían recoger. <join>Crea un anuncio de negocio</join> para que la gente vea qué tienes, dónde estás y cómo coordinar la recogida.</p>"
       },
       "financialModel": {
         "question": "¿Cuál es el modelo financiero? ¿Peels es una organización sin fines de lucro?",
@@ -575,7 +592,7 @@
       },
       "fogo": {
         "question": "Ya tengo recolección de restos de comida. ¿Sigue siendo relevante el compostaje comunitario?",
-        "answer": "Sí. Mucha gente todavía no tiene acceso a un servicio fiable de recolección de restos de comida, y el compostaje comunitario también puede ser más local, social y educativo que un servicio municipal o de ciudad. Peels está pensado para apoyar tanto a los lugares que ya cuentan con recolección como a los que todavía la están construyendo."
+        "answer": "Sí. El compostaje comunitario significa que los restos de comida se compostan a través de vecinos, huertos comunitarios, negocios locales u otros proyectos locales, no mediante procesos industriales ni en vertederos. Mucha gente todavía no tiene acceso a un servicio fiable de recolección de restos de comida, y el compostaje comunitario también puede ser más local, social y educativo que un servicio municipal o de ciudad. Peels está pensado para apoyar tanto a los lugares que ya cuentan con recolección como a los que todavía la están construyendo."
       },
       "mapPrivacy": {
         "question": "No me siento cómodo compartiendo mi dirección. ¿Puedo participar?",
@@ -598,7 +615,7 @@
       "title": "Usar Peels",
       "manageEmails": {
         "question": "¿Cómo puedo administrar qué correos recibo?",
-        "answer": "<p>Solo enviamos los correos necesarios para que Peels funcione. Eso incluye uno o dos correos relacionados con la cuenta y avisos cuando otro miembro de Peels te envía un mensaje.</p><p>Las notificaciones por correo son obligatorias para quienes tienen anuncios, ya que indican que una persona interesada preguntó por dejar restos o por recoger algo. Si una persona anfitriona ya no quiere recibir correos, puede ocultar su anuncio del mapa o eliminarlo por completo.</p><p>Las personas sin anuncios no pueden recibir mensajes y, por lo tanto, tampoco correos, a menos que primero contacten a una persona anfitriona.</p><p>Cualquier persona puede denunciar o bloquear a otros miembros de Peels mediante nuestro sistema de mensajería. Bloquear a alguien significa que ya no podrá enviarte mensajes ni correos.</p>"
+        "answer": "<p>Peels envía correos de cuenta y mensajes necesarios para que el servicio funcione, incluidos correos de inicio de sesión y avisos cuando otro miembro te envía un mensaje.</p><p>El boletín es separado y opcional. Puedes suscribirte o cancelar la suscripción en cualquier momento desde tu página de Perfil.</p><p>Si tienes un anuncio, las notificaciones de mensajes son necesarias para que las personas interesadas puedan contactarte. Puedes detener nuevas consultas ocultando tu anuncio del mapa o eliminándolo.</p><p>También puedes denunciar o bloquear a otros miembros de Peels desde el sistema de mensajería.</p>"
       }
     },
     "contact": {

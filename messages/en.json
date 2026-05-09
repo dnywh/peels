@@ -561,13 +561,30 @@
     "subtitle": "Find answers to common questions, or use the contact options below if you need a hand.",
     "peelsFaq": {
       "title": "About Peels",
+      "communityTitle": "Community and partners",
+      "whatIsPeels": {
+        "question": "What is Peels?",
+        "answer": "Peels is a community composting map that helps people find nearby places to drop off food scraps, or create a listing if they can accept scraps from neighbours. It’s a free, non-commercial, community project to connect folks with food scraps to those who compost."
+      },
       "whosBehind": {
-        "question": "Who’s behind Peels?",
-        "answer": "<p>Peels is a project led by <danny>Danny White</danny>, a product designer with 10 years experience working on products including Airbnb, ChatGPT, Kickstarter, and Facebook. He helped start the composting program at Pocket City Farms and previously built a traveller's guide to reducing food waste.</p><p>We want Peels to be around for the long haul, so have <opensource>open sourced</opensource> the project and welcome your contributions.</p>"
+        "question": "Who maintains Peels?",
+        "answer": "<p>Peels is maintained by volunteers and contributors who want to help more food scraps become compost instead of landfill.</p><p>The project was started by <danny>Danny White</danny>, who helped begin the composting program at Pocket City Farms. Peels is <opensource>open source</opensource>, and contributions are welcome.</p>"
       },
       "howDifferent": {
         "question": "How is Peels different to ShareWaste?",
-        "answer": "<p>ShareWaste was a precursor to Peels with a similar idea: connecting people locally to divert organic material from landfill. Sadly, ShareWaste shut down at the end of 2024.</p><p>Right now, we're just trying to fill the gap that ShareWaste left. You can think of Peels as a direct replacement for ShareWaste.</p><p>We've got plenty of other ideas in the pipeline, including general area guides for composting. Stay tuned for those.</p>"
+        "answer": "<p>ShareWaste shut down at the end of 2024 but helped popularise a similar idea: connect people with food scraps to nearby people who compost. Peels carries that idea forward as an actively maintained, open-source platform.</p><p>You can still find compost hosts on a map, create a listing, and arrange food-scrap drop-offs or pickups with nearby members.</p>"
+      },
+      "findDropOff": {
+        "question": "How do I find a compost drop-off near me?",
+        "answer": "<p><map>Open the Peels map</map> and look for a nearby host or community garden that accepts food scraps. Select a listing to see what they accept, where they are, and how to contact them.</p>"
+      },
+      "noGarden": {
+        "question": "Can I compost food scraps if I don’t have a garden or compost bin?",
+        "answer": "Yes. Peels is designed for people who have food scraps but nowhere practical to compost them. You can use Peels to find someone nearby who already composts and is open to receiving scraps."
+      },
+      "businesses": {
+        "question": "Can businesses use Peels to donate food scraps?",
+        "answer": "<p>Yes. Cafes, restaurants, offices, grocers, and other businesses can use Peels if they have food scraps that nearby composters could collect. <join>Create a business listing</join> so people can see what you have, where you are, and how to arrange pickup.</p>"
       },
       "financialModel": {
         "question": "What’s the financial model? Are you non-profit?",
@@ -575,7 +592,7 @@
       },
       "fogo": {
         "question": "I already have food scrap collection. Is community composting relevant?",
-        "answer": "Absolutely. Many people still don’t have access to reliable food-scrap collection, and community composting can also be more local, social, and educational than a council or city-wide service. Peels is designed to support both the places that already have collection and the places still building it."
+        "answer": "Yes. Community composting means food scraps are composted by neighbours, community gardens, local businesses, or other local projects, not industrial processes or landfill. Many people still don’t have access to reliable food-scrap collection, and community composting can also be more local, social, and educational than a council or city-wide service. Peels is designed to support both the places that already have collection and the places still building it."
       },
       "mapPrivacy": {
         "question": "I’m not comfortable sharing my address. Can I still participate?",
@@ -598,7 +615,7 @@
       "title": "Using Peels",
       "manageEmails": {
         "question": "How do I manage which emails I receive?",
-        "answer": "<p>We only send emails that are necessary to keep Peels working. That includes one or two account-related emails, and emails to notify you whenever a fellow Peels member has sent you message.</p><p>Email notifications are required for listing hosts, as it means a prospective donor has enquired about dropping off scraps (or picking something up). Hosts who longer wish to receive emails can either hide their listing from the map (making it impossible for new donors to reach out) or delete their listing entirely (meaning previous donors can no longer message, either).</p><p>People without listings cannot be messaged (and thus emailed) unless they initiate contact with a host first.</p><p>Anyone can report or block individual Peels members via our messaging system. Blocking someone means they can no longer message or email you.</p>"
+        "answer": "<p>Peels sends account and message emails that are necessary to keep the service working, including sign-in emails and notifications when another member messages you.</p><p>The newsletter is separate and optional. You can subscribe or unsubscribe at any time from your Profile page.</p><p>If you host a listing, message notifications are required so prospective donors can reach you. You can stop new enquiries by hiding your listing from the map or deleting it.</p><p>You can also report or block individual Peels members via the messaging system.</p>"
       }
     },
     "contact": {

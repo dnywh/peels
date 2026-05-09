@@ -6,7 +6,10 @@ import type { User } from "@supabase/supabase-js";
 import { Marker, NavigationControl } from "react-map-gl/maplibre";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { getListingDisplayName } from "@/utils/listingUtils";
+import {
+  getAnonymousResidentialListingTeaser,
+  getListingDisplayName,
+} from "@/utils/listingUtils";
 import { parseTextWithLinks } from "@/utils/linkUtils";
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
@@ -88,8 +91,11 @@ const ListingRead = memo(function Listing({
   const isDemo = presentation === "demo";
   const nonDemoReferenceNow = !isDemo ? referenceNow : undefined;
   const demoListing = isDemoListing(listing) ? listing : null;
-  const realListing =
+  const rawRealListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
+  const realListing = rawRealListing
+    ? getAnonymousResidentialListingTeaser(rawRealListing, user)
+    : null;
 
   // Load existing thread if any (only if not in demo mode). Depend on the
   // specific listing fields used inside the effect so a new `realListing`

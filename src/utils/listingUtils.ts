@@ -17,6 +17,7 @@ type ListingLike = {
   description?: string | null;
   accepted_items?: string[] | null;
   rejected_items?: string[] | null;
+  links?: string[] | null;
   photos?: string[] | null;
   coordinates?: ListingCoordinates | null;
 };
@@ -268,6 +269,29 @@ export function getListingOwnerAvatar(
     bucket: "avatars",
     filename: listing.owner_avatar || null,
     alt: `${listing.owner_first_name || "Listing owner"} avatar`,
+  };
+}
+
+export function getAnonymousResidentialListingTeaser<T extends ListingLike>(
+  listing: T,
+  user: ListingUser
+): T {
+  if (user || normaliseListingType(listing.type) !== "residential") {
+    return listing;
+  }
+
+  return {
+    ...listing,
+    name: null,
+    owner_first_name: null,
+    owner_avatar: null,
+    avatar: null,
+    description: null,
+    accepted_items: null,
+    rejected_items: null,
+    photos: null,
+    links: null,
+    coordinates: null,
   };
 }
 

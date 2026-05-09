@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   generateListingJsonLd,
   generateListingMetadata,
+  getAnonymousResidentialListingTeaser,
 } from "@/utils/listingUtils";
 import { getListingSeoOptions } from "@/utils/listingSeo";
 import ListingRead from "@/components/ListingRead";
@@ -78,13 +79,18 @@ export default async function ListingPage({
 
   const listingSeoOptions = await getListingSeoOptions();
   const listingJsonLd = generateListingJsonLd(listing, user, listingSeoOptions);
+  const listingForRead = getAnonymousResidentialListingTeaser(listing, user);
 
   // TODO: Return 'Success' toast for folks who have just created a new listing and have been redirected to it, here
 
   return (
     <StyledMain>
       {listingJsonLd ? <JsonLd data={listingJsonLd} /> : null}
-      <ListingRead user={user} listing={listing} referenceNow={referenceNow} />
+      <ListingRead
+        user={user}
+        listing={listingForRead}
+        referenceNow={referenceNow}
+      />
     </StyledMain>
   );
 }

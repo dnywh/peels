@@ -293,7 +293,7 @@ npm run test:e2e:prod
 
 Use the local anon key that matches the running local Supabase stack. Do not mix the hosted project URL with the local anon key, or the local URL with a hosted anon key.
 
-The production-like Playwright config starts its own `next start` server so it does not accidentally reuse a stray `next dev` process on port `3000`.
+By default, Playwright starts its own app server on `127.0.0.1:3001`, so it does not collide with the usual local `next dev` server on port `3000`. Set `PLAYWRIGHT_PORT` if you need a different port.
 
 In CI, pull requests run `npm run check` and `npm run build`. Pushes to `main` also run the production-like Playwright smoke suite.
 

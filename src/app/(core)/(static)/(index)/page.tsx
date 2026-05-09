@@ -13,6 +13,7 @@ import StaticPageSection from "@/components/StaticPageSection";
 import NewsletterIssuesList from "@/components/NewsletterIssuesList";
 import HeaderBlock from "@/components/HeaderBlock";
 import FooterBlock from "@/components/FooterBlock";
+import { PeelsFaqJsonLd } from "@/components/FaqJsonLd/FaqJsonLd";
 import { homepageCouncilMentions } from "@/content/partnerMentions";
 import { styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
@@ -119,11 +120,12 @@ export default function Index() {
       </StaticPageSection>
 
       <StaticPageSection padding="lg" id="faq-section">
+        <PeelsFaqJsonLd variant="summary" />
         <HeaderBlock>
           <h2>{t("faq.title")}</h2>
           <p>{t("faq.subtitle")}</p>
         </HeaderBlock>
-        <PeelsFaq />
+        <PeelsFaq variant="summary" />
         <FooterBlock>
           <p>
             {t.rich("faq.footer", {
