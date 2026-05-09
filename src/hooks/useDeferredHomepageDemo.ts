@@ -1,29 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-type IdleWindow = Window & {
-  requestIdleCallback?: (
-    callback: () => void,
-    options?: { timeout?: number }
-  ) => number;
-  cancelIdleCallback?: (handle: number) => void;
-};
-
-function scheduleIdleTask(callback: () => void) {
-  const idleWindow = window as IdleWindow;
-
-  if (typeof idleWindow.requestIdleCallback === "function") {
-    const idleCallbackId = idleWindow.requestIdleCallback(callback, {
-      timeout: 2_000,
-    });
-
-    return () => idleWindow.cancelIdleCallback?.(idleCallbackId);
-  }
-
-  const timeoutId = globalThis.setTimeout(callback, 300);
-  return () => globalThis.clearTimeout(timeoutId);
-}
+import { scheduleIdleTask } from "@/utils/scheduleIdleTask";
 
 export function useDeferredHomepageDemo() {
   const [isReady, setIsReady] = useState(false);
@@ -35,7 +13,10 @@ export function useDeferredHomepageDemo() {
     }
 
     const markReady = () => setIsReady(true);
-    const cancelIdleTask = scheduleIdleTask(markReady);
+    const cancelIdleTask = scheduleIdleTask(markReady, {
+      timeout: 2_000,
+      fallbackDelay: 300,
+    });
     const observer =
       "IntersectionObserver" in window
         ? new IntersectionObserver(

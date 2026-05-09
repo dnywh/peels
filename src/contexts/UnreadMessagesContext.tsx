@@ -11,6 +11,7 @@ import {
 import { createClient } from "@/utils/supabase/client";
 import { usePathname } from "next/navigation";
 import { getChatThreadIdFromPathname } from "@/features/chat/chatRoutes";
+import { scheduleIdleTask } from "@/utils/scheduleIdleTask";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 
 type ThreadReadStatus = Record<string, boolean>;
@@ -33,29 +34,6 @@ const UnreadMessagesContext = createContext<
   UnreadMessagesContextValue | undefined
 >(undefined);
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
-
-type IdleWindow = Window & {
-  requestIdleCallback?: (
-    callback: () => void,
-    options?: { timeout?: number }
-  ) => number;
-  cancelIdleCallback?: (handle: number) => void;
-};
-
-function scheduleIdleTask(callback: () => void) {
-  const idleWindow = window as IdleWindow;
-
-  if (typeof idleWindow.requestIdleCallback === "function") {
-    const idleCallbackId = idleWindow.requestIdleCallback(callback, {
-      timeout: 2_000,
-    });
-
-    return () => idleWindow.cancelIdleCallback?.(idleCallbackId);
-  }
-
-  const timeoutId = globalThis.setTimeout(callback, 250);
-  return () => globalThis.clearTimeout(timeoutId);
-}
 
 export function UnreadMessagesProvider({ children }: PropsWithChildren) {
   const [unreadCount, setUnreadCount] = useState(0);

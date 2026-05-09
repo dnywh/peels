@@ -17,7 +17,7 @@ These instructions apply to the whole repository.
 ## Auth, Sessions, and Public-Page Performance
 
 - `src/proxy.ts` intentionally does not refresh Supabase auth on every request. Public pages should use `createSignedOutResponse()` so their initial response does not wait on `supabase.auth.getUser()`.
-- Only add paths to `authRequiredPathPrefixes` when the first server response must know auth state, such as protected routes, auth callbacks, and guest-only auth pages. Adding public routes there can regress TTFB, FCP, and LCP.
+- Only add paths to `authRequiredPathPrefixes` when the first server response must know auth state, such as protected routes, auth callbacks, guest-only auth pages, or routes that server-render private/public data differently. `/map` and `/listings` belong there because they call server `auth.getUser()` before choosing listing data sources.
 - Server components that branch on auth should treat `authStateHeaderName` as a forwarded proxy hint, not proof that public routes have performed a fresh auth lookup. Public pages are deliberately signed-out on the initial server render until client auth resolves.
 - Keep auth-aware public UI in small client slots or enhancements, such as `AccountButton`, `FooterLocaleSlot`, and unread chat dots. It is acceptable for these to appear or update after first paint.
 - Keep `UnreadMessagesProvider` scoped to tab-bar and chat layouts rather than the root layout. It should not make public HTML wait on Supabase, and its initial auth/unread check should remain idle or otherwise deferred.

@@ -33,6 +33,8 @@ const authRequiredPathPrefixes = [
   "/auth",
   "/chats",
   "/forgot-password",
+  "/listings",
+  "/map",
   "/profile",
   "/sign-in",
   "/sign-up",
@@ -46,7 +48,7 @@ function shouldUpdateSession(request: NextRequest) {
 
 export async function proxy(request: NextRequest) {
   // Public routes deliberately skip Supabase auth refresh for first-paint
-  // performance. Auth-aware client slots converge after hydration.
+  // performance. Routes that server-render auth-aware data stay above.
   const response = shouldUpdateSession(request)
     ? await updateSession(request)
     : createSignedOutResponse(request);

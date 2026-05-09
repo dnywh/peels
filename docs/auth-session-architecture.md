@@ -8,9 +8,9 @@ Peels keeps public pages fast by avoiding a server-side Supabase auth refresh un
 
 - Auth-required paths use `updateSession()`. This creates a Supabase server client, calls `supabase.auth.getUser()`, refreshes cookies when needed, forwards `x-peels-auth-state`, and applies auth redirects for protected or guest-only pages.
 - Public paths use `createSignedOutResponse()`. This forwards the current path and a signed-out auth hint without calling Supabase, so pages such as `/`, `/share`, and static content do not block first paint on auth.
-- `authRequiredPathPrefixes` should stay small. Add to it only when the first server response truly needs auth state.
+- `authRequiredPathPrefixes` should stay small. Add to it only when the first server response truly needs auth state. `/map` and `/listings` belong there because they server-render auth-aware listing data before client hydration.
 
-The forwarded auth state is a rendering hint. On public routes, it intentionally says signed-out on the initial server render even if the browser has a valid session cookie. Client-side auth slots can then resolve the real state after hydration.
+The forwarded auth state is a rendering hint. On public routes that do not need server auth, it intentionally says signed-out on the initial server render even if the browser has a valid session cookie. Client-side auth slots can then resolve the real state after hydration.
 
 ## Locale Behaviour
 
@@ -38,7 +38,7 @@ The unread check should stay deferred so it does not delay public HTML. If the u
 
 The homepage should server-render useful static content first, then hydrate dynamism later.
 
-- `IntroHeader` owns the static hero frame and primary calls to action.
+- `IntroHeader` reserves the hero visual space without server-rendering the decorative map/avatar/pin frame.
 - `DeferredIntroHeaderRotator` loads the animated hero rotator after the first paint/idle window.
 - `PeelsHowItWorks` keeps crawlable explanatory content in the initial HTML.
 - Deferred demo components load map, listing, chat, and photo demos after intersection or idle.
