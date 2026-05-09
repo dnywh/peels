@@ -7,7 +7,7 @@ import { Marker, NavigationControl } from "react-map-gl/maplibre";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import {
-  getAnonymousResidentialListingTeaser,
+  getAnonymousSensitiveListingTeaser,
   getListingDisplayName,
 } from "@/utils/listingUtils";
 import { parseTextWithLinks } from "@/utils/linkUtils";
@@ -96,7 +96,7 @@ const ListingRead = memo(function Listing({
   const rawRealListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
   const realListing = rawRealListing
-    ? getAnonymousResidentialListingTeaser(rawRealListing, user)
+    ? getAnonymousSensitiveListingTeaser(rawRealListing, user)
     : null;
   const listingForDisplay = demoListing ?? realListing;
 

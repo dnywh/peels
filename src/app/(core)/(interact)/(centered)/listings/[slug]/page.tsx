@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import {
   generateListingJsonLd,
   generateListingMetadata,
-  getAnonymousResidentialListingTeaser,
+  getAnonymousSensitiveListingTeaser,
   getListingDisplayName,
 } from "@/utils/listingUtils";
 import { getListingSeoOptions } from "@/utils/listingSeo";
@@ -80,7 +80,7 @@ export default async function ListingPage({
 
   const listingSeoOptions = await getListingSeoOptions();
   const listingJsonLd = generateListingJsonLd(listing, user, listingSeoOptions);
-  const listingForRead = getAnonymousResidentialListingTeaser(listing, user);
+  const listingForRead = getAnonymousSensitiveListingTeaser(listing, user);
   const listingDisplayName = getListingDisplayName(
     listingForRead,
     user,

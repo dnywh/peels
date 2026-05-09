@@ -66,7 +66,7 @@ type AvatarDescriptor = {
   alt: string;
 } | null;
 
-type AnonymousResidentialListingTeaserField =
+type AnonymousSensitiveListingTeaserField =
   | "name"
   | "owner_first_name"
   | "owner_avatar"
@@ -78,11 +78,11 @@ type AnonymousResidentialListingTeaserField =
   | "links"
   | "coordinates";
 
-type AnonymousResidentialListingTeaser<T extends ListingLike> = Omit<
+type AnonymousSensitiveListingTeaser<T extends ListingLike> = Omit<
   T,
-  AnonymousResidentialListingTeaserField
+  AnonymousSensitiveListingTeaserField
 > &
-  Record<AnonymousResidentialListingTeaserField, null>;
+  Record<AnonymousSensitiveListingTeaserField, null>;
 
 type GenerateListingMetadataOptions = ListingSeoOptions & {
   includeFullMetadata?: boolean;
@@ -270,7 +270,7 @@ export function getListingAvatar(
   if (listing.is_demo) {
     const demoAvatarFilename = listing.avatar?.split("/").pop();
     const demoListingDisplayName =
-      listing.name || listing.owner_first_name || "Listing";
+      listing.name || listing.owner_first_name || seoCopy.fallbackListingName;
 
     return {
       isDemo: true,
@@ -325,10 +325,10 @@ export function getListingOwnerAvatar(
   };
 }
 
-export function getAnonymousResidentialListingTeaser<T extends ListingLike>(
+export function getAnonymousSensitiveListingTeaser<T extends ListingLike>(
   listing: T,
   user: ListingUser
-): T | AnonymousResidentialListingTeaser<T> {
+): T | AnonymousSensitiveListingTeaser<T> {
   const listingType = normaliseListingType(listing.type);
 
   if (!isSensitiveAnonymousListing(listingType, user)) {
@@ -347,7 +347,7 @@ export function getAnonymousResidentialListingTeaser<T extends ListingLike>(
     photos: null,
     links: null,
     coordinates: null,
-  } as AnonymousResidentialListingTeaser<T>;
+  } as AnonymousSensitiveListingTeaser<T>;
 }
 
 export function getProfileAvatarSource(

@@ -5,7 +5,7 @@ import {
   generateListingDescription,
   generateListingJsonLd,
   generateListingMetadata,
-  getAnonymousResidentialListingTeaser,
+  getAnonymousSensitiveListingTeaser,
   getListingAvatar,
 } from "./listingUtils.ts";
 import type { Listing } from "../types/listing.ts";
@@ -298,7 +298,7 @@ test("anonymous unknown-type metadata emits a private teaser", () => {
     includeFullMetadata: true,
   });
   const description = String(metadata.description);
-  const teaser = getAnonymousResidentialListingTeaser(unknownTypeListing, null);
+  const teaser = getAnonymousSensitiveListingTeaser(unknownTypeListing, null);
 
   assert.deepEqual(metadata.title, {
     absolute: "Private Host",
