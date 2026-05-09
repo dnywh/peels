@@ -34,7 +34,7 @@ export type ListingSeoCopy = {
   fallbackListingName: string;
   residentialConnectName: string;
   residentialIntro: (values: { name: string; location?: string }) => string;
-  nonResidentialIntro: (values: { name: string; location?: string }) => string;
+  businessIntro: (values: { name: string; location?: string }) => string;
   connect: (values: {
     name: string;
     siteName: string;
@@ -94,8 +94,8 @@ const defaultListingSeoCopy: ListingSeoCopy = {
   residentialConnectName: "them",
   residentialIntro: ({ name, location }) =>
     `${name} accepts food scraps for composting${location ? ` in ${location}` : ""}.`,
-  nonResidentialIntro: ({ name, location }) =>
-    `${name} helps people compost food scraps${location ? ` in ${location}` : ""}.`,
+  businessIntro: ({ name, location }) =>
+    `${name} shares compostable material for composting${location ? ` in ${location}` : ""}.`,
   connect: ({ name, siteName, explainer }) =>
     `Connect with ${name} on ${siteName}, ${explainer}.`,
   acceptedItemsLabel: "Accepted food scraps",
@@ -394,7 +394,9 @@ export function generateListingDescription(
   const listingType = normaliseListingType(listing.type);
   const isSensitiveAnonymous = isSensitiveAnonymousListing(listingType, user);
   const shouldUseResidentialIntro =
-    listingType === "residential" || isSensitiveAnonymous;
+    listingType === "residential" ||
+    listingType === "community" ||
+    isSensitiveAnonymous;
   const shouldOmitListingDescription =
     listingType === "residential" || isSensitiveAnonymous;
   const listingFullLocation = getListingLocation(listing, options.locale);
@@ -403,7 +405,7 @@ export function generateListingDescription(
         name: listingDisplayName,
         location: listingFullLocation || undefined,
       })
-    : seoCopy.nonResidentialIntro({
+    : seoCopy.businessIntro({
         name: listingDisplayName,
         location: listingFullLocation || undefined,
       });

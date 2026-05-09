@@ -112,7 +112,7 @@ test("public listing pages expose crawlable listing metadata", async ({
 
   const description = await getMetaDescription(page);
   expect(description).toContain(
-    "Marrickville Neighbourhood Compost helps people compost food scraps"
+    "Marrickville Neighbourhood Compost accepts food scraps for composting"
   );
 
   const jsonLdScripts = await getListingJsonLdScripts(page);
@@ -221,7 +221,7 @@ test("public listing pages localise Spanish SEO metadata", async ({
 
     const description = await getMetaDescription(page);
     expect(description).toContain(
-      "Marrickville Neighbourhood Compost ayuda a compostar restos de comida"
+      "Marrickville Neighbourhood Compost acepta restos de comida para compostar"
     );
     expect(description).not.toContain("helps people compost food scraps");
 
@@ -230,7 +230,7 @@ test("public listing pages localise Spanish SEO metadata", async ({
       jsonLdScripts.some(
         (script) =>
           script.includes('"inLanguage":"es"') &&
-          script.includes("ayuda a compostar restos de comida")
+          script.includes("acepta restos de comida para compostar")
       )
     ).toBeTruthy();
 
@@ -300,7 +300,7 @@ test("public listing pages localise Brazilian Portuguese SEO metadata", async ({
 
     const description = await getMetaDescription(page);
     expect(description).toContain(
-      "Marrickville Neighbourhood Compost ajuda pessoas a compostar restos de comida"
+      "Marrickville Neighbourhood Compost aceita restos de comida para compostagem"
     );
     expect(description).not.toContain("helps people compost food scraps");
   } finally {
@@ -338,7 +338,7 @@ test("map listing URLs localise metadata without changing canonical", async ({
 
     const description = await getMetaDescription(page);
     expect(description).toContain(
-      "Marrickville Neighbourhood Compost ayuda a compostar restos de comida"
+      "Marrickville Neighbourhood Compost acepta restos de comida para compostar"
     );
   } finally {
     await context.close();

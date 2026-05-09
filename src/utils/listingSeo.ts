@@ -20,10 +20,10 @@ export async function getListingSeoOptions() {
       location
         ? t("residentialIntroWithLocation", { name, location })
         : t("residentialIntro", { name }),
-    nonResidentialIntro: ({ name, location }) =>
+    businessIntro: ({ name, location }) =>
       location
-        ? t("nonResidentialIntroWithLocation", { name, location })
-        : t("nonResidentialIntro", { name }),
+        ? t("businessIntroWithLocation", { name, location })
+        : t("businessIntro", { name }),
     connect: ({ name, siteName }) =>
       t("connect", { name, siteName, explainer: t("siteExplainer") }),
     acceptedItemsLabel: t("acceptedItemsLabel"),

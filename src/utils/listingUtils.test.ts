@@ -33,6 +33,17 @@ const communityListing = {
   owner_has_multiple_non_residential_listings: false,
 } satisfies Listing;
 
+const businessListing = {
+  ...communityListing,
+  name: "ACME Coffee Roasters",
+  description:
+    "Collect spent coffee grounds and hessian sacks from the back counter.",
+  accepted_items: ["Coffee grounds", "Hessian sacks"],
+  rejected_items: ["Mixed rubbish"],
+  type: "business",
+  slug: "test-acme-coffee-roasters",
+} satisfies Listing;
+
 const localisedSeoCopies = {
   es: {
     privateHostName: "Anfitrión privado",
@@ -40,8 +51,8 @@ const localisedSeoCopies = {
     residentialConnectName: "esta persona",
     residentialIntro: ({ name, location }) =>
       `${name} acepta restos de comida para compostar${location ? ` en ${location}` : ""}.`,
-    nonResidentialIntro: ({ name, location }) =>
-      `${name} ayuda a compostar restos de comida${location ? ` en ${location}` : ""}.`,
+    businessIntro: ({ name, location }) =>
+      `${name} comparte materiales compostables para compostaje${location ? ` en ${location}` : ""}.`,
     connect: ({ name, siteName, explainer }) =>
       `Contacta con ${name} en ${siteName}, ${explainer}.`,
     acceptedItemsLabel: "Restos de comida aceptados",
@@ -65,8 +76,8 @@ const localisedSeoCopies = {
     residentialConnectName: "dieser Person",
     residentialIntro: ({ name, location }) =>
       `${name} nimmt Lebensmittelreste zum Kompostieren${location ? ` in ${location}` : ""} an.`,
-    nonResidentialIntro: ({ name, location }) =>
-      `${name} hilft Menschen, Lebensmittelreste${location ? ` in ${location}` : ""} zu kompostieren.`,
+    businessIntro: ({ name, location }) =>
+      `${name} gibt kompostierbares Material zum Kompostieren${location ? ` in ${location}` : ""} ab.`,
     connect: ({ name, siteName, explainer }) =>
       `Verbinde dich mit ${name} auf ${siteName}, ${explainer}.`,
     acceptedItemsLabel: "Akzeptierte Lebensmittelreste",
@@ -84,8 +95,8 @@ const localisedSeoCopies = {
     residentialConnectName: "essa pessoa",
     residentialIntro: ({ name, location }) =>
       `${name} aceita restos de comida para compostagem${location ? ` em ${location}` : ""}.`,
-    nonResidentialIntro: ({ name, location }) =>
-      `${name} ajuda pessoas a compostar restos de comida${location ? ` em ${location}` : ""}.`,
+    businessIntro: ({ name, location }) =>
+      `${name} disponibiliza materiais compostáveis para compostagem${location ? ` em ${location}` : ""}.`,
     connect: ({ name, siteName, explainer }) =>
       `Entre em contato com ${name} pelo ${siteName}, ${explainer}.`,
     acceptedItemsLabel: "Restos de comida aceitos",
@@ -103,8 +114,8 @@ const localisedSeoCopies = {
     residentialConnectName: "cette personne",
     residentialIntro: ({ name, location }) =>
       `${name} accepte les restes alimentaires pour le compostage${location ? ` à ${location}` : ""}.`,
-    nonResidentialIntro: ({ name, location }) =>
-      `${name} aide les gens à composter leurs restes alimentaires${location ? ` à ${location}` : ""}.`,
+    businessIntro: ({ name, location }) =>
+      `${name} propose des matières compostables pour le compostage${location ? ` à ${location}` : ""}.`,
     connect: ({ name, siteName, explainer }) =>
       `Contactez ${name} sur ${siteName}, ${explainer}.`,
     acceptedItemsLabel: "Restes alimentaires acceptés",
@@ -134,9 +145,20 @@ test("listing descriptions lead with compost and food-scrap intent", () => {
 
   assert.match(
     description,
-    /^Neighbourhood compost drop-off helps people compost food scraps in Marrickville, Australia\./
+    /^Neighbourhood compost drop-off accepts food scraps for composting in Marrickville, Australia\./
   );
   assert.match(description, /local community hub/);
+});
+
+test("business listing descriptions use neutral compostable-material intent", () => {
+  const description = generateListingDescription(businessListing, null);
+
+  assert.match(
+    description,
+    /^ACME Coffee Roasters shares compostable material for composting in Marrickville, Australia\./
+  );
+  assert.match(description, /spent coffee grounds/);
+  assert.doesNotMatch(description, /helps people compost food scraps/);
 });
 
 test("listing metadata includes the canonical listing path", () => {
@@ -164,7 +186,7 @@ test("listing metadata can emit Spanish compost intent and keywords", () => {
 
   assert.match(
     String(metadata.description),
-    /^Neighbourhood compost drop-off ayuda a compostar restos de comida en Te Aro, Nueva Zelanda\./
+    /^Neighbourhood compost drop-off acepta restos de comida para compostar en Te Aro, Nueva Zelanda\./
   );
 
   assert.ok(Array.isArray(metadata.keywords));
@@ -177,10 +199,10 @@ test("listing metadata can emit Spanish compost intent and keywords", () => {
 
 test("listing metadata supports every configured non-English SEO locale", () => {
   const expectedIntentByLocale = {
-    es: "ayuda a compostar restos de comida",
-    de: "hilft Menschen, Lebensmittelreste",
-    "pt-BR": "ajuda pessoas a compostar restos de comida",
-    fr: "aide les gens à composter leurs restes alimentaires",
+    es: "acepta restos de comida para compostar",
+    de: "nimmt Lebensmittelreste zum Kompostieren",
+    "pt-BR": "aceita restos de comida para compostagem",
+    fr: "accepte les restes alimentaires pour le compostage",
   };
 
   for (const [locale, expectedIntent] of Object.entries(
@@ -385,7 +407,7 @@ test("listing JSON-LD can use localised descriptions, country names, and languag
   assert.equal(jsonLd.inLanguage, "es");
   assert.match(
     jsonLd.description,
-    /^Neighbourhood compost drop-off ayuda a compostar restos de comida en Te Aro, Nueva Zelanda\./
+    /^Neighbourhood compost drop-off acepta restos de comida para compostar en Te Aro, Nueva Zelanda\./
   );
   assert.ok(jsonLd.about.address);
   assert.equal(jsonLd.about.address.addressCountry, "Nueva Zelanda");
