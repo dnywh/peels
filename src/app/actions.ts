@@ -633,8 +633,11 @@ export const deleteListingAction = async (
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!user || !session?.access_token) {
     return redirect("/sign-in");
   }
   // Then continue with the delete listing
@@ -644,10 +647,11 @@ export const deleteListingAction = async (
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          Authorization: `Bearer ${session.access_token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ slug }), // Send the slug in the request body
+        body: JSON.stringify({ slug }),
       }
     );
 
@@ -689,8 +693,11 @@ export const deleteAccountAction = async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!user || !session?.access_token) {
     return redirect("/sign-in");
   }
 
@@ -700,25 +707,24 @@ export const deleteAccountAction = async () => {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          Authorization: `Bearer ${session.access_token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id }),
       }
     );
 
     console.log("Response status:", response.status);
     console.log("Response ok:", response.ok);
 
-    // const data = await response.json();
-    // console.log("Response data:", data);
+    const data = await response.json();
 
-    redirectPath = `/sign-in?success=${encodeURIComponent(t("accountDeleted"))}`;
-
-    // if (!response.ok) {
-    //   console.error("Delete account failed:", data);
-    //   redirectPath = `/profile?error=Failed to delete account`
-    // }
+    if (!response.ok) {
+      console.error("Delete account failed:", data);
+      redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
+    } else {
+      redirectPath = `/sign-in?success=${encodeURIComponent(t("accountDeleted"))}`;
+    }
   } catch (error) {
     console.error("Delete account error:", error);
     redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;

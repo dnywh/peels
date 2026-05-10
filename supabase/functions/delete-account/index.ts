@@ -2,6 +2,19 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { deleteListingMedia } from "../_shared/storage-utils.ts";
 
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    status,
+  });
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unexpected error";
+}
+
 serve(async (req) => {
   const supabaseAdmin = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -13,14 +26,34 @@ serve(async (req) => {
       },
     }
   );
-  const { user_id } = await req.json();
+
   try {
+    if (req.method !== "POST") {
+      return jsonResponse({ error: "Method not allowed" }, 405);
+    }
+
+    const authHeader = req.headers.get("Authorization");
+    const accessToken = authHeader?.replace("Bearer ", "");
+
+    if (!accessToken) {
+      return jsonResponse({ error: "Missing access token" }, 401);
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseAdmin.auth.getUser(accessToken);
+
+    if (userError || !user) {
+      return jsonResponse({ error: "Invalid access token" }, 401);
+    }
+
     // Get the user's profile to find avatar
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("avatar")
-      .eq("id", user_id)
-      .single();
+      .eq("id", user.id)
+      .maybeSingle();
     if (profileError) {
       console.error("Profile fetch error:", profileError);
       throw profileError;
@@ -40,7 +73,7 @@ serve(async (req) => {
     const { data: listings, error: listingsError } = await supabaseAdmin
       .from("listings")
       .select("slug")
-      .eq("owner_id", user_id);
+      .eq("owner_id", user.id);
     if (listingsError) {
       console.error("Listings fetch error:", listingsError);
       throw listingsError;
@@ -59,35 +92,15 @@ serve(async (req) => {
     }
     // Delete auth user (cascade will handle the rest)
     const { error: deleteUserError } =
-      await supabaseAdmin.auth.admin.deleteUser(user_id);
+      await supabaseAdmin.auth.admin.deleteUser(user.id);
     if (deleteUserError) {
       console.error("Auth user deletion error:", deleteUserError);
       throw deleteUserError;
     }
     console.log("Deleted auth user");
-    return new Response(
-      JSON.stringify({
-        success: true,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        status: 200,
-      }
-    );
+    return jsonResponse({ success: true }, 200);
   } catch (error) {
     console.error("Final error:", error);
-    return new Response(
-      JSON.stringify({
-        error: error.message,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        status: 400,
-      }
-    );
+    return jsonResponse({ error: getErrorMessage(error) }, 400);
   }
 });

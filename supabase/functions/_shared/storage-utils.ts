@@ -21,15 +21,15 @@ export async function deleteListingMedia(
   supabase: SupabaseClient,
   slug: string
 ) {
-  // Get listing media info
+  // Service-role callers use this after authorising the requested listing operation.
   const { data: listing, error: fetchError } = await supabase
-    // We can access the "listings" table here directly as we have a policy set allowing owners access to their full listings
     .from("listings")
     .select("avatar, photos")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
   if (fetchError) throw fetchError;
+  if (!listing) return;
 
   const deletePromises = [];
 

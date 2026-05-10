@@ -2,6 +2,17 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { deleteListingMedia } from "../_shared/storage-utils.ts";
 
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    headers: { "Content-Type": "application/json" },
+    status,
+  });
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unexpected error";
+}
+
 serve(async (req) => {
   const supabaseAdmin = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -13,30 +24,60 @@ serve(async (req) => {
       },
     }
   );
-  const { slug } = await req.json();
 
   try {
+    if (req.method !== "POST") {
+      return jsonResponse({ error: "Method not allowed" }, 405);
+    }
+
+    const { slug } = await req.json();
+
+    if (!slug || typeof slug !== "string") {
+      return jsonResponse({ error: "Missing listing slug" }, 400);
+    }
+
+    const authHeader = req.headers.get("Authorization");
+    const accessToken = authHeader?.replace("Bearer ", "");
+
+    if (!accessToken) {
+      return jsonResponse({ error: "Missing access token" }, 401);
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseAdmin.auth.getUser(accessToken);
+
+    if (userError || !user) {
+      return jsonResponse({ error: "Invalid access token" }, 401);
+    }
+
+    const { data: listing, error: listingError } = await supabaseAdmin
+      .from("listings")
+      .select("owner_id")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (listingError) throw listingError;
+
+    if (!listing || listing.owner_id !== user.id) {
+      return jsonResponse({ error: "Listing not found" }, 404);
+    }
+
     // Delete all media first
     await deleteListingMedia(supabaseAdmin, slug);
 
     // Delete the listing
     const { error: deleteError } = await supabaseAdmin
-      // We can access the "listings" table directly here as we're doing an operation through supabaseAdmin
       .from("listings")
       .delete()
       .eq("slug", slug);
 
     if (deleteError) throw deleteError;
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
+    return jsonResponse({ success: true }, 200);
   } catch (error) {
     console.error("Final error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
-      status: 400,
-    });
+    return jsonResponse({ error: getErrorMessage(error) }, 400);
   }
 });
