@@ -188,25 +188,6 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     }
   }
 
-  // Check if user exists in auth.users
-  const { data: existingAuthUser, error: authError } = await supabase.rpc(
-    "check_if_email_exists",
-    {
-      email_to_check: email,
-    }
-  );
-
-  if (authError) {
-    console.error("Error checking email:", authError);
-    redirectUrl.searchParams.append("error", t("genericLater"));
-    return redirect(redirectUrl.toString());
-  }
-
-  if (existingAuthUser) {
-    redirectUrl.searchParams.append("error", t("accountExists"));
-    return redirect(redirectUrl.toString());
-  }
-
   const {
     data: { user },
     error,
@@ -243,6 +224,20 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
       redirectUrl.searchParams.append("error", t("generic"));
       return redirect(redirectUrl.toString());
     }
+
+    const accountExistsPatterns = [
+      "already registered",
+      "already exists",
+      "User already registered",
+    ];
+    const accountExists = accountExistsPatterns.some((pattern) =>
+      error?.message?.toLowerCase().includes(pattern.toLowerCase())
+    );
+    if (accountExists) {
+      redirectUrl.searchParams.append("error", t("accountExists"));
+      return redirect(redirectUrl.toString());
+    }
+
     // Back to general error catching
     console.error(
       error?.code + " " + error?.message || "No user returned from sign up"

@@ -25,7 +25,7 @@ const getListingData = cache(async (slug: string) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const tableName = user ? "listings_private_data" : "listings_public_data";
+  const tableName = user ? "listing_contact_cards" : "public_listings";
   const selectColumns = user
     ? "name, owner_first_name, photos, type"
     : "name, photos, type";

@@ -113,13 +113,8 @@ const ListingRead = memo(function Listing({
     async function loadExistingThread() {
       if (!supabase) return;
       const { data: thread, error } = await supabase
-        .from("chat_threads_with_participants")
-        .select(
-          `
-          *,
-          chat_messages_with_senders (*)
-        `
-        )
+        .from("chat_threads")
+        .select("id, created_at, listing_id, initiator_id, owner_id")
         .match({
           listing_id: listingId,
           initiator_id: userId,
@@ -132,11 +127,31 @@ const ListingRead = memo(function Listing({
         return;
       }
 
-      setExistingThread(thread);
+      if (!thread) {
+        setExistingThread(null);
+        return;
+      }
+
+      const { data: messages, error: messagesError } = await supabase
+        .from("chat_messages")
+        .select("id, content, created_at, read_at, sender_id, thread_id")
+        .eq("thread_id", thread.id)
+        .order("created_at", { ascending: true });
+
+      if (messagesError) {
+        console.error("Error loading thread messages:", messagesError);
+        return;
+      }
+
+      setExistingThread({
+        ...thread,
+        listing: realListing,
+        messages: messages ?? [],
+      });
     }
 
     loadExistingThread();
-  }, [listingId, listingOwnerId, userId, isDemo, supabase]);
+  }, [listingId, listingOwnerId, userId, isDemo, supabase, realListing]);
 
   const initialZoomLevel = 14;
   const listingDisplayNameCopy = useMemo(

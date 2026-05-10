@@ -30,8 +30,8 @@ const handler = async (_request: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data: messageData, error: messageError } = await supabase
-      .from("chat_messages_with_senders")
-      .select("*, thread:chat_threads_with_participants!thread_id(*)")
+      .from("chat_messages")
+      .select("id, thread_id, sender_id, content")
       .eq("id", record.id)
       .single();
 
@@ -41,30 +41,77 @@ const handler = async (_request: Request): Promise<Response> => {
 
     console.log("Message Data:", messageData);
 
-    // Use the sender name from our view
-    const senderName = messageData.sender_first_name;
+    const { data: threadData, error: threadError } = await supabase
+      .from("chat_threads")
+      .select("id, listing_id, initiator_id, owner_id")
+      .eq("id", messageData.thread_id)
+      .single();
+
+    if (threadError || !threadData) {
+      throw new Error(`Failed to fetch thread data: ${threadError?.message}`);
+    }
+
+    const participantIds = [
+      messageData.sender_id,
+      threadData.initiator_id,
+      threadData.owner_id,
+    ].filter(Boolean);
+
+    const { data: participantProfiles, error: participantProfilesError } =
+      await supabase
+        .from("profile_contact_cards")
+        .select("id, first_name, avatar")
+        .in("id", participantIds);
+
+    if (participantProfilesError) {
+      throw new Error(
+        `Failed to fetch participant profiles: ${participantProfilesError.message}`
+      );
+    }
+
+    const profileById = new Map(
+      (participantProfiles ?? []).map((profile) => [profile.id, profile])
+    );
+
+    const { data: listingData, error: listingError } = await supabase
+      .from("listing_contact_cards")
+      .select(
+        "id, slug, avatar, name, type, area_name, owner_has_multiple_non_residential_listings"
+      )
+      .eq("id", threadData.listing_id)
+      .single();
+
+    if (listingError || !listingData) {
+      throw new Error(`Failed to fetch listing data: ${listingError?.message}`);
+    }
+
+    const senderProfile = profileById.get(messageData.sender_id);
+    const initiatorProfile = profileById.get(threadData.initiator_id);
+    const ownerProfile = profileById.get(threadData.owner_id);
+
+    const senderName = senderProfile?.first_name ?? "Someone";
     console.log("Sender name:", senderName);
 
-    const senderAvatar = messageData.sender_avatar;
+    const senderAvatar = senderProfile?.avatar;
     console.log("Sender avatar:", senderAvatar);
 
-    const listingAvatar = messageData.thread.listing_avatar;
+    const listingAvatar = listingData.avatar;
     console.log("Listing avatar:", listingAvatar);
 
-    const listingSlug = messageData.thread.listing_slug;
+    const listingSlug = listingData.slug ?? "";
     console.log("Listing slug:", listingSlug);
 
-    const listingName = messageData.thread.listing_name;
+    const listingName = listingData.name;
     console.log("Listing name:", listingName);
 
-    const listingType = messageData.thread.listing_type;
+    const listingType = listingData.type;
     console.log("Listing type:", listingType);
 
-    const listingAreaName = messageData.thread.listing_area_name;
+    const listingAreaName = listingData.area_name ?? "";
     console.log("Listing area name:", listingAreaName);
 
     const ownerHasMultipleNonResidentialListings =
-      messageData.thread.owner_has_multiple_non_residential_listings;
+      listingData.owner_has_multiple_non_residential_listings;
     console.log(
       "Owner has multiple non-residential listings:",
       ownerHasMultipleNonResidentialListings
@@ -72,19 +119,23 @@ const handler = async (_request: Request): Promise<Response> => {
 
     // Determine recipient_id (the user who isn't the sender)
     const recipientId =
-      messageData.thread.initiator_id === record.sender_id
-        ? messageData.thread.owner_id
-        : messageData.thread.initiator_id;
+      threadData.initiator_id === messageData.sender_id
+        ? threadData.owner_id
+        : threadData.initiator_id;
+
+    if (!recipientId) {
+      throw new Error(`No recipient found for message ${record.id}`);
+    }
 
     // Determine recipient's role in the chat (listing owner (host) or the thread initiator (donor)?)
     // This ternary seems opposite to what's logical, but it is correct somehow
     const recipientRole =
-      messageData.thread.owner_id === record.sender_id ? "initiator" : "owner";
+      threadData.owner_id === messageData.sender_id ? "initiator" : "owner";
 
     const recipientName =
-      messageData.thread.owner_id === record.sender_id
-        ? messageData.thread.initiator_first_name
-        : messageData.thread.owner_first_name;
+      (threadData.owner_id === messageData.sender_id
+        ? initiatorProfile?.first_name
+        : ownerProfile?.first_name) ?? "";
 
     // Determine which avatar(s) to show to the recipient
     let avatarMajorUrl: string | null = null;

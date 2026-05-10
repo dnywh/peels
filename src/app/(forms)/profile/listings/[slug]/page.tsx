@@ -41,7 +41,7 @@ export default async function EditListingPage({
       .eq("id", user.id)
       .single(),
     supabase
-      .from("listings_private_data")
+      .from("listing_contact_cards")
       .select(
         `
           id,

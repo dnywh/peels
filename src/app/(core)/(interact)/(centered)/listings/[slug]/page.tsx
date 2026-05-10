@@ -43,7 +43,7 @@ const getListingData = cache(async (slug: string) => {
     data: { user },
   } = await supabase.auth.getUser();
   const { data: listing } = await supabase
-    .from(user ? "listings_private_data" : "listings_public_data")
+    .from(user ? "listing_contact_cards" : "public_listings")
     .select()
     .match({ slug })
     .single();

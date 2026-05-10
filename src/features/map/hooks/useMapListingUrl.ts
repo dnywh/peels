@@ -57,7 +57,7 @@ export function useMapListingUrl({
     [t]
   );
 
-  const tableName = user ? "listings_private_data" : "listings_public_data";
+  const tableName = user ? "listing_contact_cards" : "public_listings";
   const [listingSlug, setListingSlug] = useState<string | null>(
     initialListingSlug ?? null
   );

@@ -1,6 +1,5 @@
-// Shared listing types mirroring the Supabase `listings_public_data` and
-// `listings_private_data` views. Used by the map feature and the listings
-// pages.
+// Shared listing types mirroring the Supabase public listing and authenticated
+// listing contact read models. Used by the map feature and the listings pages.
 
 export type ListingType = "business" | "community" | "residential";
 
@@ -56,9 +55,8 @@ export type DeleteListingResult = {
 };
 
 /**
- * Shape of a row from `listings_public_data` (anonymous readers) and
- * `listings_private_data` (authenticated readers). Owner-scoped fields are
- * only populated on the private view and therefore optional.
+ * Shape of a listing read model row. Owner-scoped fields are only populated on
+ * authenticated listing contact rows and therefore optional.
  */
 export interface Listing {
   id: number;

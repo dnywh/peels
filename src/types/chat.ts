@@ -28,6 +28,7 @@ export type ChatMessageRecord = {
 
 export type ChatThreadBase = {
   id: string;
+  created_at?: string | null;
   initiator_id?: string | null;
   initiator_first_name?: string | null;
   initiator_avatar?: string | null;
@@ -37,8 +38,8 @@ export type ChatThreadBase = {
 };
 
 export type ChatThreadRecord = ChatThreadBase & {
-  chat_messages_with_senders?: ChatMessageRecord[] | null;
   chat_messages?: ChatMessageRecord[] | null;
+  messages?: ChatMessageRecord[] | null;
 };
 
 export type ChatThreadPreviewRecord = ChatThreadBase & {
