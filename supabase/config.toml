@@ -285,7 +285,7 @@ verify_jwt = true
 
 [functions.send-email-for-new-chat-message]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 
 [functions.send-email-for-new-feature]
 enabled = true

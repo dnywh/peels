@@ -103,6 +103,15 @@ Security-definer helper functions live in `private`, not `public`. Public securi
 
 The current helper functions refresh read-model rows, enforce chat message/thread integrity, and support auth/profile setup.
 
+Chat message email notifications are sent through the `send-email-for-new-chat-message` Edge Function. That function is invoked by a database trigger, not by browser clients, so it has `verify_jwt = false` and performs its own shared-secret check with `PEELS_CHAT_MESSAGE_WEBHOOK_SECRET`.
+
+The same secret must exist in two places:
+
+- Supabase Edge Function secrets as `PEELS_CHAT_MESSAGE_WEBHOOK_SECRET`.
+- Supabase Vault as `PEELS_CHAT_MESSAGE_WEBHOOK_SECRET`, so the database trigger can send it in the `x-peels-webhook-secret` header.
+
+Do not use the public anon key as the protection boundary for this webhook. The function holds a service-role client so the caller must be authenticated by a non-public secret.
+
 ## Change rules
 
 - Add forward migrations only; do not edit historical migrations once they may have been applied to a preview or production branch.

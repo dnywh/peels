@@ -13,6 +13,18 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const handler = async (_request: Request): Promise<Response> => {
   try {
+    const webhookSecret = Deno.env.get("PEELS_CHAT_MESSAGE_WEBHOOK_SECRET");
+    if (!webhookSecret) {
+      throw new Error("Missing required environment variables");
+    }
+
+    if (_request.headers.get("x-peels-webhook-secret") !== webhookSecret) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // Prepare data
     const { record } = await _request.json();
     if (!record) throw new Error("No record provided");
