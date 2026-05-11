@@ -72,7 +72,7 @@ serve(async (req) => {
     // Fetch all listings for the user to delete their avatars
     const { data: listings, error: listingsError } = await supabaseAdmin
       .from("listings")
-      .select("slug, avatar, photos")
+      .select("id, slug, avatar, photos")
       .eq("owner_id", user.id);
     if (listingsError) {
       console.error("Listings fetch error:", listingsError);
@@ -80,16 +80,12 @@ serve(async (req) => {
     }
     // Delete media for each listing
     for (const listing of listings ?? []) {
-      if (!listing.slug) {
-        console.warn("Skipping listing media deletion because slug is missing");
-        continue;
-      }
-
       try {
         await deleteListingMedia(supabaseAdmin, listing);
       } catch (error) {
+        const listingLabel = listing.slug ?? `id:${listing.id}`;
         console.error(
-          `Error deleting media for listing ${listing.slug}:`,
+          `Error deleting media for listing ${listingLabel}:`,
           error
         );
         throw error;
