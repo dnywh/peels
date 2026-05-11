@@ -11,8 +11,24 @@ import { render } from "npm:@react-email/render";
 const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 const handler = async (_request: Request): Promise<Response> => {
   try {
+    if (_request.method !== "POST") {
+      return jsonResponse({ error: "Method not allowed" }, 405);
+    }
+
+    const contentType = _request.headers.get("Content-Type");
+    if (!contentType?.toLowerCase().includes("application/json")) {
+      return jsonResponse({ error: "Expected JSON request body" }, 400);
+    }
+
     const webhookSecret = Deno.env.get("PEELS_CHAT_MESSAGE_WEBHOOK_SECRET");
     if (!webhookSecret) {
       throw new Error("Missing required environment variables");
@@ -26,8 +42,17 @@ const handler = async (_request: Request): Promise<Response> => {
     }
 
     // Prepare data
-    const { record } = await _request.json();
-    if (!record) throw new Error("No record provided");
+    let payload: { record?: { id?: unknown; thread_id?: unknown } };
+    try {
+      payload = await _request.json();
+    } catch (_error) {
+      return jsonResponse({ error: "Invalid JSON request body" }, 400);
+    }
+
+    const { record } = payload;
+    if (!record?.id || typeof record.id !== "string") {
+      return jsonResponse({ error: "No record provided" }, 400);
+    }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
 
@@ -257,10 +282,7 @@ const handler = async (_request: Request): Promise<Response> => {
     });
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 };
 

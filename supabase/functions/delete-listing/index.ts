@@ -16,7 +16,14 @@ serve(async (req) => {
       return jsonResponse({ error: "Method not allowed" }, 405);
     }
 
-    const { slug } = await req.json();
+    let payload: { slug?: unknown };
+    try {
+      payload = await req.json();
+    } catch (_error) {
+      return jsonResponse({ error: "Invalid JSON request body" }, 400);
+    }
+
+    const { slug } = payload;
 
     if (!slug || typeof slug !== "string") {
       return jsonResponse({ error: "Missing listing slug" }, 400);
