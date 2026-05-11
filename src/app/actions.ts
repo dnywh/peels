@@ -691,6 +691,7 @@ export const deleteListingAction = async (
 export const deleteAccountAction = async () => {
   const t = await getTranslations("Errors");
   let redirectPath: string | null = null;
+  let shouldSignOut = false;
 
   const supabase = await createClient();
   const {
@@ -726,13 +727,16 @@ export const deleteAccountAction = async () => {
       console.error("Delete account failed:", data);
       redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
     } else {
+      shouldSignOut = true;
       redirectPath = `/sign-in?success=${encodeURIComponent(t("accountDeleted"))}`;
     }
   } catch (error) {
     console.error("Delete account error:", error);
     redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
   } finally {
-    await supabase.auth.signOut();
+    if (shouldSignOut) {
+      await supabase.auth.signOut();
+    }
     if (redirectPath) {
       return redirect(redirectPath);
     }

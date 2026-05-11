@@ -275,6 +275,18 @@ inspector_port = 8084
 enabled = true
 verify_jwt = false
 
+[functions.delete-account]
+enabled = true
+verify_jwt = true
+
+[functions.delete-listing]
+enabled = true
+verify_jwt = true
+
+[functions.send-email-for-new-chat-message]
+enabled = true
+verify_jwt = true
+
 [analytics]
 enabled = true
 port = 54337

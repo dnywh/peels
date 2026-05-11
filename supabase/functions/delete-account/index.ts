@@ -17,17 +17,6 @@ function getErrorMessage(error: unknown) {
 }
 
 serve(async (req) => {
-  const supabaseAdmin = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  );
-
   try {
     if (req.method !== "POST") {
       return jsonResponse({ error: "Method not allowed" }, 405);
@@ -38,6 +27,21 @@ serve(async (req) => {
     if (!accessToken) {
       return jsonResponse({ error: "Missing access token" }, 401);
     }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      console.error("delete-account is missing required Supabase env vars");
+      return jsonResponse({ error: "Function misconfigured" }, 500);
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
 
     const {
       data: { user },

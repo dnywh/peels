@@ -16,10 +16,8 @@ const handler = async (_request: Request): Promise<Response> => {
     // Prepare data
     const { record } = await _request.json();
     if (!record) throw new Error("No record provided");
-    console.log("Record:", record);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    console.log("Supabase URL:", supabaseUrl);
 
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (
@@ -33,6 +31,7 @@ const handler = async (_request: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(RESEND_API_KEY);
+    console.log("Processing chat message email", { messageId: record.id });
 
     const { data: messageData, error: messageError } = await supabase
       .from("chat_messages")
@@ -43,8 +42,6 @@ const handler = async (_request: Request): Promise<Response> => {
     if (messageError || !messageData) {
       throw new Error(`Failed to fetch message data: ${messageError?.message}`);
     }
-
-    console.log("Message Data:", messageData);
 
     const { data: threadData, error: threadError } = await supabase
       .from("chat_threads")
@@ -95,32 +92,21 @@ const handler = async (_request: Request): Promise<Response> => {
     const ownerProfile = profileById.get(threadData.owner_id);
 
     const senderName = senderProfile?.first_name ?? "Someone";
-    console.log("Sender name:", senderName);
 
     const senderAvatar = senderProfile?.avatar;
-    console.log("Sender avatar:", senderAvatar);
 
     const listingAvatar = listingData.avatar;
-    console.log("Listing avatar:", listingAvatar);
 
     const listingSlug = listingData.slug ?? "";
-    console.log("Listing slug:", listingSlug);
 
     const listingName = listingData.name;
-    console.log("Listing name:", listingName);
 
     const listingType = listingData.type;
-    console.log("Listing type:", listingType);
 
     const listingAreaName = listingData.area_name ?? "";
-    console.log("Listing area name:", listingAreaName);
 
     const ownerHasMultipleNonResidentialListings =
       listingData.owner_has_multiple_non_residential_listings;
-    console.log(
-      "Owner has multiple non-residential listings:",
-      ownerHasMultipleNonResidentialListings
-    );
 
     // Determine recipient_id (the user who isn't the sender)
     const recipientId =
@@ -152,7 +138,6 @@ const handler = async (_request: Request): Promise<Response> => {
       avatarMajorUrl = senderAvatar;
       avatarMajorBucket = "avatars";
       avatarMinorUrl = null; // No secondary avatar needed
-      console.log("Recipient is owner. Showing sender avatar:", senderAvatar);
     } else {
       // If the recipient is the initiator (donor/guest)
       if (listingType === "residential") {
@@ -161,39 +146,23 @@ const handler = async (_request: Request): Promise<Response> => {
         avatarMajorUrl = senderAvatar;
         avatarMajorBucket = "avatars";
         avatarMinorUrl = null; // No secondary avatar needed
-        console.log(
-          "Recipient is initiator (residential). Showing sender avatar:",
-          senderAvatar
-        );
       } else {
         // For non-residential listings, show the listing's avatar as primary
         // and the sender's (host's) avatar as secondary.
         avatarMajorUrl = listingAvatar;
         avatarMajorBucket = "listing_avatars";
         avatarMinorUrl = senderAvatar;
-        console.log(
-          "Recipient is initiator (non-residential). Showing listing avatar:",
-          listingAvatar,
-          "and sender avatar:",
-          senderAvatar
-        );
       }
     }
-
-    console.log("Sender ID from chat_messages:", record.sender_id);
-    console.log("Recipient ID from chat_threads:", recipientId);
-    console.log("Message:", record.content);
-    console.log("Recipient Role:", recipientRole);
 
     // Do auth admin query to get recipient email (keeping this pattern for security)
     // TODO: Minify this query to just ask for the email address
     const { data: recipientData, error: recipientError } =
       await supabase.auth.admin.getUserById(recipientId);
-    console.log("Recipient data:", recipientData);
-    if (recipientError) console.log("Recipient error:", recipientError);
+    if (recipientError)
+      console.error("Recipient lookup error:", recipientError);
 
     const recipientEmail = recipientData?.user?.email;
-    console.log("Recipient Email:", recipientEmail);
 
     if (!recipientEmail) {
       throw new Error(`No email found for recipient ${recipientId}`);
