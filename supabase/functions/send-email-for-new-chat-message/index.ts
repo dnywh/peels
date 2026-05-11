@@ -35,10 +35,7 @@ const handler = async (_request: Request): Promise<Response> => {
     }
 
     if (_request.headers.get("x-peels-webhook-secret") !== webhookSecret) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
     // Prepare data
