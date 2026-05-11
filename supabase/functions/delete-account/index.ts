@@ -72,7 +72,7 @@ serve(async (req) => {
     // Fetch all listings for the user to delete their avatars
     const { data: listings, error: listingsError } = await supabaseAdmin
       .from("listings")
-      .select("slug")
+      .select("slug, avatar, photos")
       .eq("owner_id", user.id);
     if (listingsError) {
       console.error("Listings fetch error:", listingsError);
@@ -86,7 +86,7 @@ serve(async (req) => {
       }
 
       try {
-        await deleteListingMedia(supabaseAdmin, listing.slug);
+        await deleteListingMedia(supabaseAdmin, listing);
       } catch (error) {
         console.error(
           `Error deleting media for listing ${listing.slug}:`,

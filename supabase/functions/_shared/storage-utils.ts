@@ -24,16 +24,8 @@ export async function deleteStorageObject(
 
 export async function deleteListingMedia(
   supabase: SupabaseClient,
-  slug: string
+  listing: ListingMedia | null
 ) {
-  // Service-role callers use this after authorising the requested listing operation.
-  const { data: listing, error: fetchError } = await supabase
-    .from("listings")
-    .select("avatar, photos")
-    .eq("slug", slug)
-    .maybeSingle<ListingMedia>();
-
-  if (fetchError) throw fetchError;
   if (!listing) return;
 
   const deletePromises = [];

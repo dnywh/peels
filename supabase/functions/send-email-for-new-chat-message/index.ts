@@ -152,8 +152,8 @@ const handler = async (_request: Request): Promise<Response> => {
       throw new Error(`No recipient found for message ${record.id}`);
     }
 
-    // Determine recipient's role in the chat (listing owner (host) or the thread initiator (donor)?)
-    // This ternary seems opposite to what's logical, but it is correct somehow
+    // recipientRole is the role of the email recipient, not the sender.
+    // If the owner sent the message, the recipient is the initiator; otherwise the recipient is the owner.
     const recipientRole =
       threadData.owner_id === messageData.sender_id ? "initiator" : "owner";
 

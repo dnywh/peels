@@ -61,7 +61,7 @@ serve(async (req) => {
 
     const { data: listing, error: listingError } = await supabaseAdmin
       .from("listings")
-      .select("id, owner_id")
+      .select("id, owner_id, avatar, photos")
       .eq("slug", slug)
       .maybeSingle();
 
@@ -72,7 +72,7 @@ serve(async (req) => {
     }
 
     // Delete all media first
-    await deleteListingMedia(supabaseAdmin, slug);
+    await deleteListingMedia(supabaseAdmin, listing);
 
     // Delete the listing
     const { data: deletedListing, error: deleteError } = await supabaseAdmin
