@@ -1,0 +1,102 @@
+# Supabase data architecture
+
+Peels uses Supabase's Data API deliberately. Tables that are safe API surfaces stay in the exposed `public` schema with RLS and narrow grants. Implementation details and internal-only data live outside the API surface.
+
+This document is safe to keep in the public repo because it describes boundaries and intent, not secrets, keys, or hidden access paths. The database policies and grants remain the source of enforcement.
+
+## Schemas
+
+### `public`
+
+`public` contains the tables and functions the app may reach through the Supabase client. Anything in this schema should be treated as potentially API-addressable, so tables need RLS enabled and role grants should be explicit.
+
+The main public tables are split into two groups:
+
+- Source-of-truth tables that store real application records.
+- Read-model tables that expose deliberately shaped data to a specific audience.
+
+### `private`
+
+`private` is not an exposed Data API schema. It is for database implementation details such as trigger functions, security-definer helpers, and internal-only tables.
+
+Browser clients should not query this schema. Server-side service-role code may use it for trusted internal work when needed.
+
+## Source-of-truth tables
+
+### `public.profiles`
+
+Stores private profile state for each user, including fields that should not be broadly readable through the API. It is not a public profile directory.
+
+Direct reads are owner-scoped. Public or cross-user display needs should use `profile_contact_cards`.
+
+### `public.listings`
+
+Stores full listing records, including owner identity and fields that should not be exposed to signed-out visitors.
+
+Direct writes stay on the base table so listing create/edit/delete flows operate on the canonical record. Public browsing should use `public_listings`; authenticated listing/contact UI should use `listing_contact_cards`.
+
+### `public.chat_threads`
+
+Stores chat thread membership and listing context. Access is participant-scoped through RLS.
+
+The app composes richer chat payloads in TypeScript instead of exposing privileged joined views.
+
+### `public.chat_messages`
+
+Stores chat messages. Access is participant-scoped through RLS, with trigger checks for message sender integrity and rate limits.
+
+### `private.growth_tracking`
+
+Stores internal growth tracking records. It is not part of the client Data API and should be read or written only by trusted server-side or database code.
+
+## Read-model tables
+
+### `public.public_listings`
+
+Signed-out safe listing catalogue used by map, SEO, sitemap, homepage, and public listing pages.
+
+This table intentionally includes public listing content such as description, accepted items, rejected items, type, area/country, coordinates, slug, and low-sensitivity presentation metadata.
+
+Residential listings keep their description, accepted items, and rejected items public, but owner identity and residential media are hidden:
+
+- `name` is `null` for residential rows.
+- `photos` is `null` for residential rows.
+- `avatar` is `null` for residential rows.
+- `owner_id`, `visibility`, raw `location`, and profile fields are not exposed.
+
+Rows are maintained by database triggers from `public.listings`.
+
+### `public.listing_contact_cards`
+
+Authenticated listing/contact read model for visible listings, own listings, and chat participant flows.
+
+It includes listing data plus the owner id and safe owner display fields needed to start or display chats. It is still protected by RLS; it is not a signed-out API.
+
+Rows are maintained by database triggers from `public.listings` and `public.profiles`.
+
+### `public.profile_contact_cards`
+
+Authenticated profile display read model with only:
+
+- `id`
+- `first_name`
+- `avatar`
+
+It is readable for the user themself and for chat participants who need display data. It is not a full profile export.
+
+Rows are maintained by database triggers from `public.profiles`.
+
+## Database helpers
+
+Security-definer helper functions live in `private`, not `public`. Public security-definer functions and public definer views should be avoided because they create confusing API surfaces and Supabase dashboard warnings.
+
+The current helper functions refresh read-model rows, enforce chat message/thread integrity, and support auth/profile setup.
+
+## Change rules
+
+- Add forward migrations only; do not edit historical migrations once they may have been applied to a preview or production branch.
+- Keep `public` tables RLS-enabled.
+- Do not add public security-definer views or functions.
+- Prefer read-model tables for deliberate API shapes when column-level privacy matters.
+- Prefer TypeScript composition for authenticated interaction state such as chat, where materialised joined database views make privacy harder to reason about.
+- Keep internal-only tables in `private` unless there is a clear client API reason not to.
