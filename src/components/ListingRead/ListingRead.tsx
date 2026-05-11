@@ -95,9 +95,13 @@ const ListingRead = memo(function Listing({
   const demoListing = isDemoListing(listing) ? listing : null;
   const rawRealListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
-  const realListing = rawRealListing
-    ? getAnonymousSensitiveListingTeaser(rawRealListing, user)
-    : null;
+  const realListing = useMemo(
+    () =>
+      rawRealListing
+        ? getAnonymousSensitiveListingTeaser(rawRealListing, user)
+        : null,
+    [rawRealListing, user]
+  );
   const listingForDisplay = demoListing ?? realListing;
 
   // Load existing thread if any (only if not in demo mode). Depend on the

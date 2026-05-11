@@ -139,7 +139,9 @@ async function fetchListingContactCards(
 
   const { data, error } = await supabase
     .from("listing_contact_cards")
-    .select("*")
+    .select(
+      "id, owner_id, owner_first_name, owner_avatar, owner_has_multiple_non_residential_listings, type, area_name, name, slug, avatar"
+    )
     .in("id", listingIds);
 
   if (error) {
