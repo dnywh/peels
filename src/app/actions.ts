@@ -217,8 +217,10 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
       "Error running hook URI",
       "Failed to reach hook within maximum time",
     ];
+    const errorMessage = error?.message ?? "";
+    const lowerCaseErrorMessage = errorMessage.toLowerCase();
     const isHookTimeout = hookTimeoutPatterns.some((pattern) =>
-      error?.message?.includes(pattern)
+      errorMessage.includes(pattern)
     );
     if (isHookTimeout) {
       redirectUrl.searchParams.append("error", t("generic"));
@@ -231,7 +233,7 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
       "User already registered",
     ];
     const accountExists = accountExistsPatterns.some((pattern) =>
-      error?.message?.toLowerCase().includes(pattern.toLowerCase())
+      lowerCaseErrorMessage.includes(pattern.toLowerCase())
     );
     if (accountExists) {
       redirectUrl.searchParams.append("error", t("accountExists"));

@@ -57,6 +57,8 @@ Signed-out safe listing catalogue used by map, SEO, sitemap, homepage, and publi
 
 This table intentionally includes public listing content such as description, accepted items, rejected items, type, area/country, coordinates, slug, and low-sensitivity presentation metadata.
 
+`coordinates` is the JSON shape consumed by the app. `latitude` and `longitude` are generated from that same value so map viewport queries can use normal database indexes without exposing or querying the base `listings.location` column directly.
+
 Residential listings keep their description, accepted items, and rejected items public, but owner identity and residential media are hidden:
 
 - `name` is `null` for residential rows.

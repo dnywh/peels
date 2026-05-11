@@ -229,12 +229,9 @@ export async function getChatThreads(
     fetchProfileCards(supabase, profileIds),
     fetchListingContactCards(supabase, listingIds),
     threadIds.length > 0
-      ? supabase
-          .from("chat_messages")
-          .select("id, content, created_at, read_at, sender_id, thread_id")
-          .in("thread_id", threadIds)
-          .order("created_at", { ascending: false })
-          .order("id", { ascending: false })
+      ? supabase.rpc("latest_chat_messages_for_threads", {
+          thread_ids: threadIds,
+        })
       : { data: [], error: null },
   ]);
 
