@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState, memo, useEffect, useMemo } from "react";
+import { Fragment, useState, memo, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 
@@ -102,6 +102,8 @@ const ListingRead = memo(function Listing({
         : null,
     [rawRealListing, user]
   );
+  const realListingRef = useRef(realListing);
+  realListingRef.current = realListing;
   const listingForDisplay = demoListing ?? realListing;
 
   // Load existing thread if any (only if not in demo mode). Depend on the
@@ -149,13 +151,13 @@ const ListingRead = memo(function Listing({
 
       setExistingThread({
         ...thread,
-        listing: realListing,
+        listing: realListingRef.current,
         messages: messages ?? [],
       });
     }
 
     loadExistingThread();
-  }, [listingId, listingOwnerId, userId, isDemo, supabase, realListing]);
+  }, [listingId, listingOwnerId, userId, isDemo, supabase]);
 
   const initialZoomLevel = 14;
   const listingDisplayNameCopy = useMemo(

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBearerToken } from "../_shared/auth.ts";
 import { deleteListingMedia } from "../_shared/storage-utils.ts";
 
 function jsonResponse(body: Record<string, unknown>, status: number) {
@@ -36,8 +37,7 @@ serve(async (req) => {
       return jsonResponse({ error: "Missing listing slug" }, 400);
     }
 
-    const authHeader = req.headers.get("Authorization");
-    const accessToken = authHeader?.replace("Bearer ", "");
+    const accessToken = getBearerToken(req.headers.get("Authorization"));
 
     if (!accessToken) {
       return jsonResponse({ error: "Missing access token" }, 401);

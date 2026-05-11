@@ -1,5 +1,10 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+type ListingMedia = {
+  avatar: string | null;
+  photos: string[] | null;
+};
+
 export async function deleteStorageObject(
   supabase: SupabaseClient,
   bucket: string,
@@ -26,7 +31,7 @@ export async function deleteListingMedia(
     .from("listings")
     .select("avatar, photos")
     .eq("slug", slug)
-    .maybeSingle();
+    .maybeSingle<ListingMedia>();
 
   if (fetchError) throw fetchError;
   if (!listing) return;
