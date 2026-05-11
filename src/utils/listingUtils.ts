@@ -63,20 +63,28 @@ type AvatarDescriptor = {
   alt: string;
 } | null;
 
-type AnonymousSensitiveListingTeaserField =
+type AnonymousSensitiveListingTeaserAlwaysNullField =
   | "name"
   | "owner_first_name"
   | "owner_avatar"
   | "avatar"
   | "photos"
-  | "links"
-  | "coordinates";
+  | "links";
 
 type AnonymousSensitiveListingTeaser<T extends ListingLike> = Omit<
   T,
-  AnonymousSensitiveListingTeaserField
+  | AnonymousSensitiveListingTeaserAlwaysNullField
+  | "description"
+  | "accepted_items"
+  | "rejected_items"
+  | "coordinates"
 > &
-  Record<AnonymousSensitiveListingTeaserField, null>;
+  Record<AnonymousSensitiveListingTeaserAlwaysNullField, null> & {
+    description: T["description"] | null;
+    accepted_items: T["accepted_items"] | null;
+    rejected_items: T["rejected_items"] | null;
+    coordinates: T["coordinates"] | null;
+  };
 
 type GenerateListingMetadataOptions = ListingSeoOptions & {
   includeFullMetadata?: boolean;

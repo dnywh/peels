@@ -658,7 +658,13 @@ export const deleteListingAction = async (
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Error deleting listing:", data.message);
+      const errorMessage =
+        typeof data.error === "string"
+          ? data.error
+          : typeof data.message === "string"
+            ? data.message
+            : t("Errors.failedDeleteListing");
+      console.error("Error deleting listing:", errorMessage);
       return actionError(t("Errors.failedDeleteListing"));
     }
 

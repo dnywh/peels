@@ -10,7 +10,6 @@ import { render } from "npm:@react-email/render";
 // Look up required env variables and API keys from Supabase secrets
 const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const resend = new Resend(RESEND_API_KEY);
 
 const handler = async (_request: Request): Promise<Response> => {
   try {
@@ -23,11 +22,17 @@ const handler = async (_request: Request): Promise<Response> => {
     console.log("Supabase URL:", supabaseUrl);
 
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    if (!supabaseUrl || !supabaseServiceKey || !RESEND_API_KEY) {
+    if (
+      !supabaseUrl ||
+      !supabaseServiceKey ||
+      !RESEND_API_KEY ||
+      !generalEmailAddress
+    ) {
       throw new Error("Missing required environment variables");
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const resend = new Resend(RESEND_API_KEY);
 
     const { data: messageData, error: messageError } = await supabase
       .from("chat_messages")
