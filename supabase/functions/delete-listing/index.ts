@@ -89,6 +89,6 @@ serve(async (req) => {
     return jsonResponse({ success: true }, 200);
   } catch (error) {
     console.error("Final error:", error);
-    return jsonResponse({ error: getErrorMessage(error) }, 400);
+    return jsonResponse({ error: getErrorMessage(error) }, 500);
   }
 });
