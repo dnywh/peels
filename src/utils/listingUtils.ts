@@ -346,7 +346,7 @@ export function getAnonymousSensitiveListingTeaser<T extends ListingLike>(
       : null,
     photos: null,
     links: null,
-    coordinates: null,
+    coordinates: shouldKeepPublicListingContent ? listing.coordinates : null,
   } as AnonymousSensitiveListingTeaser<T>;
 }
 

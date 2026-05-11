@@ -330,6 +330,7 @@ test("anonymous residential teaser keeps public listing content while hiding ide
   assert.equal(teaser.description, residentialListing.description);
   assert.deepEqual(teaser.accepted_items, residentialListing.accepted_items);
   assert.deepEqual(teaser.rejected_items, residentialListing.rejected_items);
+  assert.deepEqual(teaser.coordinates, residentialListing.coordinates);
 });
 
 test("anonymous unknown-type metadata emits a private teaser", () => {
