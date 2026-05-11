@@ -39,7 +39,7 @@ const handler = async (_request: Request): Promise<Response> => {
     }
 
     // Prepare data
-    let payload: { record?: { id?: unknown; thread_id?: unknown } };
+    let payload: { record?: { id?: unknown } };
     try {
       payload = await _request.json();
     } catch (_error) {
@@ -234,7 +234,7 @@ const handler = async (_request: Request): Promise<Response> => {
         senderName,
         recipientName,
         // messageContent: record.content,
-        threadId: record.thread_id,
+        threadId: threadData.id,
         listingSlug,
         listingAreaName,
         recipientRole,
@@ -254,7 +254,7 @@ const handler = async (_request: Request): Promise<Response> => {
           senderName,
           recipientName,
           // messageContent: record.content,
-          threadId: record.thread_id,
+          threadId: threadData.id,
           listingSlug,
           listingAreaName,
           recipientRole,
