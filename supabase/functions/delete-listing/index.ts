@@ -10,10 +10,6 @@ function jsonResponse(body: Record<string, unknown>, status: number) {
   });
 }
 
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Unexpected error";
-}
-
 serve(async (req) => {
   try {
     if (req.method !== "POST") {
@@ -89,6 +85,6 @@ serve(async (req) => {
     return jsonResponse({ success: true }, 200);
   } catch (error) {
     console.error("Final error:", error);
-    return jsonResponse({ error: getErrorMessage(error) }, 500);
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 });

@@ -12,10 +12,6 @@ function jsonResponse(body: Record<string, unknown>, status: number) {
   });
 }
 
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Unexpected error";
-}
-
 serve(async (req) => {
   try {
     if (req.method !== "POST") {
@@ -83,7 +79,12 @@ serve(async (req) => {
       throw listingsError;
     }
     // Delete media for each listing
-    for (const listing of listings) {
+    for (const listing of listings ?? []) {
+      if (!listing.slug) {
+        console.warn("Skipping listing media deletion because slug is missing");
+        continue;
+      }
+
       try {
         await deleteListingMedia(supabaseAdmin, listing.slug);
       } catch (error) {
@@ -105,6 +106,6 @@ serve(async (req) => {
     return jsonResponse({ success: true }, 200);
   } catch (error) {
     console.error("Final error:", error);
-    return jsonResponse({ error: getErrorMessage(error) }, 500);
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 });
