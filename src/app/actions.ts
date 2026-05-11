@@ -71,6 +71,11 @@ type SetDisplayLocaleActionData = {
   locale: Locale;
 };
 
+function getListingMutationData(listingData: ListingDraftInput) {
+  const { id: _id, ...mutationData } = listingData;
+  return mutationData;
+}
+
 function getActionFormData<T>(
   previousStateOrFormData: FormData | InlineActionResult<T>,
   maybeFormData?: FormData
@@ -842,11 +847,20 @@ export const createOrUpdateListingAction = async (
     }
 
     // Insert/update the listing
-    const { data, error } = await supabase
-      .from("listings")
-      .upsert(listingData)
-      .select()
-      .single();
+    const listingMutation = listingData.id
+      ? supabase
+          .from("listings")
+          .update(getListingMutationData(listingData))
+          .eq("id", listingData.id)
+          .select()
+          .single()
+      : supabase
+          .from("listings")
+          .insert(getListingMutationData(listingData))
+          .select()
+          .single();
+
+    const { data, error } = await listingMutation;
 
     if (error) {
       console.error("Supabase error:", error);
