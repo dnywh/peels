@@ -68,9 +68,6 @@ type AnonymousSensitiveListingTeaserField =
   | "owner_first_name"
   | "owner_avatar"
   | "avatar"
-  | "description"
-  | "accepted_items"
-  | "rejected_items"
   | "photos"
   | "links"
   | "coordinates";
@@ -332,15 +329,21 @@ export function getAnonymousSensitiveListingTeaser<T extends ListingLike>(
     return listing;
   }
 
+  const shouldKeepPublicListingContent = listingType === "residential";
+
   return {
     ...listing,
     name: null,
     owner_first_name: null,
     owner_avatar: null,
     avatar: null,
-    description: null,
-    accepted_items: null,
-    rejected_items: null,
+    description: shouldKeepPublicListingContent ? listing.description : null,
+    accepted_items: shouldKeepPublicListingContent
+      ? listing.accepted_items
+      : null,
+    rejected_items: shouldKeepPublicListingContent
+      ? listing.rejected_items
+      : null,
     photos: null,
     links: null,
     coordinates: null,
