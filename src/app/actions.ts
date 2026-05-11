@@ -242,7 +242,9 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
 
     // Back to general error catching
     console.error(
-      error?.code + " " + error?.message || "No user returned from sign up"
+      error
+        ? `${error.code ?? "unknown"} ${error.message ?? "Unknown sign-up error"}`
+        : "No user returned from sign up"
     );
     redirectUrl.searchParams.append(
       "error",
