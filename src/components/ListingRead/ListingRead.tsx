@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState, memo, useEffect, useMemo, useRef } from "react";
+import { Fragment, useState, memo, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 
@@ -102,8 +102,6 @@ const ListingRead = memo(function Listing({
         : null,
     [rawRealListing, user]
   );
-  const realListingRef = useRef(realListing);
-  realListingRef.current = realListing;
   const listingForDisplay = demoListing ?? realListing;
 
   // Load existing thread if any (only if not in demo mode). Depend on the
@@ -113,7 +111,19 @@ const ListingRead = memo(function Listing({
   const listingOwnerId = realListing?.owner_id;
   const userId = user?.id;
   useEffect(() => {
-    if (isDemo || !supabase || !userId || !listingId || !listingOwnerId) return;
+    const listingSnapshot = realListing;
+    if (
+      isDemo ||
+      !supabase ||
+      !userId ||
+      !listingId ||
+      !listingOwnerId ||
+      !listingSnapshot
+    ) {
+      return;
+    }
+
+    let isCurrentRequest = true;
 
     // TODO: Should this only be called when the actual ListingChatDrawer is loaded?
     async function loadExistingThread() {
@@ -134,6 +144,7 @@ const ListingRead = memo(function Listing({
       }
 
       if (!thread) {
+        if (!isCurrentRequest) return;
         setExistingThread(null);
         return;
       }
@@ -149,14 +160,18 @@ const ListingRead = memo(function Listing({
         return;
       }
 
+      if (!isCurrentRequest) return;
       setExistingThread({
         ...thread,
-        listing: realListingRef.current,
+        listing: listingSnapshot,
         messages: messages ?? [],
       });
     }
 
     loadExistingThread();
+    return () => {
+      isCurrentRequest = false;
+    };
   }, [listingId, listingOwnerId, userId, isDemo, supabase]);
 
   const initialZoomLevel = 14;
