@@ -58,7 +58,7 @@ serve(async (req) => {
 
     const { data: listing, error: listingError } = await supabaseAdmin
       .from("listings")
-      .select("owner_id")
+      .select("id, owner_id")
       .eq("slug", slug)
       .maybeSingle();
 
@@ -72,12 +72,19 @@ serve(async (req) => {
     await deleteListingMedia(supabaseAdmin, slug);
 
     // Delete the listing
-    const { error: deleteError } = await supabaseAdmin
+    const { data: deletedListing, error: deleteError } = await supabaseAdmin
       .from("listings")
       .delete()
-      .eq("slug", slug);
+      .eq("id", listing.id)
+      .eq("owner_id", user.id)
+      .select("id")
+      .maybeSingle();
 
     if (deleteError) throw deleteError;
+
+    if (!deletedListing) {
+      return jsonResponse({ error: "Listing not found" }, 404);
+    }
 
     return jsonResponse({ success: true }, 200);
   } catch (error) {

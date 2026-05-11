@@ -639,20 +639,26 @@ export const deleteListingAction = async (
   if (!user || !session?.access_token) {
     return redirect("/sign-in");
   }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Missing Supabase client env vars for listing deletion.");
+    return actionError(t("Errors.generic"));
+  }
+
   // Then continue with the delete listing
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-listing`, // Adjust the endpoint as necessary
-      {
-        method: "POST",
-        headers: {
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          Authorization: `Bearer ${session.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ slug }),
-      }
-    );
+    const response = await fetch(`${supabaseUrl}/functions/v1/delete-listing`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ slug }),
+    });
 
     console.log("Response status:", response.status);
     console.log("Response ok:", response.ok);
@@ -707,18 +713,25 @@ export const deleteAccountAction = async () => {
     return redirect("/sign-in");
   }
 
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-account`,
-      {
-        method: "POST",
-        headers: {
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          Authorization: `Bearer ${session.access_token}`,
-          "Content-Type": "application/json",
-        },
-      }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Missing Supabase client env vars for account deletion.");
+    return redirect(
+      `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`
     );
+  }
+
+  try {
+    const response = await fetch(`${supabaseUrl}/functions/v1/delete-account`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
     console.log("Response status:", response.status);
     console.log("Response ok:", response.ok);
