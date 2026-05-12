@@ -161,10 +161,16 @@ The current helper functions refresh read-model rows, enforce chat message/threa
 
 Chat message email notifications are sent through the `send-email-for-new-chat-message` Edge Function. That function is invoked by a database trigger, not by browser clients, so it has `verify_jwt = false` and performs its own shared-secret check with `PEELS_CHAT_MESSAGE_WEBHOOK_SECRET`.
 
-The same secret must exist in two places:
+The same webhook secret must exist in two places:
 
 - Supabase Edge Function secrets as `PEELS_CHAT_MESSAGE_WEBHOOK_SECRET`.
 - Supabase Vault as `PEELS_CHAT_MESSAGE_WEBHOOK_SECRET`, so the database trigger can send it in the `x-peels-webhook-secret` header.
+
+The database trigger also needs the hosted project URL in Vault:
+
+- Supabase Vault as `PEELS_SUPABASE_PROJECT_URL`, for example `https://<project-ref>.supabase.co`.
+
+Do not use local Supabase Docker hostnames such as `kong:8000` in migrations that run in hosted environments. They work during local `supabase db reset`, but hosted Postgres cannot resolve them.
 
 Do not use the public anon key as the protection boundary for this webhook. The function holds a service-role client so the caller must be authenticated by a non-public secret.
 
