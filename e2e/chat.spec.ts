@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import {
   DONOR_EMAIL,
   HOST_EMAIL,
@@ -9,6 +9,19 @@ import {
   failChatSendRequests,
   signIn,
 } from "./helpers";
+
+async function expectMessageListAtBottom(page: Page) {
+  await expect
+    .poll(async () =>
+      page.getByTestId("chat-message-list").evaluate((element) => {
+        return (
+          Math.ceil(element.scrollTop + element.clientHeight) >=
+          element.scrollHeight - 1
+        );
+      })
+    )
+    .toBe(true);
+}
 
 test("chat loads the seeded thread and composer for a signed-in donor", async ({
   page,
@@ -127,7 +140,11 @@ test("chat send disables the composer while pending and appends the new message"
   await expect(sendButton).toHaveAttribute("aria-busy", "true");
   await expect(composerInput).toBeDisabled();
   await expect(messageVisible).toBeVisible();
+  await expectMessageListAtBottom(page);
   await expect(composerInput).toHaveValue("");
+  await expect(
+    page.getByTestId("thread-list").locator("a").first()
+  ).toHaveAttribute("data-testid", `thread-preview-${SEEDED_THREAD_ID}`);
   await expect
     .poll(async () =>
       page.evaluate((threadId) => {
@@ -270,4 +287,72 @@ test("invalid chat thread ids redirect back to the chat index", async ({
 
   await expect(page).toHaveURL(/\/chats$/);
   await expect(page.getByTestId("thread-list")).toBeVisible();
+});
+
+test("mobile listing chat drawer keeps the composer visible as the draft grows", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: "/listings/demo-marrickville-compost",
+  });
+
+  await page.getByRole("button", { name: "Contact Avery" }).click();
+  await expect(page.getByTestId("chat-window")).toBeVisible();
+  await expect
+    .poll(async () =>
+      page.locator("[data-vaul-drawer]").evaluate((drawer) => {
+        const drawerRect = drawer.getBoundingClientRect();
+        return (
+          getComputedStyle(drawer).transform === "none" &&
+          Math.ceil(drawerRect.bottom) <= window.innerHeight + 1
+        );
+      })
+    )
+    .toBe(true);
+
+  const composerInput = page.getByTestId("chat-composer-input");
+  const sendButton = page.getByTestId("chat-composer-send");
+  await composerInput.fill(
+    [
+      "Hi Avery, would it be possible to drop some scraps off tomorrow morning?",
+      "About a lunchbox worth.",
+      "Sorry for the late notice, just leaving town tomorrow.",
+      "Please let me know what works best.",
+    ].join("\n")
+  );
+
+  await expect(composerInput).toBeInViewport();
+  await expect(sendButton).toBeInViewport();
+  const layoutMetrics = await page
+    .getByTestId("chat-composer")
+    .evaluate((composer) => {
+      const drawer = document.querySelector("[data-vaul-drawer]");
+      const input = composer.querySelector("textarea");
+      const composerRect = composer.getBoundingClientRect();
+      const drawerRect = drawer?.getBoundingClientRect();
+      const inputRect = input?.getBoundingClientRect();
+      const drawerStyles = drawer ? getComputedStyle(drawer) : null;
+
+      return {
+        bottomLeftRadius: parseFloat(
+          drawerStyles?.borderBottomLeftRadius ?? "0"
+        ),
+        composerBottom: Math.ceil(composerRect.bottom),
+        drawerTop: Math.floor(drawerRect?.top ?? 0),
+        inputHeight: Math.ceil(inputRect?.height ?? 0),
+        topLeftRadius: parseFloat(drawerStyles?.borderTopLeftRadius ?? "0"),
+        viewportHeight: window.innerHeight,
+      };
+    });
+
+  expect(layoutMetrics.topLeftRadius).toBeGreaterThan(0);
+  expect(layoutMetrics.bottomLeftRadius).toBe(0);
+  expect(layoutMetrics.drawerTop).toBeGreaterThan(0);
+  expect(layoutMetrics.drawerTop).toBeLessThanOrEqual(24);
+  expect(layoutMetrics.composerBottom).toBeLessThanOrEqual(
+    layoutMetrics.viewportHeight + 1
+  );
+  expect(layoutMetrics.inputHeight).toBeLessThanOrEqual(112);
 });

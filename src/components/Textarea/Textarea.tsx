@@ -4,7 +4,9 @@ import { theme } from "@/styles/theme.yak";
 import type { ReactNode, TextareaHTMLAttributes } from "react";
 
 const chatTextareaStyles = css`
+  max-height: min(7rem, 24dvh);
   min-height: 3rem;
+  overflow-y: auto;
   border-radius: 1.5rem;
   padding: 0.75rem 1rem;
   resize: none;
