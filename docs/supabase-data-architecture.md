@@ -15,6 +15,42 @@ The main public tables are split into two groups:
 - Source-of-truth tables that store real application records.
 - Read-model tables that expose deliberately shaped data to a specific audience.
 
+## Naming
+
+### Source tables
+
+Source tables are the canonical records. They are the place writes happen and
+the place the application should treat as the source of truth.
+
+For example, `public.listings.location` is the canonical listing location.
+Other tables may copy or reshape that location for safe reads, but they do not
+become the source of truth.
+
+### Read models
+
+A read model is a table shaped for a read use case rather than for canonical
+storage. Peels uses read models when different audiences need different columns
+from the same underlying records.
+
+This avoids using base tables as both storage and public API. The base table can
+keep all fields needed by the product, while each read model exposes only the
+fields needed by its audience.
+
+### `contact_cards`
+
+`contact_cards` is Peels naming, not a Postgres or Supabase convention. It means
+"small safe display/contact summary".
+
+The important part is the audience boundary:
+
+- `public_listings` is for signed-out public browsing and SEO.
+- `listing_contact_cards` is for signed-in listing/contact/chat flows.
+- `profile_contact_cards` is for signed-in profile display in allowed
+  relationships, especially chat participants.
+
+If a future table needs a different audience or purpose, prefer a name that says
+that audience clearly rather than blindly reusing `contact_cards`.
+
 ### `private`
 
 `private` is not an exposed Data API schema. It is for database implementation details such as trigger functions, security-definer helpers, and internal-only tables.
@@ -76,6 +112,26 @@ Residential listings keep their description, accepted items, and rejected items 
 - `owner_id`, `visibility`, raw `location`, and profile fields are not exposed.
 
 Rows are maintained by database triggers from `public.listings`.
+
+#### `owner_has_multiple_non_residential_listings`
+
+This boolean means: the hidden owner of this listing has more than one visible
+business/community listing.
+
+It exists for presentation copy. In chat, if a person reaches out to an owner
+who has multiple non-residential listings, the UI can say they reached out about
+a specific listing name rather than using more ambiguous generic copy.
+
+The field is low sensitivity because it does not expose the owner id, owner
+name, email, profile, or the list of the owner's other listings. It reveals only
+that this listing's owner has multiple visible non-residential listings.
+
+Current app code mainly needs this field through `listing_contact_cards` for
+authenticated chat flows. It remains on `public_listings` because it was already
+part of the public listing read shape and may be useful presentation metadata,
+but it is not essential to signed-out browsing today. If public minimisation
+becomes stricter later, this is a reasonable candidate to remove from
+`public_listings` while keeping it on `listing_contact_cards`.
 
 ### `public.listing_contact_cards`
 
