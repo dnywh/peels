@@ -65,10 +65,6 @@ const TitleBlock = styled.div`
     & :is(h1, h3) {
       font-size: 1.25rem;
     }
-
-    & p {
-      font-size: 1rem;
-    }
   }
 `;
 
@@ -79,7 +75,7 @@ const MainContents = styled.div<{ $isDrawer?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.5rem;
 
   & ${TitleBlock} {
     text-align: left;
