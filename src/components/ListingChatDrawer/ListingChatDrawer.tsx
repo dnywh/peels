@@ -27,6 +27,8 @@ const ListingCtaContainer = styled.div`
   }
 `;
 
+const mobileTopInset = "1rem";
+
 const StyledDrawerContent = styled(Drawer.Content)`
   background: ${theme.colors.background.top};
   border-radius: ${theme.corners.base} ${theme.corners.base} 0 0;
@@ -34,8 +36,9 @@ const StyledDrawerContent = styled(Drawer.Content)`
   &::after {
     display: none;
   }
-  margin-top: 24px;
-  height: 95%;
+  margin-top: ${mobileTopInset};
+  height: calc(100dvh - ${mobileTopInset});
+  max-height: calc(100dvh - ${mobileTopInset});
   position: fixed;
   bottom: 0;
   left: 0;

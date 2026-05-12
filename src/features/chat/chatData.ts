@@ -34,6 +34,11 @@ type ListingContactCard = ChatListing & {
   id: number;
 };
 
+type ChatThreadPreviewSortItem = {
+  sortTimestamp: number;
+  thread: ChatThreadPreviewRecord;
+};
+
 export function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     value
@@ -205,6 +210,23 @@ function composePreviewRecord({
   };
 }
 
+function getChatThreadPreviewSortTimestamp(thread: ChatThreadPreviewRecord) {
+  const sortDate = thread.latest_message_created_at ?? thread.created_at;
+
+  return Date.parse(sortDate ?? "");
+}
+
+function compareChatThreadPreviewRecency(
+  firstItem: ChatThreadPreviewSortItem,
+  secondItem: ChatThreadPreviewSortItem
+) {
+  const recencyDifference = secondItem.sortTimestamp - firstItem.sortTimestamp;
+
+  return (
+    recencyDifference || firstItem.thread.id.localeCompare(secondItem.thread.id)
+  );
+}
+
 export async function getChatThreads(
   supabase: SupabaseServerClient,
   userId: string
@@ -283,9 +305,13 @@ export async function getChatThreads(
       )
   );
 
-  return previewThreads.map((thread) =>
-    toChatThreadListItem(thread, unreadThreadIds)
-  );
+  return previewThreads
+    .map((thread) => ({
+      sortTimestamp: getChatThreadPreviewSortTimestamp(thread),
+      thread,
+    }))
+    .sort(compareChatThreadPreviewRecency)
+    .map(({ thread }) => toChatThreadListItem(thread, unreadThreadIds));
 }
 
 export async function getSelectedChatThread(

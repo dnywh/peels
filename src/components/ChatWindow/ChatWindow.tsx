@@ -3,6 +3,7 @@
 import { theme } from "@/styles/theme.yak";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/client";
 import ChatMessage from "@/components/ChatMessage";
@@ -143,11 +144,18 @@ const StyledChatWindow = styled.div`
 
 const StyledMessagesContainer = styled.div`
   flex: 1;
-  padding: 1.5rem 1rem 1rem;
+  min-height: 0;
+  padding: 1rem 0.75rem 0.75rem;
   overflow-y: scroll;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.875rem;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem 1rem 1rem;
+    gap: 1rem;
+  }
 `;
 
 const EmptyState = styled.div`
@@ -170,7 +178,11 @@ const EmptyState = styled.div`
 const Day = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.25rem;
+
+  @media (min-width: 768px) {
+    gap: 2rem;
+  }
 `;
 
 const DayHeader = styled.header`
@@ -206,6 +218,7 @@ const ChatWindow = memo(function ChatWindow({
 }: ChatWindowProps) {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const supabase = useMemo(() => (isDemo ? null : createClient()), [isDemo]);
   const { setUnreadCount, markThreadAsRead } = useUnreadMessages();
   const realListing = isDemo ? null : (listing as ChatListing);
@@ -218,6 +231,7 @@ const ChatWindow = memo(function ChatWindow({
     key: string;
     message: string;
   } | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   const [message, setMessage] = useState("");
   const [threadId, setThreadId] = useState<string | null>(
@@ -264,6 +278,18 @@ const ChatWindow = memo(function ChatWindow({
   const hasLocalThread = !existingThread && Boolean(threadId);
 
   useBeforeUnloadWarning(hasUnsentMessage && !sendMutation.isPending);
+
+  const scrollMessagesToBottom = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      const messagesContainer = messagesContainerRef.current;
+
+      if (!messagesContainer) {
+        return;
+      }
+
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+  }, []);
 
   function resolveChatErrorMessage(errorMessage: string | null) {
     if (!errorMessage) {
@@ -377,6 +403,10 @@ const ChatWindow = memo(function ChatWindow({
     },
     [flushPendingDraftWrite]
   );
+
+  useEffect(() => {
+    scrollMessagesToBottom();
+  }, [messages.length, scrollMessagesToBottom, threadId]);
 
   useEffect(() => {
     if (isDemo || !supabase || !threadId || !user?.id) {
@@ -529,6 +559,10 @@ const ChatWindow = memo(function ChatWindow({
         removeDraftWrite(sentDraftStorageKey);
       }
       setMessage("");
+
+      if (!isDemo) {
+        router.refresh();
+      }
     }
   }
 
@@ -576,7 +610,10 @@ const ChatWindow = memo(function ChatWindow({
         isDrawer={isDrawer}
       />
 
-      <StyledMessagesContainer data-testid="chat-message-list">
+      <StyledMessagesContainer
+        data-testid="chat-message-list"
+        ref={messagesContainerRef}
+      >
         {messages.length === 0 && (
           <EmptyState data-testid="chat-empty-state">
             <p>{t("Chat.empty")}</p>
@@ -638,6 +675,7 @@ const ChatWindow = memo(function ChatWindow({
             </Day>
           );
         })}
+        <div aria-hidden="true" />
       </StyledMessagesContainer>
 
       <ChatComposer

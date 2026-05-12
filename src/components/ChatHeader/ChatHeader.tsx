@@ -16,14 +16,19 @@ import type { ReactNode } from "react";
 import type { ChatListing, ChatThreadRecord, ChatUser } from "@/types/chat";
 import type { DemoListing } from "@/types/listing";
 
-const StyledChatHeader = styled.header`
+const StyledChatHeader = styled.header<{ $isDrawer?: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 1rem;
+  gap: ${({ $isDrawer }) => ($isDrawer ? "0.75rem" : "1rem")};
   border-bottom: 1px solid ${theme.colors.border.base};
   background-color: ${theme.colors.background.top};
-  padding: 1rem;
+  padding: ${({ $isDrawer }) => ($isDrawer ? "0.75rem" : "1rem")};
+
+  @media (min-width: 768px) {
+    gap: 1rem;
+    padding: 1rem;
+  }
 `;
 
 const AvatarContainer = styled.div`
@@ -60,10 +65,6 @@ const TitleBlock = styled.div`
     & :is(h1, h3) {
       font-size: 1.25rem;
     }
-
-    & p {
-      font-size: 1rem;
-    }
   }
 `;
 
@@ -74,7 +75,7 @@ const MainContents = styled.div<{ $isDrawer?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.5rem;
 
   & ${TitleBlock} {
     text-align: left;
@@ -185,7 +186,7 @@ function ChatHeader({
   const HeadingTag = isDemo ? "h3" : "h1";
 
   return (
-    <StyledChatHeader>
+    <StyledChatHeader $isDrawer={isDrawer}>
       {!isDrawer && !isDemo && (
         <IconButton
           breakpoint="sm"
@@ -223,7 +224,8 @@ function ChatHeader({
                 : undefined
             }
             user={user}
-            smallest="small"
+            smallest="tiny"
+            width="fixed"
             role={role}
           />
         </AvatarContainer>

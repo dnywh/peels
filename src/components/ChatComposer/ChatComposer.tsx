@@ -15,16 +15,25 @@ const ChatComposerForm = styled.div`
   justify-content: stretch;
   gap: 0.5rem;
   border-top: 1px solid ${theme.colors.border.base};
-  padding: 1rem;
+  padding: 0.75rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom));
+
+  @media (min-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const ChatComposerInner = styled.form`
   width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
   justify-content: stretch;
-  gap: 0.75rem;
+  gap: 0.625rem;
+
+  @media (min-width: 768px) {
+    align-items: center;
+    gap: 0.75rem;
+  }
 `;
 
 const StyledIconButton = styled(IconButton)`
