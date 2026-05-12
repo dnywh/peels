@@ -13,15 +13,9 @@ export function getThreadMessages(
   existingThread?: {
     messages?: ChatMessageRecord[] | null;
     chat_messages?: ChatMessageRecord[] | null;
-    chat_messages_with_senders?: ChatMessageRecord[] | null;
   } | null
 ) {
-  return (
-    existingThread?.messages ??
-    existingThread?.chat_messages_with_senders ??
-    existingThread?.chat_messages ??
-    []
-  );
+  return existingThread?.messages ?? existingThread?.chat_messages ?? [];
 }
 
 export async function loadThreadMessages({
@@ -32,8 +26,8 @@ export async function loadThreadMessages({
   threadId: string;
 }): Promise<InlineActionResult<ChatMessageRecord[]>> {
   const { data, error } = await supabase
-    .from("chat_messages_with_senders")
-    .select()
+    .from("chat_messages")
+    .select("id, content, created_at, read_at, sender_id, thread_id")
     .eq("thread_id", threadId)
     .order("created_at", { ascending: true });
 

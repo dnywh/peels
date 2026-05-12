@@ -1,6 +1,6 @@
 type DemoThread = {
   id: string;
-  chat_messages_with_senders: Array<{
+  messages: Array<{
     id: string;
     content: string;
     created_at: string;
@@ -15,7 +15,7 @@ export const DEMO_CHAT_REFERENCE_TIME = "2025-05-02T09:02:00.000Z";
 export const demoThreads: DemoThread[] = [
   {
     id: "demo-thread-1",
-    chat_messages_with_senders: [
+    messages: [
       {
         id: "demo-thread-1-message-1",
         content: "Hey Becca, are you still accepting food scraps?",

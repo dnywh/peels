@@ -71,6 +71,11 @@ type SetDisplayLocaleActionData = {
   locale: Locale;
 };
 
+function getListingMutationData(listingData: ListingDraftInput) {
+  const { id: _id, ...mutationData } = listingData;
+  return mutationData;
+}
+
 function getActionFormData<T>(
   previousStateOrFormData: FormData | InlineActionResult<T>,
   maybeFormData?: FormData
@@ -188,25 +193,6 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     }
   }
 
-  // Check if user exists in auth.users
-  const { data: existingAuthUser, error: authError } = await supabase.rpc(
-    "check_if_email_exists",
-    {
-      email_to_check: email,
-    }
-  );
-
-  if (authError) {
-    console.error("Error checking email:", authError);
-    redirectUrl.searchParams.append("error", t("genericLater"));
-    return redirect(redirectUrl.toString());
-  }
-
-  if (existingAuthUser) {
-    redirectUrl.searchParams.append("error", t("accountExists"));
-    return redirect(redirectUrl.toString());
-  }
-
   const {
     data: { user },
     error,
@@ -236,16 +222,34 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
       "Error running hook URI",
       "Failed to reach hook within maximum time",
     ];
+    const errorMessage = error?.message ?? "";
+    const lowerCaseErrorMessage = errorMessage.toLowerCase();
     const isHookTimeout = hookTimeoutPatterns.some((pattern) =>
-      error?.message?.includes(pattern)
+      errorMessage.includes(pattern)
     );
     if (isHookTimeout) {
       redirectUrl.searchParams.append("error", t("generic"));
       return redirect(redirectUrl.toString());
     }
+
+    const accountExistsPatterns = [
+      "already registered",
+      "already exists",
+      "User already registered",
+    ];
+    const accountExists = accountExistsPatterns.some((pattern) =>
+      lowerCaseErrorMessage.includes(pattern.toLowerCase())
+    );
+    if (accountExists) {
+      redirectUrl.searchParams.append("error", t("accountExists"));
+      return redirect(redirectUrl.toString());
+    }
+
     // Back to general error catching
     console.error(
-      error?.code + " " + error?.message || "No user returned from sign up"
+      error
+        ? `${error.code ?? "unknown"} ${error.message ?? "Unknown sign-up error"}`
+        : "No user returned from sign up"
     );
     redirectUrl.searchParams.append(
       "error",
@@ -633,23 +637,33 @@ export const deleteListingAction = async (
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!user || !session?.access_token) {
     return redirect("/sign-in");
   }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Missing Supabase client env vars for listing deletion.");
+    return actionError(t("Errors.generic"));
+  }
+
   // Then continue with the delete listing
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-listing`, // Adjust the endpoint as necessary
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ slug }), // Send the slug in the request body
-      }
-    );
+    const response = await fetch(`${supabaseUrl}/functions/v1/delete-listing`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ slug }),
+    });
 
     console.log("Response status:", response.status);
     console.log("Response ok:", response.ok);
@@ -657,7 +671,13 @@ export const deleteListingAction = async (
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Error deleting listing:", data.message);
+      const errorMessage =
+        typeof data.error === "string"
+          ? data.error
+          : typeof data.message === "string"
+            ? data.message
+            : t("Errors.failedDeleteListing");
+      console.error("Error deleting listing:", errorMessage);
       return actionError(t("Errors.failedDeleteListing"));
     }
 
@@ -684,46 +704,59 @@ export const deleteListingAction = async (
 export const deleteAccountAction = async () => {
   const t = await getTranslations("Errors");
   let redirectPath: string | null = null;
+  let shouldSignOut = false;
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!user || !session?.access_token) {
     return redirect("/sign-in");
   }
 
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-account`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: user.id }),
-      }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Missing Supabase client env vars for account deletion.");
+    return redirect(
+      `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`
     );
+  }
+
+  try {
+    const response = await fetch(`${supabaseUrl}/functions/v1/delete-account`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
     console.log("Response status:", response.status);
     console.log("Response ok:", response.ok);
 
-    // const data = await response.json();
-    // console.log("Response data:", data);
+    const data = await response.json();
 
-    redirectPath = `/sign-in?success=${encodeURIComponent(t("accountDeleted"))}`;
-
-    // if (!response.ok) {
-    //   console.error("Delete account failed:", data);
-    //   redirectPath = `/profile?error=Failed to delete account`
-    // }
+    if (!response.ok) {
+      console.error("Delete account failed:", data);
+      redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
+    } else {
+      shouldSignOut = true;
+      redirectPath = `/sign-in?success=${encodeURIComponent(t("accountDeleted"))}`;
+    }
   } catch (error) {
     console.error("Delete account error:", error);
     redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
   } finally {
-    await supabase.auth.signOut();
+    if (shouldSignOut) {
+      await supabase.auth.signOut();
+    }
     if (redirectPath) {
       return redirect(redirectPath);
     }
@@ -814,11 +847,20 @@ export const createOrUpdateListingAction = async (
     }
 
     // Insert/update the listing
-    const { data, error } = await supabase
-      .from("listings")
-      .upsert(listingData)
-      .select()
-      .single();
+    const listingMutation = listingData.id
+      ? supabase
+          .from("listings")
+          .update(getListingMutationData(listingData))
+          .eq("id", listingData.id)
+          .select()
+          .single()
+      : supabase
+          .from("listings")
+          .insert(getListingMutationData(listingData))
+          .select()
+          .single();
+
+    const { data, error } = await listingMutation;
 
     if (error) {
       console.error("Supabase error:", error);

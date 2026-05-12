@@ -10,28 +10,66 @@ import { render } from "npm:@react-email/render";
 // Look up required env variables and API keys from Supabase secrets
 const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const resend = new Resend(RESEND_API_KEY);
+
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
 
 const handler = async (_request: Request): Promise<Response> => {
   try {
+    if (_request.method !== "POST") {
+      return jsonResponse({ error: "Method not allowed" }, 405);
+    }
+
+    const contentType = _request.headers.get("Content-Type");
+    if (!contentType?.toLowerCase().includes("application/json")) {
+      return jsonResponse({ error: "Expected JSON request body" }, 400);
+    }
+
+    const webhookSecret = Deno.env.get("PEELS_CHAT_MESSAGE_WEBHOOK_SECRET");
+    if (!webhookSecret) {
+      throw new Error("Missing required environment variables");
+    }
+
+    if (_request.headers.get("x-peels-webhook-secret") !== webhookSecret) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+
     // Prepare data
-    const { record } = await _request.json();
-    if (!record) throw new Error("No record provided");
-    console.log("Record:", record);
+    let payload: { record?: { id?: unknown } };
+    try {
+      payload = await _request.json();
+    } catch (_error) {
+      return jsonResponse({ error: "Invalid JSON request body" }, 400);
+    }
+
+    const { record } = payload;
+    if (!record?.id || typeof record.id !== "string") {
+      return jsonResponse({ error: "No record provided" }, 400);
+    }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    console.log("Supabase URL:", supabaseUrl);
 
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    if (!supabaseUrl || !supabaseServiceKey || !RESEND_API_KEY) {
+    if (
+      !supabaseUrl ||
+      !supabaseServiceKey ||
+      !RESEND_API_KEY ||
+      !generalEmailAddress
+    ) {
       throw new Error("Missing required environment variables");
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const resend = new Resend(RESEND_API_KEY);
+    console.log("Processing chat message email", { messageId: record.id });
 
     const { data: messageData, error: messageError } = await supabase
-      .from("chat_messages_with_senders")
-      .select("*, thread:chat_threads_with_participants!thread_id(*)")
+      .from("chat_messages")
+      .select("id, thread_id, sender_id, content")
       .eq("id", record.id)
       .single();
 
@@ -39,52 +77,90 @@ const handler = async (_request: Request): Promise<Response> => {
       throw new Error(`Failed to fetch message data: ${messageError?.message}`);
     }
 
-    console.log("Message Data:", messageData);
+    const { data: threadData, error: threadError } = await supabase
+      .from("chat_threads")
+      .select("id, listing_id, initiator_id, owner_id")
+      .eq("id", messageData.thread_id)
+      .single();
 
-    // Use the sender name from our view
-    const senderName = messageData.sender_first_name;
-    console.log("Sender name:", senderName);
+    if (threadError || !threadData) {
+      throw new Error(`Failed to fetch thread data: ${threadError?.message}`);
+    }
 
-    const senderAvatar = messageData.sender_avatar;
-    console.log("Sender avatar:", senderAvatar);
+    const participantIds = [
+      messageData.sender_id,
+      threadData.initiator_id,
+      threadData.owner_id,
+    ].filter(Boolean);
 
-    const listingAvatar = messageData.thread.listing_avatar;
-    console.log("Listing avatar:", listingAvatar);
+    const { data: participantProfiles, error: participantProfilesError } =
+      await supabase
+        .from("profile_contact_cards")
+        .select("id, first_name, avatar")
+        .in("id", participantIds);
 
-    const listingSlug = messageData.thread.listing_slug;
-    console.log("Listing slug:", listingSlug);
+    if (participantProfilesError) {
+      throw new Error(
+        `Failed to fetch participant profiles: ${participantProfilesError.message}`
+      );
+    }
 
-    const listingName = messageData.thread.listing_name;
-    console.log("Listing name:", listingName);
+    const profileById = new Map(
+      (participantProfiles ?? []).map((profile) => [profile.id, profile])
+    );
 
-    const listingType = messageData.thread.listing_type;
-    console.log("Listing type:", listingType);
+    const { data: listingData, error: listingError } = await supabase
+      .from("listing_contact_cards")
+      .select(
+        "id, slug, avatar, name, type, area_name, owner_has_multiple_non_residential_listings"
+      )
+      .eq("id", threadData.listing_id)
+      .single();
 
-    const listingAreaName = messageData.thread.listing_area_name;
-    console.log("Listing area name:", listingAreaName);
+    if (listingError || !listingData) {
+      throw new Error(`Failed to fetch listing data: ${listingError?.message}`);
+    }
+
+    const senderProfile = profileById.get(messageData.sender_id);
+    const initiatorProfile = profileById.get(threadData.initiator_id);
+    const ownerProfile = profileById.get(threadData.owner_id);
+
+    const senderName = senderProfile?.first_name ?? "Someone";
+
+    const senderAvatar = senderProfile?.avatar;
+
+    const listingAvatar = listingData.avatar;
+
+    const listingSlug = listingData.slug ?? "";
+
+    const listingName = listingData.name;
+
+    const listingType = listingData.type;
+
+    const listingAreaName = listingData.area_name ?? "";
 
     const ownerHasMultipleNonResidentialListings =
-      messageData.thread.owner_has_multiple_non_residential_listings;
-    console.log(
-      "Owner has multiple non-residential listings:",
-      ownerHasMultipleNonResidentialListings
-    );
+      listingData.owner_has_multiple_non_residential_listings;
 
     // Determine recipient_id (the user who isn't the sender)
     const recipientId =
-      messageData.thread.initiator_id === record.sender_id
-        ? messageData.thread.owner_id
-        : messageData.thread.initiator_id;
+      threadData.initiator_id === messageData.sender_id
+        ? threadData.owner_id
+        : threadData.initiator_id;
 
-    // Determine recipient's role in the chat (listing owner (host) or the thread initiator (donor)?)
-    // This ternary seems opposite to what's logical, but it is correct somehow
+    if (!recipientId) {
+      throw new Error(`No recipient found for message ${record.id}`);
+    }
+
+    // recipientRole is the role of the email recipient, not the sender.
+    // If the owner sent the message, the recipient is the initiator; otherwise the recipient is the owner.
     const recipientRole =
-      messageData.thread.owner_id === record.sender_id ? "initiator" : "owner";
+      threadData.owner_id === messageData.sender_id ? "initiator" : "owner";
 
     const recipientName =
-      messageData.thread.owner_id === record.sender_id
-        ? messageData.thread.initiator_first_name
-        : messageData.thread.owner_first_name;
+      (threadData.owner_id === messageData.sender_id
+        ? initiatorProfile?.first_name
+        : ownerProfile?.first_name) ?? "";
 
     // Determine which avatar(s) to show to the recipient
     let avatarMajorUrl: string | null = null;
@@ -96,7 +172,6 @@ const handler = async (_request: Request): Promise<Response> => {
       avatarMajorUrl = senderAvatar;
       avatarMajorBucket = "avatars";
       avatarMinorUrl = null; // No secondary avatar needed
-      console.log("Recipient is owner. Showing sender avatar:", senderAvatar);
     } else {
       // If the recipient is the initiator (donor/guest)
       if (listingType === "residential") {
@@ -105,39 +180,23 @@ const handler = async (_request: Request): Promise<Response> => {
         avatarMajorUrl = senderAvatar;
         avatarMajorBucket = "avatars";
         avatarMinorUrl = null; // No secondary avatar needed
-        console.log(
-          "Recipient is initiator (residential). Showing sender avatar:",
-          senderAvatar
-        );
       } else {
         // For non-residential listings, show the listing's avatar as primary
         // and the sender's (host's) avatar as secondary.
         avatarMajorUrl = listingAvatar;
         avatarMajorBucket = "listing_avatars";
         avatarMinorUrl = senderAvatar;
-        console.log(
-          "Recipient is initiator (non-residential). Showing listing avatar:",
-          listingAvatar,
-          "and sender avatar:",
-          senderAvatar
-        );
       }
     }
-
-    console.log("Sender ID from chat_messages:", record.sender_id);
-    console.log("Recipient ID from chat_threads:", recipientId);
-    console.log("Message:", record.content);
-    console.log("Recipient Role:", recipientRole);
 
     // Do auth admin query to get recipient email (keeping this pattern for security)
     // TODO: Minify this query to just ask for the email address
     const { data: recipientData, error: recipientError } =
       await supabase.auth.admin.getUserById(recipientId);
-    console.log("Recipient data:", recipientData);
-    if (recipientError) console.log("Recipient error:", recipientError);
+    if (recipientError)
+      console.error("Recipient lookup error:", recipientError);
 
     const recipientEmail = recipientData?.user?.email;
-    console.log("Recipient Email:", recipientEmail);
 
     if (!recipientEmail) {
       throw new Error(`No email found for recipient ${recipientId}`);
@@ -175,7 +234,7 @@ const handler = async (_request: Request): Promise<Response> => {
         senderName,
         recipientName,
         // messageContent: record.content,
-        threadId: record.thread_id,
+        threadId: threadData.id,
         listingSlug,
         listingAreaName,
         recipientRole,
@@ -195,7 +254,7 @@ const handler = async (_request: Request): Promise<Response> => {
           senderName,
           recipientName,
           // messageContent: record.content,
-          threadId: record.thread_id,
+          threadId: threadData.id,
           listingSlug,
           listingAreaName,
           recipientRole,
@@ -220,10 +279,7 @@ const handler = async (_request: Request): Promise<Response> => {
     });
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 };
 

@@ -29,7 +29,7 @@ const getInitialData = cache(async (listingSlug: string | undefined) => {
 
   const listingResponse = listingSlug
     ? await supabase
-        .from(user ? "listings_private_data" : "listings_public_data")
+        .from(user ? "listing_contact_cards" : "public_listings")
         .select()
         .eq("slug", listingSlug)
         .single()

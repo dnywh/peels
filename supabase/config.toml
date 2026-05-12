@@ -275,6 +275,30 @@ inspector_port = 8084
 enabled = true
 verify_jwt = false
 
+[functions.delete-account]
+enabled = true
+verify_jwt = true
+
+[functions.delete-listing]
+enabled = true
+verify_jwt = true
+
+[functions.send-email-for-new-chat-message]
+enabled = true
+verify_jwt = false
+
+[functions.send-email-for-new-feature]
+enabled = true
+verify_jwt = true
+
+[functions.send-email-for-newsletter-issue-resend-audience]
+enabled = true
+verify_jwt = true
+
+[functions.send-email-for-newsletter-issue-supabase-users]
+enabled = true
+verify_jwt = true
+
 [analytics]
 enabled = true
 port = 54337

@@ -1,42 +1,97 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBearerToken } from "../_shared/auth.ts";
 import { deleteListingMedia } from "../_shared/storage-utils.ts";
 
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    headers: { "Content-Type": "application/json" },
+    status,
+  });
+}
+
 serve(async (req) => {
-  const supabaseAdmin = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    {
+  try {
+    if (req.method !== "POST") {
+      return jsonResponse({ error: "Method not allowed" }, 405);
+    }
+
+    let payload: { slug?: unknown };
+    try {
+      payload = await req.json();
+    } catch (_error) {
+      return jsonResponse({ error: "Invalid JSON request body" }, 400);
+    }
+
+    const { slug } = payload;
+
+    if (!slug || typeof slug !== "string") {
+      return jsonResponse({ error: "Missing listing slug" }, 400);
+    }
+
+    const accessToken = getBearerToken(req.headers.get("Authorization"));
+
+    if (!accessToken) {
+      return jsonResponse({ error: "Missing access token" }, 401);
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      console.error("delete-listing is missing required Supabase env vars");
+      return jsonResponse({ error: "Function misconfigured" }, 500);
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
-    }
-  );
-  const { slug } = await req.json();
+    });
 
-  try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseAdmin.auth.getUser(accessToken);
+
+    if (userError || !user) {
+      return jsonResponse({ error: "Invalid access token" }, 401);
+    }
+
+    const { data: listing, error: listingError } = await supabaseAdmin
+      .from("listings")
+      .select("id, owner_id, avatar, photos")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (listingError) throw listingError;
+
+    if (!listing || listing.owner_id !== user.id) {
+      return jsonResponse({ error: "Listing not found" }, 404);
+    }
+
     // Delete all media first
-    await deleteListingMedia(supabaseAdmin, slug);
+    await deleteListingMedia(supabaseAdmin, listing);
 
     // Delete the listing
-    const { error: deleteError } = await supabaseAdmin
-      // We can access the "listings" table directly here as we're doing an operation through supabaseAdmin
+    const { data: deletedListing, error: deleteError } = await supabaseAdmin
       .from("listings")
       .delete()
-      .eq("slug", slug);
+      .eq("id", listing.id)
+      .eq("owner_id", user.id)
+      .select("id")
+      .maybeSingle();
 
     if (deleteError) throw deleteError;
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
+    if (!deletedListing) {
+      return jsonResponse({ error: "Listing not found" }, 404);
+    }
+
+    return jsonResponse({ success: true }, 200);
   } catch (error) {
     console.error("Final error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
-      status: 400,
-    });
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 });

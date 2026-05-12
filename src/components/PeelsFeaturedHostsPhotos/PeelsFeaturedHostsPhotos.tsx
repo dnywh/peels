@@ -88,7 +88,7 @@ function PeelsFeaturedHostsPhotos() {
   useEffect(() => {
     const loadListings = async () => {
       const { data, error } = await supabase
-        .from("listings_public_data")
+        .from("public_listings")
         .select(
           "slug, name, photos, type, is_stub, homepage_featured, homepage_featured_photo_indexes"
         )

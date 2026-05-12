@@ -1,5 +1,10 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+type ListingMedia = {
+  avatar: string | null;
+  photos: string[] | null;
+};
+
 export async function deleteStorageObject(
   supabase: SupabaseClient,
   bucket: string,
@@ -19,17 +24,9 @@ export async function deleteStorageObject(
 
 export async function deleteListingMedia(
   supabase: SupabaseClient,
-  slug: string
+  listing: ListingMedia | null
 ) {
-  // Get listing media info
-  const { data: listing, error: fetchError } = await supabase
-    // We can access the "listings" table here directly as we have a policy set allowing owners access to their full listings
-    .from("listings")
-    .select("avatar, photos")
-    .eq("slug", slug)
-    .single();
-
-  if (fetchError) throw fetchError;
+  if (!listing) return;
 
   const deletePromises = [];
 

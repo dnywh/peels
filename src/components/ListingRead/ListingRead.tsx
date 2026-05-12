@@ -95,9 +95,13 @@ const ListingRead = memo(function Listing({
   const demoListing = isDemoListing(listing) ? listing : null;
   const rawRealListing =
     !isDemo && listing && !isDemoListing(listing) ? (listing as Listing) : null;
-  const realListing = rawRealListing
-    ? getAnonymousSensitiveListingTeaser(rawRealListing, user)
-    : null;
+  const realListing = useMemo(
+    () =>
+      rawRealListing
+        ? getAnonymousSensitiveListingTeaser(rawRealListing, user)
+        : null,
+    [rawRealListing, user]
+  );
   const listingForDisplay = demoListing ?? realListing;
 
   // Load existing thread if any (only if not in demo mode). Depend on the
@@ -107,19 +111,26 @@ const ListingRead = memo(function Listing({
   const listingOwnerId = realListing?.owner_id;
   const userId = user?.id;
   useEffect(() => {
-    if (isDemo || !supabase || !userId || !listingId || !listingOwnerId) return;
+    const listingSnapshot = realListing;
+    if (
+      isDemo ||
+      !supabase ||
+      !userId ||
+      !listingId ||
+      !listingOwnerId ||
+      !listingSnapshot
+    ) {
+      return;
+    }
+
+    let isCurrentRequest = true;
 
     // TODO: Should this only be called when the actual ListingChatDrawer is loaded?
     async function loadExistingThread() {
       if (!supabase) return;
       const { data: thread, error } = await supabase
-        .from("chat_threads_with_participants")
-        .select(
-          `
-          *,
-          chat_messages_with_senders (*)
-        `
-        )
+        .from("chat_threads")
+        .select("id, created_at, listing_id, initiator_id, owner_id")
         .match({
           listing_id: listingId,
           initiator_id: userId,
@@ -132,10 +143,35 @@ const ListingRead = memo(function Listing({
         return;
       }
 
-      setExistingThread(thread);
+      if (!thread) {
+        if (!isCurrentRequest) return;
+        setExistingThread(null);
+        return;
+      }
+
+      const { data: messages, error: messagesError } = await supabase
+        .from("chat_messages")
+        .select("id, content, created_at, read_at, sender_id, thread_id")
+        .eq("thread_id", thread.id)
+        .order("created_at", { ascending: true });
+
+      if (messagesError) {
+        console.error("Error loading thread messages:", messagesError);
+        return;
+      }
+
+      if (!isCurrentRequest) return;
+      setExistingThread({
+        ...thread,
+        listing: listingSnapshot,
+        messages: messages ?? [],
+      });
     }
 
     loadExistingThread();
+    return () => {
+      isCurrentRequest = false;
+    };
   }, [listingId, listingOwnerId, userId, isDemo, supabase]);
 
   const initialZoomLevel = 14;

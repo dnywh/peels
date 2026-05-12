@@ -304,6 +304,35 @@ test("anonymous residential metadata avoids leaking profile names with localised
   assert.doesNotMatch(description, /Sam/);
 });
 
+test("anonymous residential teaser keeps public listing content while hiding identity and media", () => {
+  const residentialListing = {
+    ...communityListing,
+    type: "residential",
+    name: null,
+    description:
+      "Drop scraps in the labelled bucket by the side gate after 5pm.",
+    accepted_items: ["Fruit scraps", "Coffee grounds"],
+    rejected_items: ["Meat", "Dairy"],
+    photos: ["private/sam-backyard.jpg"],
+    avatar: "private/sam-listing-avatar.jpg",
+    owner_first_name: "Sam",
+    owner_avatar: "sam.jpg",
+    slug: "private-host",
+  } satisfies Listing;
+
+  const teaser = getAnonymousSensitiveListingTeaser(residentialListing, null);
+
+  assert.equal(teaser.name, null);
+  assert.equal(teaser.owner_first_name, null);
+  assert.equal(teaser.owner_avatar, null);
+  assert.equal(teaser.avatar, null);
+  assert.equal(teaser.photos, null);
+  assert.equal(teaser.description, residentialListing.description);
+  assert.deepEqual(teaser.accepted_items, residentialListing.accepted_items);
+  assert.deepEqual(teaser.rejected_items, residentialListing.rejected_items);
+  assert.deepEqual(teaser.coordinates, residentialListing.coordinates);
+});
+
 test("anonymous unknown-type metadata emits a private teaser", () => {
   const unknownTypeListing = {
     ...communityListing,

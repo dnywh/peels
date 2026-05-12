@@ -2,6 +2,7 @@ import "server-only";
 
 import { createClient } from "@/utils/supabase/server";
 import type {
+  ChatListing,
   ChatMessageRecord,
   ChatThreadListItem,
   ChatThreadPreviewRecord,
@@ -13,6 +14,24 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 type UnreadThreadRow = {
   thread_id: string | null;
+};
+
+type ChatThreadRow = {
+  id: string;
+  created_at: string;
+  listing_id: number | null;
+  initiator_id: string | null;
+  owner_id: string | null;
+};
+
+type ProfileContactCard = {
+  id: string;
+  first_name: string | null;
+  avatar: string | null;
+};
+
+type ListingContactCard = ChatListing & {
+  id: number;
 };
 
 export function isUuid(value: string) {
@@ -30,7 +49,7 @@ function toChatThreadView(thread: ChatThreadRecord): ChatThreadView {
     owner_id: thread.owner_id ?? null,
     owner_first_name: thread.owner_first_name ?? null,
     listing: thread.listing ?? null,
-    messages: thread.chat_messages_with_senders ?? thread.chat_messages ?? [],
+    messages: thread.messages ?? thread.chat_messages ?? [],
   };
 }
 
@@ -76,29 +95,124 @@ function getThreadParticipantFilter(userId: string) {
   return `initiator_id.eq.${userId},owner_id.eq.${userId}`;
 }
 
+function keyById<T extends { id: string | number }>(rows: T[]) {
+  return new Map(rows.map((row) => [row.id, row]));
+}
+
+function uniqueValues<T>(values: Array<T | null | undefined>) {
+  return [...new Set(values.filter((value): value is T => value != null))];
+}
+
+function toChatListing(
+  listing: ChatListing | null | undefined
+): ChatListing | null {
+  return listing ?? null;
+}
+
+async function fetchProfileCards(
+  supabase: SupabaseServerClient,
+  profileIds: string[]
+) {
+  if (profileIds.length === 0) {
+    return new Map<string, ProfileContactCard>();
+  }
+
+  const { data, error } = await supabase
+    .from("profile_contact_cards")
+    .select("id, first_name, avatar")
+    .in("id", profileIds);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return keyById((data ?? []) as ProfileContactCard[]);
+}
+
+async function fetchListingContactCards(
+  supabase: SupabaseServerClient,
+  listingIds: number[]
+) {
+  if (listingIds.length === 0) {
+    return new Map<number, ListingContactCard>();
+  }
+
+  const { data, error } = await supabase
+    .from("listing_contact_cards")
+    .select(
+      "id, owner_id, owner_first_name, owner_avatar, owner_has_multiple_non_residential_listings, type, area_name, name, slug, avatar"
+    )
+    .in("id", listingIds);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return keyById((data ?? []) as ListingContactCard[]);
+}
+
+function composeThreadRecord({
+  initiator,
+  listing,
+  messages,
+  owner,
+  thread,
+}: {
+  initiator?: ProfileContactCard;
+  listing?: ChatListing;
+  messages?: ChatMessageRecord[];
+  owner?: ProfileContactCard;
+  thread: ChatThreadRow;
+}): ChatThreadRecord {
+  return {
+    id: thread.id,
+    created_at: thread.created_at,
+    initiator_id: thread.initiator_id,
+    initiator_first_name: initiator?.first_name ?? null,
+    initiator_avatar: initiator?.avatar ?? null,
+    owner_id: thread.owner_id,
+    owner_first_name: owner?.first_name ?? null,
+    listing: toChatListing(listing),
+    messages: messages ?? [],
+  };
+}
+
+function composePreviewRecord({
+  initiator,
+  latestMessage,
+  listing,
+  owner,
+  thread,
+}: {
+  initiator?: ProfileContactCard;
+  latestMessage?: ChatMessageRecord;
+  listing?: ChatListing;
+  owner?: ProfileContactCard;
+  thread: ChatThreadRow;
+}): ChatThreadPreviewRecord {
+  return {
+    ...composeThreadRecord({
+      initiator,
+      listing,
+      owner,
+      thread,
+    }),
+    latest_message_id: latestMessage?.id ?? null,
+    latest_message_content: latestMessage?.content ?? null,
+    latest_message_created_at: latestMessage?.created_at ?? null,
+    latest_message_read_at: latestMessage?.read_at ?? null,
+    latest_message_sender_id: latestMessage?.sender_id ?? null,
+  };
+}
+
 export async function getChatThreads(
   supabase: SupabaseServerClient,
   userId: string
 ) {
   const threadParticipantFilter = getThreadParticipantFilter(userId);
   const threadsResult = await supabase
-    .from("chat_threads_with_participants")
-    .select(
-      `
-        id,
-        initiator_id,
-        initiator_first_name,
-        initiator_avatar,
-        owner_id,
-        owner_first_name,
-        latest_message_id,
-        latest_message_content,
-        latest_message_created_at,
-        latest_message_read_at,
-        latest_message_sender_id,
-        listing:listings_private_data (*)
-      `
-    )
+    .from("chat_threads")
+    .select("id, created_at, listing_id, initiator_id, owner_id")
     .or(threadParticipantFilter)
     .order("created_at", { ascending: false });
 
@@ -106,8 +220,49 @@ export async function getChatThreads(
     throw new Error(threadsResult.error.message);
   }
 
-  const previewThreads = (threadsResult.data ??
-    []) as ChatThreadPreviewRecord[];
+  const threads = (threadsResult.data ?? []) as ChatThreadRow[];
+  const threadIds = threads.map((thread) => thread.id);
+  const profileIds = uniqueValues(
+    threads.flatMap((thread) => [thread.initiator_id, thread.owner_id])
+  );
+  const listingIds = uniqueValues(threads.map((thread) => thread.listing_id));
+
+  const [profileCardsById, listingsById, messagesResult] = await Promise.all([
+    fetchProfileCards(supabase, profileIds),
+    fetchListingContactCards(supabase, listingIds),
+    threadIds.length > 0
+      ? supabase.rpc("latest_chat_messages_for_threads", {
+          thread_ids: threadIds,
+        })
+      : { data: [], error: null },
+  ]);
+
+  if (messagesResult.error) {
+    throw new Error(messagesResult.error.message);
+  }
+
+  const latestMessagesByThreadId = new Map<string, ChatMessageRecord>();
+  for (const message of (messagesResult.data ?? []) as ChatMessageRecord[]) {
+    if (message.thread_id && !latestMessagesByThreadId.has(message.thread_id)) {
+      latestMessagesByThreadId.set(message.thread_id, message);
+    }
+  }
+
+  const previewThreads = threads.map((thread) =>
+    composePreviewRecord({
+      initiator: thread.initiator_id
+        ? profileCardsById.get(thread.initiator_id)
+        : undefined,
+      latestMessage: latestMessagesByThreadId.get(thread.id),
+      listing: thread.listing_id
+        ? listingsById.get(thread.listing_id)
+        : undefined,
+      owner: thread.owner_id
+        ? profileCardsById.get(thread.owner_id)
+        : undefined,
+      thread,
+    })
+  );
   const previewThreadIds = previewThreads.map((thread) => thread.id);
   const { data: unreadThreads, error: unreadThreadsError } =
     previewThreadIds.length > 0
@@ -140,26 +295,8 @@ export async function getSelectedChatThread(
 ) {
   const threadParticipantFilter = getThreadParticipantFilter(userId);
   const selectedThreadResult = await supabase
-    .from("chat_threads_with_participants")
-    .select(
-      `
-        id,
-        initiator_id,
-        initiator_first_name,
-        initiator_avatar,
-        owner_id,
-        owner_first_name,
-        listing:listings_private_data (*),
-        chat_messages_with_senders (
-          id,
-          content,
-          created_at,
-          read_at,
-          sender_id,
-          thread_id
-        )
-      `
-    )
+    .from("chat_threads")
+    .select("id, created_at, listing_id, initiator_id, owner_id")
     .or(threadParticipantFilter)
     .eq("id", threadId)
     .maybeSingle();
@@ -168,8 +305,40 @@ export async function getSelectedChatThread(
     throw new Error(selectedThreadResult.error.message);
   }
 
-  const selectedThreadRecord =
-    selectedThreadResult.data as ChatThreadRecord | null;
+  const thread = selectedThreadResult.data as ChatThreadRow | null;
+
+  if (!thread) {
+    return null;
+  }
+
+  const profileIds = uniqueValues([thread.initiator_id, thread.owner_id]);
+  const listingIds = uniqueValues([thread.listing_id]);
+
+  const [profileCardsById, listingsById, messagesResult] = await Promise.all([
+    fetchProfileCards(supabase, profileIds),
+    fetchListingContactCards(supabase, listingIds),
+    supabase
+      .from("chat_messages")
+      .select("id, content, created_at, read_at, sender_id, thread_id")
+      .eq("thread_id", threadId)
+      .order("created_at", { ascending: true }),
+  ]);
+
+  if (messagesResult.error) {
+    throw new Error(messagesResult.error.message);
+  }
+
+  const selectedThreadRecord = composeThreadRecord({
+    initiator: thread.initiator_id
+      ? profileCardsById.get(thread.initiator_id)
+      : undefined,
+    listing: thread.listing_id
+      ? listingsById.get(thread.listing_id)
+      : undefined,
+    messages: (messagesResult.data ?? []) as ChatMessageRecord[],
+    owner: thread.owner_id ? profileCardsById.get(thread.owner_id) : undefined,
+    thread,
+  });
 
   return selectedThreadRecord ? toChatThreadView(selectedThreadRecord) : null;
 }
