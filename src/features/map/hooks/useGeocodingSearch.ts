@@ -1,0 +1,106 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  geocoding,
+  type GeocodingFeature,
+  type GeocodingPlaceType,
+  type Position,
+} from "@maptiler/client";
+
+export const MAP_GEOCODING_TYPES: GeocodingPlaceType[] = [
+  "address",
+  "place",
+  "neighbourhood",
+  "locality",
+  "municipal_district",
+  "municipality",
+];
+
+type GeocodingSearchStatus = "idle" | "loading" | "success" | "error";
+
+type UseGeocodingSearchOptions = {
+  query: string;
+  countryCode?: string | null;
+  proximity?: Position | "ip";
+  enabled?: boolean;
+  minLength?: number;
+  debounceMs?: number;
+  limit?: number;
+};
+
+export function useGeocodingSearch({
+  query,
+  countryCode,
+  proximity,
+  enabled = true,
+  minLength = 3,
+  debounceMs = 250,
+  limit = 5,
+}: UseGeocodingSearchOptions) {
+  const [features, setFeatures] = useState<GeocodingFeature[]>([]);
+  const [status, setStatus] = useState<GeocodingSearchStatus>("idle");
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    const trimmedQuery = query.trim();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
+    if (!enabled || trimmedQuery.length < minLength) {
+      setFeatures([]);
+      setStatus("idle");
+      return;
+    }
+
+    setStatus("loading");
+
+    const timeout = window.setTimeout(() => {
+      const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+
+      if (!apiKey) {
+        if (requestIdRef.current === requestId) {
+          setFeatures([]);
+          setStatus("error");
+        }
+        return;
+      }
+
+      void geocoding
+        .forward(trimmedQuery, {
+          apiKey,
+          autocomplete: true,
+          country: countryCode ? [countryCode] : undefined,
+          fuzzyMatch: true,
+          limit,
+          proximity,
+          types: MAP_GEOCODING_TYPES,
+        })
+        .then((result) => {
+          if (requestIdRef.current !== requestId) return;
+
+          setFeatures(result.features);
+          setStatus("success");
+        })
+        .catch((error) => {
+          if (requestIdRef.current !== requestId) return;
+
+          console.warn("Could not search MapTiler geocoding:", error);
+          setFeatures([]);
+          setStatus("error");
+        });
+    }, debounceMs);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [countryCode, debounceMs, enabled, limit, minLength, proximity, query]);
+
+  return {
+    features,
+    isError: status === "error",
+    isLoading: status === "loading",
+    isReady: status === "success",
+    status,
+  };
+}

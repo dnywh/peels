@@ -3,7 +3,9 @@ import {
   DONOR_EMAIL,
   HOST_EMAIL,
   PROFILE_RENDER_TIMEOUT_MS,
+  createMockGeocodingFeature,
   delayServerActionRequests,
+  mockMapTilerGeocoding,
   signIn,
 } from "./helpers";
 
@@ -86,6 +88,40 @@ test("new listing form shows validation feedback when location is missing", asyn
   ).toBeVisible();
 });
 
+test("listing location search picks a geocoding result", async ({ page }) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: "/profile/listings/new/business",
+  });
+  await mockMapTilerGeocoding(
+    page,
+    createMockGeocodingFeature({
+      text: "Newtown",
+      placeName: "Newtown, New South Wales, Australia",
+      center: [151.1781, -33.8985],
+    })
+  );
+
+  await expect(page.getByTestId("listing-write-form")).toBeVisible();
+  await page.locator("#country").selectOption("AU");
+  const searchInput = page.getByTestId("listing-location-search-input");
+  await searchInput.fill("Newtown");
+  await expect
+    .poll(async () =>
+      searchInput.evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).fontSize)
+      )
+    )
+    .toBeGreaterThanOrEqual(16);
+  await page.getByRole("option", { name: /Newtown/ }).click();
+
+  await expect(searchInput).toHaveValue("Newtown");
+  await expect(page.locator(".maplibregl-canvas")).toBeVisible({
+    timeout: 10_000,
+  });
+  await expect(page.getByText(/Drag the pin/)).toBeVisible();
+});
+
 test("listing edit saves and restores seeded business fields", async ({
   page,
 }) => {
@@ -105,6 +141,8 @@ test("listing edit saves and restores seeded business fields", async ({
       : ALTERNATE_BUSINESS_DESCRIPTION;
   const updatedVisibility = originalVisibility === "true" ? "false" : "true";
 
+  await descriptionInput.fill("");
+  await expect(descriptionInput).toHaveValue("");
   await descriptionInput.fill(updatedDescription);
   await visibilityInput.selectOption(updatedVisibility);
   await delayServerActionRequests(page);
@@ -128,6 +166,10 @@ test("listing edit saves and restores seeded business fields", async ({
     updatedVisibility
   );
 
+  await listingWriteForm.locator("#description").first().fill("");
+  await expect(listingWriteForm.locator("#description").first()).toHaveValue(
+    ""
+  );
   await listingWriteForm
     .locator("#description")
     .first()

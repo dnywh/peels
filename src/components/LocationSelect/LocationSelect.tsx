@@ -2,21 +2,21 @@
 import { theme } from "@/styles/theme.yak";
 import { useCallback, useEffect, useState, useRef } from "react";
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
-
-// import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
+import type { GeocodingFeature } from "@maptiler/client";
 
 import { countries } from "@/data/countries";
 
-import { Marker, NavigationControl } from "react-map-gl/maplibre";
+import { Marker } from "react-map-gl/maplibre";
 // import "maplibre-gl/dist/maplibre-gl.css";
 
 import Select from "@/components/Select";
 
-import MapTilerGeocoder, {
-  type MapTilerGeocoderHandle,
-} from "@/components/MapTilerGeocoder";
 import MapThumbnail from "@/components/MapThumbnail";
 import MapPin from "@/components/MapPin";
+import GeocodingSearch, {
+  type GeocodingSearchHandle,
+} from "@/features/map/components/GeocodingSearch";
+import { MapZoomControls } from "@/features/map/components/MapControls";
 
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
@@ -156,7 +156,7 @@ export default function LocationSelect({
 }: LocationSelectProps) {
   const t = useTranslations();
   const mapRef = useRef<any>(null);
-  const inputRef = useRef<MapTilerGeocoderHandle | null>(null);
+  const inputRef = useRef<GeocodingSearchHandle | null>(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
   const [placeholderText, setPlaceholderText] = useState(
@@ -232,18 +232,16 @@ export default function LocationSelect({
   );
 
   const handlePick = useCallback(
-    async (event: any) => {
-      // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
-      // Return early if that's the case
-      if (!event.feature?.center) return;
+    async (feature: GeocodingFeature) => {
+      if (!feature.center) return;
 
       // Otherwise continue as normal
-      console.log("Picked:", event, event.feature?.center);
+      console.log("Picked:", feature, feature.center);
       onLocationInteract?.();
 
       const nextCoordinates = {
-        latitude: event.feature?.center[1],
-        longitude: event.feature?.center[0],
+        latitude: feature.center[1],
+        longitude: feature.center[0],
       };
 
       // Get area name from coordinates
@@ -252,6 +250,7 @@ export default function LocationSelect({
         nextCoordinates.latitude
       );
       setAreaName(nextAreaName);
+      inputRef.current?.setQuery(nextAreaName || feature.place_name);
 
       inputRef.current?.blur();
 
@@ -298,47 +297,21 @@ export default function LocationSelect({
           ))}
         </Select>
 
-        {/* TODO: Reuse MapSearch component */}
-        {/* TODO: Add a 'required' prop for forms that require a location (doesn't work with GeocodingControl) */}
         {/* TODO: Handle database error when user doesn't enter a location */}
-        <div
-          id="custom-geocoding-styles"
-          className={error ? "error" : undefined}
-        >
-          <MapTilerGeocoder
-            // Add these two props to the custom component
-            error={error}
-            ariaInvalid={error ? "true" : undefined}
-            // Continue with actual props
-            id="autocomplete" // Doesn't work out of the box
-            ref={inputRef}
-            apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
-            country={countryCode}
-            // The below will be great for the map page where we don't want to bother with a country dropdown:
-            // Only applies if control is tied to a map. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
-            // proximity={[
-            //     // { type: "map-center", minZoom: 12 },
-            //     { type: "client-geolocation", minZoom: 8 },
-            //     // { type: "server-geolocation", minZoom: 8 },
-            // ]}
-            types={[
-              "address",
-              "place",
-              "neighbourhood",
-              "locality",
-              "municipal_district",
-              "municipality",
-            ]}
-            placeholder={placeholderText}
-            errorMessage={t("Map.searchError")}
-            noResultsMessage={t("Map.searchNoResults")}
-            minLength={3}
-            showPlaceType="never"
-            onPick={handlePick}
-            // Testing...
-            required={true}
-          />
-        </div>
+        <GeocodingSearch
+          ref={inputRef}
+          id="autocomplete"
+          ariaInvalid={error ? "true" : undefined}
+          clearLabel={t("Map.searchClear")}
+          countryCode={countryCode}
+          error={error}
+          errorMessage={t("Map.searchError")}
+          inputTestId="listing-location-search-input"
+          loadingMessage={t("Map.searchLoading")}
+          noResultsMessage={t("Map.searchNoResults")}
+          onPick={handlePick}
+          placeholder={placeholderText}
+        />
         <InputHintComponent variant={error ? "error" : undefined}>
           {error
             ? error
@@ -375,7 +348,12 @@ export default function LocationSelect({
             >
               <MapPin type={listingType} selected={true} />
             </Marker>
-            <NavigationControl showZoom={true} showCompass={false} />
+            <MapZoomControls
+              onZoomIn={() => mapRef.current?.getMap().zoomIn()}
+              onZoomOut={() => mapRef.current?.getMap().zoomOut()}
+              zoomInLabel={t("Map.zoomInControl")}
+              zoomOutLabel={t("Map.zoomOutControl")}
+            />
           </MapThumbnail>
 
           <InputHintComponent>

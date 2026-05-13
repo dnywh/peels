@@ -3,7 +3,7 @@ import { Fragment, useState, memo, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 
-import { Marker, NavigationControl } from "react-map-gl/maplibre";
+import { Marker } from "react-map-gl/maplibre";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import {
@@ -301,7 +301,6 @@ const ListingRead = memo(function Listing({
                     type={realListing.type ?? undefined}
                   />
                 </Marker>
-                <NavigationControl showCompass={false} />
               </MapThumbnail>
 
               <MapDetails>

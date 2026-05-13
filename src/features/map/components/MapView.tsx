@@ -1,18 +1,18 @@
 "use client";
 import { theme } from "@/styles/theme.yak";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
 import Map, {
-  NavigationControl,
   AttributionControl,
-  GeolocateControl,
+  Marker,
   type MapRef,
   type ViewStateChangeEvent,
   type MapLayerMouseEvent,
 } from "react-map-gl/maplibre";
 import type { LngLatBounds } from "maplibre-gl";
+import type { GeocodingFeature } from "@maptiler/client";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocale, useTranslations } from "next-intl";
 import { styled } from "next-yak";
@@ -22,6 +22,7 @@ import type { ListingMarker, SelectedListing } from "@/types/listing";
 
 import MapPinLayer from "./MapPinLayer";
 import MapSearch from "./MapSearch";
+import MapControls from "./MapControls";
 import {
   MAP_MAX_ZOOM,
   ZOOM_LEVEL_DEFAULT,
@@ -40,10 +41,6 @@ import {
   saveStoredInitialMapCoordinates,
   type InitialMapCoordinates,
 } from "../lib/mapInitialView";
-
-type GeocodingPickEvent = {
-  feature?: { center?: [number, number] };
-};
 
 type MapViewProps = {
   selectedListing: SelectedListing | null;
@@ -106,13 +103,6 @@ const attributionControlDesktopStyle: CSSProperties = {
   marginBottom: "10px",
 };
 
-const searchStyle: CSSProperties = {
-  position: "absolute",
-  top: "0.75rem",
-  left: "0.75rem",
-  zIndex: 1,
-};
-
 const STORE_MAP_VIEW_DELAY_MS = 300;
 const STORE_MAP_VIEW_DELTA = 0.000001;
 const STORE_MAP_ZOOM_DELTA = 0.01;
@@ -131,6 +121,16 @@ type MapPinZoomStyle = CSSProperties & {
   "--map-pin-icon-scale": string;
   "--map-pin-halo-scale": string;
 };
+
+const UserLocationDot = styled.div`
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 999px;
+  background: ${theme.colors.focus.outline};
+  border: 2px solid ${theme.colors.background.top};
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, ${theme.colors.focus.outline}, transparent 70%);
+`;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -206,6 +206,11 @@ export default function MapView({
   const mapFlavor = usePreferredMapFlavor();
   const mapRef = useRef<MapRef | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [userCoordinates, setUserCoordinates] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const mapPinZoomStyleRef = useRef<MapPinZoomStyle | null>(null);
   const initialMapPinZoomStyleRef = useRef<MapPinZoomStyle | null>(null);
   const pendingPinZoomRef = useRef<number | null>(null);
@@ -409,11 +414,40 @@ export default function MapView({
     [isListingSelected, listingSlug, onMapClick, selectedListingId]
   );
 
+  const zoomIn = useCallback(() => {
+    mapRef.current?.getMap().zoomIn();
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    mapRef.current?.getMap().zoomOut();
+  }, []);
+
+  const handleLocate = useCallback(() => {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const coordinates = {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        };
+        setUserCoordinates(coordinates);
+        flyToCoordinate(coordinates, ZOOM_LEVEL_DEFAULT);
+      },
+      (error) => {
+        console.warn("Could not locate current position:", error);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 60_000,
+        timeout: 10_000,
+      }
+    );
+  }, [flyToCoordinate]);
+
   const handleSearchPick = useCallback(
-    (event: GeocodingPickEvent) => {
-      // Quirk in MapTiler's Geocoding component: tapping close is also an
-      // "onPick" with no center. Ignore those.
-      const center = event?.feature?.center;
+    (feature: GeocodingFeature) => {
+      const center = feature.center;
       if (!center) return;
 
       flyToCoordinate(
@@ -450,9 +484,6 @@ export default function MapView({
             onError={handleMapError}
             onClick={handleMapClickInternal}
           >
-            <GeolocateControl showUserLocation={true} />
-            <NavigationControl showZoom={true} showCompass={false} />
-
             <AttributionControl
               compact={true}
               style={
@@ -467,12 +498,32 @@ export default function MapView({
               selectedListingId={selectedListingId}
               onMarkerClick={onMarkerClick}
             />
+            {userCoordinates ? (
+              <Marker
+                longitude={userCoordinates.longitude}
+                latitude={userCoordinates.latitude}
+                anchor="center"
+              >
+                <UserLocationDot />
+              </Marker>
+            ) : null}
           </Map>
 
+          <MapControls
+            locateLabel={t("locateControl")}
+            onLocate={handleLocate}
+            onSearch={() => setIsSearchOpen(true)}
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            searchLabel={t("searchLabel")}
+            zoomInLabel={t("zoomInControl")}
+            zoomOutLabel={t("zoomOutControl")}
+          />
           <MapSearch
             onPick={handleSearchPick}
             countryCode={countryCode}
-            style={searchStyle}
+            open={isSearchOpen}
+            onOpenChange={setIsSearchOpen}
           />
         </>
       ) : (
