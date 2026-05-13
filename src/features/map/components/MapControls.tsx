@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Navigation, Plus, Search } from "lucide-react";
+import { Compass, Minus, Plus, Search } from "lucide-react";
 import { css, styled } from "next-yak";
 
 import { theme } from "@/styles/theme.yak";
@@ -33,8 +33,8 @@ const controlButtonStyles = css`
     ${theme.colors.border.base} 46%
   );
   cursor: pointer;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -63,12 +63,12 @@ const controlButtonStyles = css`
 
 const Cluster = styled.div`
   position: absolute;
-  left: 0.75rem;
+  right: 0.75rem;
   top: 0.75rem;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   pointer-events: auto;
 `;
 
@@ -84,17 +84,17 @@ const ZoomCluster = styled.div`
 
 const ControlButton = styled.button`
   ${controlButtonStyles}
-  border-radius: 1.35rem;
-  box-shadow: 0 0.625rem 1.75rem rgba(0, 0, 0, 0.16);
+  border-radius: 0.875rem;
+  box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.14);
 `;
 
 const ZoomGroup = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 1.4rem;
+  border-radius: 0.95rem;
   background: ${theme.colors.background.top};
-  box-shadow: 0 0.625rem 1.75rem rgba(0, 0, 0, 0.16);
+  box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.14);
 `;
 
 const ZoomButton = styled.button`
@@ -141,7 +141,7 @@ function ZoomControlGroup({
         data-testid="map-control-zoom-in"
         onClick={onZoomIn}
       >
-        <Plus size={27} strokeWidth={1.75} aria-hidden="true" />
+        <Plus size={20} strokeWidth={1.75} aria-hidden="true" />
       </ZoomButton>
       <ZoomButton
         type="button"
@@ -150,7 +150,7 @@ function ZoomControlGroup({
         data-testid="map-control-zoom-out"
         onClick={onZoomOut}
       >
-        <Minus size={27} strokeWidth={1.75} aria-hidden="true" />
+        <Minus size={20} strokeWidth={1.75} aria-hidden="true" />
       </ZoomButton>
     </ZoomGroup>
   );
@@ -176,7 +176,7 @@ export default function MapControls({
           data-testid="map-control-search"
           onClick={onSearch}
         >
-          <Search size={28} strokeWidth={1.75} aria-hidden="true" />
+          <Search size={20} strokeWidth={1.75} aria-hidden="true" />
         </ControlButton>
       ) : null}
       {onLocate && locateLabel ? (
@@ -187,7 +187,7 @@ export default function MapControls({
           data-testid="map-control-locate"
           onClick={onLocate}
         >
-          <Navigation size={27} strokeWidth={1.75} aria-hidden="true" />
+          <Compass size={20} strokeWidth={1.75} aria-hidden="true" />
         </ControlButton>
       ) : null}
       <ZoomControlGroup
