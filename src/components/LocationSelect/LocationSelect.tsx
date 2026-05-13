@@ -143,11 +143,16 @@ async function getAreaNameMatch(
   longitude: number,
   latitude: number
 ): Promise<AreaNameMatch | null> {
-  const coordinates = await geocoding.reverse([longitude, latitude]);
+  try {
+    const coordinates = await geocoding.reverse([longitude, latitude]);
 
-  return getBestAreaNameMatchFromFeatures(
-    coordinates.features as AreaNameFeature[]
-  );
+    return getBestAreaNameMatchFromFeatures(
+      coordinates.features as AreaNameFeature[]
+    );
+  } catch (error) {
+    console.warn("Could not reverse-geocode selected location:", error);
+    return null;
+  }
 }
 
 // TODO: use this to build a custom component around the core geocoding API, using my nice own components for input and dropdown
@@ -223,7 +228,6 @@ export default function LocationSelect({
     (e: ChangeEvent<HTMLSelectElement>) => {
       onLocationInteract?.();
       setCountryCode(e.target.value);
-      console.log("Country changed, focusing input...");
       setMapShown(false);
       inputRef.current?.focus();
     },
@@ -232,12 +236,10 @@ export default function LocationSelect({
 
   const handleDragStart = useCallback(() => {
     inputRef.current?.blur(); // Close and blur the input if it's open
-    console.log("handling drag start");
   }, []);
 
   const handleDragEnd = useCallback(
     async (event: any) => {
-      console.log("Drag end. Location:", event.lngLat);
       onLocationInteract?.();
 
       const nextCoordinates = {
@@ -264,8 +266,6 @@ export default function LocationSelect({
     async (feature: GeocodingFeature) => {
       if (!feature.center) return;
 
-      // Otherwise continue as normal
-      console.log("Picked:", feature, feature.center);
       onLocationInteract?.();
 
       const nextCoordinates = {
@@ -288,16 +288,9 @@ export default function LocationSelect({
       inputRef.current?.blur();
 
       if (!mapShown) {
-        console.log("Map isnt shown yet, coming now...");
         setCoordinates(nextCoordinates);
         setMapShown(true);
       } else {
-        console.log(
-          "Map already shown, flying from",
-          coordinates,
-          "to",
-          nextCoordinates
-        );
         mapRef.current?.flyTo({
           center: [nextCoordinates.longitude, nextCoordinates.latitude],
           duration: 2800,

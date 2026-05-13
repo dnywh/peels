@@ -171,7 +171,7 @@ const ResultList = styled.ul`
   padding: 0;
 `;
 
-const ResultOption = styled.button<{ $active?: boolean }>`
+const ResultOption = styled.li<{ $active?: boolean }>`
   appearance: none;
   width: 100%;
   border: 0;
@@ -269,7 +269,7 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
           : "";
     const shouldRenderStatusMessage =
       variant === "palette" || !onStatusMessageChange;
-    const activeFeature = features[activeIndex];
+    const activeFeature = showResults ? features[activeIndex] : undefined;
 
     useEffect(() => {
       onStatusMessageChange?.(statusMessage);
@@ -374,28 +374,27 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
         ) : null}
 
         {showResults && features.length > 0 ? (
-          <ResultsPanel $variant={variant} id={listId}>
-            <ResultList role="listbox">
+          <ResultsPanel $variant={variant}>
+            <ResultList id={listId} role="listbox">
               {features.map((feature, index) => (
-                <li key={feature.id}>
-                  <ResultOption
-                    id={`${listId}-option-${index}`}
-                    role="option"
-                    type="button"
-                    $active={index === activeIndex}
-                    aria-selected={index === activeIndex}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onMouseEnter={() => setActiveIndex(index)}
-                    onClick={() => pickFeature(feature)}
-                  >
-                    <ResultPrimary>
-                      {getFeaturePrimaryLabel(feature)}
-                    </ResultPrimary>
-                    <ResultSecondary>
-                      {getFeatureSecondaryLabel(feature)}
-                    </ResultSecondary>
-                  </ResultOption>
-                </li>
+                <ResultOption
+                  key={feature.id}
+                  id={`${listId}-option-${index}`}
+                  role="option"
+                  tabIndex={-1}
+                  $active={index === activeIndex}
+                  aria-selected={index === activeIndex}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onClick={() => pickFeature(feature)}
+                >
+                  <ResultPrimary>
+                    {getFeaturePrimaryLabel(feature)}
+                  </ResultPrimary>
+                  <ResultSecondary>
+                    {getFeatureSecondaryLabel(feature)}
+                  </ResultSecondary>
+                </ResultOption>
               ))}
             </ResultList>
           </ResultsPanel>
