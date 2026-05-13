@@ -64,7 +64,11 @@ const DialogOverlay = styled(Dialog.Overlay)`
   position: fixed;
   inset: 0;
   z-index: 4;
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.4);
+
+  @media (prefers-color-scheme: dark) {
+    background: rgba(0, 0, 0, 0.62);
+  }
 
   &[data-state="open"] {
     animation: ${overlayEnter} 140ms ease-out;

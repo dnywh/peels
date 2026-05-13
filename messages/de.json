@@ -502,7 +502,7 @@
     "drawerDescription": "Details zum ausgewählten Eintrag.",
     "emptyTitle": "Nichts gefunden",
     "emptyBody": "Der Eintrag, den du suchst, existiert nicht oder wurde entfernt. Tut uns leid.",
-    "searchPlaceholder": "Ort oder Gebiet suchen",
+    "searchPlaceholder": "Strasse oder Ort suchen",
     "searchError": "Etwas ist schiefgelaufen. Erneut versuchen?",
     "searchNoResults": "Keine Ergebnisse. Tippe weiter oder verfeinere deine Suche",
     "searchDialogTitle": "Karte durchsuchen",

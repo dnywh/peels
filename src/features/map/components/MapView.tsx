@@ -58,7 +58,7 @@ const MapContainer = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: lightblue;
+  background-color: ${theme.colors.background.map};
 `;
 
 const ReturnToListingButton = styled(Button)`

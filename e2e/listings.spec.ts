@@ -181,10 +181,12 @@ test("listing edit saves and restores seeded business fields", async ({
     updatedVisibility
   );
 
-  await listingWriteForm
+  const restoreDescriptionInput = listingWriteForm
     .locator("#description")
-    .first()
-    .fill(originalDescription);
+    .first();
+  await restoreDescriptionInput.fill("");
+  await expect(restoreDescriptionInput).toHaveValue("");
+  await restoreDescriptionInput.fill(originalDescription);
   await expect(listingWriteForm.locator("#description").first()).toHaveValue(
     originalDescription
   );
