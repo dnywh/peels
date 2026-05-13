@@ -55,11 +55,13 @@ export function useGeocodingSearch({
 
     setStatus("loading");
 
+    let cancelled = false;
+
     const timeout = window.setTimeout(() => {
       const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
       if (!apiKey) {
-        if (requestIdRef.current === requestId) {
+        if (!cancelled && requestIdRef.current === requestId) {
           setFeatures([]);
           setStatus("error");
         }
@@ -77,13 +79,13 @@ export function useGeocodingSearch({
           types: MAP_GEOCODING_TYPES,
         })
         .then((result) => {
-          if (requestIdRef.current !== requestId) return;
+          if (cancelled || requestIdRef.current !== requestId) return;
 
           setFeatures(result.features);
           setStatus("success");
         })
         .catch((error) => {
-          if (requestIdRef.current !== requestId) return;
+          if (cancelled || requestIdRef.current !== requestId) return;
 
           console.warn("Could not search MapTiler geocoding:", error);
           setFeatures([]);
@@ -92,6 +94,10 @@ export function useGeocodingSearch({
     }, debounceMs);
 
     return () => {
+      cancelled = true;
+      if (requestIdRef.current === requestId) {
+        requestIdRef.current += 1;
+      }
       window.clearTimeout(timeout);
     };
   }, [countryCode, debounceMs, enabled, limit, minLength, proximity, query]);
