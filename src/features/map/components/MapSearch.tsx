@@ -129,6 +129,7 @@ export default function MapSearch({
             <Dialog.Description>{t("searchPlaceholder")}</Dialog.Description>
           </VisuallyHidden.Root>
           <GeocodingSearch
+            ariaLabel={t("searchDialogTitle")}
             autoFocus={true}
             clearLabel={t("searchClear")}
             countryCode={countryCode}

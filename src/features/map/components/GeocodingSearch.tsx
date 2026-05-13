@@ -27,6 +27,8 @@ type GeocodingSearchVariant = "inline" | "palette";
 
 type GeocodingSearchProps = {
   id?: string;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
   ariaInvalid?: "true" | "false";
   autoFocus?: boolean;
   clearLabel: string;
@@ -224,6 +226,8 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
   function GeocodingSearch(
     {
       id,
+      ariaLabel,
+      ariaLabelledBy,
       ariaInvalid,
       autoFocus,
       clearLabel,
@@ -339,6 +343,8 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
             aria-autocomplete="list"
             aria-controls={listId}
             aria-expanded={showResults}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
             aria-invalid={ariaInvalid}
             aria-activedescendant={
               activeFeature ? `${listId}-option-${activeIndex}` : undefined

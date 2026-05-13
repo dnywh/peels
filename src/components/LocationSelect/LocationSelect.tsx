@@ -199,9 +199,8 @@ export default function LocationSelect({
   const inputRef = useRef<GeocodingSearchHandle | null>(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
-  const [placeholderText] = useState(
-    initialPlaceholderText || t("Listings.form.locationPlaceholder")
-  );
+  const placeholderText =
+    initialPlaceholderText || t("Listings.form.locationPlaceholder");
   const [searchStatusMessage, setSearchStatusMessage] = useState("");
 
   useEffect(() => {
@@ -310,7 +309,7 @@ export default function LocationSelect({
         setCoordinates(nextCoordinates);
       }
     },
-    [mapShown, coordinates, onLocationInteract, setCoordinates, setAreaName]
+    [mapShown, onLocationInteract, setCoordinates, setAreaName]
   );
 
   return (
@@ -339,6 +338,7 @@ export default function LocationSelect({
           ref={inputRef}
           id="autocomplete"
           ariaInvalid={error ? "true" : undefined}
+          ariaLabel={t("Listings.form.location")}
           clearLabel={t("Map.searchClear")}
           countryCode={countryCode}
           error={error}
