@@ -1,6 +1,6 @@
 "use client";
 
-import { LocateFixed, Minus, Plus, Search } from "lucide-react";
+import { Minus, Navigation, Plus, Search } from "lucide-react";
 import { css, styled } from "next-yak";
 
 import { theme } from "@/styles/theme.yak";
@@ -25,29 +25,31 @@ type MapZoomControlsProps = {
 
 const controlButtonStyles = css`
   appearance: none;
-  border: 1px solid ${theme.colors.border.base};
-  border-radius: 999px;
-  background: color-mix(
+  border: 0;
+  background: ${theme.colors.background.top};
+  color: color-mix(
     in srgb,
-    ${theme.colors.background.top},
-    transparent 6%
+    ${theme.colors.text.secondary},
+    ${theme.colors.border.base} 46%
   );
-  color: ${theme.colors.text.primary};
   cursor: pointer;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
-  backdrop-filter: blur(12px);
   transition:
     background 100ms ease-in-out,
     color 75ms ease-in-out,
     transform 50ms ease-out;
 
   &:hover {
-    background: ${theme.colors.background.top};
+    color: ${theme.colors.text.primary};
+    background: color-mix(
+      in srgb,
+      ${theme.colors.background.top},
+      ${theme.colors.background.sunk} 35%
+    );
   }
 
   &:active {
@@ -66,7 +68,7 @@ const Cluster = styled.div`
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 0.75rem;
   pointer-events: auto;
 `;
 
@@ -77,12 +79,33 @@ const ZoomCluster = styled.div`
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
   pointer-events: auto;
 `;
 
 const ControlButton = styled.button`
   ${controlButtonStyles}
+  border-radius: 1.35rem;
+  box-shadow: 0 0.625rem 1.75rem rgba(0, 0, 0, 0.16);
+`;
+
+const ZoomGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1.4rem;
+  background: ${theme.colors.background.top};
+  box-shadow: 0 0.625rem 1.75rem rgba(0, 0, 0, 0.16);
+`;
+
+const ZoomButton = styled.button`
+  ${controlButtonStyles}
+  box-shadow: none;
+  border-radius: 0;
+
+  & + & {
+    border-top: 1px solid
+      color-mix(in srgb, ${theme.colors.border.base}, transparent 35%);
+  }
 `;
 
 export function MapZoomControls({
@@ -93,25 +116,43 @@ export function MapZoomControls({
 }: MapZoomControlsProps) {
   return (
     <ZoomCluster>
-      <ControlButton
+      <ZoomControlGroup
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        zoomInLabel={zoomInLabel}
+        zoomOutLabel={zoomOutLabel}
+      />
+    </ZoomCluster>
+  );
+}
+
+function ZoomControlGroup({
+  onZoomIn,
+  onZoomOut,
+  zoomInLabel,
+  zoomOutLabel,
+}: MapZoomControlsProps) {
+  return (
+    <ZoomGroup>
+      <ZoomButton
         type="button"
         aria-label={zoomInLabel}
         title={zoomInLabel}
         data-testid="map-control-zoom-in"
         onClick={onZoomIn}
       >
-        <Plus size={18} aria-hidden="true" />
-      </ControlButton>
-      <ControlButton
+        <Plus size={27} strokeWidth={1.75} aria-hidden="true" />
+      </ZoomButton>
+      <ZoomButton
         type="button"
         aria-label={zoomOutLabel}
         title={zoomOutLabel}
         data-testid="map-control-zoom-out"
         onClick={onZoomOut}
       >
-        <Minus size={18} aria-hidden="true" />
-      </ControlButton>
-    </ZoomCluster>
+        <Minus size={27} strokeWidth={1.75} aria-hidden="true" />
+      </ZoomButton>
+    </ZoomGroup>
   );
 }
 
@@ -135,7 +176,7 @@ export default function MapControls({
           data-testid="map-control-search"
           onClick={onSearch}
         >
-          <Search size={18} aria-hidden="true" />
+          <Search size={28} strokeWidth={1.75} aria-hidden="true" />
         </ControlButton>
       ) : null}
       {onLocate && locateLabel ? (
@@ -146,27 +187,15 @@ export default function MapControls({
           data-testid="map-control-locate"
           onClick={onLocate}
         >
-          <LocateFixed size={18} aria-hidden="true" />
+          <Navigation size={27} strokeWidth={1.75} aria-hidden="true" />
         </ControlButton>
       ) : null}
-      <ControlButton
-        type="button"
-        aria-label={zoomInLabel}
-        title={zoomInLabel}
-        data-testid="map-control-zoom-in"
-        onClick={onZoomIn}
-      >
-        <Plus size={18} aria-hidden="true" />
-      </ControlButton>
-      <ControlButton
-        type="button"
-        aria-label={zoomOutLabel}
-        title={zoomOutLabel}
-        data-testid="map-control-zoom-out"
-        onClick={onZoomOut}
-      >
-        <Minus size={18} aria-hidden="true" />
-      </ControlButton>
+      <ZoomControlGroup
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        zoomInLabel={zoomInLabel}
+        zoomOutLabel={zoomOutLabel}
+      />
     </Cluster>
   );
 }
