@@ -275,6 +275,12 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
       onStatusMessageChange?.(statusMessage);
     }, [onStatusMessageChange, statusMessage]);
 
+    useEffect(() => {
+      if (activeIndex >= features.length) {
+        setActiveIndex(0);
+      }
+    }, [activeIndex, features.length]);
+
     useImperativeHandle(
       forwardedRef,
       () => ({

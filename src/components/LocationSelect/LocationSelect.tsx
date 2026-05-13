@@ -144,7 +144,15 @@ async function getAreaNameMatch(
   latitude: number
 ): Promise<AreaNameMatch | null> {
   try {
-    const coordinates = await geocoding.reverse([longitude, latitude]);
+    const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+
+    if (!apiKey) {
+      return null;
+    }
+
+    const coordinates = await geocoding.reverse([longitude, latitude], {
+      apiKey,
+    });
 
     return getBestAreaNameMatchFromFeatures(
       coordinates.features as AreaNameFeature[]
@@ -257,6 +265,9 @@ export default function LocationSelect({
       if (nextAreaNameMatch) {
         setAreaName(nextAreaNameMatch.name);
         inputRef.current?.setQuery(nextAreaNameMatch.name);
+      } else {
+        setAreaName("");
+        inputRef.current?.setQuery("");
       }
     },
     [onLocationInteract, setCoordinates, setAreaName]
