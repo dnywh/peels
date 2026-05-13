@@ -502,7 +502,7 @@
     "drawerDescription": "Detalles del anuncio seleccionado.",
     "emptyTitle": "No encontramos nada",
     "emptyBody": "El anuncio que buscas no existe o fue eliminado.",
-    "searchPlaceholder": "Buscar",
+    "searchPlaceholder": "Busca un lugar o zona",
     "searchError": "Algo salió mal. ¿Intentarlo de nuevo?",
     "searchNoResults": "Sin resultados. Sigue escribiendo o ajusta tu búsqueda",
     "searchDialogTitle": "Buscar en el mapa",

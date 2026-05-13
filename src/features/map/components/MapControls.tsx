@@ -1,8 +1,13 @@
 "use client";
 
-import { Compass, Minus, Plus, Search } from "lucide-react";
 import { css, styled } from "next-yak";
 
+import {
+  MapControlGpsIcon,
+  MapControlMinusIcon,
+  MapControlPlusIcon,
+  MapControlSearchIcon,
+} from "@/components/MapControlIcons";
 import { theme } from "@/styles/theme.yak";
 
 type MapControlClusterProps = {
@@ -34,13 +39,9 @@ const controlButtonStyles = css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition:
-    background 100ms ease-in-out,
-    color 75ms ease-in-out,
-    transform 50ms ease-out;
+  transition: background 100ms ease-in-out;
 
   &:hover {
-    color: ${theme.colors.text.primary};
     background: color-mix(
       in srgb,
       ${theme.colors.background.top},
@@ -49,7 +50,20 @@ const controlButtonStyles = css`
   }
 
   &:active {
-    transform: translateY(1px);
+    background: color-mix(
+      in srgb,
+      ${theme.colors.background.top},
+      ${theme.colors.background.sunk} 80%
+    );
+  }
+
+  &:hover svg {
+    opacity: 0.75;
+    transform: scale(0.9);
+  }
+
+  &:active svg {
+    opacity: 1;
   }
 
   &:focus-visible {
@@ -57,9 +71,11 @@ const controlButtonStyles = css`
   }
 
   svg {
-    width: 1.125rem;
-    height: 1.125rem;
-    stroke-width: 2.25px;
+    width: 1rem;
+    height: 1rem;
+    transition:
+      opacity 150ms ease-in-out,
+      transform 35ms ease-in-out;
   }
 `;
 
@@ -88,7 +104,7 @@ const ControlButton = styled.button`
   ${controlButtonStyles}
   border-radius: 0.7rem;
   box-shadow:
-    0 0 0 1px ${theme.colors.border.elevated},
+    0 0 0 2px ${theme.colors.border.elevated},
     0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
 `;
 
@@ -99,7 +115,7 @@ const ZoomGroup = styled.div`
   border-radius: 0.75rem;
   background: ${theme.colors.background.top};
   box-shadow:
-    0 0 0 1px ${theme.colors.border.elevated},
+    0 0 0 2px ${theme.colors.border.elevated},
     0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
 `;
 
@@ -146,7 +162,7 @@ function ZoomControlGroup({
         data-testid="map-control-zoom-in"
         onClick={onZoomIn}
       >
-        <Plus aria-hidden="true" />
+        <MapControlPlusIcon aria-hidden="true" />
       </ZoomButton>
       <ZoomButton
         type="button"
@@ -155,7 +171,7 @@ function ZoomControlGroup({
         data-testid="map-control-zoom-out"
         onClick={onZoomOut}
       >
-        <Minus aria-hidden="true" />
+        <MapControlMinusIcon aria-hidden="true" />
       </ZoomButton>
     </ZoomGroup>
   );
@@ -181,7 +197,7 @@ export default function MapControls({
           data-testid="map-control-search"
           onClick={onSearch}
         >
-          <Search aria-hidden="true" />
+          <MapControlSearchIcon aria-hidden="true" />
         </ControlButton>
       ) : null}
       {onLocate && locateLabel ? (
@@ -192,7 +208,7 @@ export default function MapControls({
           data-testid="map-control-locate"
           onClick={onLocate}
         >
-          <Compass aria-hidden="true" />
+          <MapControlGpsIcon aria-hidden="true" />
         </ControlButton>
       ) : null}
       <ZoomControlGroup

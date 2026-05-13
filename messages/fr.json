@@ -502,7 +502,7 @@
     "drawerDescription": "Détails de l’annonce sélectionnée.",
     "emptyTitle": "Rien à l’horizon",
     "emptyBody": "L’annonce que vous cherchez n’existe pas ou a été supprimée. Désolé pour la déception.",
-    "searchPlaceholder": "Rechercher",
+    "searchPlaceholder": "Rechercher un lieu ou une zone",
     "searchError": "Quelque chose s’est mal passé. Réessayer ?",
     "searchNoResults": "Aucun résultat. Continuez à taper ou affinez votre recherche",
     "searchDialogTitle": "Rechercher sur la carte",

@@ -502,7 +502,7 @@
     "drawerDescription": "Selected listing details.",
     "emptyTitle": "Coming up empty",
     "emptyBody": "The listing you’re looking for doesn’t exist or has been removed. Sorry to disappoint.",
-    "searchPlaceholder": "Search",
+    "searchPlaceholder": "Search for a place or area",
     "searchError": "Something went wrong. Try again?",
     "searchNoResults": "No results. Keep typing or refine your search",
     "searchDialogTitle": "Search the map",

@@ -3,7 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { useTranslations } from "next-intl";
-import { styled } from "next-yak";
+import { keyframes, styled } from "next-yak";
 import type { GeocodingFeature } from "@maptiler/client";
 
 import { theme } from "@/styles/theme.yak";
@@ -16,11 +16,70 @@ type MapSearchProps = {
   open: boolean;
 };
 
+const overlayEnter = keyframes`
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+`;
+
+const overlayExit = keyframes`
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+`;
+
+const contentEnter = keyframes`
+  from {
+    opacity: 0;
+    transform: translate(-50%, 0.375rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+`;
+
+const contentExit = keyframes`
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, 0.25rem);
+  }
+`;
+
 const DialogOverlay = styled(Dialog.Overlay)`
   position: fixed;
   inset: 0;
   z-index: 4;
   background: rgba(0, 0, 0, 0.18);
+
+  &[data-state="open"] {
+    animation: ${overlayEnter} 140ms ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: ${overlayExit} 110ms ease-in;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-state="open"],
+    &[data-state="closed"] {
+      animation: none;
+    }
+  }
 `;
 
 const DialogContent = styled(Dialog.Content)`
@@ -35,6 +94,21 @@ const DialogContent = styled(Dialog.Content)`
   border-radius: calc(${theme.corners.base} * 1.35);
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
   padding: 0.75rem;
+
+  &[data-state="open"] {
+    animation: ${contentEnter} 160ms ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: ${contentExit} 110ms ease-in;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-state="open"],
+    &[data-state="closed"] {
+      animation: none;
+    }
+  }
 `;
 
 export default function MapSearch({
