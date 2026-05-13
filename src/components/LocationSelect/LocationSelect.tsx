@@ -6,7 +6,11 @@ import type { GeocodingFeature } from "@maptiler/client";
 
 import { countries } from "@/data/countries";
 
-import { Marker } from "react-map-gl/maplibre";
+import {
+  Marker,
+  type MapRef,
+  type MarkerDragEvent,
+} from "react-map-gl/maplibre";
 // import "maplibre-gl/dist/maplibre-gl.css";
 
 import Select from "@/components/Select";
@@ -195,7 +199,7 @@ export default function LocationSelect({
   error,
 }: LocationSelectProps) {
   const t = useTranslations();
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<MapRef | null>(null);
   const inputRef = useRef<GeocodingSearchHandle | null>(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
@@ -246,7 +250,7 @@ export default function LocationSelect({
   }, []);
 
   const handleDragEnd = useCallback(
-    async (event: any) => {
+    async (event: MarkerDragEvent) => {
       onLocationInteract?.();
 
       const nextCoordinates = {
