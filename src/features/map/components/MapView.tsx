@@ -224,8 +224,10 @@ export default function MapView({
     () => resolveInitialViewState(selectedListing, initialCoordinates),
     [initialCoordinates, selectedListing]
   );
+  const hasInitialPosition =
+    hasValidCoordinates(selectedListing) || initialCoordinates !== null;
 
-  if (initialMapPinZoomStyleRef.current === null) {
+  if (hasInitialPosition && initialMapPinZoomStyleRef.current === null) {
     initialMapPinZoomStyleRef.current = resolveMapPinZoomVariables(
       initialViewState.zoom
     );
@@ -312,14 +314,21 @@ export default function MapView({
     [applyMapPinZoomVariables]
   );
 
+  const syncCurrentMapState = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return null;
+
+    applyMapPinZoomVariables(map.getZoom());
+    emitBoundsChange(map.getBounds());
+
+    return map;
+  }, [applyMapPinZoomVariables, emitBoundsChange]);
+
   const handleLoad = useCallback(() => {
     handleMapLoad();
-    const map = mapRef.current?.getMap();
-    if (map) {
-      applyMapPinZoomVariables(map.getZoom());
-      emitBoundsChange(map.getBounds());
-    }
-  }, [applyMapPinZoomVariables, emitBoundsChange, handleMapLoad]);
+    const map = syncCurrentMapState();
+    map?.once("idle", syncCurrentMapState);
+  }, [handleMapLoad, syncCurrentMapState]);
 
   useEffect(() => {
     if (initialCoordinates) {
@@ -418,14 +427,12 @@ export default function MapView({
   const showReturnButton = Boolean(
     selectedListing && isListingSelected && !isSelectedInView
   );
-  const hasInitialPosition =
-    hasValidCoordinates(selectedListing) || initialCoordinates !== null;
 
   return (
     <MapContainer
       ref={mapContainerRef}
       data-testid="map-view"
-      style={initialMapPinZoomStyleRef.current}
+      style={initialMapPinZoomStyleRef.current ?? undefined}
     >
       {hasInitialPosition ? (
         <>
