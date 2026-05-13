@@ -27,11 +27,7 @@ const controlButtonStyles = css`
   appearance: none;
   border: 0;
   background: ${theme.colors.background.top};
-  color: color-mix(
-    in srgb,
-    ${theme.colors.text.secondary},
-    ${theme.colors.border.base} 46%
-  );
+  color: ${theme.colors.text.ui.emptyState};
   cursor: pointer;
   width: 2rem;
   height: 2rem;
@@ -91,7 +87,9 @@ const ZoomCluster = styled.div`
 const ControlButton = styled.button`
   ${controlButtonStyles}
   border-radius: 0.7rem;
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
+  box-shadow:
+    0 0 0 1px ${theme.colors.border.elevated},
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
 `;
 
 const ZoomGroup = styled.div`
@@ -100,7 +98,9 @@ const ZoomGroup = styled.div`
   overflow: hidden;
   border-radius: 0.75rem;
   background: ${theme.colors.background.top};
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
+  box-shadow:
+    0 0 0 1px ${theme.colors.border.elevated},
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
 `;
 
 const ZoomButton = styled.button`
@@ -109,8 +109,7 @@ const ZoomButton = styled.button`
   border-radius: 0;
 
   & + & {
-    border-top: 1px solid
-      color-mix(in srgb, ${theme.colors.border.base}, transparent 35%);
+    border-top: 1px solid ${theme.colors.border.elevated};
   }
 `;
 
