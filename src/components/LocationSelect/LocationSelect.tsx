@@ -162,6 +162,7 @@ export default function LocationSelect({
   const [placeholderText, setPlaceholderText] = useState(
     initialPlaceholderText || t("Listings.form.locationPlaceholder")
   );
+  const [searchStatusMessage, setSearchStatusMessage] = useState("");
 
   useEffect(() => {
     if (autoDetectCountry && !countryCode) {
@@ -310,12 +311,14 @@ export default function LocationSelect({
           loadingMessage={t("Map.searchLoading")}
           noResultsMessage={t("Map.searchNoResults")}
           onPick={handlePick}
+          onStatusMessageChange={setSearchStatusMessage}
           placeholder={placeholderText}
         />
         <InputHintComponent variant={error ? "error" : undefined}>
           {error
             ? error
-            : t("Listings.form.locationHint", {
+            : searchStatusMessage ||
+              t("Listings.form.locationHint", {
                 type: listingType,
               })}
         </InputHintComponent>

@@ -3,6 +3,7 @@
 import {
   forwardRef,
   useId,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -38,6 +39,7 @@ type GeocodingSearchProps = {
   onBlur?: () => void;
   onFocus?: () => void;
   onPick: (feature: GeocodingFeature) => void;
+  onStatusMessageChange?: (message: string) => void;
   placeholder: string;
   proximity?: Position | "ip";
   variant?: GeocodingSearchVariant;
@@ -53,10 +55,7 @@ const Root = styled.div<{
   flex-direction: column;
 
   input {
-    border-radius: ${({ $variant }) =>
-      $variant === "palette"
-        ? `calc(${theme.corners.base} * 1.25)`
-        : `calc(${theme.corners.base} * 0.85)`};
+    border-radius: calc(${theme.corners.base} * 0.5);
     font-size: ${({ $variant }) =>
       $variant === "palette" ? "1.0625rem" : "1rem"};
     min-height: 3.5rem;
@@ -66,8 +65,8 @@ const Root = styled.div<{
     ${({ $error }) =>
       $error &&
       css`
-        border-color: hsla(22, 87%, 50%, 1);
-        border-width: 1.5px;
+        border-color: ${theme.colors.input.invalid.border};
+        border-width: 2px;
         background-color: hsla(22, 87%, 50%, 0.0625);
       `}
   }
@@ -80,23 +79,20 @@ const InputWrap = styled.div`
 const Input = styled.input`
   width: 100%;
   appearance: none;
-  color: ${theme.colors.text.primary};
-  border: 1px solid ${theme.colors.border.base};
-  background-color: ${theme.colors.background.top};
+  color: ${theme.colors.text.ui.secondary};
+  border: 1px solid ${theme.colors.border.stark};
+  background-color: ${theme.colors.background.slight};
   box-shadow: inset 0 -3px 2px 0 rgba(0, 0, 0, 0.03);
   line-height: 1.35;
   outline: none;
 
   &::placeholder {
-    color: ${theme.colors.text.secondary};
+    color: ${theme.colors.input.placeholder.text};
   }
 
   &:focus {
-    border-color: ${theme.colors.focus.outline};
-    box-shadow:
-      0 0 0 3px
-        color-mix(in srgb, ${theme.colors.focus.outline}, transparent 65%),
-      inset 0 -3px 2px 0 rgba(0, 0, 0, 0.03);
+    outline: 2px solid ${theme.colors.border.focus};
+    outline-offset: 2px;
   }
 `;
 
@@ -115,7 +111,7 @@ const ClearButton = styled.button`
   right: 0.375rem;
   top: 50%;
   transform: translateY(-50%);
-  border-radius: 999px;
+  border-radius: 0.7rem;
 
   &:hover {
     color: ${theme.colors.text.primary};
@@ -137,7 +133,7 @@ const ResultsPanel = styled.div<{ $variant: GeocodingSearchVariant }>`
   overflow: hidden;
   background: ${theme.colors.background.top};
   border: 1px solid ${theme.colors.border.base};
-  border-radius: ${theme.corners.base};
+  border-radius: calc(${theme.corners.base} * 0.5);
   box-shadow: 0 5px 10px #33335926;
 
   ${({ $variant }) =>
@@ -241,6 +237,7 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
       onBlur,
       onFocus,
       onPick,
+      onStatusMessageChange,
       placeholder,
       proximity,
       variant = "inline",
@@ -276,7 +273,13 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
         : showNoResults
           ? noResultsMessage
           : "";
+    const shouldRenderStatusMessage =
+      variant === "palette" || !onStatusMessageChange;
     const activeFeature = features[activeIndex];
+
+    useEffect(() => {
+      onStatusMessageChange?.(statusMessage);
+    }, [onStatusMessageChange, statusMessage]);
 
     useImperativeHandle(
       forwardedRef,
@@ -365,9 +368,11 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
           ) : null}
         </InputWrap>
 
-        <StatusMessage $visible={Boolean(statusMessage)}>
-          {statusMessage}
-        </StatusMessage>
+        {shouldRenderStatusMessage ? (
+          <StatusMessage $visible={Boolean(statusMessage)}>
+            {statusMessage}
+          </StatusMessage>
+        ) : null}
 
         {showResults && features.length > 0 ? (
           <ResultsPanel $variant={variant} id={listId}>
