@@ -73,7 +73,7 @@ export default async function ResetPassword(props: {
         {searchParams.error && (
           <FormMessage message={{ error: searchParams.error }} />
         )}
-        <SubmitButton pendingText={t("Status.resetting")}>
+        <SubmitButton fullWidth pendingText={t("Status.resetting")}>
           {t("Actions.resetPassword")}
         </SubmitButton>
       </Form>

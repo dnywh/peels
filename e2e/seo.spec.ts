@@ -221,7 +221,7 @@ test("public listing pages expose crawlable listing metadata", async ({
   );
 });
 
-test("anonymous residential listing pages expose an indexable private-host teaser", async ({
+test("anonymous residential listing pages expose indexable public content without identity or media", async ({
   page,
 }) => {
   await page.goto(RESIDENTIAL_LISTING_PATH, { waitUntil: "domcontentloaded" });
@@ -239,19 +239,22 @@ test("anonymous residential listing pages expose an indexable private-host tease
   await expect(
     page.getByRole("heading", { name: "Private Host" })
   ).toBeVisible();
-  await expect(page.getByText("Resident of Newtown")).toBeVisible();
+  await expect(
+    page.getByText("Resident of Newtown", { exact: true })
+  ).toBeVisible();
+  await expect(page.getByText("A small residential setup")).toBeVisible();
+  await expect(page.getByText("Fruit scraps", { exact: true })).toBeVisible();
+  await expect(page.getByText("Paper towels", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Crushed egg shells", { exact: true })
+  ).toBeVisible();
 
   const pageHtml = await page.content();
   for (const privateText of [
     "Newtown Balcony Worm Farm",
-    "A small residential setup",
-    "Fruit scraps",
-    "Paper towels",
-    "Crushed egg shells",
-    "Citrus in bulk",
-    "Cooked food",
-    "151.1781",
-    "-33.8986",
+    "9a0c62fc-bf50-4f45-ba6c-5b9051c2712a",
+    "demo/sunflowers.jpg",
+    "Riley",
   ]) {
     expect(pageHtml).not.toContain(privateText);
   }

@@ -19,6 +19,7 @@ type ButtonStyleProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   width?: ButtonWidth;
+  fullWidth?: boolean;
   disabled?: boolean;
 };
 
@@ -108,6 +109,11 @@ type LinkButtonRestProps = Omit<
 const isLinkButton = (props: ButtonProps): props is LinkButtonProps =>
   props.href !== undefined;
 
+const getResolvedWidth = (
+  width: ButtonWidth | undefined,
+  fullWidth: boolean | undefined
+) => (fullWidth ? "full" : width);
+
 const getCommonProps = (props: ButtonProps) => {
   const {
     variant = "secondary",
@@ -117,10 +123,13 @@ const getCommonProps = (props: ButtonProps) => {
     loading = false,
     loadingText = "Loading...",
     size = "normal",
+    width,
+    fullWidth,
     onClick,
     href,
     ...restProps
   } = props;
+  const resolvedWidth = getResolvedWidth(width, fullWidth);
 
   return {
     variant,
@@ -130,6 +139,7 @@ const getCommonProps = (props: ButtonProps) => {
     loading,
     loadingText,
     size,
+    width: resolvedWidth,
     onClick,
     href,
     restProps,
@@ -388,6 +398,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
       loading,
       loadingText,
       size,
+      width,
       onClick,
       restProps,
     } = getCommonProps(allProps);
@@ -416,13 +427,13 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
           href={allProps.href}
           ref={ref as Ref<HTMLAnchorElement>}
           $variant={variant}
-          $width={allProps.width}
+          $width={width}
           $size={size}
           $disabledState={isDisabled}
           tabIndex={isDisabled ? -1 : tabIndex}
           aria-disabled={isDisabled || undefined}
           aria-busy={isLoading || undefined}
-          data-button-width={allProps.width ?? "contained"}
+          data-button-width={width ?? "contained"}
           {...clickProps}
           {...linkProps}
           rel={rel}
@@ -442,13 +453,13 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         ref={ref as Ref<HTMLButtonElement>}
         disabled={isDisabled}
         $variant={variant}
-        $width={allProps.width}
+        $width={width}
         $size={size}
         $disabledState={isDisabled}
         tabIndex={isDisabled ? -1 : tabIndex}
         aria-disabled={isDisabled || undefined}
         aria-busy={isLoading || undefined}
-        data-button-width={allProps.width ?? "contained"}
+        data-button-width={width ?? "contained"}
         onClick={onClick}
         {...buttonProps}
       >
