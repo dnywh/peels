@@ -155,11 +155,22 @@ const ResultsPanel = styled.div<{ $variant: GeocodingSearchVariant }>`
     `}
 `;
 
-const StatusMessage = styled.div`
-  padding: 0.75rem 1rem;
-  color: ${theme.colors.text.secondary};
-  font-size: 1rem;
+const StatusMessage = styled.div<{ $visible?: boolean }>`
+  max-height: ${({ $visible }) => ($visible ? "3rem" : "0")};
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  overflow: hidden;
+  transform: translateY(${({ $visible }) => ($visible ? "0" : "-0.25rem")});
+  transition:
+    max-height 160ms ease,
+    opacity 140ms ease,
+    transform 160ms ease;
+  color: ${theme.colors.text.tertiary};
+  font-size: 0.875rem;
   line-height: 1.35;
+  padding: ${({ $visible }) => ($visible ? "0.625rem 1rem 0" : "0 1rem")};
+  pointer-events: none;
+  text-align: center;
+  text-wrap: balance;
 `;
 
 const ResultList = styled.ul`
@@ -263,6 +274,13 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
         features.length > 0);
     const showNoResults =
       showResults && isReady && !isLoading && !isError && features.length === 0;
+    const statusMessage = isLoading
+      ? loadingMessage
+      : isError
+        ? error || errorMessage
+        : showNoResults
+          ? noResultsMessage
+          : "";
     const activeFeature = features[activeIndex];
 
     useImperativeHandle(
@@ -352,40 +370,35 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
           ) : null}
         </InputWrap>
 
-        {showResults ? (
+        <StatusMessage $visible={Boolean(statusMessage)}>
+          {statusMessage}
+        </StatusMessage>
+
+        {showResults && features.length > 0 ? (
           <ResultsPanel $variant={variant} id={listId}>
-            {isLoading ? <StatusMessage>{loadingMessage}</StatusMessage> : null}
-            {isError ? (
-              <StatusMessage>{error || errorMessage}</StatusMessage>
-            ) : null}
-            {showNoResults ? (
-              <StatusMessage>{noResultsMessage}</StatusMessage>
-            ) : null}
-            {features.length > 0 ? (
-              <ResultList role="listbox">
-                {features.map((feature, index) => (
-                  <li key={feature.id}>
-                    <ResultOption
-                      id={`${listId}-option-${index}`}
-                      role="option"
-                      type="button"
-                      $active={index === activeIndex}
-                      aria-selected={index === activeIndex}
-                      onMouseDown={(event) => event.preventDefault()}
-                      onMouseEnter={() => setActiveIndex(index)}
-                      onClick={() => pickFeature(feature)}
-                    >
-                      <ResultPrimary>
-                        {getFeaturePrimaryLabel(feature)}
-                      </ResultPrimary>
-                      <ResultSecondary>
-                        {getFeatureSecondaryLabel(feature)}
-                      </ResultSecondary>
-                    </ResultOption>
-                  </li>
-                ))}
-              </ResultList>
-            ) : null}
+            <ResultList role="listbox">
+              {features.map((feature, index) => (
+                <li key={feature.id}>
+                  <ResultOption
+                    id={`${listId}-option-${index}`}
+                    role="option"
+                    type="button"
+                    $active={index === activeIndex}
+                    aria-selected={index === activeIndex}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    onClick={() => pickFeature(feature)}
+                  >
+                    <ResultPrimary>
+                      {getFeaturePrimaryLabel(feature)}
+                    </ResultPrimary>
+                    <ResultSecondary>
+                      {getFeatureSecondaryLabel(feature)}
+                    </ResultSecondary>
+                  </ResultOption>
+                </li>
+              ))}
+            </ResultList>
           </ResultsPanel>
         ) : null}
       </Root>
