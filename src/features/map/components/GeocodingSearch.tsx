@@ -52,12 +52,6 @@ const Root = styled.div<{
   display: flex;
   flex-direction: column;
 
-  ${({ $variant }) =>
-    $variant === "palette" &&
-    css`
-      gap: 0.75rem;
-    `}
-
   input {
     border-radius: ${({ $variant }) =>
       $variant === "palette"
@@ -150,6 +144,7 @@ const ResultsPanel = styled.div<{ $variant: GeocodingSearchVariant }>`
     $variant === "palette" &&
     css`
       position: static;
+      margin-top: 0.75rem;
       max-height: min(45vh, 24rem);
       overflow-y: auto;
     `}
