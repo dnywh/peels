@@ -80,24 +80,14 @@ const controlButtonStyles = css`
   }
 `;
 
-const Cluster = styled.div`
+const ControlAnchor = styled.div<{ $gap?: boolean }>`
   position: absolute;
   right: 0.75rem;
   top: 0.75rem;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  pointer-events: auto;
-`;
-
-const ZoomCluster = styled.div`
-  position: absolute;
-  right: 0.75rem;
-  top: 0.75rem;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
+  gap: ${({ $gap }) => ($gap ? "0.375rem" : 0)};
   pointer-events: auto;
 `;
 
@@ -139,14 +129,14 @@ export function MapZoomControls({
   zoomOutLabel,
 }: MapZoomControlsProps) {
   return (
-    <ZoomCluster>
+    <ControlAnchor>
       <ZoomControlGroup
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         zoomInLabel={zoomInLabel}
         zoomOutLabel={zoomOutLabel}
       />
-    </ZoomCluster>
+    </ControlAnchor>
   );
 }
 
@@ -192,7 +182,7 @@ export default function MapControls({
   zoomOutLabel,
 }: MapControlClusterProps) {
   return (
-    <Cluster>
+    <ControlAnchor $gap>
       {onSearch && searchLabel ? (
         <ControlButton
           type="button"
@@ -223,6 +213,6 @@ export default function MapControls({
         zoomInLabel={zoomInLabel}
         zoomOutLabel={zoomOutLabel}
       />
-    </Cluster>
+    </ControlAnchor>
   );
 }

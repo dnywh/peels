@@ -14,7 +14,10 @@ import { css, styled } from "next-yak";
 import type { GeocodingFeature, Position } from "@maptiler/client";
 
 import { theme } from "@/styles/theme.yak";
-import { useGeocodingSearch } from "../hooks/useGeocodingSearch";
+import {
+  MAP_GEOCODING_MIN_QUERY_LENGTH,
+  useGeocodingSearch,
+} from "../hooks/useGeocodingSearch";
 
 export type GeocodingSearchHandle = {
   blur: () => void;
@@ -259,7 +262,8 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
       countryCode,
       proximity,
     });
-    const hasSearchableQuery = query.trim().length >= 3;
+    const hasSearchableQuery =
+      query.trim().length >= MAP_GEOCODING_MIN_QUERY_LENGTH;
     const showResults =
       hasSearchableQuery && (variant === "palette" || isFocused);
     const showNoResults =

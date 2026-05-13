@@ -16,6 +16,7 @@ export const MAP_GEOCODING_TYPES: GeocodingPlaceType[] = [
   "municipal_district",
   "municipality",
 ];
+export const MAP_GEOCODING_MIN_QUERY_LENGTH = 3;
 
 type GeocodingSearchStatus = "idle" | "loading" | "success" | "error";
 
@@ -34,7 +35,7 @@ export function useGeocodingSearch({
   countryCode,
   proximity,
   enabled = true,
-  minLength = 3,
+  minLength = MAP_GEOCODING_MIN_QUERY_LENGTH,
   debounceMs = 250,
   limit = 5,
 }: UseGeocodingSearchOptions) {
