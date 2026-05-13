@@ -31,6 +31,25 @@ test("sign-in preserves a safe redirect_to", async ({ page }) => {
   await expect(page).toHaveURL(/\/profile$/);
 });
 
+test("password reset success page renders for signed-in users", async ({
+  page,
+}) => {
+  const successMessage =
+    "Your password has been updated. Let’s get back to composting!";
+
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: `/profile/reset-password?success=${encodeURIComponent(
+      successMessage
+    )}`,
+  });
+
+  await expect(
+    page.getByRole("heading", { name: "Password updated" })
+  ).toBeVisible();
+  await expect(page.getByText(successMessage)).toBeVisible();
+});
+
 test("sign-in normalises unsafe redirect_to values", async ({ page }) => {
   await signIn(page, {
     email: HOST_EMAIL,

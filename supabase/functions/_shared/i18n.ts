@@ -101,7 +101,7 @@ const authEmailCopy = {
         "Sorry to hear you’re having trouble signing in to Peels. Here’s a link to reset your password.",
       heading: "Reset your password",
       footer:
-        "You’re receiving this email because someone—hopefully you—requested a password reset link for your Peels account.",
+        "You’re receiving this email because someone requested a password reset link for your Peels account.",
       body: "Sorry to hear you’re having trouble signing in to Peels. Tap the below link to reset your password:",
       button: "Reset password",
     },
@@ -164,7 +164,7 @@ const authEmailCopy = {
         "Sentimos que estés teniendo problemas para iniciar sesión en Peels. Aquí tienes un enlace para restablecer tu contraseña.",
       heading: "Restablece tu contraseña",
       footer:
-        "Recibes este correo porque alguien, esperamos que hayas sido tú, solicitó un enlace para restablecer la contraseña de tu cuenta de Peels.",
+        "Recibes este correo porque alguien solicitó un enlace para restablecer la contraseña de tu cuenta de Peels.",
       body: "Sentimos que estés teniendo problemas para iniciar sesión en Peels. Toca el siguiente enlace para restablecer tu contraseña:",
       button: "Restablecer contraseña",
     },
@@ -228,7 +228,7 @@ const authEmailCopy = {
         "Schade, dass du Probleme beim Anmelden bei Peels hast. Hier ist ein Link, um dein Passwort zurückzusetzen.",
       heading: "Setze dein Passwort zurück",
       footer:
-        "Du erhältst diese E-Mail, weil jemand – hoffentlich du – einen Link zum Zurücksetzen des Passworts für dein Peels-Konto angefordert hat.",
+        "Du erhältst diese E-Mail, weil jemand einen Link zum Zurücksetzen des Passworts für dein Peels-Konto angefordert hat.",
       body: "Schade, dass du Probleme beim Anmelden bei Peels hast. Nutze den folgenden Link, um dein Passwort zurückzusetzen:",
       button: "Passwort zurücksetzen",
     },
@@ -292,7 +292,7 @@ const authEmailCopy = {
         "Lamentamos que estejas com dificuldades para entrar no Peels. Aqui está um link para redefinires a tua palavra-passe.",
       heading: "Redefine a tua palavra-passe",
       footer:
-        "Recebeste este e-mail porque alguém, esperamos que tenhas sido tu, pediu um link para redefinir a palavra-passe da tua conta no Peels.",
+        "Recebeste este e-mail porque alguém pediu um link para redefinir a palavra-passe da tua conta no Peels.",
       body: "Lamentamos que estejas com dificuldades para entrar no Peels. Toca no link abaixo para redefinires a tua palavra-passe:",
       button: "Redefinir palavra-passe",
     },
@@ -356,7 +356,7 @@ const authEmailCopy = {
         "Désolé d’apprendre que vous avez du mal à vous connecter à Peels. Voici un lien pour réinitialiser votre mot de passe.",
       heading: "Réinitialisez votre mot de passe",
       footer:
-        "Vous recevez cet e-mail parce que quelqu’un, espérons-le vous, a demandé un lien de réinitialisation du mot de passe pour votre compte Peels.",
+        "Vous recevez cet e-mail parce que quelqu’un a demandé un lien de réinitialisation du mot de passe pour votre compte Peels.",
       body: "Désolé d’apprendre que vous avez du mal à vous connecter à Peels. Appuyez sur le lien ci-dessous pour réinitialiser votre mot de passe :",
       button: "Réinitialiser le mot de passe",
     },

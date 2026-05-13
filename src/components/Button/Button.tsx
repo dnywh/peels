@@ -408,6 +408,8 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
     if (isLink) {
       const linkProps = getLinkButtonProps(restProps as LinkButtonRestProps);
       const rel = resolveExternalRel(linkProps.target, linkProps.rel);
+      const clickProps =
+        isDisabled || onClick ? { onClick: handleLinkClick } : {};
 
       return (
         <StyledLink
@@ -421,7 +423,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
           aria-disabled={isDisabled || undefined}
           aria-busy={isLoading || undefined}
           data-button-width={allProps.width ?? "contained"}
-          onClick={handleLinkClick}
+          {...clickProps}
           {...linkProps}
           rel={rel}
         >
