@@ -258,12 +258,7 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
     });
     const hasSearchableQuery = query.trim().length >= 3;
     const showResults =
-      hasSearchableQuery &&
-      (variant === "palette" ||
-        isFocused ||
-        isLoading ||
-        isError ||
-        features.length > 0);
+      hasSearchableQuery && (variant === "palette" || isFocused);
     const showNoResults =
       showResults && isReady && !isLoading && !isError && features.length === 0;
     const statusMessage = isLoading

@@ -115,6 +115,7 @@ test("listing location search picks a geocoding result", async ({ page }) => {
     .toBeGreaterThanOrEqual(16);
   await page.getByRole("option", { name: /Newtown/ }).click();
 
+  await expect(page.getByRole("option", { name: /Newtown/ })).toHaveCount(0);
   await expect(searchInput).toHaveValue("Newtown");
   await expect(page.locator(".maplibregl-canvas")).toBeVisible({
     timeout: 10_000,
