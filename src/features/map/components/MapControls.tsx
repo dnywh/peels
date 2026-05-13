@@ -11,6 +11,7 @@ import {
 import { theme } from "@/styles/theme.yak";
 
 type MapControlClusterProps = {
+  locateActive?: boolean;
   locateLabel?: string;
   onLocate?: () => void;
   onSearch?: () => void;
@@ -100,8 +101,10 @@ const ZoomCluster = styled.div`
   pointer-events: auto;
 `;
 
-const ControlButton = styled.button`
+const ControlButton = styled.button<{ $active?: boolean }>`
   ${controlButtonStyles}
+  color: ${({ $active }) =>
+    $active ? theme.colors.text.primary : theme.colors.text.ui.emptyState};
   border-radius: 0.7rem;
   box-shadow:
     0 0 0 2px ${theme.colors.border.elevated},
@@ -178,6 +181,7 @@ function ZoomControlGroup({
 }
 
 export default function MapControls({
+  locateActive = false,
   locateLabel,
   onLocate,
   onSearch,
@@ -204,7 +208,9 @@ export default function MapControls({
         <ControlButton
           type="button"
           aria-label={locateLabel}
+          aria-pressed={locateActive}
           title={locateLabel}
+          $active={locateActive}
           data-testid="map-control-locate"
           onClick={onLocate}
         >

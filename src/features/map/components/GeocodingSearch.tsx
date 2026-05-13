@@ -284,7 +284,10 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
     useImperativeHandle(
       forwardedRef,
       () => ({
-        blur: () => inputRef.current?.blur(),
+        blur: () => {
+          setIsFocused(false);
+          inputRef.current?.blur();
+        },
         clear: () => {
           setQuery("");
           setActiveIndex(0);
@@ -301,6 +304,8 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
     const pickFeature = (feature: GeocodingFeature) => {
       setQuery(getFeatureInputLabel(feature));
       setActiveIndex(0);
+      setIsFocused(false);
+      inputRef.current?.blur();
       onPick(feature);
     };
 

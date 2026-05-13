@@ -510,6 +510,7 @@ export default function MapView({
           </Map>
 
           <MapControls
+            locateActive={Boolean(userCoordinates)}
             locateLabel={t("locateControl")}
             onLocate={handleLocate}
             onSearch={() => setIsSearchOpen(true)}
