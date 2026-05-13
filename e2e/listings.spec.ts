@@ -96,16 +96,29 @@ test("listing location search picks a geocoding result", async ({ page }) => {
   await mockMapTilerGeocoding(
     page,
     createMockGeocodingFeature({
-      text: "Newtown",
-      placeName: "Newtown, New South Wales, Australia",
-      center: [151.1781, -33.8985],
+      id: "poi.mount-kuring-gai-station",
+      text: "Mount Kuring-gai Station",
+      placeName:
+        "Mount Kuring-gai Station, Mount Kuring-gai, Sydney, Australia",
+      placeType: ["poi"],
+      context: [
+        {
+          id: "neighbourhood.mount-kuring-gai",
+          text: "Mount Kuring-gai",
+        },
+        {
+          id: "place.sydney",
+          text: "Sydney",
+        },
+      ],
+      center: [151.1368, -33.6546],
     })
   );
 
   await expect(page.getByTestId("listing-write-form")).toBeVisible();
   await page.locator("#country").selectOption("AU");
   const searchInput = page.getByTestId("listing-location-search-input");
-  await searchInput.fill("Newtown");
+  await searchInput.fill("Mount Kuring-gai");
   await expect
     .poll(async () =>
       searchInput.evaluate((element) =>
@@ -113,10 +126,12 @@ test("listing location search picks a geocoding result", async ({ page }) => {
       )
     )
     .toBeGreaterThanOrEqual(16);
-  await page.getByRole("option", { name: /Newtown/ }).click();
+  await page.getByRole("option", { name: /Mount Kuring-gai Station/ }).click();
 
-  await expect(page.getByRole("option", { name: /Newtown/ })).toHaveCount(0);
-  await expect(searchInput).toHaveValue("Newtown");
+  await expect(
+    page.getByRole("option", { name: /Mount Kuring-gai Station/ })
+  ).toHaveCount(0);
+  await expect(searchInput).toHaveValue("Mount Kuring-gai");
   await expect(page.locator(".maplibregl-canvas")).toBeVisible({
     timeout: 10_000,
   });
@@ -142,9 +157,8 @@ test("listing edit saves and restores seeded business fields", async ({
       : ALTERNATE_BUSINESS_DESCRIPTION;
   const updatedVisibility = originalVisibility === "true" ? "false" : "true";
 
-  await descriptionInput.fill("");
-  await expect(descriptionInput).toHaveValue("");
   await descriptionInput.fill(updatedDescription);
+  await expect(descriptionInput).toHaveValue(updatedDescription);
   await visibilityInput.selectOption(updatedVisibility);
   await delayServerActionRequests(page);
 
@@ -167,14 +181,13 @@ test("listing edit saves and restores seeded business fields", async ({
     updatedVisibility
   );
 
-  await listingWriteForm.locator("#description").first().fill("");
-  await expect(listingWriteForm.locator("#description").first()).toHaveValue(
-    ""
-  );
   await listingWriteForm
     .locator("#description")
     .first()
     .fill(originalDescription);
+  await expect(listingWriteForm.locator("#description").first()).toHaveValue(
+    originalDescription
+  );
   await listingWriteForm
     .locator("#visibility")
     .first()

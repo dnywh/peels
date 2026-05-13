@@ -13,6 +13,11 @@ type MockGeocodingFeatureOptions = {
   id?: string;
   text?: string;
   placeName?: string;
+  placeType?: string[];
+  context?: Array<{
+    id: string;
+    text: string;
+  }>;
   center?: [number, number];
   countryCode?: string;
 };
@@ -21,6 +26,8 @@ export function createMockGeocodingFeature({
   id = "place.123",
   text = "Newtown",
   placeName = "Newtown, New South Wales, Australia",
+  placeType = ["place"],
+  context,
   center = [151.1781, -33.8985],
   countryCode = "AU",
 }: MockGeocodingFeatureOptions = {}) {
@@ -29,8 +36,9 @@ export function createMockGeocodingFeature({
     type: "Feature",
     text,
     place_name: placeName,
-    place_type: ["place"],
-    place_type_name: ["Place"],
+    place_type: placeType,
+    place_type_name: placeType,
+    context,
     center,
     bbox: [center[0], center[1], center[0], center[1]],
     geometry: {

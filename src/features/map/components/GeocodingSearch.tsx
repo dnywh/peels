@@ -100,7 +100,7 @@ const ClearButton = styled.button`
   appearance: none;
   border: 0;
   background: transparent;
-  color: ${theme.colors.text.secondary};
+  color: ${theme.colors.text.ui.tertiary};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -114,7 +114,6 @@ const ClearButton = styled.button`
   border-radius: 0.7rem;
 
   &:hover {
-    color: ${theme.colors.text.primary};
     background: ${theme.colors.background.sunk};
   }
 

@@ -48,6 +48,30 @@ type Coordinates = {
   longitude: number;
 };
 
+type AreaNameFeature = {
+  id?: string;
+  place_name?: string;
+  place_type?: string[];
+  properties?: {
+    "osm:place_type"?: string;
+  };
+  text?: string;
+  "osm:place_type"?: string;
+};
+
+type AreaNameMatch = {
+  name: string;
+  priority: number;
+};
+
+const areaNameTypePriority = [
+  "neighbourhood",
+  "place",
+  "municipality",
+  "region",
+  "country",
+  "continental_marine",
+] as const;
 type LocationSelectProps = {
   listingType: string;
   coordinates: Coordinates | null;
@@ -62,65 +86,68 @@ type LocationSelectProps = {
   error?: string;
 };
 
-async function getAreaName(
+function featureMatchesAreaType(feature: AreaNameFeature, type: string) {
+  return (
+    feature.place_type?.includes(type) ||
+    feature.id?.startsWith(`${type}.`) ||
+    feature.id?.startsWith(`${type}:`)
+  );
+}
+
+function isUnknownOsmPlace(feature: AreaNameFeature) {
+  return (
+    feature.properties?.["osm:place_type"] === "unknown" ||
+    feature["osm:place_type"] === "unknown"
+  );
+}
+
+function getBestAreaNameMatchFromFeatures(
+  features: AreaNameFeature[]
+): AreaNameMatch | null {
+  if (!features.length) {
+    return null;
+  }
+
+  for (const [priority, type] of areaNameTypePriority.entries()) {
+    const areaFeature = features.find(
+      (feature) =>
+        featureMatchesAreaType(feature, type) && !isUnknownOsmPlace(feature)
+    );
+
+    if (areaFeature?.text) {
+      return {
+        name: areaFeature.text,
+        priority,
+      };
+    }
+  }
+
+  const fallbackName = features[0]?.place_name || features[0]?.text || "";
+
+  return fallbackName
+    ? {
+        name: fallbackName,
+        priority: areaNameTypePriority.length,
+      }
+    : null;
+}
+
+function getSelectedFeatureAreaNameMatch(feature: GeocodingFeature) {
+  return getBestAreaNameMatchFromFeatures([
+    feature,
+    ...((feature.context as AreaNameFeature[] | undefined) ?? []),
+  ]);
+}
+
+async function getAreaNameMatch(
   longitude: number,
   latitude: number
-): Promise<string> {
+): Promise<AreaNameMatch | null> {
   const coordinates = await geocoding.reverse([longitude, latitude]);
 
-  const features = coordinates.features as any[];
-
-  if (!features || features.length === 0) {
-    return "";
-  }
-
-  // Helper function to find feature by place type
-  const findFeatureByType = (features: any[], types: string[]) => {
-    return features.find((f) =>
-      types.some(
-        (type) =>
-          f.place_type?.includes(type) &&
-          // Some places are coming up as 'storage', with a correlation to prpoerties.osm:place_type being "unknown"
-          // E.g. see Jo's listing in Fitzroy
-          // Skip these
-          f.properties[`osm:place_type`] !== "unknown"
-      )
-    );
-  };
-
-  // Look for features in order of specificity
-  const neighbourhood = findFeatureByType(features, ["neighbourhood"]);
-  const place = findFeatureByType(features, ["place"]);
-  const municipality = findFeatureByType(features, ["municipality"]);
-  const region = findFeatureByType(features, ["region"]);
-  const country = findFeatureByType(features, ["country"]);
-  const marine = findFeatureByType(features, ["continental_marine"]);
-
-  let areaName = "";
-
-  // Build location string based on available information
-
-  if (place) {
-    areaName = place.text;
-    // } else if (place && region) {
-    //   areaName = `${place.text}, ${region.text}`;
-    // } else if (municipality && region) {
-    //   areaName = `${municipality.text}, ${region.text}`;
-  } else if (neighbourhood) {
-    areaName = neighbourhood.text;
-  } else if (municipality) {
-    areaName = municipality.text;
-  } else if (region) {
-    areaName = region.text;
-  } else if (country) {
-    areaName = country.text;
-  } else if (marine) {
-    areaName = marine.text;
-  } else {
-    // Fallback to the most relevant feature's place name
-    areaName = features[0].place_name || "";
-  }
-  return areaName;
+  return getBestAreaNameMatchFromFeatures(
+    coordinates.features as AreaNameFeature[]
+  );
 }
 
 // TODO: use this to build a custom component around the core geocoding API, using my nice own components for input and dropdown
@@ -159,7 +186,7 @@ export default function LocationSelect({
   const inputRef = useRef<GeocodingSearchHandle | null>(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
-  const [placeholderText, setPlaceholderText] = useState(
+  const [placeholderText] = useState(
     initialPlaceholderText || t("Listings.form.locationPlaceholder")
   );
   const [searchStatusMessage, setSearchStatusMessage] = useState("");
@@ -206,9 +233,7 @@ export default function LocationSelect({
   const handleDragStart = useCallback(() => {
     inputRef.current?.blur(); // Close and blur the input if it's open
     console.log("handling drag start");
-    inputRef.current?.setQuery("");
-    setPlaceholderText(t("Listings.form.customLocation")); // Clear previous value
-  }, [t]);
+  }, []);
 
   const handleDragEnd = useCallback(
     async (event: any) => {
@@ -222,12 +247,15 @@ export default function LocationSelect({
 
       setCoordinates(nextCoordinates); // Unsure if this is needed. Might be helpful for form submission
 
-      const nextAreaName = await getAreaName(
+      const nextAreaNameMatch = await getAreaNameMatch(
         nextCoordinates.longitude,
         nextCoordinates.latitude
       );
-      setAreaName(nextAreaName);
-      setPlaceholderText(nextAreaName);
+
+      if (nextAreaNameMatch) {
+        setAreaName(nextAreaNameMatch.name);
+        inputRef.current?.setQuery(nextAreaNameMatch.name);
+      }
     },
     [onLocationInteract, setCoordinates, setAreaName]
   );
@@ -245,13 +273,17 @@ export default function LocationSelect({
         longitude: feature.center[0],
       };
 
-      // Get area name from coordinates
-      const nextAreaName = await getAreaName(
-        nextCoordinates.longitude,
-        nextCoordinates.latitude
-      );
+      const selectedAreaNameMatch = getSelectedFeatureAreaNameMatch(feature);
+      const reverseAreaNameMatch = selectedAreaNameMatch
+        ? null
+        : await getAreaNameMatch(
+            nextCoordinates.longitude,
+            nextCoordinates.latitude
+          );
+      const nextAreaNameMatch = selectedAreaNameMatch ?? reverseAreaNameMatch;
+      const nextAreaName = nextAreaNameMatch?.name || feature.place_name;
       setAreaName(nextAreaName);
-      inputRef.current?.setQuery(nextAreaName || feature.place_name);
+      inputRef.current?.setQuery(nextAreaName);
 
       inputRef.current?.blur();
 
