@@ -296,9 +296,7 @@ test("map search palette flies to a picked geocoding result", async ({
   await page.getByTestId("map-control-search").click();
   const searchInput = page.getByTestId("geocoding-search-input");
   await expect(searchInput).toBeFocused();
-  await expect(
-    page.getByTestId("map-search-dialog").locator(":scope > button")
-  ).toHaveCount(0);
+  await expect(page.getByTestId("map-search-close")).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("map-search-dialog")).toBeHidden();
 
