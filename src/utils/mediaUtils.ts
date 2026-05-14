@@ -7,62 +7,67 @@ type ListingPhotoRecord = {
   photos: string[] | null;
 };
 
-const MIME_TYPE_EXTENSIONS: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/gif": "gif",
-  "image/svg+xml": "svg",
-  "image/avif": "avif",
-  "image/heic": "heic",
-  "image/heif": "heif",
+type MediaUploadResponse = {
+  filename?: string;
+  error?: string;
 };
 
-function getFileExtension(file: File) {
-  const fileNameExtension = file.name.split(".").pop()?.trim().toLowerCase();
+type MediaUploadError = Error & {
+  statusCode?: string;
+};
 
-  if (fileNameExtension && /^[a-z0-9]+$/.test(fileNameExtension)) {
-    return fileNameExtension;
+async function uploadMedia({
+  entityId,
+  file,
+  kind,
+  previousPath,
+}: {
+  entityId?: string | null;
+  file: File;
+  kind: "profile_avatar" | "listing_avatar" | "listing_photo";
+  previousPath?: string | null;
+}) {
+  const formData = new FormData();
+  formData.append("kind", kind);
+  formData.append("file", file);
+
+  if (entityId) {
+    formData.append("entityId", entityId);
   }
 
-  return MIME_TYPE_EXTENSIONS[file.type] ?? "bin";
+  if (previousPath) {
+    formData.append("previousPath", previousPath);
+  }
+
+  const response = await fetch("/api/media/upload", {
+    body: formData,
+    method: "POST",
+  });
+  const data = (await response.json().catch(() => ({}))) as MediaUploadResponse;
+
+  if (!response.ok || !data.filename) {
+    const error = new Error(
+      data.error || "Media upload failed"
+    ) as MediaUploadError;
+    error.statusCode = String(response.status);
+    throw error;
+  }
+
+  return data.filename;
 }
 
 export async function uploadAvatar(
   file: File,
   bucket: AvatarBucket,
-  id: string
+  id: string,
+  previousPath?: string
 ) {
-  const supabase = createClient();
-  const fileExt = getFileExtension(file);
-  const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
-  const { data, error } = await supabase.storage
-    .from(bucket)
-    .upload(fileName, file);
-
-  if (error) throw error;
-  console.log("Avatar uploaded:", data);
-
-  if (bucket === "avatars") {
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ avatar: fileName })
-      .eq("id", id);
-
-    if (updateError) throw updateError;
-  }
-
-  if (bucket === "listing_avatars" && id) {
-    const { error: updateError } = await supabase
-      .from("listings")
-      .update({ avatar: fileName })
-      .eq("slug", id);
-
-    if (updateError) throw updateError;
-  }
-
-  return fileName;
+  return uploadMedia({
+    entityId: id,
+    file,
+    kind: bucket === "avatars" ? "profile_avatar" : "listing_avatar",
+    previousPath,
+  });
 }
 
 export async function deleteAvatar(
@@ -105,36 +110,11 @@ export async function uploadListingPhoto(
   file: File,
   listingSlug: string | null = null
 ) {
-  const supabase = createClient();
-  const fileExt = getFileExtension(file);
-  const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
-  const { data, error } = await supabase.storage
-    .from("listing_photos")
-    .upload(fileName, file);
-
-  if (error) throw error;
-  console.log("Photo uploaded:", data);
-
-  if (listingSlug) {
-    const { data: listing, error: fetchError } = await supabase
-      .from("listings")
-      .select("photos")
-      .eq("slug", listingSlug)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    const photos = (listing as ListingPhotoRecord | null)?.photos ?? [];
-    const { error: updateError } = await supabase
-      .from("listings")
-      .update({ photos: [...photos, fileName] })
-      .eq("slug", listingSlug);
-
-    if (updateError) throw updateError;
-  }
-
-  return fileName;
+  return uploadMedia({
+    entityId: listingSlug,
+    file,
+    kind: "listing_photo",
+  });
 }
 
 export async function deleteListingPhoto(

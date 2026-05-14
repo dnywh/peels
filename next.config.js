@@ -68,6 +68,7 @@ const nextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   // Allowed list of image formats, hosts
   images: {
+    formats: ["image/avif", "image/webp"],
     // Increase expiration (Max Age) of cache
     // https://vercel.com/docs/image-optimization#remote-images-cache-key
     // https://vercel.com/docs/image-optimization/managing-image-optimization-costs

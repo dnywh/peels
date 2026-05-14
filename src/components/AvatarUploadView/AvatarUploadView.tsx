@@ -118,7 +118,7 @@ function AvatarUploadView({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           multiple={false}
           onChange={handleUpload}
           disabled={isBusy}

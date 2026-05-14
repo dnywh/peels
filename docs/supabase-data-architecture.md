@@ -174,6 +174,44 @@ Do not use local Supabase Docker hostnames such as `kong:8000` in migrations tha
 
 Do not use the public anon key as the protection boundary for this webhook. The function holds a service-role client so the caller must be authenticated by a non-public secret.
 
+## Storage media cleanup
+
+User-uploaded media lives in public Storage buckets, but the canonical
+references live in `public.profiles.avatar`, `public.listings.avatar`, and
+`public.listings.photos`.
+
+Listing and account deletion should clean up media through the Edge Functions
+before the database rows are deleted:
+
+- `delete-listing` removes that listing's avatar and photos, then deletes the
+  listing row.
+- `delete-account` removes the profile avatar plus all owned listing media, then
+  deletes the auth user.
+
+Do not add a Postgres Cron job that deletes from `storage.objects`. Supabase
+Storage object deletion must go through the Storage API; deleting rows from
+`storage.objects` only removes metadata and can leave object bytes behind.
+
+For historical orphans, first inspect the read-only helper:
+
+```sql
+\i supabase/snippets/orphaned-media.sql
+```
+
+Then run the Storage API cleanup script in dry-run mode:
+
+```sh
+npm run media:cleanup-orphans
+```
+
+For hosted environments, pass the project URL and service-role key explicitly
+and include `--allow-remote`. Deletion requires both `--delete-orphans` and
+`--confirm-delete-orphans`; this keeps the default path inspect-only.
+
+Storage folder placeholders such as `.emptyFolderPlaceholder` are Supabase
+folder bookkeeping objects, not user media. The helper and cleanup script ignore
+them.
+
 ## Change rules
 
 - Add forward migrations only; do not edit historical migrations once they may have been applied to a preview or production branch.

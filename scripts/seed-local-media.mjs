@@ -13,19 +13,19 @@ const bucketConfigs = {
   avatars: {
     public: true,
     fileSizeLimit: "10MiB",
-    allowedMimeTypes: ["image/png", "image/jpeg", "image/webp"],
+    allowedMimeTypes: ["image/png", "image/jpeg"],
     sourceDir: path.join(repoRoot, "supabase", "storage", "avatars"),
   },
   listing_avatars: {
     public: true,
     fileSizeLimit: "10MiB",
-    allowedMimeTypes: ["image/png", "image/jpeg", "image/webp"],
+    allowedMimeTypes: ["image/png", "image/jpeg"],
     sourceDir: path.join(repoRoot, "supabase", "storage", "listing_avatars"),
   },
   listing_photos: {
     public: true,
     fileSizeLimit: "50MiB",
-    allowedMimeTypes: ["image/png", "image/jpeg", "image/webp"],
+    allowedMimeTypes: ["image/jpeg"],
     sourceDir: path.join(repoRoot, "supabase", "storage", "listing_photos"),
   },
 };

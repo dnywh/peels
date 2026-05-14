@@ -3,9 +3,9 @@ import { theme } from "@/styles/theme.yak";
 
 import { useRef, useState } from "react";
 import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
+import { normaliseImageFileForUpload } from "@/utils/media/client";
 import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
-import Compressor from "compressorjs";
 import Dropzone from "react-dropzone";
 // import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
@@ -77,7 +77,6 @@ const DropOverlay = styled.aside`
 const MAX_PHOTOS = 5;
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
-const MAX_DIMENSION = 2048; // Reasonable max dimension for listing photos
 
 const RemoteImageComponent = RemoteImage as React.ComponentType<any>;
 const uploadListingPhotoAction = uploadListingPhoto as (
@@ -118,19 +117,6 @@ function ListingPhotosManager({
     onPhotosChange?.(nextPhotos);
   };
 
-  const compressFile = (file: File) => {
-    return new Promise<File>((resolve, reject) => {
-      new Compressor(file, {
-        quality: 0.8, // Good balance between quality and compression
-        maxWidth: MAX_DIMENSION, // Reasonable max dimension for property photos
-        maxHeight: MAX_DIMENSION,
-        convertSize: 1000000, // Convert PNGs to JPEGs if they're over ~1MB
-        success: (result) => resolve(result as File),
-        error: (err) => reject(err),
-      });
-    });
-  };
-
   const handleDrop = async (acceptedFiles: File[]) => {
     if (isMutatingPhotos) return;
 
@@ -158,21 +144,21 @@ function ListingPhotosManager({
 
     setIsUploading(true);
     try {
-      const compressedFiles = await Promise.all(
-        files.map((file) => compressFile(file))
-      );
-      console.log(
-        "Original vs Compressed sizes:",
-        files.map((f, i) => ({
-          original: Math.round(f.size / 1024) + "KB",
-          compressed: Math.round(compressedFiles[i].size / 1024) + "KB",
-        }))
+      const normalisedFiles = await Promise.all(
+        files.map((file) => normaliseImageFileForUpload(file))
       );
 
-      const uploadPromises = compressedFiles.map((file) =>
-        uploadListingPhotoAction(file, !isNewListing ? listingSlug : undefined)
-      );
-      const newFilenames = (await Promise.all(uploadPromises)) as string[];
+      const newFilenames: string[] = [];
+
+      for (const file of normalisedFiles) {
+        newFilenames.push(
+          await uploadListingPhotoAction(
+            file,
+            !isNewListing ? listingSlug : undefined
+          )
+        );
+      }
+
       updatePhotos((currentPhotos) => [...currentPhotos, ...newFilenames]);
     } catch (error) {
       // console.error("Upload error details:", error);
@@ -330,7 +316,7 @@ function ListingPhotosManager({
             <input
               {...getInputProps()}
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.heif"
               multiple
               disabled={isMutatingPhotos || photos.length >= MAX_PHOTOS}
               style={{ display: "none" }}
