@@ -220,6 +220,7 @@ export default function MapView({
   const initialMapPinZoomStyleRef = useRef<MapPinZoomStyle | null>(null);
   const pendingPinZoomRef = useRef<number | null>(null);
   const pinZoomAnimationFrameRef = useRef<number | null>(null);
+  const hasSyncedIdleBoundsRef = useRef(false);
   const saveMapViewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
@@ -350,9 +351,16 @@ export default function MapView({
 
   const handleLoad = useCallback(() => {
     handleMapLoad();
-    const map = syncCurrentMapState();
-    map?.once("idle", syncCurrentMapState);
+    hasSyncedIdleBoundsRef.current = false;
+    syncCurrentMapState();
   }, [handleMapLoad, syncCurrentMapState]);
+
+  const handleIdle = useCallback(() => {
+    if (hasSyncedIdleBoundsRef.current) return;
+
+    hasSyncedIdleBoundsRef.current = true;
+    syncCurrentMapState();
+  }, [syncCurrentMapState]);
 
   useEffect(() => {
     if (initialCoordinates) {
@@ -485,6 +493,8 @@ export default function MapView({
   return (
     <MapContainer
       ref={mapContainerRef}
+      role="region"
+      aria-label={t("mapRegionLabel")}
       data-testid="map-view"
       style={initialMapPinZoomStyleRef.current ?? undefined}
     >
@@ -501,6 +511,7 @@ export default function MapView({
             onZoom={handleMove}
             onMoveEnd={handleMoveEnd}
             onLoad={handleLoad}
+            onIdle={handleIdle}
             onError={handleMapError}
             onClick={handleMapClickInternal}
           >
@@ -515,6 +526,7 @@ export default function MapView({
 
             <MapPinLayer
               listings={listings}
+              markerLabel={t("markerLabel")}
               selectedListingId={selectedListingId}
               onMarkerClick={onMarkerClick}
             />
@@ -524,12 +536,13 @@ export default function MapView({
                 latitude={userCoordinates.latitude}
                 anchor="center"
               >
-                <UserLocationDot />
+                <UserLocationDot aria-hidden="true" />
               </Marker>
             ) : null}
           </Map>
 
           <MapControls
+            controlsLabel={t("controlsLabel")}
             locateActive={Boolean(userCoordinates)}
             locateLabel={t("locateControl")}
             onLocate={handleLocate}
@@ -539,6 +552,7 @@ export default function MapView({
             searchLabel={t("searchLabel")}
             zoomInDisabled={isZoomInDisabled}
             zoomInLabel={t("zoomInControl")}
+            zoomControlsLabel={t("zoomControlsLabel")}
             zoomOutLabel={t("zoomOutControl")}
           />
           <MapSearch
@@ -549,11 +563,15 @@ export default function MapView({
           />
         </>
       ) : (
-        <LoadingChip>{t("loadingPins")}</LoadingChip>
+        <LoadingChip role="status" aria-live="polite">
+          {t("loadingPins")}
+        </LoadingChip>
       )}
 
       {hasInitialPosition && isFetching && (
-        <LoadingChip>{t("loadingPins")}</LoadingChip>
+        <LoadingChip role="status" aria-live="polite">
+          {t("loadingPins")}
+        </LoadingChip>
       )}
 
       {showReturnButton && (

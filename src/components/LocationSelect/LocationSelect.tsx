@@ -375,6 +375,7 @@ export default function LocationSelect({
               <MapPin type={listingType} selected={true} />
             </Marker>
             <MapZoomControls
+              controlsLabel={t("Map.zoomControlsLabel")}
               onZoomIn={() => mapRef.current?.getMap().zoomIn()}
               onZoomOut={() => mapRef.current?.getMap().zoomOut()}
               zoomInLabel={t("Map.zoomInControl")}

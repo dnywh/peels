@@ -500,6 +500,10 @@
   "Map": {
     "drawerTitle": "Detalhes do anúncio",
     "drawerDescription": "Detalhes do anúncio selecionado.",
+    "mapRegionLabel": "Mapa de compostagem",
+    "controlsLabel": "Controles do mapa",
+    "zoomControlsLabel": "Controles de zoom do mapa",
+    "markerLabel": "Marcador do mapa",
     "emptyTitle": "Nada por aqui",
     "emptyBody": "O anúncio que você procura não existe ou foi removido. Desculpe a decepção.",
     "searchPlaceholder": "Busque uma rua ou um lugar",

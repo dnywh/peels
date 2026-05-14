@@ -500,6 +500,10 @@
   "Map": {
     "drawerTitle": "Listing details",
     "drawerDescription": "Selected listing details.",
+    "mapRegionLabel": "Composting map",
+    "controlsLabel": "Map controls",
+    "zoomControlsLabel": "Map zoom controls",
+    "markerLabel": "Map marker",
     "emptyTitle": "Coming up empty",
     "emptyBody": "The listing you’re looking for doesn’t exist or has been removed. Sorry to disappoint.",
     "searchPlaceholder": "Search for a street or place",
