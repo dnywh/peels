@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { STORED_MAP_VIEW_KEY } from "../src/features/map/lib/mapStorageConstants";
+import { createMockGeocodingFeature, mockMapTilerGeocoding } from "./helpers";
 
 type StoredMapView = {
   latitude: number;
@@ -127,7 +128,7 @@ async function zoomInUntilMapPinsAreDetailed(page: Page) {
       );
     if (detailScale >= 0.99) return;
 
-    await page.getByRole("button", { name: /zoom in/i }).click();
+    await page.getByTestId("map-control-zoom-in").click();
     await page.waitForTimeout(500);
   }
 
@@ -154,7 +155,7 @@ test("map mounts when IP location is unavailable and restores the last view", as
     });
     expect(await readStoredMapView(page)).toBeNull();
 
-    await page.getByRole("button", { name: /zoom in/i }).click();
+    await page.getByTestId("map-control-zoom-in").click();
 
     await expect
       .poll(
@@ -182,7 +183,7 @@ test("map mounts when IP location is unavailable and restores the last view", as
     });
     expectStoredMapViewToMatch(await readStoredMapView(page), storedAfterMove);
 
-    await page.getByRole("button", { name: /zoom in/i }).click();
+    await page.getByTestId("map-control-zoom-in").click();
     await expect
       .poll(async () => {
         const storedView = await readStoredMapView(page);
@@ -240,6 +241,49 @@ test("map restores a localStorage-only view after hydration", async ({
   } finally {
     await page.unrouteAll({ behavior: "ignoreErrors" });
   }
+});
+
+test("map search palette flies to a picked geocoding result", async ({
+  page,
+}) => {
+  const feature = createMockGeocodingFeature({
+    text: "Newtown",
+    placeName: "Newtown, New South Wales, Australia",
+    center: [151.1781, -33.8985],
+  });
+  await seedStoredMapView(page, INNER_WEST_MAP_VIEW);
+  await mockMapTilerGeocoding(page, feature);
+
+  await page.goto("/map", { waitUntil: "domcontentloaded" });
+
+  const mapView = page.getByTestId("map-view");
+  await expect(mapView.locator(".maplibregl-canvas")).toBeVisible({
+    timeout: 10_000,
+  });
+
+  await page.getByTestId("map-control-search").click();
+  const searchInput = page.getByTestId("geocoding-search-input");
+  await expect(searchInput).toBeFocused();
+  await searchInput.fill("Newtown");
+  await expect
+    .poll(async () =>
+      searchInput.evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).fontSize)
+      )
+    )
+    .toBeGreaterThanOrEqual(16);
+  await page.getByRole("option", { name: /Newtown/ }).click();
+  await expect(page.getByTestId("map-search-dialog")).toBeHidden();
+
+  await expect
+    .poll(
+      async () => {
+        const storedView = await readStoredMapView(page);
+        return storedView?.latitude ?? null;
+      },
+      { timeout: 5000 }
+    )
+    .toBeCloseTo(-33.8985, 1);
 });
 
 test("map pins minify at country zoom, then grow and animate selection", async ({

@@ -2,21 +2,25 @@
 import { theme } from "@/styles/theme.yak";
 import { useCallback, useEffect, useState, useRef } from "react";
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
-
-// import "@maptiler/geocoding-control/style.css"; // TODO REMOVE (TURN ON AND OFF TO PREVIEW STYLES)
+import type { GeocodingFeature } from "@maptiler/client";
 
 import { countries } from "@/data/countries";
 
-import { Marker, NavigationControl } from "react-map-gl/maplibre";
+import {
+  Marker,
+  type MapRef,
+  type MarkerDragEvent,
+} from "react-map-gl/maplibre";
 // import "maplibre-gl/dist/maplibre-gl.css";
 
 import Select from "@/components/Select";
 
-import MapTilerGeocoder, {
-  type MapTilerGeocoderHandle,
-} from "@/components/MapTilerGeocoder";
 import MapThumbnail from "@/components/MapThumbnail";
 import MapPin from "@/components/MapPin";
+import GeocodingSearch, {
+  type GeocodingSearchHandle,
+} from "@/features/map/components/GeocodingSearch";
+import { MapZoomControls } from "@/features/map/components/MapControls";
 
 import Fieldset from "@/components/Fieldset";
 import Field from "@/components/Field";
@@ -39,7 +43,8 @@ const ZOOM_LEVEL = 16;
 import { config, geocoding, geolocation } from "@maptiler/client";
 
 // Reverse geocoding for legible location (area_name)
-config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
+const mapTilerApiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
+config.apiKey = mapTilerApiKey;
 
 // const maptilerClient = new maptilersdk.Maptiler();
 
@@ -48,6 +53,30 @@ type Coordinates = {
   longitude: number;
 };
 
+type AreaNameFeature = {
+  id?: string;
+  place_name?: string;
+  place_type?: string[];
+  properties?: {
+    "osm:place_type"?: string;
+  };
+  text?: string;
+  "osm:place_type"?: string;
+};
+
+type AreaNameMatch = {
+  name: string;
+  priority: number;
+};
+
+const areaNameTypePriority = [
+  "neighbourhood",
+  "place",
+  "municipality",
+  "region",
+  "country",
+  "continental_marine",
+] as const;
 type LocationSelectProps = {
   listingType: string;
   coordinates: Coordinates | null;
@@ -62,85 +91,81 @@ type LocationSelectProps = {
   error?: string;
 };
 
-async function getAreaName(
-  longitude: number,
-  latitude: number
-): Promise<string> {
-  const coordinates = await geocoding.reverse([longitude, latitude]);
-
-  const features = coordinates.features as any[];
-
-  if (!features || features.length === 0) {
-    return "";
-  }
-
-  // Helper function to find feature by place type
-  const findFeatureByType = (features: any[], types: string[]) => {
-    return features.find((f) =>
-      types.some(
-        (type) =>
-          f.place_type?.includes(type) &&
-          // Some places are coming up as 'storage', with a correlation to prpoerties.osm:place_type being "unknown"
-          // E.g. see Jo's listing in Fitzroy
-          // Skip these
-          f.properties[`osm:place_type`] !== "unknown"
-      )
-    );
-  };
-
-  // Look for features in order of specificity
-  const neighbourhood = findFeatureByType(features, ["neighbourhood"]);
-  const place = findFeatureByType(features, ["place"]);
-  const municipality = findFeatureByType(features, ["municipality"]);
-  const region = findFeatureByType(features, ["region"]);
-  const country = findFeatureByType(features, ["country"]);
-  const marine = findFeatureByType(features, ["continental_marine"]);
-
-  let areaName = "";
-
-  // Build location string based on available information
-
-  if (place) {
-    areaName = place.text;
-    // } else if (place && region) {
-    //   areaName = `${place.text}, ${region.text}`;
-    // } else if (municipality && region) {
-    //   areaName = `${municipality.text}, ${region.text}`;
-  } else if (neighbourhood) {
-    areaName = neighbourhood.text;
-  } else if (municipality) {
-    areaName = municipality.text;
-  } else if (region) {
-    areaName = region.text;
-  } else if (country) {
-    areaName = country.text;
-  } else if (marine) {
-    areaName = marine.text;
-  } else {
-    // Fallback to the most relevant feature's place name
-    areaName = features[0].place_name || "";
-  }
-  return areaName;
+function featureMatchesAreaType(feature: AreaNameFeature, type: string) {
+  return (
+    feature.place_type?.includes(type) ||
+    feature.id?.startsWith(`${type}.`) ||
+    feature.id?.startsWith(`${type}:`)
+  );
 }
 
-// TODO: use this to build a custom component around the core geocoding API, using my nice own components for input and dropdown
-// https://docs.maptiler.com/cloud/api/geocoding/
-// async function basicCallToBuildCustomComponentAround() {
-//   try {
-//     const response = await fetch(
-//       `https://api.maptiler.com/geocoding/Zurich.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`
-//     );
-//     if (!response.ok) throw new Error("API request failed");
-//     const data = await response.json();
-//     console.log(data.query, data.features);
-//     return Response.json(data);
-//   } catch (error) {
-//     return Response.json({ error: error.message }, { status: 500 });
-//   }
-// }
-// basicCallToBuildCustomComponentAround();
+function isUnknownOsmPlace(feature: AreaNameFeature) {
+  return (
+    feature.properties?.["osm:place_type"] === "unknown" ||
+    feature["osm:place_type"] === "unknown"
+  );
+}
 
-// React component
+function getBestAreaNameMatchFromFeatures(
+  features: AreaNameFeature[]
+): AreaNameMatch | null {
+  if (!features.length) {
+    return null;
+  }
+
+  for (const [priority, type] of areaNameTypePriority.entries()) {
+    const areaFeature = features.find(
+      (feature) =>
+        featureMatchesAreaType(feature, type) && !isUnknownOsmPlace(feature)
+    );
+
+    if (areaFeature?.text) {
+      return {
+        name: areaFeature.text,
+        priority,
+      };
+    }
+  }
+
+  const fallbackName = features[0]?.place_name || features[0]?.text || "";
+
+  return fallbackName
+    ? {
+        name: fallbackName,
+        priority: areaNameTypePriority.length,
+      }
+    : null;
+}
+
+function getSelectedFeatureAreaNameMatch(feature: GeocodingFeature) {
+  return getBestAreaNameMatchFromFeatures([
+    feature,
+    ...((feature.context as AreaNameFeature[] | undefined) ?? []),
+  ]);
+}
+
+async function getAreaNameMatch(
+  longitude: number,
+  latitude: number
+): Promise<AreaNameMatch | null> {
+  try {
+    if (!mapTilerApiKey) {
+      return null;
+    }
+
+    const coordinates = await geocoding.reverse([longitude, latitude], {
+      apiKey: mapTilerApiKey,
+    });
+
+    return getBestAreaNameMatchFromFeatures(
+      coordinates.features as AreaNameFeature[]
+    );
+  } catch (error) {
+    console.warn("Could not reverse-geocode selected location:", error);
+    return null;
+  }
+}
+
 export default function LocationSelect({
   listingType,
   coordinates,
@@ -155,16 +180,20 @@ export default function LocationSelect({
   error,
 }: LocationSelectProps) {
   const t = useTranslations();
-  const mapRef = useRef<any>(null);
-  const inputRef = useRef<MapTilerGeocoderHandle | null>(null);
+  const mapRef = useRef<MapRef | null>(null);
+  const inputRef = useRef<GeocodingSearchHandle | null>(null);
 
   const [mapShown, setMapShown] = useState(coordinates ? true : false);
-  const [placeholderText, setPlaceholderText] = useState(
-    initialPlaceholderText || t("Listings.form.locationPlaceholder")
-  );
+  const placeholderText =
+    initialPlaceholderText || t("Listings.form.locationPlaceholder");
+  const [searchStatusMessage, setSearchStatusMessage] = useState("");
 
   useEffect(() => {
     if (autoDetectCountry && !countryCode) {
+      if (!mapTilerApiKey) {
+        return;
+      }
+
       let isMounted = true; // Track if component is mounted
 
       const initializeLocation = async () => {
@@ -173,7 +202,6 @@ export default function LocationSelect({
 
           // Only update state if component is still mounted and user hasn't changed the value
           if (isMounted && !countryCode && response?.country_code) {
-            console.log("Updating to detected country:", response.country_code);
             setCountryCode(response.country_code);
           }
         } catch (error) {
@@ -195,7 +223,6 @@ export default function LocationSelect({
     (e: ChangeEvent<HTMLSelectElement>) => {
       onLocationInteract?.();
       setCountryCode(e.target.value);
-      console.log("Country changed, focusing input...");
       setMapShown(false);
       inputRef.current?.focus();
     },
@@ -204,14 +231,10 @@ export default function LocationSelect({
 
   const handleDragStart = useCallback(() => {
     inputRef.current?.blur(); // Close and blur the input if it's open
-    console.log("handling drag start");
-    inputRef.current?.setQuery("");
-    setPlaceholderText(t("Listings.form.customLocation")); // Clear previous value
-  }, [t]);
+  }, []);
 
   const handleDragEnd = useCallback(
-    async (event: any) => {
-      console.log("Drag end. Location:", event.lngLat);
+    async (event: MarkerDragEvent) => {
       onLocationInteract?.();
 
       const nextCoordinates = {
@@ -221,51 +244,51 @@ export default function LocationSelect({
 
       setCoordinates(nextCoordinates); // Unsure if this is needed. Might be helpful for form submission
 
-      const nextAreaName = await getAreaName(
+      const nextAreaNameMatch = await getAreaNameMatch(
         nextCoordinates.longitude,
         nextCoordinates.latitude
       );
-      setAreaName(nextAreaName);
-      setPlaceholderText(nextAreaName);
+
+      if (nextAreaNameMatch) {
+        setAreaName(nextAreaNameMatch.name);
+        inputRef.current?.setQuery(nextAreaNameMatch.name);
+      } else {
+        setAreaName("");
+        inputRef.current?.setQuery("");
+      }
     },
     [onLocationInteract, setCoordinates, setAreaName]
   );
 
   const handlePick = useCallback(
-    async (event: any) => {
-      // Quirk in MapTiler's Geocoding component: they consider tapping close an 'onPick
-      // Return early if that's the case
-      if (!event.feature?.center) return;
+    async (feature: GeocodingFeature) => {
+      if (!feature.center) return;
 
-      // Otherwise continue as normal
-      console.log("Picked:", event, event.feature?.center);
       onLocationInteract?.();
 
       const nextCoordinates = {
-        latitude: event.feature?.center[1],
-        longitude: event.feature?.center[0],
+        latitude: feature.center[1],
+        longitude: feature.center[0],
       };
 
-      // Get area name from coordinates
-      const nextAreaName = await getAreaName(
-        nextCoordinates.longitude,
-        nextCoordinates.latitude
-      );
+      const selectedAreaNameMatch = getSelectedFeatureAreaNameMatch(feature);
+      const reverseAreaNameMatch = selectedAreaNameMatch
+        ? null
+        : await getAreaNameMatch(
+            nextCoordinates.longitude,
+            nextCoordinates.latitude
+          );
+      const nextAreaNameMatch = selectedAreaNameMatch ?? reverseAreaNameMatch;
+      const nextAreaName = nextAreaNameMatch?.name || feature.place_name;
       setAreaName(nextAreaName);
+      inputRef.current?.setQuery(nextAreaName);
 
       inputRef.current?.blur();
 
       if (!mapShown) {
-        console.log("Map isnt shown yet, coming now...");
         setCoordinates(nextCoordinates);
         setMapShown(true);
       } else {
-        console.log(
-          "Map already shown, flying from",
-          coordinates,
-          "to",
-          nextCoordinates
-        );
         mapRef.current?.flyTo({
           center: [nextCoordinates.longitude, nextCoordinates.latitude],
           duration: 2800,
@@ -274,7 +297,7 @@ export default function LocationSelect({
         setCoordinates(nextCoordinates);
       }
     },
-    [mapShown, coordinates, onLocationInteract, setCoordinates, setAreaName]
+    [mapShown, onLocationInteract, setCoordinates, setAreaName]
   );
 
   return (
@@ -298,51 +321,28 @@ export default function LocationSelect({
           ))}
         </Select>
 
-        {/* TODO: Reuse MapSearch component */}
-        {/* TODO: Add a 'required' prop for forms that require a location (doesn't work with GeocodingControl) */}
         {/* TODO: Handle database error when user doesn't enter a location */}
-        <div
-          id="custom-geocoding-styles"
-          className={error ? "error" : undefined}
-        >
-          <MapTilerGeocoder
-            // Add these two props to the custom component
-            error={error}
-            ariaInvalid={error ? "true" : undefined}
-            // Continue with actual props
-            id="autocomplete" // Doesn't work out of the box
-            ref={inputRef}
-            apiKey={process.env.NEXT_PUBLIC_MAPTILER_API_KEY}
-            country={countryCode}
-            // The below will be great for the map page where we don't want to bother with a country dropdown:
-            // Only applies if control is tied to a map. See https://docs.maptiler.com/sdk-js/modules/geocoding/api/types/#ProximityRule
-            // proximity={[
-            //     // { type: "map-center", minZoom: 12 },
-            //     { type: "client-geolocation", minZoom: 8 },
-            //     // { type: "server-geolocation", minZoom: 8 },
-            // ]}
-            types={[
-              "address",
-              "place",
-              "neighbourhood",
-              "locality",
-              "municipal_district",
-              "municipality",
-            ]}
-            placeholder={placeholderText}
-            errorMessage={t("Map.searchError")}
-            noResultsMessage={t("Map.searchNoResults")}
-            minLength={3}
-            showPlaceType="never"
-            onPick={handlePick}
-            // Testing...
-            required={true}
-          />
-        </div>
+        <GeocodingSearch
+          ref={inputRef}
+          id="autocomplete"
+          ariaInvalid={error ? "true" : undefined}
+          ariaLabel={t("Listings.form.location")}
+          clearLabel={t("Map.searchClear")}
+          countryCode={countryCode}
+          error={error}
+          errorMessage={t("Map.searchError")}
+          inputTestId="listing-location-search-input"
+          loadingMessage={t("Map.searchLoading")}
+          noResultsMessage={t("Map.searchNoResults")}
+          onPick={handlePick}
+          onStatusMessageChange={setSearchStatusMessage}
+          placeholder={placeholderText}
+        />
         <InputHintComponent variant={error ? "error" : undefined}>
           {error
             ? error
-            : t("Listings.form.locationHint", {
+            : searchStatusMessage ||
+              t("Listings.form.locationHint", {
                 type: listingType,
               })}
         </InputHintComponent>
@@ -371,11 +371,15 @@ export default function LocationSelect({
               anchor="center"
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
-              onClick={() => console.log("Tapped marker")}
             >
               <MapPin type={listingType} selected={true} />
             </Marker>
-            <NavigationControl showZoom={true} showCompass={false} />
+            <MapZoomControls
+              onZoomIn={() => mapRef.current?.getMap().zoomIn()}
+              onZoomOut={() => mapRef.current?.getMap().zoomOut()}
+              zoomInLabel={t("Map.zoomInControl")}
+              zoomOutLabel={t("Map.zoomOutControl")}
+            />
           </MapThumbnail>
 
           <InputHintComponent>

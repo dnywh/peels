@@ -3,7 +3,9 @@ import {
   DONOR_EMAIL,
   HOST_EMAIL,
   PROFILE_RENDER_TIMEOUT_MS,
+  createMockGeocodingFeature,
   delayServerActionRequests,
+  mockMapTilerGeocoding,
   signIn,
 } from "./helpers";
 
@@ -86,6 +88,56 @@ test("new listing form shows validation feedback when location is missing", asyn
   ).toBeVisible();
 });
 
+test("listing location search picks a geocoding result", async ({ page }) => {
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: "/profile/listings/new/business",
+  });
+  await mockMapTilerGeocoding(
+    page,
+    createMockGeocodingFeature({
+      id: "poi.mount-kuring-gai-station",
+      text: "Mount Kuring-gai Station",
+      placeName:
+        "Mount Kuring-gai Station, Mount Kuring-gai, Sydney, Australia",
+      placeType: ["poi"],
+      context: [
+        {
+          id: "neighbourhood.mount-kuring-gai",
+          text: "Mount Kuring-gai",
+        },
+        {
+          id: "place.sydney",
+          text: "Sydney",
+        },
+      ],
+      center: [151.1368, -33.6546],
+    })
+  );
+
+  await expect(page.getByTestId("listing-write-form")).toBeVisible();
+  await page.locator("#country").selectOption("AU");
+  const searchInput = page.getByTestId("listing-location-search-input");
+  await searchInput.fill("Mount Kuring-gai");
+  await expect
+    .poll(async () =>
+      searchInput.evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).fontSize)
+      )
+    )
+    .toBeGreaterThanOrEqual(16);
+  await page.getByRole("option", { name: /Mount Kuring-gai Station/ }).click();
+
+  await expect(
+    page.getByRole("option", { name: /Mount Kuring-gai Station/ })
+  ).toHaveCount(0);
+  await expect(searchInput).toHaveValue("Mount Kuring-gai");
+  await expect(page.locator(".maplibregl-canvas")).toBeVisible({
+    timeout: 10_000,
+  });
+  await expect(page.getByText(/Drag the pin/)).toBeVisible();
+});
+
 test("listing edit saves and restores seeded business fields", async ({
   page,
 }) => {
@@ -106,6 +158,7 @@ test("listing edit saves and restores seeded business fields", async ({
   const updatedVisibility = originalVisibility === "true" ? "false" : "true";
 
   await descriptionInput.fill(updatedDescription);
+  await expect(descriptionInput).toHaveValue(updatedDescription);
   await visibilityInput.selectOption(updatedVisibility);
   await delayServerActionRequests(page);
 
@@ -128,10 +181,15 @@ test("listing edit saves and restores seeded business fields", async ({
     updatedVisibility
   );
 
-  await listingWriteForm
+  const restoreDescriptionInput = listingWriteForm
     .locator("#description")
-    .first()
-    .fill(originalDescription);
+    .first();
+  await restoreDescriptionInput.fill("");
+  await expect(restoreDescriptionInput).toHaveValue("");
+  await restoreDescriptionInput.fill(originalDescription);
+  await expect(listingWriteForm.locator("#description").first()).toHaveValue(
+    originalDescription
+  );
   await listingWriteForm
     .locator("#visibility")
     .first()

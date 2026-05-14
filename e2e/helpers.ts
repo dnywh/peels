@@ -9,6 +9,68 @@ export const HOST_SECOND_SEEDED_THREAD_ID =
   "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 export const PROFILE_RENDER_TIMEOUT_MS = 15_000;
 
+type MockGeocodingFeatureOptions = {
+  id?: string;
+  text?: string;
+  placeName?: string;
+  placeType?: string[];
+  context?: Array<{
+    id: string;
+    text: string;
+  }>;
+  center?: [number, number];
+  countryCode?: string;
+};
+
+export function createMockGeocodingFeature({
+  id = "place.123",
+  text = "Newtown",
+  placeName = "Newtown, New South Wales, Australia",
+  placeType = ["place"],
+  context,
+  center = [151.1781, -33.8985],
+  countryCode = "AU",
+}: MockGeocodingFeatureOptions = {}) {
+  return {
+    id,
+    type: "Feature",
+    text,
+    place_name: placeName,
+    place_type: placeType,
+    place_type_name: placeType,
+    context,
+    center,
+    bbox: [center[0], center[1], center[0], center[1]],
+    geometry: {
+      type: "Point",
+      coordinates: center,
+    },
+    properties: {
+      ref: id,
+      country_code: countryCode,
+    },
+    relevance: 1,
+  };
+}
+
+export async function mockMapTilerGeocoding(
+  page: Page,
+  feature = createMockGeocodingFeature()
+) {
+  await page.route("**/geocoding/**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        type: "FeatureCollection",
+        query: [],
+        features: [feature],
+        attribution: "Mock MapTiler geocoding",
+      }),
+    });
+  });
+}
+
 export async function signIn(
   page: Page,
   {

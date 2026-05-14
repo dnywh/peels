@@ -5,9 +5,9 @@ import {
   sharedMediaFrameRadius,
   sharedMediaFrameShapeStyles,
 } from "@/styles/mediaFrame";
-import { useMemo } from "react";
+import { forwardRef, useMemo } from "react";
 
-import Map, { AttributionControl } from "react-map-gl/maplibre";
+import Map, { AttributionControl, type MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocale } from "next-intl";
 
@@ -17,6 +17,11 @@ import { handleMapError } from "@/features/map/lib/mapErrors";
 import { createProtomapsStyle } from "@/features/map/lib/protomapsStyle";
 import { usePreferredMapFlavor } from "@/features/map/hooks/usePreferredMapFlavor";
 
+type MapThumbnailProps = {
+  height?: number | string;
+  children?: ReactNode;
+} & Omit<ComponentProps<typeof Map>, "children" | "style" | "mapStyle">;
+
 const MapContainer = styled.div`
   ${sharedMediaFrameShapeStyles}
   ${sharedMediaFrameBorderStyles}
@@ -24,38 +29,36 @@ const MapContainer = styled.div`
   position: relative;
 `;
 
-export default function MapThumbnail({
-  height = "300",
-  children,
-  ...props
-}: {
-  height?: number | string;
-  children?: ReactNode;
-} & Omit<ComponentProps<typeof Map>, "children" | "style" | "mapStyle">) {
-  const locale = useLocale();
-  const mapFlavor = usePreferredMapFlavor();
-  const mapStyle = useMemo(
-    () => createProtomapsStyle({ flavorName: mapFlavor, locale }),
-    [locale, mapFlavor]
-  );
+const MapThumbnail = forwardRef<MapRef, MapThumbnailProps>(
+  function MapThumbnail({ height = "300", children, ...props }, ref) {
+    const locale = useLocale();
+    const mapFlavor = usePreferredMapFlavor();
+    const mapStyle = useMemo(
+      () => createProtomapsStyle({ flavorName: mapFlavor, locale }),
+      [locale, mapFlavor]
+    );
 
-  return (
-    <MapContainer>
-      <Map
-        attributionControl={false} // Customised below
-        mapStyle={mapStyle}
-        onError={handleMapError}
-        renderWorldCopies={true}
-        style={{
-          width: "100%",
-          height: height,
-          borderRadius: sharedMediaFrameRadius,
-        }}
-        {...props}
-      >
-        <AttributionControl compact={true} />
-        {children}
-      </Map>
-    </MapContainer>
-  );
-}
+    return (
+      <MapContainer>
+        <Map
+          ref={ref}
+          attributionControl={false} // Customised below
+          mapStyle={mapStyle}
+          onError={handleMapError}
+          renderWorldCopies={true}
+          style={{
+            width: "100%",
+            height: height,
+            borderRadius: sharedMediaFrameRadius,
+          }}
+          {...props}
+        >
+          <AttributionControl compact={true} />
+          {children}
+        </Map>
+      </MapContainer>
+    );
+  }
+);
+
+export default MapThumbnail;
