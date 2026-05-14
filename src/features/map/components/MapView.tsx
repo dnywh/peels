@@ -220,6 +220,7 @@ export default function MapView({
   const initialMapPinZoomStyleRef = useRef<MapPinZoomStyle | null>(null);
   const pendingPinZoomRef = useRef<number | null>(null);
   const pinZoomAnimationFrameRef = useRef<number | null>(null);
+  const hasSyncedIdleBoundsRef = useRef(false);
   const saveMapViewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
@@ -350,9 +351,16 @@ export default function MapView({
 
   const handleLoad = useCallback(() => {
     handleMapLoad();
-    const map = syncCurrentMapState();
-    map?.once("idle", syncCurrentMapState);
+    hasSyncedIdleBoundsRef.current = false;
+    syncCurrentMapState();
   }, [handleMapLoad, syncCurrentMapState]);
+
+  const handleIdle = useCallback(() => {
+    if (hasSyncedIdleBoundsRef.current) return;
+
+    hasSyncedIdleBoundsRef.current = true;
+    syncCurrentMapState();
+  }, [syncCurrentMapState]);
 
   useEffect(() => {
     if (initialCoordinates) {
@@ -501,6 +509,7 @@ export default function MapView({
             onZoom={handleMove}
             onMoveEnd={handleMoveEnd}
             onLoad={handleLoad}
+            onIdle={handleIdle}
             onError={handleMapError}
             onClick={handleMapClickInternal}
           >
