@@ -388,7 +388,11 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
         </InputWrap>
 
         {shouldRenderStatusMessage ? (
-          <StatusMessage $visible={Boolean(statusMessage)}>
+          <StatusMessage
+            aria-live="polite"
+            role="status"
+            $visible={Boolean(statusMessage)}
+          >
             {statusMessage}
           </StatusMessage>
         ) : null}
