@@ -18,6 +18,7 @@ type MapControlClusterProps = {
   onZoomIn: () => void;
   onZoomOut: () => void;
   searchLabel?: string;
+  zoomInDisabled?: boolean;
   zoomInLabel: string;
   zoomOutLabel: string;
 };
@@ -25,6 +26,7 @@ type MapControlClusterProps = {
 type MapZoomControlsProps = {
   onZoomIn: () => void;
   onZoomOut: () => void;
+  zoomInDisabled?: boolean;
   zoomInLabel: string;
   zoomOutLabel: string;
 };
@@ -69,6 +71,20 @@ const controlButtonStyles = css`
 
   &:focus-visible {
     outline: 3px solid ${theme.colors.focus.outline};
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:disabled svg {
+    opacity: 0.35;
+    transform: none;
+  }
+
+  &:disabled:hover,
+  &:disabled:active {
+    background: ${theme.colors.background.top};
   }
 
   svg {
@@ -125,6 +141,7 @@ const ZoomButton = styled.button`
 export function MapZoomControls({
   onZoomIn,
   onZoomOut,
+  zoomInDisabled = false,
   zoomInLabel,
   zoomOutLabel,
 }: MapZoomControlsProps) {
@@ -133,6 +150,7 @@ export function MapZoomControls({
       <ZoomControlGroup
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
+        zoomInDisabled={zoomInDisabled}
         zoomInLabel={zoomInLabel}
         zoomOutLabel={zoomOutLabel}
       />
@@ -143,6 +161,7 @@ export function MapZoomControls({
 function ZoomControlGroup({
   onZoomIn,
   onZoomOut,
+  zoomInDisabled = false,
   zoomInLabel,
   zoomOutLabel,
 }: MapZoomControlsProps) {
@@ -153,6 +172,7 @@ function ZoomControlGroup({
         aria-label={zoomInLabel}
         title={zoomInLabel}
         data-testid="map-control-zoom-in"
+        disabled={zoomInDisabled}
         onClick={onZoomIn}
       >
         <MapControlPlusIcon aria-hidden="true" />
@@ -178,6 +198,7 @@ export default function MapControls({
   onZoomIn,
   onZoomOut,
   searchLabel,
+  zoomInDisabled = false,
   zoomInLabel,
   zoomOutLabel,
 }: MapControlClusterProps) {
@@ -209,6 +230,7 @@ export default function MapControls({
       <ZoomControlGroup
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
+        zoomInDisabled={zoomInDisabled}
         zoomInLabel={zoomInLabel}
         zoomOutLabel={zoomOutLabel}
       />

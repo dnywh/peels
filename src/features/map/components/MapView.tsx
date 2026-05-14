@@ -113,6 +113,7 @@ const PIN_HALO_MIN_ZOOM = 8;
 const PIN_HALO_MIN_SCALE = 0.18;
 const PIN_HALO_FULL_ZOOM = MAP_MAX_ZOOM;
 const PIN_HALO_GROWTH_EXPONENT = 2.2;
+const MAP_ZOOM_DISABLED_EPSILON = 0.001;
 
 type MapPinZoomStyle = CSSProperties & {
   "--map-pin-compact-scale": string;
@@ -165,6 +166,10 @@ function resolveMapPinZoomVariables(zoom: number): MapPinZoomStyle {
     "--map-pin-icon-scale": iconScale.toFixed(3),
     "--map-pin-halo-scale": haloScale.toFixed(3),
   };
+}
+
+function isMapZoomAtMax(zoom: number) {
+  return zoom >= MAP_MAX_ZOOM - MAP_ZOOM_DISABLED_EPSILON;
 }
 
 function resolveInitialViewState(
@@ -229,6 +234,9 @@ export default function MapView({
     () => resolveInitialViewState(selectedListing, initialCoordinates),
     [initialCoordinates, selectedListing]
   );
+  const [isZoomInDisabled, setIsZoomInDisabled] = useState(() =>
+    isMapZoomAtMax(initialViewState.zoom)
+  );
   const hasInitialPosition =
     hasValidCoordinates(selectedListing) || initialCoordinates !== null;
 
@@ -257,6 +265,16 @@ export default function MapView({
     },
     [requestBounds]
   );
+
+  const syncZoomControlState = useCallback((zoom: number) => {
+    const nextIsZoomInDisabled = isMapZoomAtMax(zoom);
+
+    setIsZoomInDisabled((currentIsZoomInDisabled) =>
+      currentIsZoomInDisabled === nextIsZoomInDisabled
+        ? currentIsZoomInDisabled
+        : nextIsZoomInDisabled
+    );
+  }, []);
 
   const applyMapPinZoomVariables = useCallback((zoom: number) => {
     const container = mapContainerRef.current;
@@ -324,10 +342,11 @@ export default function MapView({
     if (!map) return null;
 
     applyMapPinZoomVariables(map.getZoom());
+    syncZoomControlState(map.getZoom());
     emitBoundsChange(map.getBounds());
 
     return map;
-  }, [applyMapPinZoomVariables, emitBoundsChange]);
+  }, [applyMapPinZoomVariables, emitBoundsChange, syncZoomControlState]);
 
   const handleLoad = useCallback(() => {
     handleMapLoad();
@@ -389,8 +408,9 @@ export default function MapView({
   const handleMove = useCallback(
     (event: ViewStateChangeEvent) => {
       scheduleMapPinZoomUpdate(event.viewState.zoom);
+      syncZoomControlState(event.viewState.zoom);
     },
-    [scheduleMapPinZoomUpdate]
+    [scheduleMapPinZoomUpdate, syncZoomControlState]
   );
 
   const handleMoveEnd = useCallback(
@@ -517,6 +537,7 @@ export default function MapView({
             onZoomIn={zoomIn}
             onZoomOut={zoomOut}
             searchLabel={t("searchLabel")}
+            zoomInDisabled={isZoomInDisabled}
             zoomInLabel={t("zoomInControl")}
             zoomOutLabel={t("zoomOutControl")}
           />
