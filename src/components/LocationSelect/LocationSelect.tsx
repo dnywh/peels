@@ -43,7 +43,8 @@ const ZOOM_LEVEL = 16;
 import { config, geocoding, geolocation } from "@maptiler/client";
 
 // Reverse geocoding for legible location (area_name)
-config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
+const mapTilerApiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
+config.apiKey = mapTilerApiKey;
 
 // const maptilerClient = new maptilersdk.Maptiler();
 
@@ -148,14 +149,12 @@ async function getAreaNameMatch(
   latitude: number
 ): Promise<AreaNameMatch | null> {
   try {
-    const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
-
-    if (!apiKey) {
+    if (!mapTilerApiKey) {
       return null;
     }
 
     const coordinates = await geocoding.reverse([longitude, latitude], {
-      apiKey,
+      apiKey: mapTilerApiKey,
     });
 
     return getBestAreaNameMatchFromFeatures(
@@ -191,6 +190,10 @@ export default function LocationSelect({
 
   useEffect(() => {
     if (autoDetectCountry && !countryCode) {
+      if (!mapTilerApiKey) {
+        return;
+      }
+
       let isMounted = true; // Track if component is mounted
 
       const initializeLocation = async () => {

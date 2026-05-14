@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { keyframes, styled } from "next-yak";
 import type { GeocodingFeature } from "@maptiler/client";
 
+import IconButton from "@/components/IconButton";
 import { theme } from "@/styles/theme.yak";
 import GeocodingSearch from "./GeocodingSearch";
 
@@ -115,13 +116,23 @@ const DialogContent = styled(Dialog.Content)`
   }
 `;
 
+const DialogCloseButton = styled(IconButton)`
+  position: absolute;
+  right: -0.625rem;
+  top: -0.625rem;
+  border-radius: 0.7rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
+`;
+
 export default function MapSearch({
   countryCode,
   onOpenChange,
   onPick,
   open,
 }: MapSearchProps) {
-  const t = useTranslations("Map");
+  const actionsT = useTranslations("Actions");
+  const mapT = useTranslations("Map");
+  const closeLabel = actionsT("close");
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -129,25 +140,33 @@ export default function MapSearch({
         <DialogOverlay />
         <DialogContent data-testid="map-search-dialog">
           <VisuallyHidden.Root>
-            <Dialog.Title>{t("searchDialogTitle")}</Dialog.Title>
-            <Dialog.Description>{t("searchPlaceholder")}</Dialog.Description>
+            <Dialog.Title>{mapT("searchDialogTitle")}</Dialog.Title>
+            <Dialog.Description>{mapT("searchPlaceholder")}</Dialog.Description>
           </VisuallyHidden.Root>
           <GeocodingSearch
-            ariaLabel={t("searchDialogTitle")}
+            ariaLabel={mapT("searchDialogTitle")}
             autoFocus={true}
-            clearLabel={t("searchClear")}
+            clearLabel={mapT("searchClear")}
             countryCode={countryCode}
-            errorMessage={t("searchError")}
-            loadingMessage={t("searchLoading")}
-            noResultsMessage={t("searchNoResults")}
+            errorMessage={mapT("searchError")}
+            loadingMessage={mapT("searchLoading")}
+            noResultsMessage={mapT("searchNoResults")}
             onPick={(feature) => {
               onPick(feature);
               onOpenChange(false);
             }}
-            placeholder={t("searchPlaceholder")}
+            placeholder={mapT("searchPlaceholder")}
             proximity="ip"
             variant="palette"
           />
+          <Dialog.Close asChild>
+            <DialogCloseButton
+              icon="close"
+              aria-label={closeLabel}
+              title={closeLabel}
+              type="button"
+            />
+          </Dialog.Close>
         </DialogContent>
       </Dialog.Portal>
     </Dialog.Root>

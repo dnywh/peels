@@ -257,24 +257,28 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
     const [query, setQuery] = useState("");
     const [isFocused, setIsFocused] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
+    const hasSearchableQuery =
+      query.trim().length >= MAP_GEOCODING_MIN_QUERY_LENGTH;
+    const canShowResults = variant === "palette" || isFocused;
+    const showResults = hasSearchableQuery && canShowResults;
     const { features, isError, isLoading, isReady } = useGeocodingSearch({
       query,
       countryCode,
+      enabled: showResults,
       proximity,
     });
-    const hasSearchableQuery =
-      query.trim().length >= MAP_GEOCODING_MIN_QUERY_LENGTH;
-    const showResults =
-      hasSearchableQuery && (variant === "palette" || isFocused);
+    const hasVisibleListbox = showResults && features.length > 0;
     const showNoResults =
       showResults && isReady && !isLoading && !isError && features.length === 0;
-    const statusMessage = isLoading
-      ? loadingMessage
-      : isError
-        ? error || errorMessage
-        : showNoResults
-          ? noResultsMessage
-          : "";
+    const statusMessage = showResults
+      ? isLoading
+        ? loadingMessage
+        : isError
+          ? error || errorMessage
+          : showNoResults
+            ? noResultsMessage
+            : ""
+      : "";
     const shouldRenderStatusMessage =
       variant === "palette" || !onStatusMessageChange;
     const activeFeature = showResults ? features[activeIndex] : undefined;
@@ -345,8 +349,8 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
             autoFocus={autoFocus}
             placeholder={placeholder}
             aria-autocomplete="list"
-            aria-controls={listId}
-            aria-expanded={showResults}
+            aria-controls={hasVisibleListbox ? listId : undefined}
+            aria-expanded={hasVisibleListbox}
             aria-label={ariaLabel}
             aria-labelledby={ariaLabelledBy}
             aria-invalid={ariaInvalid}
@@ -389,7 +393,7 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
           </StatusMessage>
         ) : null}
 
-        {showResults && features.length > 0 ? (
+        {hasVisibleListbox ? (
           <ResultsPanel $variant={variant}>
             <ResultList id={listId} role="listbox">
               {features.map((feature, index) => (
