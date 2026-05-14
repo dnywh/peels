@@ -54,6 +54,7 @@ export function useGeocodingSearch({
       return;
     }
 
+    setFeatures([]);
     setStatus("loading");
 
     let cancelled = false;

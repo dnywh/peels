@@ -274,7 +274,7 @@ const GeocodingSearch = forwardRef<GeocodingSearchHandle, GeocodingSearchProps>(
       ? isLoading
         ? loadingMessage
         : isError
-          ? error || errorMessage
+          ? errorMessage
           : showNoResults
             ? noResultsMessage
             : ""
