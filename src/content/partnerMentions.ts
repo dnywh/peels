@@ -136,6 +136,10 @@ export const communityMediaMentions = [
     href: "https://www.canberraenvironment.org/media/international-compost-awareness-week",
   },
   {
+    name: "SEE Change",
+    href: "https://www.seechange.org.au/wasteandrecycling",
+  },
+  {
     name: "Pickled Compost",
     href: "https://pickledcompost.com/pages/benefits",
   },

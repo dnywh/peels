@@ -198,7 +198,6 @@ export default function MapControls({
         <ControlButton
           type="button"
           aria-label={locateLabel}
-          aria-pressed={locateActive}
           title={locateLabel}
           $active={locateActive}
           data-testid="map-control-locate"

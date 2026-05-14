@@ -167,24 +167,6 @@ async function getAreaNameMatch(
   }
 }
 
-// TODO: use this to build a custom component around the core geocoding API, using my nice own components for input and dropdown
-// https://docs.maptiler.com/cloud/api/geocoding/
-// async function basicCallToBuildCustomComponentAround() {
-//   try {
-//     const response = await fetch(
-//       `https://api.maptiler.com/geocoding/Zurich.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`
-//     );
-//     if (!response.ok) throw new Error("API request failed");
-//     const data = await response.json();
-//     console.log(data.query, data.features);
-//     return Response.json(data);
-//   } catch (error) {
-//     return Response.json({ error: error.message }, { status: 500 });
-//   }
-// }
-// basicCallToBuildCustomComponentAround();
-
-// React component
 export default function LocationSelect({
   listingType,
   coordinates,
@@ -217,7 +199,6 @@ export default function LocationSelect({
 
           // Only update state if component is still mounted and user hasn't changed the value
           if (isMounted && !countryCode && response?.country_code) {
-            console.log("Updating to detected country:", response.country_code);
             setCountryCode(response.country_code);
           }
         } catch (error) {
@@ -387,7 +368,6 @@ export default function LocationSelect({
               anchor="center"
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
-              onClick={() => console.log("Tapped marker")}
             >
               <MapPin type={listingType} selected={true} />
             </Marker>
