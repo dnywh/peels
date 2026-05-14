@@ -135,6 +135,19 @@ async function zoomInUntilMapPinsAreDetailed(page: Page) {
   await expectMapPinDetailScale(page, 1);
 }
 
+async function focusMapControlByKeyboard(page: Page, testId: string) {
+  for (let i = 0; i < 20; i += 1) {
+    await page.keyboard.press("Tab");
+    const activeTestId = await page.evaluate(() =>
+      document.activeElement?.getAttribute("data-testid")
+    );
+
+    if (activeTestId === testId) return;
+  }
+
+  throw new Error(`Could not focus ${testId} by keyboard`);
+}
+
 test("map mounts when IP location is unavailable and restores the last view", async ({
   page,
 }) => {
@@ -154,6 +167,16 @@ test("map mounts when IP location is unavailable and restores the last view", as
       timeout: 10_000,
     });
     expect(await readStoredMapView(page)).toBeNull();
+
+    await focusMapControlByKeyboard(page, "map-control-search");
+    await expect(page.getByTestId("map-control-search")).toBeFocused();
+    await expect
+      .poll(() =>
+        page
+          .getByTestId("map-control-search")
+          .evaluate((element) => getComputedStyle(element).boxShadow)
+      )
+      .toContain("inset");
 
     await page.getByTestId("map-control-zoom-in").click();
 
@@ -263,6 +286,16 @@ test("map search palette flies to a picked geocoding result", async ({
 
   await page.getByTestId("map-control-search").click();
   const searchInput = page.getByTestId("geocoding-search-input");
+  await expect(searchInput).toBeFocused();
+  await expect(
+    page.getByTestId("map-search-dialog").getByRole("button", {
+      name: "Close",
+    })
+  ).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(page.getByTestId("map-search-dialog")).toBeHidden();
+
+  await page.getByTestId("map-control-search").click();
   await expect(searchInput).toBeFocused();
   await searchInput.fill("Newtown");
   await expect
