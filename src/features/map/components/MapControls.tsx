@@ -80,6 +80,13 @@ const controlButtonStyles = css`
       var(--map-control-shadow, 0 0 0 0 transparent);
   }
 
+  @media (forced-colors: active) {
+    &:focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+
   &:disabled {
     cursor: default;
   }

@@ -177,6 +177,15 @@ test("map mounts when IP location is unavailable and restores the last view", as
           .evaluate((element) => getComputedStyle(element).boxShadow)
       )
       .toContain("inset");
+    await focusMapControlByKeyboard(page, "map-control-zoom-in");
+    await expect(page.getByTestId("map-control-zoom-in")).toBeFocused();
+    await expect
+      .poll(() =>
+        page
+          .getByTestId("map-control-zoom-in")
+          .evaluate((element) => getComputedStyle(element).boxShadow)
+      )
+      .toContain("inset");
 
     await page.getByTestId("map-control-zoom-in").click();
 
@@ -288,9 +297,7 @@ test("map search palette flies to a picked geocoding result", async ({
   const searchInput = page.getByTestId("geocoding-search-input");
   await expect(searchInput).toBeFocused();
   await expect(
-    page.getByTestId("map-search-dialog").getByRole("button", {
-      name: "Close",
-    })
+    page.getByTestId("map-search-dialog").locator(":scope > button")
   ).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("map-search-dialog")).toBeHidden();
