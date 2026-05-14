@@ -500,6 +500,10 @@
   "Map": {
     "drawerTitle": "Détails de l’annonce",
     "drawerDescription": "Détails de l’annonce sélectionnée.",
+    "mapRegionLabel": "Carte du compostage",
+    "controlsLabel": "Commandes de la carte",
+    "zoomControlsLabel": "Commandes de zoom de la carte",
+    "markerLabel": "Repère de carte",
     "emptyTitle": "Rien à l’horizon",
     "emptyBody": "L’annonce que vous cherchez n’existe pas ou a été supprimée. Désolé pour la déception.",
     "searchPlaceholder": "Rechercher une rue ou un lieu",

@@ -11,6 +11,7 @@ import {
 import { theme } from "@/styles/theme.yak";
 
 type MapControlClusterProps = {
+  controlsLabel: string;
   locateActive?: boolean;
   locateLabel?: string;
   onLocate?: () => void;
@@ -21,9 +22,11 @@ type MapControlClusterProps = {
   zoomInDisabled?: boolean;
   zoomInLabel: string;
   zoomOutLabel: string;
+  zoomControlsLabel: string;
 };
 
 type MapZoomControlsProps = {
+  controlsLabel: string;
   onZoomIn: () => void;
   onZoomOut: () => void;
   zoomInDisabled?: boolean;
@@ -139,6 +142,7 @@ const ZoomButton = styled.button`
 `;
 
 export function MapZoomControls({
+  controlsLabel,
   onZoomIn,
   onZoomOut,
   zoomInDisabled = false,
@@ -148,6 +152,7 @@ export function MapZoomControls({
   return (
     <ControlAnchor>
       <ZoomControlGroup
+        controlsLabel={controlsLabel}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         zoomInDisabled={zoomInDisabled}
@@ -159,6 +164,7 @@ export function MapZoomControls({
 }
 
 function ZoomControlGroup({
+  controlsLabel,
   onZoomIn,
   onZoomOut,
   zoomInDisabled = false,
@@ -166,7 +172,7 @@ function ZoomControlGroup({
   zoomOutLabel,
 }: MapZoomControlsProps) {
   return (
-    <ZoomGroup>
+    <ZoomGroup role="group" aria-label={controlsLabel}>
       <ZoomButton
         type="button"
         aria-label={zoomInLabel}
@@ -191,6 +197,7 @@ function ZoomControlGroup({
 }
 
 export default function MapControls({
+  controlsLabel,
   locateActive = false,
   locateLabel,
   onLocate,
@@ -200,10 +207,11 @@ export default function MapControls({
   searchLabel,
   zoomInDisabled = false,
   zoomInLabel,
+  zoomControlsLabel,
   zoomOutLabel,
 }: MapControlClusterProps) {
   return (
-    <ControlAnchor $gap>
+    <ControlAnchor $gap role="group" aria-label={controlsLabel}>
       {onSearch && searchLabel ? (
         <ControlButton
           type="button"
@@ -228,6 +236,7 @@ export default function MapControls({
         </ControlButton>
       ) : null}
       <ZoomControlGroup
+        controlsLabel={zoomControlsLabel}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         zoomInDisabled={zoomInDisabled}

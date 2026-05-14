@@ -500,6 +500,10 @@
   "Map": {
     "drawerTitle": "Eintragsdetails",
     "drawerDescription": "Details zum ausgewählten Eintrag.",
+    "mapRegionLabel": "Kompostkarte",
+    "controlsLabel": "Kartensteuerung",
+    "zoomControlsLabel": "Zoomsteuerung der Karte",
+    "markerLabel": "Kartenmarkierung",
     "emptyTitle": "Nichts gefunden",
     "emptyBody": "Der Eintrag, den du suchst, existiert nicht oder wurde entfernt. Tut uns leid.",
     "searchPlaceholder": "Strasse oder Ort suchen",

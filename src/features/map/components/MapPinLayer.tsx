@@ -15,6 +15,7 @@ import { hasValidCoordinates } from "../lib/mapUtils";
 
 type MapPinLayerProps = {
   listings: ListingMarker[];
+  markerLabel: string;
   selectedListingId: number | null;
   onMarkerClick: (listing: ListingMarker) => void;
 };
@@ -23,6 +24,7 @@ type ListingMapPinMarkerProps = {
   listing: ListingMarker;
   coords: ListingCoordinates;
   isSelected: boolean;
+  markerLabel: string;
   onMarkerClick: MapPinLayerProps["onMarkerClick"];
 };
 
@@ -36,6 +38,7 @@ function ListingMapPinMarker({
   listing,
   coords,
   isSelected,
+  markerLabel,
   onMarkerClick,
 }: ListingMapPinMarkerProps) {
   const markerRef = useRef<MarkerInstance | null>(null);
@@ -51,6 +54,8 @@ function ListingMapPinMarker({
     if (!markerElement) return;
 
     markerElement.tabIndex = 0;
+    markerElement.setAttribute("role", "button");
+    markerElement.setAttribute("aria-label", markerLabel);
 
     const activateFromKeyboard = (event: KeyboardEvent) => {
       lastKeyboardActivationRef.current = event.timeStamp;
@@ -86,10 +91,13 @@ function ListingMapPinMarker({
 
     return () => {
       isSpaceActivationPendingRef.current = false;
+      markerElement.removeAttribute("aria-label");
+      markerElement.removeAttribute("role");
+      markerElement.removeAttribute("tabindex");
       markerElement.removeEventListener("keydown", handleMarkerKeyDown);
       markerElement.removeEventListener("keyup", handleMarkerKeyUp);
     };
-  }, [listing, onMarkerClick]);
+  }, [listing, markerLabel, onMarkerClick]);
 
   const handlePinClick = (event: ReactMouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -146,6 +154,7 @@ function ListingMapPinMarker({
 
 export default function MapPinLayer({
   listings,
+  markerLabel,
   selectedListingId,
   onMarkerClick,
 }: MapPinLayerProps) {
@@ -163,6 +172,7 @@ export default function MapPinLayer({
               listing={listing}
               coords={coords}
               isSelected={isSelected}
+              markerLabel={markerLabel}
               onMarkerClick={onMarkerClick}
             />
           );
