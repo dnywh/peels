@@ -77,7 +77,7 @@ const controlButtonStyles = css`
     outline: none;
     box-shadow:
       inset 0 0 0 2px ${theme.colors.focus.outline},
-      var(--map-control-shadow, none);
+      var(--map-control-shadow, 0 0 0 0 transparent);
   }
 
   &:disabled {
