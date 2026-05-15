@@ -66,6 +66,30 @@ test("listing type chooser routes signed-in hosts to the selected form", async (
   await expect(page.locator("#name")).toBeVisible();
 });
 
+test("listing type chooser hides residential option at the residential limit", async ({
+  page,
+}) => {
+  await signIn(page, {
+    email: DONOR_EMAIL,
+    redirectTo: "/profile/listings/new?type=host",
+  });
+
+  const chooser = page.getByTestId("listing-type-chooser");
+  const communityOption = page.getByTestId("listing-type-option-community");
+  const continueButton = page.getByTestId("listing-type-chooser-submit");
+
+  await expect(chooser).toBeVisible();
+  await expect(page.getByTestId("listing-type-option-residential")).toHaveCount(
+    0
+  );
+  await expect(communityOption).toBeVisible();
+  await communityOption.click();
+  await expect(continueButton).toBeEnabled();
+  await continueButton.click();
+
+  await expect(page).toHaveURL(/\/profile\/listings\/new\/community$/);
+});
+
 test("new listing form shows validation feedback when location is missing", async ({
   page,
 }) => {

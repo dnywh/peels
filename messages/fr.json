@@ -98,7 +98,7 @@
     "resetPasswordSuccess": "Votre mot de passe a été mis à jour. Retour au compostage !",
     "savePhotosFailed": "L’annonce a été créée, mais les photos n’ont pas pu être enregistrées.",
     "signUpFailed": "Échec de l’inscription",
-    "tooManyListings": "Vous avez atteint le nombre maximal d’annonces autorisées. Supprimez-en une parmi vos trois annonces actuelles pour en créer une nouvelle.",
+    "tooManyListings": "Vous avez atteint le nombre maximal d’annonces autorisées. Supprimez l’une de vos annonces existantes pour en créer une nouvelle.",
     "tooManyMessages": "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
     "tooManyThreads": "Vous avez lancé trop de nouvelles conversations au cours de la dernière heure. Veuillez réessayer plus tard.",
     "firstNameTooShort": "Veuillez utiliser au moins 2 caractères pour votre prénom.",
@@ -329,6 +329,7 @@
       "hostTypeTitle": "Où acceptez-vous des restes alimentaires ?",
       "listingTypeLabel": "Type d’annonce",
       "hostTypeLabel": "Type d’hôte",
+      "noAvailableOptions": "Vous avez atteint le nombre maximal d’annonces autorisées.",
       "options": {
         "host": {
           "title": "J’accepte des restes alimentaires",

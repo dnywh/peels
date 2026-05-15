@@ -18,6 +18,7 @@ type ListingTypeChooserProps = {
   mode: "listing" | "host";
   options: ListingTypeOption[];
   continueLabel: string;
+  emptyMessage: string;
   ariaLabel: string;
 };
 
@@ -25,6 +26,7 @@ export default function ListingTypeChooser({
   mode,
   options,
   continueLabel,
+  emptyMessage,
   ariaLabel,
 }: ListingTypeChooserProps) {
   const router = useRouter();
@@ -63,21 +65,25 @@ export default function ListingTypeChooser({
       data-testid="listing-type-chooser"
       data-hydrated={isHydrated ? "true" : "false"}
     >
-      <RadioGroup
-        value={selectedOption}
-        onChange={(value) => setSelectedOption(value as ListingTypeOption)}
-        aria-label={ariaLabel}
-      >
-        {options.map((option) => (
-          <Radio
-            key={option.key}
-            value={option}
-            data-testid={`listing-type-option-${option.key}`}
-            title={option.title}
-            description={option.description}
-          />
-        ))}
-      </RadioGroup>
+      {options.length > 0 ? (
+        <RadioGroup
+          value={selectedOption}
+          onChange={(value) => setSelectedOption(value as ListingTypeOption)}
+          aria-label={ariaLabel}
+        >
+          {options.map((option) => (
+            <Radio
+              key={option.key}
+              value={option}
+              data-testid={`listing-type-option-${option.key}`}
+              title={option.title}
+              description={option.description}
+            />
+          ))}
+        </RadioGroup>
+      ) : (
+        <p>{emptyMessage}</p>
+      )}
 
       <SubmitButton
         width="full"
