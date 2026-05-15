@@ -98,7 +98,7 @@
     "resetPasswordSuccess": "A sua senha foi atualizada. Vamos voltar à compostagem!",
     "savePhotosFailed": "O anúncio foi criado, mas não foi possível salvar as fotos.",
     "signUpFailed": "Não foi possível concluir o cadastro",
-    "tooManyListings": "Você atingiu o número máximo de anúncios permitidos. Exclua um dos seus três anúncios atuais para criar um novo.",
+    "tooManyListings": "Você atingiu o número máximo de anúncios permitidos. Exclua um dos seus anúncios existentes para criar um novo.",
     "tooManyMessages": "Você enviou mensagens demais. Tente novamente mais tarde.",
     "tooManyThreads": "Você iniciou conversas demais na última hora. Tente novamente mais tarde.",
     "firstNameTooShort": "Use pelo menos 2 caracteres no seu nome.",
@@ -329,6 +329,7 @@
       "hostTypeTitle": "Onde você aceita restos de comida?",
       "listingTypeLabel": "Tipo de anúncio",
       "hostTypeLabel": "Tipo de anfitrião",
+      "noAvailableOptions": "Você atingiu o número máximo de anúncios permitidos.",
       "options": {
         "host": {
           "title": "Eu aceito restos de comida",

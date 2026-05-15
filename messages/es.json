@@ -98,7 +98,7 @@
     "resetPasswordSuccess": "Tu contraseña ha sido actualizada. ¡Volvamos al compostaje!",
     "savePhotosFailed": "Se creó el anuncio, pero no se pudieron guardar las fotos.",
     "signUpFailed": "No se pudo completar el registro",
-    "tooManyListings": "Has alcanzado el número máximo de anuncios permitidos. Elimina uno de tus tres anuncios actuales para crear uno nuevo.",
+    "tooManyListings": "Has alcanzado el número máximo de anuncios permitidos. Elimina uno de tus anuncios existentes para crear uno nuevo.",
     "tooManyMessages": "Has enviado demasiados mensajes. Inténtalo de nuevo más tarde.",
     "tooManyThreads": "Has iniciado demasiadas conversaciones nuevas en la última hora. Inténtalo de nuevo más tarde.",
     "firstNameTooShort": "Usa al menos 2 caracteres para tu nombre.",
@@ -329,6 +329,7 @@
       "hostTypeTitle": "¿Dónde recibirás restos de comida?",
       "listingTypeLabel": "Tipo de anuncio",
       "hostTypeLabel": "Tipo de anfitrión",
+      "noAvailableOptions": "Has alcanzado el número máximo de anuncios permitidos.",
       "options": {
         "host": {
           "title": "Acepto restos de comida",

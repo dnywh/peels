@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Avatar from "@/components/Avatar";
 import Lozenge from "@/components/Lozenge";
+import { MAX_LISTINGS_PER_USER } from "@/config/listingLimits";
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
 import type { Listing, ListingType } from "@/types/listing";
@@ -20,8 +21,6 @@ type ProfileListingsCopy = {
   listingPrompt: string;
   addAnotherListing: string;
 };
-
-const MAX_LISTINGS = 12; // TODO: Store this value on Supabase and use in the related RLS policy, so they are always in sync
 
 const ListingsList = styled.ul`
   display: flex;
@@ -180,7 +179,7 @@ export default function ProfileListings({
         );
       })}
       {/* Only show the "add a/another listing" link if there are less than the maximum amount of allowed listings OR the user is an admin*/}
-      {listings.length < MAX_LISTINGS || profile?.is_admin ? (
+      {listings.length < MAX_LISTINGS_PER_USER || profile?.is_admin ? (
         <li>
           {listings.length === 0 ? (
             <AddYourFirstListingLink href="/profile/listings/new">

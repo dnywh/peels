@@ -1,0 +1,2 @@
+export const MAX_LISTINGS_PER_USER = 12;
+export const MAX_RESIDENTIAL_LISTINGS_PER_USER = 3;

@@ -98,7 +98,7 @@
     "resetPasswordSuccess": "Your password has been updated. Let’s get back to composting!",
     "savePhotosFailed": "Created listing but couldn’t save photos.",
     "signUpFailed": "Sign up failed",
-    "tooManyListings": "You’ve reached the maximum number of listings allowed. Delete one of your current three to create a new one.",
+    "tooManyListings": "You’ve reached the maximum number of listings allowed. Delete one of your existing listings to create a new one.",
     "tooManyMessages": "You’ve sent too many messages. Please try again later.",
     "tooManyThreads": "You’ve started too many new conversations in the last hour. Please try again later.",
     "firstNameTooShort": "Please use at least 2 characters for your first name.",
@@ -329,6 +329,7 @@
       "hostTypeTitle": "Where will you accept food scraps?",
       "listingTypeLabel": "Listing type",
       "hostTypeLabel": "Host type",
+      "noAvailableOptions": "You’ve reached the maximum number of listings allowed.",
       "options": {
         "host": {
           "title": "I accept food scraps",
