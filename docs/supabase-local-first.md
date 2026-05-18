@@ -178,8 +178,9 @@ Use this when setting up Peels on a new machine.
 7. Run `npm run supabase:env`.
 8. Set `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331` in `.env.local`.
 9. Copy the printed `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`.
-10. Run `npm run dev`.
-11. Sign in with one of the demo accounts above.
+10. Copy the printed `SERVICE_ROLE_KEY` into `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
+11. Run `npm run dev`.
+12. Sign in with one of the demo accounts above.
 
 If the app still shows old environment values, clear the build cache and restart:
 

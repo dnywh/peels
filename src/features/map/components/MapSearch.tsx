@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { keyframes, styled } from "next-yak";
 import type { GeocodingFeature } from "@maptiler/client";
 
-import IconButton from "@/components/IconButton";
 import { theme } from "@/styles/theme.yak";
 import GeocodingSearch from "./GeocodingSearch";
 
@@ -116,23 +115,13 @@ const DialogContent = styled(Dialog.Content)`
   }
 `;
 
-const DialogCloseButton = styled(IconButton)`
-  position: absolute;
-  right: -0.625rem;
-  top: -0.625rem;
-  border-radius: 0.7rem;
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
-`;
-
 export default function MapSearch({
   countryCode,
   onOpenChange,
   onPick,
   open,
 }: MapSearchProps) {
-  const actionsT = useTranslations("Actions");
   const mapT = useTranslations("Map");
-  const closeLabel = actionsT("close");
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -159,14 +148,6 @@ export default function MapSearch({
             proximity="ip"
             variant="palette"
           />
-          <Dialog.Close asChild>
-            <DialogCloseButton
-              icon="close"
-              aria-label={closeLabel}
-              title={closeLabel}
-              type="button"
-            />
-          </Dialog.Close>
         </DialogContent>
       </Dialog.Portal>
     </Dialog.Root>

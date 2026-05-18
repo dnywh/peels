@@ -96,9 +96,9 @@
     "requiredPasswordFields": "Ces deux champs sont obligatoires.",
     "resetPasswordDenied": "Hum, quelque chose ne va pas. Vous n’avez peut-être pas l’autorisation de réinitialiser ce mot de passe ou vous avez tenté de réutiliser un mot de passe récent.",
     "resetPasswordSuccess": "Votre mot de passe a été mis à jour. Retour au compostage !",
-    "savePhotosFailed": "L’annonce a été créée, mais les photos n’ont pas pu être enregistrées.",
+    "savePhotosFailed": "Impossible d’enregistrer les médias de l’annonce. Veuillez réessayer.",
     "signUpFailed": "Échec de l’inscription",
-    "tooManyListings": "Vous avez atteint le nombre maximal d’annonces autorisées. Supprimez-en une parmi vos trois annonces actuelles pour en créer une nouvelle.",
+    "tooManyListings": "Vous avez atteint le nombre maximal d’annonces autorisées. Supprimez l’une de vos annonces existantes pour en créer une nouvelle.",
     "tooManyMessages": "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
     "tooManyThreads": "Vous avez lancé trop de nouvelles conversations au cours de la dernière heure. Veuillez réessayer plus tard.",
     "firstNameTooShort": "Veuillez utiliser au moins 2 caractères pour votre prénom.",
@@ -329,6 +329,7 @@
       "hostTypeTitle": "Où acceptez-vous des restes alimentaires ?",
       "listingTypeLabel": "Type d’annonce",
       "hostTypeLabel": "Type d’hôte",
+      "noAvailableOptions": "Vous avez atteint le nombre maximal d’annonces autorisées.",
       "options": {
         "host": {
           "title": "J’accepte des restes alimentaires",
@@ -500,6 +501,10 @@
   "Map": {
     "drawerTitle": "Détails de l’annonce",
     "drawerDescription": "Détails de l’annonce sélectionnée.",
+    "mapRegionLabel": "Carte du compostage",
+    "controlsLabel": "Commandes de la carte",
+    "zoomControlsLabel": "Commandes de zoom de la carte",
+    "markerLabel": "Repère de carte",
     "emptyTitle": "Rien à l’horizon",
     "emptyBody": "L’annonce que vous cherchez n’existe pas ou a été supprimée. Désolé pour la déception.",
     "searchPlaceholder": "Rechercher une rue ou un lieu",

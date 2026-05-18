@@ -24,7 +24,7 @@ const bucketConfigs = {
   },
   listing_photos: {
     public: true,
-    fileSizeLimit: "50MiB",
+    fileSizeLimit: "25MiB",
     allowedMimeTypes: ["image/jpeg"],
     sourceDir: path.join(repoRoot, "supabase", "storage", "listing_photos"),
   },

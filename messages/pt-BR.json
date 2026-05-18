@@ -96,9 +96,9 @@
     "requiredPasswordFields": "Os dois campos são obrigatórios.",
     "resetPasswordDenied": "Hum, algo não parece certo. Talvez você não tenha permissão para redefinir esta senha ou tenha tentado reutilizar uma senha recente.",
     "resetPasswordSuccess": "A sua senha foi atualizada. Vamos voltar à compostagem!",
-    "savePhotosFailed": "O anúncio foi criado, mas não foi possível salvar as fotos.",
+    "savePhotosFailed": "Não foi possível salvar a mídia do anúncio. Tente novamente.",
     "signUpFailed": "Não foi possível concluir o cadastro",
-    "tooManyListings": "Você atingiu o número máximo de anúncios permitidos. Exclua um dos seus três anúncios atuais para criar um novo.",
+    "tooManyListings": "Você atingiu o número máximo de anúncios permitidos. Exclua um dos seus anúncios existentes para criar um novo.",
     "tooManyMessages": "Você enviou mensagens demais. Tente novamente mais tarde.",
     "tooManyThreads": "Você iniciou conversas demais na última hora. Tente novamente mais tarde.",
     "firstNameTooShort": "Use pelo menos 2 caracteres no seu nome.",
@@ -329,6 +329,7 @@
       "hostTypeTitle": "Onde você aceita restos de comida?",
       "listingTypeLabel": "Tipo de anúncio",
       "hostTypeLabel": "Tipo de anfitrião",
+      "noAvailableOptions": "Você atingiu o número máximo de anúncios permitidos.",
       "options": {
         "host": {
           "title": "Eu aceito restos de comida",
@@ -500,6 +501,10 @@
   "Map": {
     "drawerTitle": "Detalhes do anúncio",
     "drawerDescription": "Detalhes do anúncio selecionado.",
+    "mapRegionLabel": "Mapa de compostagem",
+    "controlsLabel": "Controles do mapa",
+    "zoomControlsLabel": "Controles de zoom do mapa",
+    "markerLabel": "Marcador do mapa",
     "emptyTitle": "Nada por aqui",
     "emptyBody": "O anúncio que você procura não existe ou foi removido. Desculpe a decepção.",
     "searchPlaceholder": "Busque uma rua ou um lugar",

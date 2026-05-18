@@ -9,14 +9,21 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
 const buckets = ["avatars", "listing_avatars", "listing_photos"];
+const databaseListPageSize = 1000;
+const storageListPageSize = 1000;
 const args = new Set(process.argv.slice(2));
 const shouldDeleteOrphans = args.has("--delete-orphans");
 const confirmedOrphanDeletion = args.has("--confirm-delete-orphans");
 const allowRemote = args.has("--allow-remote");
 const beforeArg = process.argv.find((arg) => arg.startsWith("--before="));
+const hasExplicitBefore = Boolean(beforeArg);
 const before = beforeArg
   ? new Date(beforeArg.slice("--before=".length))
   : new Date();
+const pendingUploadProtectionMs = 24 * 60 * 60 * 1000;
+const pendingUploadProtectedAfter = new Date(
+  before.getTime() - pendingUploadProtectionMs
+);
 
 if (Number.isNaN(before.valueOf())) {
   throw new Error(
@@ -81,51 +88,106 @@ function assertSafeTarget(supabaseUrl) {
 }
 
 async function listStorageObjects(supabase, bucket, prefix = "") {
-  const { data, error } = await supabase.storage.from(bucket).list(prefix, {
-    limit: 1000,
-    offset: 0,
-    sortBy: { column: "name", order: "asc" },
-  });
-
-  if (error) {
-    throw new Error(`Failed to list ${bucket}/${prefix}: ${error.message}`);
-  }
-
   const objects = [];
+  let offset = 0;
 
-  for (const item of data ?? []) {
-    const itemPath = prefix ? `${prefix}/${item.name}` : item.name;
+  while (true) {
+    const { data, error } = await supabase.storage.from(bucket).list(prefix, {
+      limit: storageListPageSize,
+      offset,
+      sortBy: { column: "name", order: "asc" },
+    });
 
-    if (item.id === null) {
-      objects.push(...(await listStorageObjects(supabase, bucket, itemPath)));
-      continue;
+    if (error) {
+      throw new Error(`Failed to list ${bucket}/${prefix}: ${error.message}`);
     }
 
-    objects.push({
-      bucket,
-      createdAt: item.created_at ? new Date(item.created_at) : null,
-      path: itemPath,
-      size: item.metadata?.size ?? null,
-      updatedAt: item.updated_at ? new Date(item.updated_at) : null,
-    });
+    for (const item of data ?? []) {
+      const itemPath = prefix ? `${prefix}/${item.name}` : item.name;
+
+      if (item.id === null) {
+        objects.push(...(await listStorageObjects(supabase, bucket, itemPath)));
+        continue;
+      }
+
+      objects.push({
+        bucket,
+        createdAt: item.created_at ? new Date(item.created_at) : null,
+        path: itemPath,
+        size: item.metadata?.size ?? null,
+        updatedAt: item.updated_at ? new Date(item.updated_at) : null,
+      });
+    }
+
+    if (!data || data.length < storageListPageSize) {
+      break;
+    }
+
+    offset += data.length;
   }
 
   return objects;
 }
 
+async function selectAllRows({
+  columns,
+  configure,
+  orderColumn,
+  supabase,
+  table,
+}) {
+  const rows = [];
+  let offset = 0;
+
+  while (true) {
+    let query = supabase.from(table).select(columns);
+
+    if (configure) {
+      query = configure(query);
+    }
+
+    const { data, error } = await query
+      .order(orderColumn, { ascending: true })
+      .range(offset, offset + databaseListPageSize - 1);
+
+    if (error) {
+      throw new Error(`Failed to list ${table}: ${error.message}`);
+    }
+
+    rows.push(...(data ?? []));
+
+    if (!data || data.length < databaseListPageSize) {
+      break;
+    }
+
+    offset += data.length;
+  }
+
+  return rows;
+}
+
 async function getReferencedMedia(supabase) {
-  const { data: profiles, error: profilesError } = await supabase
-    .from("profiles")
-    .select("avatar")
-    .not("avatar", "is", null);
-
-  if (profilesError) throw profilesError;
-
-  const { data: listings, error: listingsError } = await supabase
-    .from("listings")
-    .select("avatar, photos");
-
-  if (listingsError) throw listingsError;
+  const profiles = await selectAllRows({
+    columns: "id, avatar",
+    configure: (query) => query.not("avatar", "is", null),
+    orderColumn: "id",
+    supabase,
+    table: "profiles",
+  });
+  const listings = await selectAllRows({
+    columns: "id, avatar, photos",
+    orderColumn: "id",
+    supabase,
+    table: "listings",
+  });
+  const pendingMediaUploads = await selectAllRows({
+    columns: "id, bucket, path, created_at",
+    configure: (query) =>
+      query.gte("created_at", pendingUploadProtectedAfter.toISOString()),
+    orderColumn: "id",
+    supabase,
+    table: "pending_media_uploads",
+  });
 
   const references = new Set();
 
@@ -145,12 +207,27 @@ async function getReferencedMedia(supabase) {
     }
   }
 
+  for (const upload of pendingMediaUploads ?? []) {
+    if (upload.bucket && upload.path) {
+      references.add(`${upload.bucket}/${upload.path}`);
+    }
+  }
+
   return references;
 }
 
 function isBeforeCutoff(object) {
-  const objectDate = object.createdAt || object.updatedAt;
-  return !objectDate || objectDate <= before;
+  const objectDates = [object.createdAt, object.updatedAt].filter(Boolean);
+
+  if (objectDates.length === 0) {
+    return true;
+  }
+
+  const mostRecentObjectDate = new Date(
+    Math.max(...objectDates.map((date) => date.getTime()))
+  );
+
+  return mostRecentObjectDate <= before;
 }
 
 function isStoragePlaceholder(object) {
@@ -163,10 +240,33 @@ function formatObject(object) {
   return `${object.bucket}/${object.path} (${size}, ${createdAt})`;
 }
 
+async function deletePendingMediaUploadRowsForObject(supabase, object) {
+  if (
+    object.bucket !== "listing_avatars" &&
+    object.bucket !== "listing_photos"
+  ) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("pending_media_uploads")
+    .delete()
+    .eq("bucket", object.bucket)
+    .eq("path", object.path);
+
+  if (error) throw error;
+}
+
 async function main() {
   if (shouldDeleteOrphans && !confirmedOrphanDeletion) {
     throw new Error(
       "Refusing to delete orphans without --confirm-delete-orphans."
+    );
+  }
+
+  if (shouldDeleteOrphans && !hasExplicitBefore) {
+    throw new Error(
+      "Refusing to delete orphans without an explicit --before cutoff."
     );
   }
 
@@ -210,6 +310,8 @@ async function main() {
   }
 
   for (const object of orphanedObjects) {
+    await deletePendingMediaUploadRowsForObject(supabase, object);
+
     const { error } = await supabase.storage
       .from(object.bucket)
       .remove([object.path]);

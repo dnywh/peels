@@ -96,9 +96,9 @@
     "requiredPasswordFields": "Beide Felder sind erforderlich.",
     "resetPasswordDenied": "Hmm, da stimmt etwas nicht. Vielleicht hast du keine Berechtigung, dieses Passwort zurückzusetzen, oder du hast versucht, ein kürzlich verwendetes Passwort erneut zu nutzen.",
     "resetPasswordSuccess": "Dein Passwort wurde aktualisiert. Zurück zum Kompostieren!",
-    "savePhotosFailed": "Der Eintrag wurde erstellt, aber die Fotos konnten nicht gespeichert werden.",
+    "savePhotosFailed": "Die Medien des Eintrags konnten nicht gespeichert werden. Bitte versuche es erneut.",
     "signUpFailed": "Registrierung fehlgeschlagen",
-    "tooManyListings": "Du hast die maximale Anzahl erlaubter Einträge erreicht. Lösche einen deiner aktuellen drei Einträge, um einen neuen zu erstellen.",
+    "tooManyListings": "Du hast die maximale Anzahl erlaubter Einträge erreicht. Lösche einen deiner bestehenden Einträge, um einen neuen zu erstellen.",
     "tooManyMessages": "Du hast zu viele Nachrichten gesendet. Bitte versuche es später erneut.",
     "tooManyThreads": "Du hast in der letzten Stunde zu viele neue Unterhaltungen begonnen. Bitte versuche es später erneut.",
     "firstNameTooShort": "Bitte verwende mindestens 2 Zeichen für deinen Vornamen.",
@@ -329,6 +329,7 @@
       "hostTypeTitle": "Wo nimmst du Essensreste an?",
       "listingTypeLabel": "Eintragstyp",
       "hostTypeLabel": "Gastgebertyp",
+      "noAvailableOptions": "Du hast die maximale Anzahl erlaubter Einträge erreicht.",
       "options": {
         "host": {
           "title": "Ich nehme Essensreste an",
@@ -500,6 +501,10 @@
   "Map": {
     "drawerTitle": "Eintragsdetails",
     "drawerDescription": "Details zum ausgewählten Eintrag.",
+    "mapRegionLabel": "Kompostkarte",
+    "controlsLabel": "Kartensteuerung",
+    "zoomControlsLabel": "Zoomsteuerung der Karte",
+    "markerLabel": "Kartenmarkierung",
     "emptyTitle": "Nichts gefunden",
     "emptyBody": "Der Eintrag, den du suchst, existiert nicht oder wurde entfernt. Tut uns leid.",
     "searchPlaceholder": "Strasse oder Ort suchen",

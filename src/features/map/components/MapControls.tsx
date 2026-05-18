@@ -11,6 +11,7 @@ import {
 import { theme } from "@/styles/theme.yak";
 
 type MapControlClusterProps = {
+  controlsLabel: string;
   locateActive?: boolean;
   locateLabel?: string;
   onLocate?: () => void;
@@ -21,9 +22,11 @@ type MapControlClusterProps = {
   zoomInDisabled?: boolean;
   zoomInLabel: string;
   zoomOutLabel: string;
+  zoomControlsLabel: string;
 };
 
 type MapZoomControlsProps = {
+  controlsLabel: string;
   onZoomIn: () => void;
   onZoomOut: () => void;
   zoomInDisabled?: boolean;
@@ -35,6 +38,7 @@ const controlButtonStyles = css`
   appearance: none;
   border: 0;
   background: ${theme.colors.background.top};
+  box-shadow: var(--map-control-shadow, none);
   color: ${theme.colors.text.ui.emptyState};
   cursor: pointer;
   width: 2rem;
@@ -70,7 +74,17 @@ const controlButtonStyles = css`
   }
 
   &:focus-visible {
-    outline: 3px solid ${theme.colors.focus.outline};
+    outline: none;
+    box-shadow:
+      inset 0 0 0 2px ${theme.colors.focus.outline},
+      var(--map-control-shadow, 0 0 0 0 transparent);
+  }
+
+  @media (forced-colors: active) {
+    &:focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
   }
 
   &:disabled {
@@ -109,12 +123,12 @@ const ControlAnchor = styled.div<{ $gap?: boolean }>`
 
 const ControlButton = styled.button<{ $active?: boolean }>`
   ${controlButtonStyles}
+  --map-control-shadow:
+    0 0 0 2px ${theme.colors.border.elevated},
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
   color: ${({ $active }) =>
     $active ? theme.colors.text.primary : theme.colors.text.ui.emptyState};
   border-radius: 0.7rem;
-  box-shadow:
-    0 0 0 2px ${theme.colors.border.elevated},
-    0 0.25rem 0.75rem rgba(0, 0, 0, 0.13);
 `;
 
 const ZoomGroup = styled.div`
@@ -139,6 +153,7 @@ const ZoomButton = styled.button`
 `;
 
 export function MapZoomControls({
+  controlsLabel,
   onZoomIn,
   onZoomOut,
   zoomInDisabled = false,
@@ -148,6 +163,7 @@ export function MapZoomControls({
   return (
     <ControlAnchor>
       <ZoomControlGroup
+        controlsLabel={controlsLabel}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         zoomInDisabled={zoomInDisabled}
@@ -159,6 +175,7 @@ export function MapZoomControls({
 }
 
 function ZoomControlGroup({
+  controlsLabel,
   onZoomIn,
   onZoomOut,
   zoomInDisabled = false,
@@ -166,7 +183,7 @@ function ZoomControlGroup({
   zoomOutLabel,
 }: MapZoomControlsProps) {
   return (
-    <ZoomGroup>
+    <ZoomGroup role="group" aria-label={controlsLabel}>
       <ZoomButton
         type="button"
         aria-label={zoomInLabel}
@@ -191,6 +208,7 @@ function ZoomControlGroup({
 }
 
 export default function MapControls({
+  controlsLabel,
   locateActive = false,
   locateLabel,
   onLocate,
@@ -200,10 +218,11 @@ export default function MapControls({
   searchLabel,
   zoomInDisabled = false,
   zoomInLabel,
+  zoomControlsLabel,
   zoomOutLabel,
 }: MapControlClusterProps) {
   return (
-    <ControlAnchor $gap>
+    <ControlAnchor $gap role="group" aria-label={controlsLabel}>
       {onSearch && searchLabel ? (
         <ControlButton
           type="button"
@@ -228,6 +247,7 @@ export default function MapControls({
         </ControlButton>
       ) : null}
       <ZoomControlGroup
+        controlsLabel={zoomControlsLabel}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         zoomInDisabled={zoomInDisabled}

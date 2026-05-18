@@ -8,6 +8,7 @@ import {
 } from "@/lib/formValidation";
 import { getSafeHttpReferrer } from "@/utils/referrer";
 import { createClient } from "@/utils/supabase/server";
+import { createServiceRoleClient } from "@/utils/supabase/service";
 import { getBaseUrl } from "@/utils/url";
 import {
   encodedRedirect,
@@ -71,9 +72,230 @@ type SetDisplayLocaleActionData = {
   locale: Locale;
 };
 
-function getListingMutationData(listingData: ListingDraftInput) {
-  const { id: _id, ...mutationData } = listingData;
-  return mutationData;
+const MAX_LISTING_PHOTOS = 5;
+
+function getListingMutationData(
+  listingData: ListingDraftInput,
+  ownerId: string
+) {
+  const {
+    avatar: _avatar,
+    id: _id,
+    owner_id: _ownerId,
+    photos: _photos,
+    ...mutationData
+  } = listingData;
+  return {
+    ...mutationData,
+    owner_id: ownerId,
+  };
+}
+
+function normaliseListingAvatar(avatar?: string | null) {
+  return avatar?.trim() || null;
+}
+
+function hasValidListingPhotos(photos?: string[] | null) {
+  const submittedPhotos = photos ?? [];
+  const normalisedPhotos = submittedPhotos.map((photo) => photo.trim());
+
+  return (
+    submittedPhotos.length <= MAX_LISTING_PHOTOS &&
+    normalisedPhotos.every(Boolean) &&
+    new Set(normalisedPhotos).size === submittedPhotos.length
+  );
+}
+
+function haveSameMembers(left: string[] = [], right: string[] = []) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  const sortedLeft = [...left].sort();
+  const sortedRight = [...right].sort();
+  return sortedLeft.every((value, index) => value === sortedRight[index]);
+}
+
+async function hasPendingMediaUploads({
+  bucket,
+  kind,
+  paths,
+  supabase,
+  userId,
+}: {
+  bucket: "listing_avatars" | "listing_photos";
+  kind: "listing_avatar" | "listing_photo";
+  paths: string[];
+  supabase: ReturnType<typeof createServiceRoleClient>;
+  userId: string;
+}) {
+  const uniquePaths = [...new Set(paths.filter(Boolean))];
+
+  if (uniquePaths.length === 0) {
+    return true;
+  }
+
+  const { data, error } = await supabase
+    .from("pending_media_uploads")
+    .select("path")
+    .eq("bucket", bucket)
+    .eq("kind", kind)
+    .eq("user_id", userId)
+    .in("path", uniquePaths);
+
+  if (error) throw error;
+
+  const pendingPaths = new Set((data ?? []).map((row) => row.path));
+  return uniquePaths.every((path) => pendingPaths.has(path));
+}
+
+async function validatePendingMediaUploads({
+  avatar,
+  photos,
+  userId,
+}: {
+  avatar?: string | null;
+  photos?: string[] | null;
+  userId: string;
+}) {
+  const supabase = createServiceRoleClient();
+
+  const avatarIsValid = await hasPendingMediaUploads({
+    bucket: "listing_avatars",
+    kind: "listing_avatar",
+    paths: avatar ? [avatar] : [],
+    supabase,
+    userId,
+  });
+
+  if (!avatarIsValid) {
+    return false;
+  }
+
+  return hasPendingMediaUploads({
+    bucket: "listing_photos",
+    kind: "listing_photo",
+    paths: photos ?? [],
+    supabase,
+    userId,
+  });
+}
+
+async function validatePersistedMediaUploads({
+  avatar,
+  listingId,
+  photos,
+  userId,
+}: {
+  avatar?: string | null;
+  listingId: number;
+  photos?: string[] | null;
+  userId: string;
+}) {
+  const supabase = createServiceRoleClient();
+  const { data: listing, error } = await supabase
+    .from("listings")
+    .select("avatar, photos")
+    .eq("id", listingId)
+    .eq("owner_id", userId)
+    .maybeSingle<{ avatar: string | null; photos: string[] | null }>();
+
+  if (error) throw error;
+
+  if (!listing) {
+    return false;
+  }
+
+  const submittedAvatar = normaliseListingAvatar(avatar);
+  const persistedAvatar = normaliseListingAvatar(listing.avatar);
+
+  if (submittedAvatar !== persistedAvatar) {
+    return false;
+  }
+
+  return haveSameMembers(photos ?? [], listing.photos ?? []);
+}
+
+async function attachPendingListingMedia({
+  avatar,
+  listingId,
+  photos,
+  userId,
+}: {
+  avatar?: string | null;
+  listingId: number;
+  photos?: string[] | null;
+  userId: string;
+}) {
+  const supabase = createServiceRoleClient();
+  const { data, error } = await supabase
+    .rpc("attach_pending_listing_media", {
+      p_avatar: normaliseListingAvatar(avatar),
+      p_listing_id: listingId,
+      p_owner_id: userId,
+      p_photos: photos ?? [],
+    })
+    .maybeSingle<{ id: number }>();
+
+  if (error) throw error;
+  if (!data) throw new Error("Listing media could not be attached");
+}
+
+async function updateExistingListingWithMediaReferences({
+  listingData,
+  userId,
+}: {
+  listingData: ListingDraftInput & { id: number };
+  userId: string;
+}) {
+  const supabase = createServiceRoleClient();
+  const { data, error } = await supabase
+    .rpc("update_listing_with_media_references", {
+      p_avatar: normaliseListingAvatar(listingData.avatar),
+      p_accepted_items: listingData.accepted_items,
+      p_area_name: listingData.area_name,
+      p_country_code: listingData.country_code,
+      p_description: listingData.description,
+      p_is_stub: listingData.is_stub ?? null,
+      p_links: listingData.links,
+      p_listing_id: listingData.id,
+      p_location: listingData.location,
+      p_name: listingData.name ?? null,
+      p_owner_id: userId,
+      p_photos: listingData.photos ?? [],
+      p_rejected_items: listingData.rejected_items,
+      p_type: listingData.type,
+      p_visibility: listingData.visibility,
+    })
+    .maybeSingle<{
+      id: number;
+      slug: string | null;
+      type: ListingType | null;
+    }>();
+
+  if (error) throw error;
+  if (!data) throw new Error("Listing changed during save");
+
+  return data;
+}
+
+async function deleteCreatedListing({
+  listingId,
+  userId,
+}: {
+  listingId: number;
+  userId: string;
+}) {
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase
+    .from("listings")
+    .delete()
+    .eq("id", listingId)
+    .eq("owner_id", userId);
+
+  if (error) {
+    console.error("Error rolling back created listing:", error);
+  }
 }
 
 function getActionFormData<T>(
@@ -824,6 +1046,9 @@ export const createOrUpdateListingAction = async (
 ): Promise<InlineActionResult<ListingSubmitResult>> => {
   const t = await getTranslations("Errors");
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   try {
     console.log("Server action: Creating/updating listing");
@@ -846,48 +1071,88 @@ export const createOrUpdateListingAction = async (
       listingData.name = nameValidation.value;
     }
 
-    // Insert/update the listing
-    const listingMutation = listingData.id
-      ? supabase
-          .from("listings")
-          .update(getListingMutationData(listingData))
-          .eq("id", listingData.id)
-          .select()
-          .single()
-      : supabase
-          .from("listings")
-          .insert(getListingMutationData(listingData))
-          .select()
-          .single();
-
-    const { data, error } = await listingMutation;
-
-    if (error) {
-      console.error("Supabase error:", error);
-
-      // Return specific error messages based on error codes
-      if (error.code === "42501") {
-        return actionError(t("tooManyListings"));
-      }
-
-      if (error.code === "23505") {
-        return actionError(t("duplicateListing"));
-      }
-
-      return actionError(t("genericLater"));
+    if (!user?.id) {
+      return actionError(t("generic"));
     }
 
-    // If this was a new listing with pending photos, update them
-    if (!listingData.id && listingData.photos?.length > 0) {
-      const { error: updateError } = await supabase
-        .from("listings")
-        .update({ photos: listingData.photos })
-        .eq("slug", data.slug);
+    if (!hasValidListingPhotos(listingData.photos)) {
+      return actionError(t("savePhotosFailed"));
+    }
 
-      if (updateError) {
-        console.error("Error updating photos:", updateError);
+    if (!listingData.id) {
+      const pendingMediaIsValid = await validatePendingMediaUploads({
+        avatar: listingData.avatar,
+        photos: listingData.photos,
+        userId: user.id,
+      });
+
+      if (!pendingMediaIsValid) {
         return actionError(t("savePhotosFailed"));
       }
+    } else {
+      const persistedMediaIsValid = await validatePersistedMediaUploads({
+        avatar: listingData.avatar,
+        listingId: listingData.id,
+        photos: listingData.photos,
+        userId: user.id,
+      });
+
+      if (!persistedMediaIsValid) {
+        return actionError(t("savePhotosFailed"));
+      }
+    }
+
+    let data: { id: number; slug: string | null; type: ListingType | null };
+
+    if (listingData.id) {
+      try {
+        data = await updateExistingListingWithMediaReferences({
+          listingData: listingData as ListingDraftInput & { id: number },
+          userId: user.id,
+        });
+      } catch (error) {
+        console.error("Error updating listing:", error);
+        return actionError(t("savePhotosFailed"));
+      }
+    } else {
+      const { data: createdListing, error } = await supabase
+        .from("listings")
+        .insert(getListingMutationData(listingData, user.id))
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Supabase error:", error);
+
+        // Return specific error messages based on error codes
+        if (error.code === "42501") {
+          return actionError(t("tooManyListings"));
+        }
+
+        if (error.code === "23505") {
+          return actionError(t("duplicateListing"));
+        }
+
+        return actionError(t("genericLater"));
+      }
+
+      try {
+        await attachPendingListingMedia({
+          avatar: listingData.avatar,
+          listingId: createdListing.id,
+          photos: listingData.photos,
+          userId: user.id,
+        });
+      } catch (error) {
+        console.error("Error updating media references:", error);
+        await deleteCreatedListing({
+          listingId: createdListing.id,
+          userId: user.id,
+        });
+        return actionError(t("savePhotosFailed"));
+      }
+
+      data = createdListing;
     }
 
     // Revalidate relevant paths

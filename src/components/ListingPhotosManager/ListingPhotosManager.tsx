@@ -4,6 +4,7 @@ import { theme } from "@/styles/theme.yak";
 import { useRef, useState } from "react";
 import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
 import { normaliseImageFileForUpload } from "@/utils/media/client";
+import { getMediaUploadConfig } from "@/utils/media/policy";
 import Button from "@/components/Button";
 import RemoteImage from "@/components/RemoteImage";
 import Dropzone from "react-dropzone";
@@ -75,8 +76,8 @@ const DropOverlay = styled.aside`
 `;
 
 const MAX_PHOTOS = 5;
-const MAX_MB = 10;
-const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
+const MAX_FILE_SIZE = getMediaUploadConfig("listing_photo").maxBytes;
+const MAX_MB = Math.round(MAX_FILE_SIZE / 1024 / 1024);
 
 const RemoteImageComponent = RemoteImage as React.ComponentType<any>;
 const uploadListingPhotoAction = uploadListingPhoto as (
@@ -148,18 +149,13 @@ function ListingPhotosManager({
         files.map((file) => normaliseImageFileForUpload(file))
       );
 
-      const newFilenames: string[] = [];
-
       for (const file of normalisedFiles) {
-        newFilenames.push(
-          await uploadListingPhotoAction(
-            file,
-            !isNewListing ? listingSlug : undefined
-          )
+        const filename = await uploadListingPhotoAction(
+          file,
+          !isNewListing ? listingSlug : undefined
         );
+        updatePhotos((currentPhotos) => [...currentPhotos, filename]);
       }
-
-      updatePhotos((currentPhotos) => [...currentPhotos, ...newFilenames]);
     } catch (error) {
       // console.error("Upload error details:", error);
 

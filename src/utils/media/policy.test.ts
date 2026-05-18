@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  MAX_MEDIA_UPLOAD_REQUEST_BYTES,
   getCanonicalContentType,
   getCanonicalExtension,
   getMediaInputFormat,
@@ -9,6 +10,15 @@ import {
 } from "./policy.ts";
 
 test("media upload policy keeps photos as JPEG and avatars as JPEG or PNG", () => {
+  assert.equal(
+    getMediaUploadConfig("listing_photo").maxBytes,
+    25 * 1024 * 1024
+  );
+  assert.equal(
+    getMediaUploadConfig("profile_avatar").maxBytes,
+    10 * 1024 * 1024
+  );
+  assert.equal(MAX_MEDIA_UPLOAD_REQUEST_BYTES, 26 * 1024 * 1024);
   assert.deepEqual(getMediaUploadConfig("listing_photo").outputFormats, [
     "jpeg",
   ]);

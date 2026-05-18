@@ -337,6 +337,44 @@ values
     false,
     false,
     '{}'::integer[]
+  ),
+  (
+    1007,
+    '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
+    null,
+    'A hidden residential listing used to exercise residential listing limits locally.',
+    extensions.st_setsrid(extensions.st_makepoint(151.1790, -33.8990), 4326)::extensions.geography,
+    array['Fruit scraps', 'Coffee grounds'],
+    array['Meat', 'Dairy'],
+    array[]::text[],
+    array[]::text[],
+    false,
+    'residential',
+    null,
+    'AU',
+    'Newtown',
+    false,
+    false,
+    '{}'::integer[]
+  ),
+  (
+    1008,
+    '9a0c62fc-bf50-4f45-ba6c-5b9051c2712a',
+    null,
+    'A second hidden residential listing used to exercise residential listing limits locally.',
+    extensions.st_setsrid(extensions.st_makepoint(151.1792, -33.8992), 4326)::extensions.geography,
+    array['Fruit scraps', 'Tea leaves'],
+    array['Meat', 'Dairy'],
+    array[]::text[],
+    array[]::text[],
+    false,
+    'residential',
+    null,
+    'AU',
+    'Newtown',
+    false,
+    false,
+    '{}'::integer[]
   )
 on conflict (id) do update
 set
@@ -365,10 +403,12 @@ set slug = case id
   when 1004 then 'demo-tempe-share-shed'
   when 1005 then 'demo-stanmore-bakery'
   when 1006 then 'demo-camperdown-community-garden'
+  when 1007 then 'demo-hidden-newtown-worm-farm-one'
+  when 1008 then 'demo-hidden-newtown-worm-farm-two'
 end
-where id in (1001, 1002, 1003, 1004, 1005, 1006);
+where id in (1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008);
 
-select setval('public.listings_id_seq', 1006, true);
+select setval('public.listings_id_seq', 1008, true);
 
 insert into public.chat_threads (
   id,

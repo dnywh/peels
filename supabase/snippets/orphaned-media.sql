@@ -26,6 +26,14 @@ with referenced_media as (
     unnest(listings.photos) as name
   from public.listings
   where listings.photos is not null
+
+  union all
+
+  select
+    pending_media_uploads.bucket as bucket_id,
+    pending_media_uploads.path as name
+  from public.pending_media_uploads
+  where pending_media_uploads.created_at >= now() - interval '1 day'
 )
 select
   storage.objects.bucket_id,

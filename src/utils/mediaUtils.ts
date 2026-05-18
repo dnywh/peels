@@ -1,11 +1,6 @@
-import { createClient } from "@/utils/supabase/client";
 import { getStoragePublicUrl } from "@/utils/storage";
 
 export type AvatarBucket = "avatars" | "listing_avatars";
-
-type ListingPhotoRecord = {
-  photos: string[] | null;
-};
 
 type MediaUploadResponse = {
   filename?: string;
@@ -56,6 +51,37 @@ async function uploadMedia({
   return data.filename;
 }
 
+async function deleteMedia({
+  entityId,
+  kind,
+  path,
+}: {
+  entityId?: string | null;
+  kind: "profile_avatar" | "listing_avatar" | "listing_photo";
+  path: string;
+}) {
+  const response = await fetch("/api/media/upload", {
+    body: JSON.stringify({
+      entityId,
+      kind,
+      path,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "DELETE",
+  });
+  const data = (await response.json().catch(() => ({}))) as MediaUploadResponse;
+
+  if (!response.ok) {
+    const error = new Error(
+      data.error || "Media deletion failed"
+    ) as MediaUploadError;
+    error.statusCode = String(response.status);
+    throw error;
+  }
+}
+
 export async function uploadAvatar(
   file: File,
   bucket: AvatarBucket,
@@ -75,27 +101,11 @@ export async function deleteAvatar(
   bucket: AvatarBucket,
   id: string
 ) {
-  const supabase = createClient();
-  const { error } = await supabase.storage.from(bucket).remove([filePath]);
-  if (error) throw error;
-
-  if (bucket === "avatars") {
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ avatar: null })
-      .eq("id", id);
-
-    if (updateError) throw updateError;
-  }
-
-  if (bucket === "listing_avatars" && id) {
-    const { error: updateError } = await supabase
-      .from("listings")
-      .update({ avatar: null })
-      .eq("slug", id);
-
-    if (updateError) throw updateError;
-  }
+  return deleteMedia({
+    entityId: id,
+    kind: bucket === "avatars" ? "profile_avatar" : "listing_avatar",
+    path: filePath,
+  });
 }
 
 export function getListingPhotoUrl(filename: string, bucket: string) {
@@ -121,40 +131,12 @@ export async function deleteListingPhoto(
   filePath: string,
   listingSlug: string | null = null
 ) {
-  const supabase = createClient();
-
   try {
-    const { error: storageError } = await supabase.storage
-      .from("listing_photos")
-      .remove([filePath]);
-
-    if (storageError) throw storageError;
-
-    if (listingSlug) {
-      const { data: listing, error: fetchError } = await supabase
-        .from("listings")
-        .select("photos")
-        .eq("slug", listingSlug)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      const updatedPhotos = (
-        (listing as ListingPhotoRecord | null)?.photos ?? []
-      ).filter((photo) => photo !== filePath);
-
-      const { error: updateError } = await supabase
-        .from("listings")
-        .update({ photos: updatedPhotos })
-        .eq("slug", listingSlug);
-
-      if (updateError) throw updateError;
-
-      console.log("Photo deleted and database updated:", filePath);
-      return updatedPhotos;
-    }
-
-    console.log("Photo deleted from storage:", filePath);
+    await deleteMedia({
+      entityId: listingSlug,
+      kind: "listing_photo",
+      path: filePath,
+    });
     return null;
   } catch (error) {
     console.error("Error deleting photo:", error);
