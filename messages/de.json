@@ -96,7 +96,7 @@
     "requiredPasswordFields": "Beide Felder sind erforderlich.",
     "resetPasswordDenied": "Hmm, da stimmt etwas nicht. Vielleicht hast du keine Berechtigung, dieses Passwort zurückzusetzen, oder du hast versucht, ein kürzlich verwendetes Passwort erneut zu nutzen.",
     "resetPasswordSuccess": "Dein Passwort wurde aktualisiert. Zurück zum Kompostieren!",
-    "savePhotosFailed": "Der Eintrag wurde erstellt, aber die Fotos konnten nicht gespeichert werden.",
+    "savePhotosFailed": "Die Medien des Eintrags konnten nicht gespeichert werden. Bitte versuche es erneut.",
     "signUpFailed": "Registrierung fehlgeschlagen",
     "tooManyListings": "Du hast die maximale Anzahl erlaubter Einträge erreicht. Lösche einen deiner bestehenden Einträge, um einen neuen zu erstellen.",
     "tooManyMessages": "Du hast zu viele Nachrichten gesendet. Bitte versuche es später erneut.",

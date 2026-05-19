@@ -96,7 +96,7 @@
     "requiredPasswordFields": "Ambos campos son obligatorios.",
     "resetPasswordDenied": "Mmm, algo no está bien. Puede que no tengas permiso para restablecer esta contraseña o que hayas intentado reutilizar una contraseña reciente.",
     "resetPasswordSuccess": "Tu contraseña ha sido actualizada. ¡Volvamos al compostaje!",
-    "savePhotosFailed": "Se creó el anuncio, pero no se pudieron guardar las fotos.",
+    "savePhotosFailed": "No se pudieron guardar los medios del anuncio. Inténtalo de nuevo.",
     "signUpFailed": "No se pudo completar el registro",
     "tooManyListings": "Has alcanzado el número máximo de anuncios permitidos. Elimina uno de tus anuncios existentes para crear uno nuevo.",
     "tooManyMessages": "Has enviado demasiados mensajes. Inténtalo de nuevo más tarde.",

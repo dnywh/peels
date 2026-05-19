@@ -174,6 +174,101 @@ Do not use local Supabase Docker hostnames such as `kong:8000` in migrations tha
 
 Do not use the public anon key as the protection boundary for this webhook. The function holds a service-role client so the caller must be authenticated by a non-public secret.
 
+## Storage media cleanup
+
+User-uploaded media lives in public Storage buckets, but the canonical
+references live in `public.profiles.avatar`, `public.listings.avatar`, and
+`public.listings.photos`.
+
+### Media write boundary
+
+Browser clients must not write Storage objects or media reference columns
+directly. Media writes go through `src/app/api/media/upload/route.ts`, which
+authenticates the user, optimises the image, writes the Storage object with the
+service-role client, and then updates the matching profile/listing reference
+after ownership checks.
+
+For new listings, uploads happen before the listing row exists. Those temporary
+uploads are tracked in `public.pending_media_uploads`, keyed by user, bucket,
+kind, and path. The table is server-owned: authenticated clients cannot insert,
+update, or delete rows directly. The upload route creates pending rows through a
+service-only RPC that caps active pending listing photos to the listing photo
+limit and caps active pending listing avatars to a small per-user limit. When
+the listing is saved, the server action validates that every submitted media
+path belongs to that user's pending upload set before attaching it to the new
+listing. The final pending-row claim and listing media attachment run through
+one service-only RPC transaction, so pending rows are not consumed unless the
+listing references are committed.
+
+Direct authenticated writes to `public.profiles.avatar`,
+`public.listings.avatar`, and `public.listings.photos` are revoked. This is
+important because delete routes remove files with the service-role Storage
+client; the app must never treat a client-forged media path as proof of
+ownership.
+
+Listing photo append/remove and existing-listing reorder operations use RPCs so
+array changes are atomic. Those RPCs are service-role only and are called after
+the app has verified the signed-in user owns the listing. Reorders only commit
+when the current media set still matches the submitted media set, so concurrent
+uploads or deletes are not overwritten by a stale save.
+Existing listing form saves that include media ordering go through the same
+database boundary, so listing field edits and media reorders commit together or
+fail together.
+
+Listing and account deletion should clean up media through the Edge Functions
+before the database rows are deleted:
+
+- `delete-listing` removes that listing's avatar and photos, then deletes the
+  listing row.
+- `delete-account` removes the profile avatar plus all owned listing media, then
+  deletes the auth user.
+
+Do not add a Postgres Cron job that deletes from `storage.objects`. Supabase
+Storage object deletion must go through the Storage API; deleting rows from
+`storage.objects` only removes metadata and can leave object bytes behind.
+
+Pending uploads are treated as active for one day. After that, abandoned
+new-listing uploads can be reported by the orphan cleanup tooling and removed
+through the Storage API.
+
+For historical orphans, first inspect the read-only helper:
+
+```sql
+\i supabase/snippets/orphaned-media.sql
+```
+
+Then run the Storage API cleanup script in dry-run mode:
+
+```sh
+npm run media:cleanup-orphans
+```
+
+For hosted environments, pass the project URL and service-role key explicitly
+and include `--allow-remote`. Deletion requires both `--delete-orphans` and
+`--confirm-delete-orphans`, plus an explicit `--before` cutoff; this keeps the
+default path inspect-only and protects in-flight uploads whose database
+references have not been written yet.
+
+Example production dry run:
+
+```sh
+SUPABASE_URL="https://YOUR_PROJECT.supabase.co" \
+SUPABASE_SERVICE_ROLE_KEY="YOUR_SERVICE_ROLE_KEY" \
+npm run media:cleanup-orphans -- --allow-remote --before=2026-05-18
+```
+
+Example production deletion after reviewing the dry-run output:
+
+```sh
+SUPABASE_URL="https://YOUR_PROJECT.supabase.co" \
+SUPABASE_SERVICE_ROLE_KEY="YOUR_SERVICE_ROLE_KEY" \
+npm run media:cleanup-orphans -- --allow-remote --before=2026-05-18 --delete-orphans --confirm-delete-orphans
+```
+
+Storage folder placeholders such as `.emptyFolderPlaceholder` are Supabase
+folder bookkeeping objects, not user media. The helper and cleanup script ignore
+them.
+
 ## Change rules
 
 - Add forward migrations only; do not edit historical migrations once they may have been applied to a preview or production branch.

@@ -90,17 +90,17 @@ file_size_limit = "25MiB"
 [storage.buckets.avatars]
 public = true
 file_size_limit = "10MiB"
-allowed_mime_types = ["application/octet-stream", "image/png", "image/jpeg", "image/webp", "image/heic", "image/heif", "image/avif"]
+allowed_mime_types = ["image/png", "image/jpeg"]
 
 [storage.buckets.listing_avatars]
 public = true
 file_size_limit = "10MiB"
-allowed_mime_types = ["application/octet-stream", "image/png", "image/jpeg", "image/webp", "image/heic", "image/heif", "image/avif"]
+allowed_mime_types = ["image/png", "image/jpeg"]
 
 [storage.buckets.listing_photos]
 public = true
 file_size_limit = "25MiB"
-allowed_mime_types = ["application/octet-stream", "image/png", "image/jpeg", "image/webp", "image/heic", "image/heif", "image/avif"]
+allowed_mime_types = ["image/jpeg"]
 
 [storage.buckets.static]
 public = true

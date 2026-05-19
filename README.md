@@ -82,6 +82,7 @@ For local-first Supabase development:
 3. Run `npm run supabase:env`
 4. Make sure `.env.local` contains the local URL `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
 5. Copy the local `ANON_KEY` value into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`
+6. Copy the local `SERVICE_ROLE_KEY` value into `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
 
 The repo defaults `NEXT_PUBLIC_SUPABASE_URL` to `http://127.0.0.1:54331` so local development does not need to point at the hosted Peels project. If you already had a `.env.local` from hosted development, update that value manually because copying `.env.example` later may not overwrite your existing file.
 Peels intentionally uses the `54331`-`54334` local port range so it can run alongside other Supabase projects that still use the CLI defaults.
@@ -108,6 +109,7 @@ For how auth/session forwarding, public-page performance, footer locale state, u
    - Run `npm run supabase:env`
    - Confirm `.env.local` uses `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
    - Copy the local `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - Copy the local `SERVICE_ROLE_KEY` into `SUPABASE_SERVICE_ROLE_KEY`
 
 3. Start development:
 
@@ -272,6 +274,7 @@ Before `npm run test:e2e` or `npm run test:e2e:prod`, make sure you are using th
 - Run `npm run supabase:env`
 - Make sure `.env.local` uses `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
 - Copy the local `ANON_KEY` into `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Copy the local `SERVICE_ROLE_KEY` into `SUPABASE_SERVICE_ROLE_KEY`
 
 If your `.env.local` was previously set up for the hosted Peels project, update it before running Playwright. A working local test setup looks like:
 
@@ -279,6 +282,7 @@ If your `.env.local` was previously set up for the hosted Peels project, update 
 NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<paste the ANON_KEY from npm run supabase:env>
+SUPABASE_SERVICE_ROLE_KEY=<paste the SERVICE_ROLE_KEY from npm run supabase:env>
 ```
 
 Then run either:

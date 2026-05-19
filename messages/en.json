@@ -96,7 +96,7 @@
     "requiredPasswordFields": "Both those fields are required.",
     "resetPasswordDenied": "Hmm, something’s not right. You might not have permission to reset this password, or you tried reusing a recent password.",
     "resetPasswordSuccess": "Your password has been updated. Let’s get back to composting!",
-    "savePhotosFailed": "Created listing but couldn’t save photos.",
+    "savePhotosFailed": "Couldn’t save listing media. Please try again.",
     "signUpFailed": "Sign up failed",
     "tooManyListings": "You’ve reached the maximum number of listings allowed. Delete one of your existing listings to create a new one.",
     "tooManyMessages": "You’ve sent too many messages. Please try again later.",
