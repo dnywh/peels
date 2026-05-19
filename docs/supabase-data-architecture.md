@@ -85,6 +85,8 @@ Stores chat messages. Access is participant-scoped through RLS, with trigger che
 
 Stores internal growth tracking records. It is not part of the client Data API and should be read or written only by trusted server-side or database code.
 
+It deliberately has RLS enabled with no policies: client roles are denied, and trusted server-side code uses explicit service-role grants.
+
 ## Read-model tables
 
 ### `public.public_listings`
@@ -191,14 +193,16 @@ after ownership checks.
 For new listings, uploads happen before the listing row exists. Those temporary
 uploads are tracked in `public.pending_media_uploads`, keyed by user, bucket,
 kind, and path. The table is server-owned: authenticated clients cannot insert,
-update, or delete rows directly. The upload route creates pending rows through a
-service-only RPC that caps active pending listing photos to the listing photo
-limit and caps active pending listing avatars to a small per-user limit. When
-the listing is saved, the server action validates that every submitted media
-path belongs to that user's pending upload set before attaching it to the new
-listing. The final pending-row claim and listing media attachment run through
-one service-only RPC transaction, so pending rows are not consumed unless the
-listing references are committed.
+update, or delete rows directly. It deliberately has RLS enabled with no
+policies, which keeps normal client roles default-denied while the service role
+uses explicit grants for trusted server-side maintenance. The upload route
+creates pending rows through a service-only RPC that caps active pending listing
+photos to the listing photo limit and caps active pending listing avatars to a
+small per-user limit. When the listing is saved, the server action validates
+that every submitted media path belongs to that user's pending upload set before
+attaching it to the new listing. The final pending-row claim and listing media
+attachment run through one service-only RPC transaction, so pending rows are not
+consumed unless the listing references are committed.
 
 Direct authenticated writes to `public.profiles.avatar`,
 `public.listings.avatar`, and `public.listings.photos` are revoked. This is
