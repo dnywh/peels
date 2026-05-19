@@ -42,6 +42,7 @@ const imgSectionWithMargin = {
 };
 
 const imgContainer = {
+  backgroundColor: assignments.colors.background.top,
   boxShadow: `0 0 0 2px ${assignments.colors.border.elevated} inset`, // Matches gallery, Apple Mail only
   borderRadius: 9, // 1px more than img
   border: `1px solid ${assignments.colors.border.elevated}`,
@@ -49,7 +50,6 @@ const imgContainer = {
 
 const img = {
   margin: 0,
-  mixBlendMode: "multiply", // So boxShadow on parent is visible in email clients that support it
   width: "100%",
   borderRadius: 8, // Should ideally match theme.corners.thumbnail (6px),
   objectFit: "cover",
