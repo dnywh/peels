@@ -7,10 +7,7 @@ import {
   resolveNewsletterLocale,
 } from "../_shared/newsletter.ts";
 import { isMissingPreferredLocaleColumn } from "../_shared/postgrest.ts";
-// Temporarily required for rendering a text version
-// The `react` email sending method does not yet supports text version
-// https://github.com/resend/resend-node/pull/469
-import { render } from "npm:@react-email/render";
+import { renderEmailHtml, renderEmailText } from "../_shared/email-html.ts";
 
 // Look up required API keys from Supabase secrets
 const newsletterEmailAddress = Deno.env.get("NEWSLETTER_EMAIL_ADDRESS");
@@ -128,6 +125,8 @@ const handler = async (_request: Request): Promise<Response> => {
           recipientName: profile.first_name || "there",
           externalAudience: false,
         });
+        const html = await renderEmailHtml(email);
+        const text = await renderEmailText(email);
 
         // Add delay to respect rate limit (at most 2 per second)
         await new Promise((resolve) => setTimeout(resolve, 750));
@@ -144,10 +143,8 @@ const handler = async (_request: Request): Promise<Response> => {
           from: `Danny from Peels <${newsletterEmailAddress}>`,
           to: [recipientEmail],
           subject: getNewsletterEmailSubject(locale),
-          react: email,
-          text: await render(email, {
-            plainText: true,
-          }),
+          html,
+          text,
           headers: {
             "List-Unsubscribe": "<https://www.peels.app/profile>",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click", // Required for deliverability, even if irrelevant

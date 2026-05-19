@@ -12,6 +12,7 @@ import { InviteEmail } from "../_templates/invite-email.tsx";
 import { ReauthenticationEmail } from "../_templates/reauthentication-email.tsx";
 import { renderAsync } from "npm:@react-email/components@0.0.22";
 import { getAuthEmailCopy, resolveEmailLocale } from "../_shared/i18n.ts";
+import { encodeEmailHtmlCharacterReferences } from "../_shared/email-character-references.ts";
 
 declare const EdgeRuntime: {
   waitUntil: (promise: Promise<unknown>) => void;
@@ -75,6 +76,9 @@ const json = (status: number, body: Record<string, unknown>) =>
 
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
+
+const renderAuthEmailHtml = async (email: React.ReactElement) =>
+  encodeEmailHtmlCharacterReferences(await renderAsync(email));
 
 const toErrorShape = (error: unknown) => {
   if (error && typeof error === "object") {
@@ -174,7 +178,7 @@ const prepareEmail = async (
     return {
       to: userEmail,
       subject: copy.subject,
-      html: await renderAsync(
+      html: await renderAuthEmailHtml(
         React.createElement(ResetPasswordEmail, {
           locale,
           supabase_url: supabaseUrl,
@@ -202,7 +206,7 @@ const prepareEmail = async (
     return {
       to: userEmail,
       subject: copy.subject,
-      html: await renderAsync(
+      html: await renderAuthEmailHtml(
         React.createElement(SignUpEmail, {
           email: userEmail,
           firstName,
@@ -240,7 +244,7 @@ const prepareEmail = async (
     return {
       to: userNewEmail,
       subject: copy.subject,
-      html: await renderAsync(
+      html: await renderAuthEmailHtml(
         React.createElement(EmailChangeEmail, {
           email: userEmail,
           newEmail: userNewEmail,
@@ -272,7 +276,7 @@ const prepareEmail = async (
     return {
       to: userEmail,
       subject: copy.subject,
-      html: await renderAsync(
+      html: await renderAuthEmailHtml(
         React.createElement(MagicLinkEmail, {
           locale,
           supabase_url: supabaseUrl,
@@ -300,7 +304,7 @@ const prepareEmail = async (
     return {
       to: userEmail,
       subject: copy.subject,
-      html: await renderAsync(
+      html: await renderAuthEmailHtml(
         React.createElement(InviteEmail, {
           locale,
           supabase_url: supabaseUrl,
@@ -328,7 +332,7 @@ const prepareEmail = async (
     return {
       to: userEmail,
       subject: copy.subject,
-      html: await renderAsync(
+      html: await renderAuthEmailHtml(
         React.createElement(ReauthenticationEmail, {
           locale,
           token,
@@ -350,7 +354,7 @@ const prepareEmail = async (
   return {
     to: userEmail,
     subject: copy.genericSubject,
-    html: await renderAsync(
+    html: await renderAuthEmailHtml(
       React.createElement(ReauthenticationEmail, {
         locale,
         token,

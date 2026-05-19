@@ -2,10 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend";
 import { NewFeatureEmail } from "../_templates/new-feature-email.tsx";
-// Temporarily required for rendering a text version
-// The `react` email sending method does not yet supports text version
-// https://github.com/resend/resend-node/pull/469
-import { render } from "npm:@react-email/render";
+import { renderEmailHtml, renderEmailText } from "../_shared/email-html.ts";
 
 // Look up required env variables and API keys from Supabase secrets
 const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
@@ -78,22 +75,17 @@ const handler = async (_request: Request): Promise<Response> => {
         //   `TEST MODE: Would email ${userEmail}, but sending to ${testEmail} instead`,
         // );
 
+        const email = NewFeatureEmail({
+          recipientName: profile.first_name || "there",
+        });
+
         const { data, error } = await resend.emails.send({
           from: `Peels <${generalEmailAddress}>`,
           // to: [testEmail], // Send to yourself instead of userEmail
           to: [userEmail],
           subject: "An update to Peels",
-          react: NewFeatureEmail({
-            recipientName: profile.first_name || "there",
-          }),
-          text: await render(
-            NewFeatureEmail({
-              recipientName: profile.first_name || "there",
-            }),
-            {
-              plainText: true,
-            }
-          ),
+          html: await renderEmailHtml(email),
+          text: await renderEmailText(email),
           headers: {
             "List-Unsubscribe": "<https://www.peels.app/profile>",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click", // Required for deliverability, even if irrelevant
