@@ -4,8 +4,7 @@ import { Resend } from "npm:resend";
 import { NewChatMessageEmail } from "../_templates/new-chat-message-email.tsx";
 import { getChatEmailCopy, resolveEmailLocale } from "../_shared/i18n.ts";
 import { isMissingPreferredLocaleColumn } from "../_shared/postgrest.ts";
-// Temporarily required, see below PR comment
-import { render } from "npm:@react-email/render";
+import { renderEmailHtml, renderEmailText } from "../_shared/email-html.ts";
 
 // Look up required env variables and API keys from Supabase secrets
 const generalEmailAddress = Deno.env.get("GENERAL_EMAIL_ADDRESS");
@@ -223,50 +222,30 @@ const handler = async (_request: Request): Promise<Response> => {
       preferredLocale: recipientProfile?.preferred_locale,
     });
     const copy = getChatEmailCopy(locale);
+    const email = NewChatMessageEmail({
+      locale,
+      senderName,
+      recipientName,
+      // messageContent: record.content,
+      threadId: threadData.id,
+      listingSlug,
+      listingAreaName,
+      recipientRole,
+      listingName,
+      listingType,
+      ownerHasMultipleNonResidentialListings,
+      avatarMajorUrl: avatarMajorUrl || undefined,
+      avatarMajorBucket: avatarMajorBucket || undefined,
+      avatarMinorUrl: avatarMinorUrl || undefined,
+    });
 
     // Prepare and send Resend email via React Email
     const { data, error } = await resend.emails.send({
       from: `Peels <${generalEmailAddress}>`,
       to: [recipientEmail],
       subject: copy.subject.replace("{senderName}", senderName),
-      react: NewChatMessageEmail({
-        locale,
-        senderName,
-        recipientName,
-        // messageContent: record.content,
-        threadId: threadData.id,
-        listingSlug,
-        listingAreaName,
-        recipientRole,
-        listingName,
-        listingType,
-        ownerHasMultipleNonResidentialListings,
-        avatarMajorUrl: avatarMajorUrl || undefined,
-        avatarMajorBucket: avatarMajorBucket || undefined,
-        avatarMinorUrl: avatarMinorUrl || undefined,
-      }),
-      // Plain text version
-      // Can be removed once this PR is merged
-      // https://github.com/resend/resend-node/pull/469#issue-2871291956
-      text: await render(
-        NewChatMessageEmail({
-          locale,
-          senderName,
-          recipientName,
-          // messageContent: record.content,
-          threadId: threadData.id,
-          listingSlug,
-          listingAreaName,
-          recipientRole,
-          listingName,
-          listingType,
-          ownerHasMultipleNonResidentialListings,
-          avatarMajorUrl: avatarMajorUrl || undefined,
-          avatarMajorBucket: avatarMajorBucket || undefined,
-          avatarMinorUrl: avatarMinorUrl || undefined,
-        }),
-        { plainText: true }
-      ),
+      html: await renderEmailHtml(email),
+      text: await renderEmailText(email),
     });
 
     if (error) {

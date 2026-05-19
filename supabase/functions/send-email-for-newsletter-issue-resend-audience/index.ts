@@ -5,10 +5,7 @@ import {
   getNewsletterAudienceConfigs,
   getNewsletterEmailSubject,
 } from "../_shared/newsletter.ts";
-// Temporarily required for rendering a text version
-// The `react` email sending method does not yet supports text version
-// https://github.com/resend/resend-node/pull/469
-import { render } from "npm:@react-email/render";
+import { renderEmailHtml, renderEmailText } from "../_shared/email-html.ts";
 
 const newsletterEmailAddress = Deno.env.get("NEWSLETTER_EMAIL_ADDRESS");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -39,14 +36,16 @@ const handler = async (_request: Request): Promise<Response> => {
         recipientName: "there",
         externalAudience: true,
       });
+      const html = await renderEmailHtml(reactEmail);
+      const text = await renderEmailText(textEmail);
 
       const { data: broadcast, error: broadcastError } =
         await resend.broadcasts.create({
           audienceId,
           from: `Danny from Peels <${newsletterEmailAddress}>`,
           subject: getNewsletterEmailSubject(locale),
-          react: reactEmail,
-          text: await render(textEmail, { plainText: true }),
+          html,
+          text,
           headers: {
             "List-Unsubscribe": "{{{RESEND_UNSUBSCRIBE_URL}}}",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
