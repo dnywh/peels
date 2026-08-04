@@ -40,15 +40,19 @@ export default async function ConfirmEmailAuthPage({
     requestedNextPath,
     getDefaultNextPathByType(authType)
   );
+  const t = await getTranslations();
 
   if (!tokenHash || !isSupportedEmailAuthType(authType)) {
-    redirect(getInvalidLinkRedirectPath(nextPath));
+    const errorMessage =
+      authType === "recovery"
+        ? t("Errors.passwordResetLinkInvalid")
+        : t("Errors.authLinkInvalid");
+    redirect(getInvalidLinkRedirectPath({ authType, errorMessage, nextPath }));
   }
 
   const locale = getLocaleFromSearchParams(params);
   const email = firstValue(params.email);
   const confirmationCopy = confirmationCopyByType[authType];
-  const t = await getTranslations();
 
   return (
     <>

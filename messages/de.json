@@ -76,6 +76,8 @@
     "working": "Wird verarbeitet..."
   },
   "Errors": {
+    "authLinkInvalid": "Dieser Anmeldelink ist ungültig oder abgelaufen. Fordere bitte einen neuen an.",
+    "passwordResetLinkInvalid": "Dieser Link zum Zurücksetzen des Passworts ist ungültig oder abgelaufen. Fordere unten einen neuen an.",
     "alreadyYourEmail": "Das ist bereits deine E-Mail-Adresse.",
     "emptyListingName": "{type, select, business {Der Name des Unternehmens darf nicht leer sein.} community {Der Name der Community darf nicht leer sein.} other {Der Name des Eintrags darf nicht leer sein.}}",
     "emptyName": "Der Name darf nicht leer sein.",

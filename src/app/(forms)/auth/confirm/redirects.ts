@@ -1,10 +1,20 @@
-const invalidLinkMessage =
-  "Hmm, that sign-in link is invalid or has expired. Please request a new one.";
-
-export function getInvalidLinkRedirectPath(nextPath: string) {
+export function getInvalidLinkRedirectPath({
+  authType,
+  errorMessage,
+  nextPath,
+}: {
+  authType: string | null;
+  errorMessage: string;
+  nextPath: string;
+}) {
   const searchParams = new URLSearchParams({
-    error: invalidLinkMessage,
-    redirect_to: nextPath,
+    error: errorMessage,
   });
+
+  if (authType === "recovery") {
+    return `/forgot-password?${searchParams}`;
+  }
+
+  searchParams.set("redirect_to", nextPath);
   return `/sign-in?${searchParams}`;
 }

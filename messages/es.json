@@ -76,6 +76,8 @@
     "working": "Procesando..."
   },
   "Errors": {
+    "authLinkInvalid": "Este enlace de inicio de sesión no es válido o ha caducado. Solicita uno nuevo.",
+    "passwordResetLinkInvalid": "Este enlace para restablecer la contraseña no es válido o ha caducado. Solicita uno nuevo abajo.",
     "alreadyYourEmail": "Esta ya es tu dirección de correo electrónico.",
     "emptyListingName": "{type, select, business {No puedes dejar vacío el nombre del negocio.} community {No puedes dejar vacío el nombre de la comunidad.} other {No puedes dejar vacío el nombre del anuncio.}}",
     "emptyName": "No puedes dejar el nombre vacío.",

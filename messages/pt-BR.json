@@ -76,6 +76,8 @@
     "working": "Processando..."
   },
   "Errors": {
+    "authLinkInvalid": "Este link de acesso é inválido ou expirou. Solicite um novo.",
+    "passwordResetLinkInvalid": "Este link de redefinição de senha é inválido ou expirou. Solicite um novo abaixo.",
     "alreadyYourEmail": "Este já é o seu endereço de e-mail.",
     "emptyListingName": "{type, select, business {O nome do negócio não pode ficar vazio.} community {O nome da comunidade não pode ficar vazio.} other {O nome do anúncio não pode ficar vazio.}}",
     "emptyName": "O nome não pode ficar vazio.",

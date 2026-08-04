@@ -25,7 +25,7 @@ The hosted Send Email Auth Hook builds an app-owned URL containing `token_hash`,
 3. The page renders action-specific copy and a Continue form. The supported actions are sign-up confirmation, invitation acceptance, magic-link sign-in, password recovery, and email change.
 4. Only the form's explicit POST server action calls `supabase.auth.verifyOtp()`.
 5. A successful verification writes the Supabase session cookies, applies the requested locale, adds the email-change success state when relevant, and redirects to the normalised next path.
-6. Invalid, malformed, expired, or already-consumed tokens redirect to sign-in with the existing invalid-link message and safe `redirect_to` value.
+6. Invalid, malformed, expired, or already-consumed recovery tokens redirect to `/forgot-password` with a contextual error so the user can immediately request another link. Other auth types redirect to sign-in with the existing invalid-link message and safe `redirect_to` value.
 
 Form fields are untrusted input. The POST action must repeat auth-type validation and redirect-path normalisation rather than relying on the preceding GET. Keep this behaviour shared through `src/utils/authRedirects.ts`, and keep invalid-link redirect construction shared by the confirmation page and action.
 

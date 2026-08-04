@@ -139,10 +139,11 @@ test("consumed recovery tokens show the invalid-link error", async ({
   );
   await page.getByTestId("auth-confirm-submit").click();
 
-  await expect(page).toHaveURL(/\/sign-in\?.*error=/);
-  await expect(page.getByTestId("sign-in-form")).toContainText(
-    /invalid or has expired/i
+  await expect(page).toHaveURL(/\/forgot-password\?.*error=/);
+  await expect(page.locator('aside[role="alert"]')).toContainText(
+    "This password reset link is invalid or has expired. Request a new one below."
   );
+  await expect(page.locator('input[name="email"]')).toBeVisible();
 });
 
 test("malformed confirmation links show the invalid-link error", async ({
@@ -150,10 +151,11 @@ test("malformed confirmation links show the invalid-link error", async ({
 }) => {
   await page.goto("/auth/confirm?type=recovery&next=/profile/reset-password");
 
-  await expect(page).toHaveURL(/\/sign-in\?.*error=/);
-  await expect(page.getByTestId("sign-in-form")).toContainText(
-    /invalid or has expired/i
+  await expect(page).toHaveURL(/\/forgot-password\?.*error=/);
+  await expect(page.locator('aside[role="alert"]')).toContainText(
+    "This password reset link is invalid or has expired. Request a new one below."
   );
+  await expect(page.locator('input[name="email"]')).toBeVisible();
 });
 
 test("sign-in normalises unsafe redirect_to values", async ({ page }) => {

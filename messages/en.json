@@ -76,6 +76,8 @@
     "working": "Working..."
   },
   "Errors": {
+    "authLinkInvalid": "Hmm, that sign-in link is invalid or has expired. Please request a new one.",
+    "passwordResetLinkInvalid": "This password reset link is invalid or has expired. Request a new one below.",
     "alreadyYourEmail": "This is already your email address.",
     "emptyListingName": "{type, select, business {You can't have an empty business name.} community {You can't have an empty community name.} other {You can't have an empty listing name.}}",
     "emptyName": "You can’t have an empty name.",

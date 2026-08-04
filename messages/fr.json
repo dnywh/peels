@@ -76,6 +76,8 @@
     "working": "Traitement..."
   },
   "Errors": {
+    "authLinkInvalid": "Ce lien de connexion est invalide ou a expiré. Veuillez en demander un nouveau.",
+    "passwordResetLinkInvalid": "Ce lien de réinitialisation du mot de passe est invalide ou a expiré. Demandez-en un nouveau ci-dessous.",
     "alreadyYourEmail": "C’est déjà votre adresse e-mail.",
     "emptyListingName": "{type, select, business {Le nom du commerce ne peut pas être vide.} community {Le nom de la communauté ne peut pas être vide.} other {Le nom de l’annonce ne peut pas être vide.}}",
     "emptyName": "Le nom ne peut pas être vide.",
