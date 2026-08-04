@@ -10,7 +10,11 @@ import {
   getLocaleFromSearchParams,
   normaliseNextPath,
 } from "@/utils/authRedirects";
-import { createClient } from "@/utils/supabase/server";
+import {
+  authStateHeaderName,
+  authStateSignedIn,
+} from "@/utils/supabase/authState";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { retryEmailAuthAction } from "./actions";
@@ -60,10 +64,8 @@ export default async function RetryEmailAuthPage({
   }
 
   if (type === "email_change") {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const isSignedIn =
+      (await headers()).get(authStateHeaderName) === authStateSignedIn;
     const profilePath = `/profile?${new URLSearchParams({
       error: error ?? t("Errors.emailChangeLinkInvalid"),
     })}`;
@@ -77,14 +79,16 @@ export default async function RetryEmailAuthPage({
         <Form as="container">
           <Button
             href={
-              user
+              isSignedIn
                 ? profilePath
                 : `/sign-in?${new URLSearchParams({ redirect_to: profilePath })}`
             }
             variant="primary"
             width="full"
           >
-            {user ? t("Auth.retry.emailChange.action") : t("Actions.signIn")}
+            {isSignedIn
+              ? t("Auth.retry.emailChange.action")
+              : t("Actions.signIn")}
           </Button>
         </Form>
       </>

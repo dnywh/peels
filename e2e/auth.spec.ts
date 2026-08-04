@@ -190,6 +190,23 @@ test("other malformed auth links show their recovery action", async ({
   await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
 });
 
+test("signed-in email-change failures return to account settings", async ({
+  page,
+}) => {
+  await signIn(page, { email: HOST_EMAIL });
+  await page.goto("/auth/confirm?type=email_change&next=/profile&locale=en");
+
+  await expect(page).toHaveURL(/\/auth\/retry\?.*type=email_change/);
+  const accountSettingsLink = page.getByRole("link", {
+    name: "Go to account settings",
+  });
+  await expect(accountSettingsLink).toBeVisible();
+  await expect(accountSettingsLink).toHaveAttribute(
+    "href",
+    /\/profile\?error=/
+  );
+});
+
 test("an expired magic link can be replaced", async ({ page }) => {
   await page.goto("/auth/retry?type=magiclink&next=/map&locale=en");
   await page.locator('input[name="email"]').fill(HOST_EMAIL);
