@@ -49,6 +49,7 @@ test("partners page shows partner and council mention proof", async ({
   await expect(
     page.getByRole("link", { name: "How to Save Our Planet" })
   ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Repurpose" })).toHaveCount(0);
   await expect(
     page.getByRole("link", { name: "Responsible Cafes", exact: true })
   ).toHaveCount(0);
@@ -73,11 +74,15 @@ test("homepage and footer link to partners", async ({ page }) => {
   await expect(page.getByText("The Guardian")).toBeHidden();
   await expect(page.getByText("Merri-bek City Council")).toBeVisible();
   await expect(page.getByText("Northern Beaches Council")).toBeVisible();
-  await expect(page.getByText("Western Australian Government")).toBeHidden();
-  await expect(page.getByText("North Sydney Council")).toBeHidden();
-  await expect(
-    page.getByRole("link", { name: "See all partners and mentions" })
-  ).toHaveAttribute("href", "/partners");
+  await expect(page.getByText("Western Australian Government")).toBeVisible();
+  await expect(page.getByText("North Sydney Council")).toBeVisible();
+  const partnerLogoLinks = page.getByRole("link", {
+    name: "See all partners and mentions",
+  });
+  await expect(partnerLogoLinks).toHaveCount(2);
+  for (const link of await partnerLogoLinks.all()) {
+    await expect(link).toHaveAttribute("href", "/partners");
+  }
   await expect(
     page
       .locator("#partners-section")

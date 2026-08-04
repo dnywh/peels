@@ -10,9 +10,7 @@ import {
 } from "@/utils/authRedirects";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-
-const INVALID_LINK_MESSAGE =
-  "Hmm, that sign-in link is invalid or has expired. Please request a new one.";
+import { getInvalidLinkRedirectPath } from "./redirects";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
 
@@ -22,11 +20,7 @@ const debugAuth = (event: string, data?: Record<string, unknown>) => {
 };
 
 const redirectToSignIn = (nextPath: string): never => {
-  const searchParams = new URLSearchParams({
-    error: INVALID_LINK_MESSAGE,
-    redirect_to: nextPath,
-  });
-  redirect(`/sign-in?${searchParams}`);
+  redirect(getInvalidLinkRedirectPath(nextPath));
 };
 
 export async function confirmEmailAuthAction(formData: FormData) {

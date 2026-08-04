@@ -10,9 +10,7 @@ import {
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { confirmEmailAuthAction } from "./actions";
-
-const INVALID_LINK_MESSAGE =
-  "Hmm, that sign-in link is invalid or has expired. Please request a new one.";
+import { getInvalidLinkRedirectPath } from "./redirects";
 
 type ConfirmSearchParams = Record<string, string | string[] | undefined>;
 
@@ -35,11 +33,7 @@ export default async function ConfirmEmailAuthPage({
   );
 
   if (!tokenHash || !isSupportedEmailAuthType(authType)) {
-    const signInParams = new URLSearchParams({
-      error: INVALID_LINK_MESSAGE,
-      redirect_to: nextPath,
-    });
-    redirect(`/sign-in?${signInParams}`);
+    redirect(getInvalidLinkRedirectPath(nextPath));
   }
 
   const locale = getLocaleFromSearchParams(params);
