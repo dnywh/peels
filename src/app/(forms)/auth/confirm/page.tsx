@@ -17,6 +17,15 @@ type ConfirmSearchParams = Record<string, string | string[] | undefined>;
 const firstValue = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
 
+const confirmationCopyByType = {
+  email: "signUp",
+  email_change: "emailChange",
+  invite: "invite",
+  magiclink: "signIn",
+  recovery: "recovery",
+  signup: "signUp",
+} as const;
+
 export default async function ConfirmEmailAuthPage({
   searchParams,
 }: {
@@ -38,13 +47,14 @@ export default async function ConfirmEmailAuthPage({
 
   const locale = getLocaleFromSearchParams(params);
   const email = firstValue(params.email);
+  const confirmationCopy = confirmationCopyByType[authType];
   const t = await getTranslations();
 
   return (
     <>
       <FormHeader button="none">
-        <h1>{t("Auth.confirm.title")}</h1>
-        <p>{t("Auth.confirm.body")}</p>
+        <h1>{t(`Auth.confirm.${confirmationCopy}.title`)}</h1>
+        <p>{t(`Auth.confirm.${confirmationCopy}.body`)}</p>
       </FormHeader>
       <Form action={confirmEmailAuthAction}>
         <input type="hidden" name="token_hash" value={tokenHash} />

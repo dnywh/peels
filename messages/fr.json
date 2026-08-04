@@ -294,9 +294,27 @@
   },
   "Auth": {
     "confirm": {
-      "title": "Continuer vers Peels",
-      "body": "Sélectionnez Continuer pour confirmer ce lien d’e-mail en toute sécurité.",
-      "pendingAction": "Confirmation..."
+      "emailChange": {
+        "title": "Confirmez votre nouvelle adresse e-mail",
+        "body": "Appuyez sur « Continuer » pour mettre à jour votre adresse e-mail."
+      },
+      "invite": {
+        "title": "Acceptez votre invitation",
+        "body": "Appuyez sur « Continuer » pour rejoindre Peels."
+      },
+      "recovery": {
+        "title": "Réinitialisez votre mot de passe",
+        "body": "Appuyez sur « Continuer » pour choisir un nouveau mot de passe."
+      },
+      "signIn": {
+        "title": "Connectez-vous à Peels",
+        "body": "Appuyez sur « Continuer » pour vous connecter."
+      },
+      "signUp": {
+        "title": "Confirmez votre adresse e-mail",
+        "body": "Appuyez sur « Continuer » pour terminer la création de votre compte."
+      },
+      "pendingAction": "Continuation..."
     },
     "complete": {
       "title": "Connexion en cours...",

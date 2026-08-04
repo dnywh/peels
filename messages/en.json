@@ -294,9 +294,27 @@
   },
   "Auth": {
     "confirm": {
-      "title": "Continue to Peels",
-      "body": "Select Continue to securely confirm this email link.",
-      "pendingAction": "Confirming..."
+      "emailChange": {
+        "title": "Confirm your new email",
+        "body": "Press ‘Continue’ to update your email address."
+      },
+      "invite": {
+        "title": "Accept your invitation",
+        "body": "Press ‘Continue’ to join Peels."
+      },
+      "recovery": {
+        "title": "Reset your password",
+        "body": "Press ‘Continue’ to choose a new password."
+      },
+      "signIn": {
+        "title": "Sign in to Peels",
+        "body": "Press ‘Continue’ to sign in."
+      },
+      "signUp": {
+        "title": "Confirm your email",
+        "body": "Press ‘Continue’ to finish creating your account."
+      },
+      "pendingAction": "Continuing..."
     },
     "complete": {
       "title": "Signing you in...",

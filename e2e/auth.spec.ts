@@ -67,7 +67,10 @@ test("email scanner requests do not consume a recovery token", async ({
 
   await page.goto(confirmPath);
   await expect(
-    page.getByRole("heading", { name: "Continue to Peels" })
+    page.getByRole("heading", { name: "Reset your password" })
+  ).toBeVisible();
+  await expect(
+    page.getByText("Press ‘Continue’ to choose a new password.")
   ).toBeVisible();
   await page.getByTestId("auth-confirm-submit").click();
 
@@ -75,6 +78,49 @@ test("email scanner requests do not consume a recovery token", async ({
   await expect(
     page.getByRole("heading", { name: "Reset password" })
   ).toBeVisible();
+});
+
+test("confirmation copy matches the email auth action", async ({ page }) => {
+  const confirmationCases = [
+    {
+      type: "signup",
+      heading: "Confirm your email",
+      body: "Press ‘Continue’ to finish creating your account.",
+    },
+    {
+      type: "invite",
+      heading: "Accept your invitation",
+      body: "Press ‘Continue’ to join Peels.",
+    },
+    {
+      type: "magiclink",
+      heading: "Sign in to Peels",
+      body: "Press ‘Continue’ to sign in.",
+    },
+    {
+      type: "recovery",
+      heading: "Reset your password",
+      body: "Press ‘Continue’ to choose a new password.",
+    },
+    {
+      type: "email_change",
+      heading: "Confirm your new email",
+      body: "Press ‘Continue’ to update your email address.",
+    },
+  ] as const;
+
+  for (const confirmationCase of confirmationCases) {
+    await page.goto(
+      `/auth/confirm?token_hash=unused-copy-test-token&type=${confirmationCase.type}`
+    );
+    await expect(
+      page.getByRole("heading", { name: confirmationCase.heading })
+    ).toBeVisible();
+    await expect(page.getByText(confirmationCase.body)).toBeVisible();
+    await expect(page.getByTestId("auth-confirm-submit")).toHaveText(
+      "Continue"
+    );
+  }
 });
 
 test("consumed recovery tokens show the invalid-link error", async ({
