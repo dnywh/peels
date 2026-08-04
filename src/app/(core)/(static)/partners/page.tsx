@@ -100,13 +100,15 @@ export default async function PartnersPage() {
         </HeaderBlock>
         <MentionCard>
           <MentionGrid aria-label={t("communityMediaMentions.listLabel")}>
-            {communityMediaMentions.map((mention) => (
-              <li key={mention.name}>
-                <StrongLink href={mention.href} target="_blank">
-                  {mention.name}
-                </StrongLink>
-              </li>
-            ))}
+            {communityMediaMentions
+              .filter((mention) => mention.shown)
+              .map((mention) => (
+                <li key={mention.name}>
+                  <StrongLink href={mention.href} target="_blank">
+                    {mention.name}
+                  </StrongLink>
+                </li>
+              ))}
           </MentionGrid>
         </MentionCard>
       </StaticPageSection>

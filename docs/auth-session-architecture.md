@@ -12,6 +12,16 @@ Peels keeps public pages fast by avoiding a server-side Supabase auth refresh un
 
 The forwarded auth state is a rendering hint. On public routes that do not need server auth, it intentionally says signed-out on the initial server render even if the browser has a valid session cookie. Client-side auth slots can then resolve the real state after hydration.
 
+## Email authentication links
+
+Peels supports several Supabase authentication link formats because hosted custom emails, local Mailpit emails, dashboard-generated links, and older links do not all deliver credentials in the same way.
+
+- Custom hosted emails link to `/auth/confirm` with a token hash in the query string. GET and HEAD requests only render an inert confirmation page. The token is consumed by `verifyOtp()` only after the user selects Continue and submits the form. This prevents email security scanners and link previews from consuming one-time tokens.
+- PKCE and legacy links containing a query-string code use `/auth/callback`, which exchanges the code for a session.
+- Links containing access and refresh tokens in the URL fragment use `/auth/complete`, `AuthHashCompletion`, and `POST /auth/session`. The browser must handle these because URL fragments are not sent to the server.
+
+Do not move token verification back into a GET handler. A GET or HEAD request may be issued automatically by Outlook Safe Links, another email scanner, a link preview, or browser prefetching. Keep redirect-path normalisation, supported auth-type validation, locale handling, and dual-domain support shared through `src/utils/authRedirects.ts`.
+
 ## Locale Behaviour
 
 Public pages should use the locale cookie as the fast path. Signed-in profile-backed locale lookup belongs on authenticated/private flows where the server has already paid the auth cost.
@@ -63,7 +73,9 @@ Selected chat routes need auth, thread lists, selected-thread data, and metadata
 For auth/session, homepage, and chat changes, prefer production-style e2e checks:
 
 ```bash
-npm run test:e2e:prod -- e2e/home.spec.ts e2e/chat.spec.ts e2e/i18n.spec.ts
+npm run test:e2e:prod -- e2e/auth.spec.ts e2e/home.spec.ts e2e/chat.spec.ts e2e/i18n.spec.ts
 ```
+
+The auth suite generates real recovery tokens through the local Supabase Admin API. Its scanner-safety test sends HEAD and GET requests to `/auth/confirm` before selecting Continue, proving that automatic link inspection does not consume the token. Start the local Supabase stack before running it.
 
 Add `e2e/seo.spec.ts` when metadata, public routes, or crawlable content are affected.

@@ -39,6 +39,21 @@ export function createAdminClient(): SupabaseClient {
   });
 }
 
+export async function generateRecoveryToken(email: string) {
+  const admin = createAdminClient();
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: {
+      redirectTo:
+        "http://127.0.0.1:3000/auth/complete?next=/profile/reset-password",
+    },
+  });
+
+  if (error) throw error;
+  return data.properties.hashed_token;
+}
+
 type MockGeocodingFeatureOptions = {
   id?: string;
   text?: string;

@@ -293,6 +293,11 @@
     }
   },
   "Auth": {
+    "confirm": {
+      "title": "Continuer vers Peels",
+      "body": "Sélectionnez Continuer pour confirmer ce lien d’e-mail en toute sécurité.",
+      "pendingAction": "Confirmation..."
+    },
     "complete": {
       "title": "Connexion en cours...",
       "body": "Nous confirmons votre lien de manière sécurisée. Vous serez redirigé dans un instant."

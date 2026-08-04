@@ -293,6 +293,11 @@
     }
   },
   "Auth": {
+    "confirm": {
+      "title": "Continue to Peels",
+      "body": "Select Continue to securely confirm this email link.",
+      "pendingAction": "Confirming..."
+    },
     "complete": {
       "title": "Signing you in...",
       "body": "We’re securely confirming your link. You’ll be redirected in a moment."
