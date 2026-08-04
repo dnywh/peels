@@ -77,7 +77,11 @@
   },
   "Errors": {
     "authLinkInvalid": "Ce lien de connexion est invalide ou a expiré. Veuillez en demander un nouveau.",
+    "emailChangeLinkInvalid": "Ce lien de changement d’adresse e-mail est invalide ou a expiré. Recommencez depuis les paramètres de votre compte.",
+    "inviteLinkInvalid": "Ce lien d’invitation est invalide ou a expiré. Demandez à la personne qui vous a invité d’en envoyer un nouveau.",
+    "magicLinkInvalid": "Ce lien de connexion est invalide ou a expiré. Demandez-en un nouveau ci-dessous.",
     "passwordResetLinkInvalid": "Ce lien de réinitialisation du mot de passe est invalide ou a expiré. Demandez-en un nouveau ci-dessous.",
+    "signupLinkInvalid": "Ce lien de confirmation est invalide ou a expiré. Demandez-en un nouveau ci-dessous.",
     "alreadyYourEmail": "C’est déjà votre adresse e-mail.",
     "emptyListingName": "{type, select, business {Le nom du commerce ne peut pas être vide.} community {Le nom de la communauté ne peut pas être vide.} other {Le nom de l’annonce ne peut pas être vide.}}",
     "emptyName": "Le nom ne peut pas être vide.",
@@ -317,6 +321,26 @@
         "body": "Appuyez sur « Continuer » pour terminer la création de votre compte."
       },
       "pendingAction": "Continuation..."
+    },
+    "retry": {
+      "emailChange": {
+        "title": "Confirmez à nouveau votre adresse e-mail",
+        "body": "Recommencez le changement d’adresse e-mail depuis les paramètres de votre compte.",
+        "action": "Accéder aux paramètres du compte"
+      },
+      "invite": {
+        "title": "Invitation expirée",
+        "body": "Demandez à la personne qui vous a invité d’envoyer une nouvelle invitation."
+      },
+      "magiclink": {
+        "title": "Demandez un nouveau lien de connexion",
+        "body": "Saisissez votre adresse e-mail et nous vous enverrons un nouveau lien."
+      },
+      "signup": {
+        "title": "Demandez un nouveau lien de confirmation",
+        "body": "Saisissez l’adresse e-mail utilisée lors de votre inscription et nous vous enverrons un nouveau lien."
+      },
+      "emailSent": "E-mail envoyé. Consultez votre boîte de réception pour trouver le nouveau lien."
     },
     "complete": {
       "title": "Connexion en cours...",

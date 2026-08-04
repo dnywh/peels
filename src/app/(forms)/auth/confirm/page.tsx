@@ -41,16 +41,29 @@ export default async function ConfirmEmailAuthPage({
     getDefaultNextPathByType(authType)
   );
   const t = await getTranslations();
+  const locale = getLocaleFromSearchParams(params);
 
   if (!tokenHash || !isSupportedEmailAuthType(authType)) {
+    const errorMessageByType: Record<string, string> = {
+      recovery: t("Errors.passwordResetLinkInvalid"),
+      signup: t("Errors.signupLinkInvalid"),
+      email: t("Errors.magicLinkInvalid"),
+      magiclink: t("Errors.magicLinkInvalid"),
+      invite: t("Errors.inviteLinkInvalid"),
+      email_change: t("Errors.emailChangeLinkInvalid"),
+    };
     const errorMessage =
-      authType === "recovery"
-        ? t("Errors.passwordResetLinkInvalid")
-        : t("Errors.authLinkInvalid");
-    redirect(getInvalidLinkRedirectPath({ authType, errorMessage, nextPath }));
+      (authType && errorMessageByType[authType]) ?? t("Errors.authLinkInvalid");
+    redirect(
+      getInvalidLinkRedirectPath({
+        authType,
+        errorMessage,
+        locale,
+        nextPath,
+      })
+    );
   }
 
-  const locale = getLocaleFromSearchParams(params);
   const email = firstValue(params.email);
   const confirmationCopy = confirmationCopyByType[authType];
 

@@ -77,7 +77,11 @@
   },
   "Errors": {
     "authLinkInvalid": "Hmm, that sign-in link is invalid or has expired. Please request a new one.",
+    "emailChangeLinkInvalid": "This email-change link is invalid or has expired. Restart the change from your account settings.",
+    "inviteLinkInvalid": "This invitation link is invalid or has expired. Ask the person who invited you to send a new one.",
+    "magicLinkInvalid": "This sign-in link is invalid or has expired. Request a new one below.",
     "passwordResetLinkInvalid": "This password reset link is invalid or has expired. Request a new one below.",
+    "signupLinkInvalid": "This confirmation link is invalid or has expired. Request a new one below.",
     "alreadyYourEmail": "This is already your email address.",
     "emptyListingName": "{type, select, business {You can't have an empty business name.} community {You can't have an empty community name.} other {You can't have an empty listing name.}}",
     "emptyName": "You can’t have an empty name.",
@@ -317,6 +321,26 @@
         "body": "Press ‘Continue’ to finish creating your account."
       },
       "pendingAction": "Continuing..."
+    },
+    "retry": {
+      "emailChange": {
+        "title": "Confirm your email again",
+        "body": "Restart the email change from your account settings.",
+        "action": "Go to account settings"
+      },
+      "invite": {
+        "title": "Invitation expired",
+        "body": "Ask the person who invited you to send a new invitation."
+      },
+      "magiclink": {
+        "title": "Request a new sign-in link",
+        "body": "Enter your email and we’ll send you a new link."
+      },
+      "signup": {
+        "title": "Request a new confirmation link",
+        "body": "Enter the email you signed up with and we’ll send you a new link."
+      },
+      "emailSent": "Email sent. Check your inbox for the new link."
     },
     "complete": {
       "title": "Signing you in...",

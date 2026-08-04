@@ -77,7 +77,11 @@
   },
   "Errors": {
     "authLinkInvalid": "Este enlace de inicio de sesión no es válido o ha caducado. Solicita uno nuevo.",
+    "emailChangeLinkInvalid": "Este enlace para cambiar el correo no es válido o ha caducado. Reinicia el cambio desde la configuración de tu cuenta.",
+    "inviteLinkInvalid": "Este enlace de invitación no es válido o ha caducado. Pide a la persona que te invitó que envíe uno nuevo.",
+    "magicLinkInvalid": "Este enlace de inicio de sesión no es válido o ha caducado. Solicita uno nuevo abajo.",
     "passwordResetLinkInvalid": "Este enlace para restablecer la contraseña no es válido o ha caducado. Solicita uno nuevo abajo.",
+    "signupLinkInvalid": "Este enlace de confirmación no es válido o ha caducado. Solicita uno nuevo abajo.",
     "alreadyYourEmail": "Esta ya es tu dirección de correo electrónico.",
     "emptyListingName": "{type, select, business {No puedes dejar vacío el nombre del negocio.} community {No puedes dejar vacío el nombre de la comunidad.} other {No puedes dejar vacío el nombre del anuncio.}}",
     "emptyName": "No puedes dejar el nombre vacío.",
@@ -317,6 +321,26 @@
         "body": "Pulsa «Continuar» para terminar de crear tu cuenta."
       },
       "pendingAction": "Continuando..."
+    },
+    "retry": {
+      "emailChange": {
+        "title": "Confirma tu correo de nuevo",
+        "body": "Reinicia el cambio de correo desde la configuración de tu cuenta.",
+        "action": "Ir a la configuración de la cuenta"
+      },
+      "invite": {
+        "title": "La invitación ha caducado",
+        "body": "Pide a la persona que te invitó que envíe una nueva invitación."
+      },
+      "magiclink": {
+        "title": "Solicita un nuevo enlace de inicio de sesión",
+        "body": "Introduce tu correo y te enviaremos un enlace nuevo."
+      },
+      "signup": {
+        "title": "Solicita un nuevo enlace de confirmación",
+        "body": "Introduce el correo con el que te registraste y te enviaremos un enlace nuevo."
+      },
+      "emailSent": "Correo enviado. Revisa tu bandeja de entrada para encontrar el nuevo enlace."
     },
     "complete": {
       "title": "Iniciando sesión...",
