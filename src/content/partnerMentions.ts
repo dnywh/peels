@@ -110,50 +110,67 @@ export const communityMediaMentions = [
   {
     name: "The Guardian",
     href: "https://www.theguardian.com/lifeandstyle/2026/jul/04/kitchen-scraps-garden-cuttings-green-waste-compost-victoria",
+    shown: true,
   },
   {
     name: "Clean Up Australia",
     href: "https://www.cleanup.org.au/food-waste/",
+    shown: true,
   },
   {
     name: "CERES",
     href: "https://ceres.org.au/faqs/",
+    shown: true,
   },
   {
     name: "Sustainable Gardening Australia",
     href: "https://www.sgaonline.org.au/cant-compost-food-waste-try-sharing-it",
+    shown: true,
   },
   {
     name: "The Sustainable Occasion",
     href: "https://www.thesustainableoccasion.com/post/a-replacement-for-sharewaste-peels-app",
+    shown: true,
   },
   {
     name: "Urban Anchors",
     href: "https://www.urbananchors.org/drop-off-sites",
+    shown: true,
   },
   {
     name: "Urban Revolution",
     href: "https://www.urbanrevolution.com.au/blogs/articles/perth-recycling-guide",
+    shown: true,
   },
   {
     name: "Canberra Environment Centre",
     href: "https://www.canberraenvironment.org/media/international-compost-awareness-week",
+    shown: true,
   },
   {
     name: "SEE Change",
     href: "https://www.seechange.org.au/wasteandrecycling",
+    shown: true,
   },
   {
     name: "Pickled Compost",
     href: "https://pickledcompost.com/pages/benefits",
+    shown: true,
   },
   {
     name: "Local Food Connect",
     href: "https://localfoodconnect.org.au/lfc-news-march-5/",
+    shown: true,
   },
   {
     name: "How to Save Our Planet",
     href: "https://podcasts.apple.com/au/podcast/how-to-save-our-planet/id1648409844?i=1000732698117",
+    shown: true,
+  },
+  {
+    name: "Repurpose",
+    href: "https://repurpose.com/blogs/blog-the-compost/compost-tech-how-apps-and-smart-bins-are-changing-the-way-we-compost#:~:text=These%20apps%20connect%20people%20without%20compost%20bins%20with%20neighbors%2C%20community%20gardens%2C%20or%20local%20businesses%20that%20have%20them",
+    shown: false,
   },
 ] as const;
 

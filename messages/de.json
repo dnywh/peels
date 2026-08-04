@@ -293,6 +293,29 @@
     }
   },
   "Auth": {
+    "confirm": {
+      "emailChange": {
+        "title": "Neue E-Mail-Adresse bestätigen",
+        "body": "Drücke „Weiter“, um deine E-Mail-Adresse zu aktualisieren."
+      },
+      "invite": {
+        "title": "Einladung annehmen",
+        "body": "Drücke „Weiter“, um Peels beizutreten."
+      },
+      "recovery": {
+        "title": "Passwort zurücksetzen",
+        "body": "Drücke „Weiter“, um ein neues Passwort zu wählen."
+      },
+      "signIn": {
+        "title": "Bei Peels anmelden",
+        "body": "Drücke „Weiter“, um dich anzumelden."
+      },
+      "signUp": {
+        "title": "E-Mail-Adresse bestätigen",
+        "body": "Drücke „Weiter“, um die Erstellung deines Kontos abzuschließen."
+      },
+      "pendingAction": "Weiter..."
+    },
     "complete": {
       "title": "Du wirst angemeldet...",
       "body": "Wir bestätigen deinen Link sicher. Du wirst gleich weitergeleitet."

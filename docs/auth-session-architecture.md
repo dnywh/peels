@@ -12,6 +12,35 @@ Peels keeps public pages fast by avoiding a server-side Supabase auth refresh un
 
 The forwarded auth state is a rendering hint. On public routes that do not need server auth, it intentionally says signed-out on the initial server render even if the browser has a valid session cookie. Client-side auth slots can then resolve the real state after hydration.
 
+## Email authentication links
+
+Authentication links are single-use credentials. Outlook Safe Links and other email security products can issue HEAD or GET requests before the recipient opens an email, so no request that merely opens a Peels URL may consume a token.
+
+### Hosted custom-email flow
+
+The hosted Send Email Auth Hook builds an app-owned URL containing `token_hash`, `type`, `next`, and `locale` query parameters. Every supported action uses the same scanner-safe boundary:
+
+1. The email opens `GET /auth/confirm`.
+2. The page validates the auth type and normalises the next path, but does not call Supabase or create a session. HEAD has the same non-consuming behaviour.
+3. The page renders action-specific copy and a Continue form. The supported actions are sign-up confirmation, invitation acceptance, magic-link sign-in, password recovery, and email change.
+4. Only the form's explicit POST server action calls `supabase.auth.verifyOtp()`.
+5. A successful verification writes the Supabase session cookies, applies the requested locale, adds the email-change success state when relevant, and redirects to the normalised next path.
+6. Invalid, malformed, expired, or already-consumed tokens redirect to sign-in with the existing invalid-link message and safe `redirect_to` value.
+
+Form fields are untrusted input. The POST action must repeat auth-type validation and redirect-path normalisation rather than relying on the preceding GET. Keep this behaviour shared through `src/utils/authRedirects.ts`, and keep invalid-link redirect construction shared by the confirmation page and action.
+
+The extra Continue step is intentional for every custom auth email, not only password recovery. Supabase one-time tokens for each action have the same prefetch risk. Keep the button label as Continue because verification can lead to another step; use the auth type only to provide an accurate heading and explanation.
+
+### Compatibility flows
+
+Hosted custom emails are not the only links Peels must accept:
+
+- PKCE and legacy links containing a query-string code use `/auth/callback`, which exchanges the code for a session.
+- Links containing access and refresh tokens in the URL fragment use `/auth/complete`, `AuthHashCompletion`, and `POST /auth/session`. The browser must handle these because URL fragments are not sent to the server.
+- Local Mailpit uses Supabase's built-in templates unless the Send Email Auth Hook is configured locally, so local links commonly use the callback or URL-fragment paths instead of `/auth/confirm`.
+
+Do not consolidate these paths unless all token delivery formats remain covered. In particular, do not move `verifyOtp()` into a GET handler, automatically submit the confirmation form, or redirect GET directly to Supabase's verification URL: each would allow scanners, link previews, or browser prefetching to consume the credential without the user.
+
 ## Locale Behaviour
 
 Public pages should use the locale cookie as the fast path. Signed-in profile-backed locale lookup belongs on authenticated/private flows where the server has already paid the auth cost.
@@ -63,7 +92,9 @@ Selected chat routes need auth, thread lists, selected-thread data, and metadata
 For auth/session, homepage, and chat changes, prefer production-style e2e checks:
 
 ```bash
-npm run test:e2e:prod -- e2e/home.spec.ts e2e/chat.spec.ts e2e/i18n.spec.ts
+npm run test:e2e:prod -- e2e/auth.spec.ts e2e/home.spec.ts e2e/chat.spec.ts e2e/i18n.spec.ts
 ```
+
+The auth suite generates real recovery tokens through the local Supabase Admin API. Its scanner-safety test sends HEAD and GET requests to `/auth/confirm` before selecting Continue, proving that automatic link inspection does not consume the token. Start the local Supabase stack before running it.
 
 Add `e2e/seo.spec.ts` when metadata, public routes, or crawlable content are affected.

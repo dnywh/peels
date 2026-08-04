@@ -3,7 +3,9 @@ import {
   HOST_EMAIL,
   SEEDED_PASSWORD,
   SEEDED_THREAD_ID,
+  createAdminClient,
   delayServerActionRequests,
+  generateRecoveryToken,
   signIn,
 } from "./helpers";
 
@@ -48,6 +50,110 @@ test("password reset success page renders for signed-in users", async ({
     page.getByRole("heading", { name: "Password updated" })
   ).toBeVisible();
   await expect(page.getByText(successMessage)).toBeVisible();
+});
+
+test("email scanner requests do not consume a recovery token", async ({
+  page,
+  request,
+}) => {
+  const tokenHash = await generateRecoveryToken(HOST_EMAIL);
+  const confirmPath = `/auth/confirm?token_hash=${tokenHash}&type=recovery&next=/profile/reset-password&locale=en`;
+
+  const headResponse = await request.head(confirmPath);
+  expect(headResponse.ok()).toBe(true);
+
+  const getResponse = await request.get(confirmPath);
+  expect(getResponse.ok()).toBe(true);
+
+  await page.goto(confirmPath);
+  await expect(
+    page.getByRole("heading", { name: "Reset your password" })
+  ).toBeVisible();
+  await expect(
+    page.getByText("Press ‘Continue’ to choose a new password.")
+  ).toBeVisible();
+  await page.getByTestId("auth-confirm-submit").click();
+
+  await expect(page).toHaveURL(/\/profile\/reset-password$/);
+  await expect(
+    page.getByRole("heading", { name: "Reset password" })
+  ).toBeVisible();
+});
+
+test("confirmation copy matches the email auth action", async ({ page }) => {
+  const confirmationCases = [
+    {
+      type: "signup",
+      heading: "Confirm your email",
+      body: "Press ‘Continue’ to finish creating your account.",
+    },
+    {
+      type: "invite",
+      heading: "Accept your invitation",
+      body: "Press ‘Continue’ to join Peels.",
+    },
+    {
+      type: "magiclink",
+      heading: "Sign in to Peels",
+      body: "Press ‘Continue’ to sign in.",
+    },
+    {
+      type: "recovery",
+      heading: "Reset your password",
+      body: "Press ‘Continue’ to choose a new password.",
+    },
+    {
+      type: "email_change",
+      heading: "Confirm your new email",
+      body: "Press ‘Continue’ to update your email address.",
+    },
+  ] as const;
+
+  for (const confirmationCase of confirmationCases) {
+    await page.goto(
+      `/auth/confirm?token_hash=unused-copy-test-token&type=${confirmationCase.type}`
+    );
+    await expect(
+      page.getByRole("heading", { name: confirmationCase.heading })
+    ).toBeVisible();
+    await expect(page.getByText(confirmationCase.body)).toBeVisible();
+    await expect(page.getByTestId("auth-confirm-submit")).toHaveText(
+      "Continue"
+    );
+  }
+});
+
+test("consumed recovery tokens show the invalid-link error", async ({
+  page,
+}) => {
+  const tokenHash = await generateRecoveryToken(HOST_EMAIL);
+  const admin = createAdminClient();
+  const { error } = await admin.auth.verifyOtp({
+    type: "recovery",
+    token_hash: tokenHash,
+  });
+  expect(error).toBeNull();
+
+  await page.goto(
+    `/auth/confirm?token_hash=${tokenHash}&type=recovery&next=/profile/reset-password`
+  );
+  await page.getByTestId("auth-confirm-submit").click();
+
+  await expect(page).toHaveURL(/\/sign-in\?.*error=/);
+  await expect(page.getByTestId("sign-in-form")).toContainText(
+    /invalid or has expired/i
+  );
+});
+
+test("malformed confirmation links show the invalid-link error", async ({
+  page,
+}) => {
+  await page.goto("/auth/confirm?type=recovery&next=/profile/reset-password");
+
+  await expect(page).toHaveURL(/\/sign-in\?.*error=/);
+  await expect(page.getByTestId("sign-in-form")).toContainText(
+    /invalid or has expired/i
+  );
 });
 
 test("sign-in normalises unsafe redirect_to values", async ({ page }) => {

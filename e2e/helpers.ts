@@ -39,6 +39,27 @@ export function createAdminClient(): SupabaseClient {
   });
 }
 
+export async function generateRecoveryToken(email: string): Promise<string> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: {
+      redirectTo:
+        "http://127.0.0.1:3000/auth/complete?next=/profile/reset-password",
+    },
+  });
+
+  if (error) throw error;
+
+  const tokenHash = data.properties?.hashed_token;
+  if (!tokenHash) {
+    throw new Error("Supabase did not return a hashed recovery token");
+  }
+
+  return tokenHash;
+}
+
 type MockGeocodingFeatureOptions = {
   id?: string;
   text?: string;

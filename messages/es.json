@@ -293,6 +293,29 @@
     }
   },
   "Auth": {
+    "confirm": {
+      "emailChange": {
+        "title": "Confirma tu nuevo correo",
+        "body": "Pulsa «Continuar» para actualizar tu correo electrónico."
+      },
+      "invite": {
+        "title": "Acepta tu invitación",
+        "body": "Pulsa «Continuar» para unirte a Peels."
+      },
+      "recovery": {
+        "title": "Restablece tu contraseña",
+        "body": "Pulsa «Continuar» para elegir una nueva contraseña."
+      },
+      "signIn": {
+        "title": "Inicia sesión en Peels",
+        "body": "Pulsa «Continuar» para iniciar sesión."
+      },
+      "signUp": {
+        "title": "Confirma tu correo",
+        "body": "Pulsa «Continuar» para terminar de crear tu cuenta."
+      },
+      "pendingAction": "Continuando..."
+    },
     "complete": {
       "title": "Iniciando sesión...",
       "body": "Estamos confirmando tu enlace de forma segura. Te redirigiremos en un momento."
