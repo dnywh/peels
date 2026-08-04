@@ -76,6 +76,12 @@
     "working": "Processando..."
   },
   "Errors": {
+    "authLinkInvalid": "Este link de acesso é inválido ou expirou. Solicite um novo.",
+    "emailChangeLinkInvalid": "Este link para alterar o e-mail é inválido ou expirou. Reinicie a alteração nas configurações da sua conta.",
+    "inviteLinkInvalid": "Este link de convite é inválido ou expirou. Peça à pessoa que convidou você para enviar um novo.",
+    "magicLinkInvalid": "Este link de acesso é inválido ou expirou. Solicite um novo abaixo.",
+    "passwordResetLinkInvalid": "Este link de redefinição de senha é inválido ou expirou. Solicite um novo abaixo.",
+    "signupLinkInvalid": "Este link de confirmação é inválido ou expirou. Solicite um novo abaixo.",
     "alreadyYourEmail": "Este já é o seu endereço de e-mail.",
     "emptyListingName": "{type, select, business {O nome do negócio não pode ficar vazio.} community {O nome da comunidade não pode ficar vazio.} other {O nome do anúncio não pode ficar vazio.}}",
     "emptyName": "O nome não pode ficar vazio.",
@@ -315,6 +321,26 @@
         "body": "Pressione “Continuar” para terminar de criar a sua conta."
       },
       "pendingAction": "Continuando..."
+    },
+    "retry": {
+      "emailChange": {
+        "title": "Confirme seu e-mail novamente",
+        "body": "Reinicie a alteração de e-mail nas configurações da sua conta.",
+        "action": "Ir para as configurações da conta"
+      },
+      "invite": {
+        "title": "O convite expirou",
+        "body": "Peça à pessoa que convidou você para enviar um novo convite."
+      },
+      "magiclink": {
+        "title": "Solicite um novo link de acesso",
+        "body": "Digite seu e-mail e enviaremos um novo link."
+      },
+      "signup": {
+        "title": "Solicite um novo link de confirmação",
+        "body": "Digite o e-mail usado no cadastro e enviaremos um novo link."
+      },
+      "emailSent": "E-mail enviado. Verifique sua caixa de entrada para encontrar o novo link."
     },
     "complete": {
       "title": "Entrando...",

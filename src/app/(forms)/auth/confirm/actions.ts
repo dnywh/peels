@@ -10,6 +10,7 @@ import {
 } from "@/utils/authRedirects";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getInvalidLinkRedirectPath } from "./redirects";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
@@ -19,8 +20,30 @@ const debugAuth = (event: string, data?: Record<string, unknown>) => {
   console.log("[auth-confirm]", event, data ?? {});
 };
 
-const redirectToSignIn = (nextPath: string): never => {
-  redirect(getInvalidLinkRedirectPath(nextPath));
+const redirectFromInvalidLink = async (
+  authType: string | null,
+  nextPath: string,
+  locale?: string | null
+): Promise<never> => {
+  const t = await getTranslations("Errors");
+  const errorMessageByType: Record<string, string> = {
+    recovery: t("passwordResetLinkInvalid"),
+    signup: t("signupLinkInvalid"),
+    email: t("magicLinkInvalid"),
+    magiclink: t("magicLinkInvalid"),
+    invite: t("inviteLinkInvalid"),
+    email_change: t("emailChangeLinkInvalid"),
+  };
+  const errorMessage =
+    (authType && errorMessageByType[authType]) ?? t("authLinkInvalid");
+  redirect(
+    getInvalidLinkRedirectPath({
+      authType,
+      errorMessage,
+      locale,
+      nextPath,
+    })
+  );
 };
 
 export async function confirmEmailAuthAction(formData: FormData) {
@@ -41,7 +64,7 @@ export async function confirmEmailAuthAction(formData: FormData) {
       authType,
       nextPath,
     });
-    return redirectToSignIn(nextPath);
+    return redirectFromInvalidLink(authType, nextPath, locale);
   }
 
   const verifiedAuthType = authType;
@@ -61,7 +84,7 @@ export async function confirmEmailAuthAction(formData: FormData) {
       authType,
       nextPath,
     });
-    return redirectToSignIn(nextPath);
+    return redirectFromInvalidLink(authType, nextPath, locale);
   }
 
   const resolvedNextPath =

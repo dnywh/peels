@@ -41,6 +41,7 @@ const Header = styled.header<{ $button?: FormHeaderButton }>`
 
 const Text = styled.div`
   ${sharedSectionTextBlockStyles}
+  gap: 2rem;
   max-width: ${theme.spacing.container.textOpticalWidth};
 
   & h1 {

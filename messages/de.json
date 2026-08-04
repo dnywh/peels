@@ -76,6 +76,12 @@
     "working": "Wird verarbeitet..."
   },
   "Errors": {
+    "authLinkInvalid": "Dieser Anmeldelink ist ungültig oder abgelaufen. Fordere bitte einen neuen an.",
+    "emailChangeLinkInvalid": "Dieser Link zur E-Mail-Änderung ist ungültig oder abgelaufen. Starte die Änderung in deinen Kontoeinstellungen erneut.",
+    "inviteLinkInvalid": "Dieser Einladungslink ist ungültig oder abgelaufen. Bitte die Person, die dich eingeladen hat, eine neue Einladung zu senden.",
+    "magicLinkInvalid": "Dieser Anmeldelink ist ungültig oder abgelaufen. Fordere unten einen neuen an.",
+    "passwordResetLinkInvalid": "Dieser Link zum Zurücksetzen des Passworts ist ungültig oder abgelaufen. Fordere unten einen neuen an.",
+    "signupLinkInvalid": "Dieser Bestätigungslink ist ungültig oder abgelaufen. Fordere unten einen neuen an.",
     "alreadyYourEmail": "Das ist bereits deine E-Mail-Adresse.",
     "emptyListingName": "{type, select, business {Der Name des Unternehmens darf nicht leer sein.} community {Der Name der Community darf nicht leer sein.} other {Der Name des Eintrags darf nicht leer sein.}}",
     "emptyName": "Der Name darf nicht leer sein.",
@@ -315,6 +321,26 @@
         "body": "Drücke „Weiter“, um die Erstellung deines Kontos abzuschließen."
       },
       "pendingAction": "Weiter..."
+    },
+    "retry": {
+      "emailChange": {
+        "title": "E-Mail erneut bestätigen",
+        "body": "Starte die E-Mail-Änderung in deinen Kontoeinstellungen erneut.",
+        "action": "Zu den Kontoeinstellungen"
+      },
+      "invite": {
+        "title": "Einladung abgelaufen",
+        "body": "Bitte die Person, die dich eingeladen hat, eine neue Einladung zu senden."
+      },
+      "magiclink": {
+        "title": "Neuen Anmeldelink anfordern",
+        "body": "Gib deine E-Mail-Adresse ein und wir senden dir einen neuen Link."
+      },
+      "signup": {
+        "title": "Neuen Bestätigungslink anfordern",
+        "body": "Gib die E-Mail-Adresse ein, mit der du dich registriert hast, und wir senden dir einen neuen Link."
+      },
+      "emailSent": "E-Mail gesendet. Prüfe deinen Posteingang auf den neuen Link."
     },
     "complete": {
       "title": "Du wirst angemeldet...",

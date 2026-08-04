@@ -139,10 +139,11 @@ test("consumed recovery tokens show the invalid-link error", async ({
   );
   await page.getByTestId("auth-confirm-submit").click();
 
-  await expect(page).toHaveURL(/\/sign-in\?.*error=/);
-  await expect(page.getByTestId("sign-in-form")).toContainText(
-    /invalid or has expired/i
+  await expect(page).toHaveURL(/\/forgot-password\?.*error=/);
+  await expect(page.locator('aside[role="alert"]')).toContainText(
+    "This password reset link is invalid or has expired. Request a new one below."
   );
+  await expect(page.locator('input[name="email"]')).toBeVisible();
 });
 
 test("malformed confirmation links show the invalid-link error", async ({
@@ -150,10 +151,98 @@ test("malformed confirmation links show the invalid-link error", async ({
 }) => {
   await page.goto("/auth/confirm?type=recovery&next=/profile/reset-password");
 
-  await expect(page).toHaveURL(/\/sign-in\?.*error=/);
-  await expect(page.getByTestId("sign-in-form")).toContainText(
-    /invalid or has expired/i
+  await expect(page).toHaveURL(/\/forgot-password\?.*error=/);
+  await expect(page.locator('aside[role="alert"]')).toContainText(
+    "This password reset link is invalid or has expired. Request a new one below."
   );
+  await expect(page.locator('input[name="email"]')).toBeVisible();
+});
+
+test("other malformed auth links show their recovery action", async ({
+  page,
+}) => {
+  await page.goto("/auth/confirm?type=signup&next=/profile&locale=en");
+  await expect(page).toHaveURL(/\/auth\/retry\?.*type=signup/);
+  await expect(
+    page.getByRole("heading", { name: "Request a new confirmation link" })
+  ).toBeVisible();
+  await expect(page.locator('input[name="email"]')).toBeVisible();
+
+  await page.goto("/auth/confirm?type=magiclink&next=/map&locale=en");
+  await expect(page).toHaveURL(/\/auth\/retry\?.*type=magiclink/);
+  await expect(
+    page.getByRole("heading", { name: "Request a new sign-in link" })
+  ).toBeVisible();
+  await expect(page.locator('input[name="email"]')).toBeVisible();
+
+  await page.goto("/auth/confirm?type=invite&next=/profile&locale=en");
+  await expect(page).toHaveURL(/\/auth\/retry\?.*type=invite/);
+  await expect(
+    page.getByRole("heading", { name: "Invitation expired" })
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+
+  await page.goto("/auth/confirm?type=email_change&next=/profile&locale=en");
+  await expect(page).toHaveURL(/\/auth\/retry\?.*type=email_change/);
+  await expect(
+    page.getByRole("heading", { name: "Confirm your email again" })
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+});
+
+test("signed-in email-change failures return to account settings", async ({
+  page,
+}) => {
+  await signIn(page, { email: HOST_EMAIL });
+  await page.goto("/auth/confirm?type=email_change&next=/profile&locale=en");
+
+  await expect(page).toHaveURL(/\/auth\/retry\?.*type=email_change/);
+  const accountSettingsLink = page.getByRole("link", {
+    name: "Go to account settings",
+  });
+  await expect(accountSettingsLink).toBeVisible();
+  await expect(accountSettingsLink).toHaveAttribute(
+    "href",
+    /\/profile\?error=/
+  );
+});
+
+test("an expired magic link can be replaced", async ({ page }) => {
+  await page.goto("/auth/retry?type=magiclink&next=/map&locale=en");
+  await page.locator('input[name="email"]').fill(HOST_EMAIL);
+  await page.getByTestId("auth-retry-submit").click();
+
+  await expect(page).toHaveURL(/\/auth\/retry\?.*success=/);
+  await expect(page.locator('aside[role="status"]')).toContainText(
+    "Email sent. Check your inbox for the new link."
+  );
+});
+
+test("an expired sign-up confirmation can be replaced", async ({ page }) => {
+  const email = `auth-retry-${Date.now()}@peels.local`;
+  const admin = createAdminClient();
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    password: SEEDED_PASSWORD,
+    email_confirm: false,
+  });
+  expect(error).toBeNull();
+  const userId = data.user?.id;
+  expect(userId).toBeTruthy();
+  if (!userId) throw new Error("Supabase did not create the test user");
+
+  try {
+    await page.goto("/auth/retry?type=signup&next=/profile&locale=en");
+    await page.locator('input[name="email"]').fill(email);
+    await page.getByTestId("auth-retry-submit").click();
+
+    await expect(page).toHaveURL(/\/auth\/retry\?.*success=/);
+    await expect(page.locator('aside[role="status"]')).toContainText(
+      "Email sent. Check your inbox for the new link."
+    );
+  } finally {
+    await admin.auth.admin.deleteUser(userId);
+  }
 });
 
 test("sign-in normalises unsafe redirect_to values", async ({ page }) => {

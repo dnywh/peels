@@ -25,7 +25,14 @@ The hosted Send Email Auth Hook builds an app-owned URL containing `token_hash`,
 3. The page renders action-specific copy and a Continue form. The supported actions are sign-up confirmation, invitation acceptance, magic-link sign-in, password recovery, and email change.
 4. Only the form's explicit POST server action calls `supabase.auth.verifyOtp()`.
 5. A successful verification writes the Supabase session cookies, applies the requested locale, adds the email-change success state when relevant, and redirects to the normalised next path.
-6. Invalid, malformed, expired, or already-consumed tokens redirect to sign-in with the existing invalid-link message and safe `redirect_to` value.
+6. Invalid, malformed, expired, or already-consumed tokens lead to an action-specific recovery path:
+   - Password recovery opens `/forgot-password`, where the user can request another reset link.
+   - Sign-up confirmation opens `/auth/retry`, where the user can resend the confirmation with `supabase.auth.resend()`.
+   - Magic-link sign-in opens `/auth/retry`, where the user can request another link with `supabase.auth.signInWithOtp()` and `shouldCreateUser: false`.
+   - Invitation acceptance explains that only the inviter can issue a replacement and offers ordinary sign-in for an existing account.
+   - Email change sends signed-in users back to account settings to restart the change. Signed-out users are asked to sign in first and then return there.
+
+The retry actions preserve the normalised next path and locale in the new email's redirect URL. They accept an email address instead of carrying it from the failed link, both because custom email URLs do not currently expose the recipient address and because query parameters are untrusted. Invitation links cannot be self-regenerated: doing so would require privileged knowledge of the inviter and intended role or account state.
 
 Form fields are untrusted input. The POST action must repeat auth-type validation and redirect-path normalisation rather than relying on the preceding GET. Keep this behaviour shared through `src/utils/authRedirects.ts`, and keep invalid-link redirect construction shared by the confirmation page and action.
 
