@@ -14,13 +14,32 @@ The forwarded auth state is a rendering hint. On public routes that do not need 
 
 ## Email authentication links
 
-Peels supports several Supabase authentication link formats because hosted custom emails, local Mailpit emails, dashboard-generated links, and older links do not all deliver credentials in the same way.
+Authentication links are single-use credentials. Outlook Safe Links and other email security products can issue HEAD or GET requests before the recipient opens an email, so no request that merely opens a Peels URL may consume a token.
 
-- Custom hosted emails link to `/auth/confirm` with a token hash in the query string. GET and HEAD requests only render an inert confirmation page. The token is consumed by `verifyOtp()` only after the user selects Continue and submits the form. This prevents email security scanners and link previews from consuming one-time tokens.
+### Hosted custom-email flow
+
+The hosted Send Email Auth Hook builds an app-owned URL containing `token_hash`, `type`, `next`, and `locale` query parameters. Every supported action uses the same scanner-safe boundary:
+
+1. The email opens `GET /auth/confirm`.
+2. The page validates the auth type and normalises the next path, but does not call Supabase or create a session. HEAD has the same non-consuming behaviour.
+3. The page renders action-specific copy and a Continue form. The supported actions are sign-up confirmation, invitation acceptance, magic-link sign-in, password recovery, and email change.
+4. Only the form's explicit POST server action calls `supabase.auth.verifyOtp()`.
+5. A successful verification writes the Supabase session cookies, applies the requested locale, adds the email-change success state when relevant, and redirects to the normalised next path.
+6. Invalid, malformed, expired, or already-consumed tokens redirect to sign-in with the existing invalid-link message and safe `redirect_to` value.
+
+Form fields are untrusted input. The POST action must repeat auth-type validation and redirect-path normalisation rather than relying on the preceding GET. Keep this behaviour shared through `src/utils/authRedirects.ts`, and keep invalid-link redirect construction shared by the confirmation page and action.
+
+The extra Continue step is intentional for every custom auth email, not only password recovery. Supabase one-time tokens for each action have the same prefetch risk. Keep the button label as Continue because verification can lead to another step; use the auth type only to provide an accurate heading and explanation.
+
+### Compatibility flows
+
+Hosted custom emails are not the only links Peels must accept:
+
 - PKCE and legacy links containing a query-string code use `/auth/callback`, which exchanges the code for a session.
 - Links containing access and refresh tokens in the URL fragment use `/auth/complete`, `AuthHashCompletion`, and `POST /auth/session`. The browser must handle these because URL fragments are not sent to the server.
+- Local Mailpit uses Supabase's built-in templates unless the Send Email Auth Hook is configured locally, so local links commonly use the callback or URL-fragment paths instead of `/auth/confirm`.
 
-Do not move token verification back into a GET handler. A GET or HEAD request may be issued automatically by Outlook Safe Links, another email scanner, a link preview, or browser prefetching. Keep redirect-path normalisation, supported auth-type validation, locale handling, and dual-domain support shared through `src/utils/authRedirects.ts`.
+Do not consolidate these paths unless all token delivery formats remain covered. In particular, do not move `verifyOtp()` into a GET handler, automatically submit the confirmation form, or redirect GET directly to Supabase's verification URL: each would allow scanners, link previews, or browser prefetching to consume the credential without the user.
 
 ## Locale Behaviour
 
