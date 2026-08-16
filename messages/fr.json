@@ -124,7 +124,7 @@
     "forgotPasswordSuccess": "Vérifiez votre boîte de réception (et vos spams) pour trouver un lien de réinitialisation du mot de passe, si cette adresse e-mail est bien liée à un compte Peels."
   },
   "Index": {
-    "title": "Trouvez une destination pour vos restes alimentaires, où que vous soyez",
+    "title": "Trouvez une destination pour vos restes alimentaires",
     "subtitle": "Peels met en relation des personnes qui ont des restes alimentaires avec celles qui compostent. C’est un projet communautaire gratuit et non commercial.",
     "metaDescription": "Peels met en relation des personnes qui ont des restes alimentaires avec celles qui compostent. C’est un projet communautaire gratuit et non commercial.",
     "metaKeywords": "gaspillage alimentaire, restes alimentaires, compost, compost près de chez moi, point de dépôt compost, dépôt de restes alimentaires",
@@ -227,7 +227,7 @@
       }
     },
     "copyExamples": {
-      "title": "Exemples de texte",
+      "title": "Exemples de rédaction",
       "subtitle": "N’hésitez pas à adapter ces propositions à vos besoins. Elles sont simplement fournies comme points de départ, en plusieurs longueurs.",
       "listLabel": "Exemples de texte pour faire connaître Peels",
       "items": {

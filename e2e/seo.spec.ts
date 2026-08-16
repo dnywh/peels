@@ -117,12 +117,10 @@ test("homepage exposes canonical social metadata and one primary H1", async ({
 }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
-  await expect(page).toHaveTitle(
-    "Peels: Find a home for your food scraps, wherever you are"
-  );
+  await expect(page).toHaveTitle("Peels: Find a home for your food scraps");
   await expectSharedSocialMetadata(page, "/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText([
-    "Find a home for your food scraps, wherever you are",
+    "Find a home for your food scraps",
   ]);
 
   const emptyLinks = await page.locator("a").evaluateAll((links) =>

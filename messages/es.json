@@ -124,7 +124,7 @@
     "forgotPasswordSuccess": "Revisa tu bandeja de entrada (y spam) para ver el enlace de restablecimiento de contraseña, suponiendo que ese correo esté vinculado a una cuenta de Peels."
   },
   "Index": {
-    "title": "Encuentra un hogar para tus restos de comida, estés donde estés",
+    "title": "Encuentra un hogar para tus restos de comida",
     "subtitle": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
     "metaDescription": "Peels conecta a personas con restos de comida con quienes hacen compost. Es un proyecto comunitario, gratuito y sin fines de lucro.",
     "metaKeywords": "residuos orgánicos, restos de comida, desperdicio alimentario, compostaje, compost cerca de mí, punto de compostaje, entrega de restos de comida",
@@ -227,7 +227,7 @@
       }
     },
     "copyExamples": {
-      "title": "Ejemplos de texto",
+      "title": "Ejemplos de redacción",
       "subtitle": "Puedes adaptar cualquiera de estas opciones a tus necesidades. Son simplemente puntos de partida, con distintas extensiones.",
       "listLabel": "Ejemplos de texto para compartir Peels",
       "items": {

@@ -124,7 +124,7 @@
     "forgotPasswordSuccess": "Check your inbox (and spam) for a password reset link, assuming that email address is linked to a Peels account."
   },
   "Index": {
-    "title": "Find a home for your food scraps, wherever you are",
+    "title": "Find a home for your food scraps",
     "subtitle": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
     "metaDescription": "Peels connects folks with food scraps to those who compost. It’s a free, non-commercial, community project.",
     "metaKeywords": "food waste, food scraps, share waste, sharewaste, makesoil, compost near me, compost drop-off, food scrap drop-off",
@@ -227,7 +227,7 @@
       }
     },
     "copyExamples": {
-      "title": "Copy examples",
+      "title": "Copywriting examples",
       "subtitle": "Please feel free to adapt any of these options to fit your needs. They’re provided simply as starting points, at various lengths.",
       "listLabel": "Copywriting examples for sharing Peels",
       "items": {

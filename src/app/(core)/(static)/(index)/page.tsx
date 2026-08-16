@@ -177,7 +177,8 @@ const Intro = styled.div`
   gap: 1.5rem;
 
   & > h1 {
-    max-width: 24ch;
+    max-width: 18ch;
+    text-wrap: balance;
     font-size: 2.75rem;
     letter-spacing: -0.03em;
     line-height: 1.05;

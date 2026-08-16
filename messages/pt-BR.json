@@ -124,7 +124,7 @@
     "forgotPasswordSuccess": "Verifique a sua caixa de entrada (e o spam) para encontrar o link de redefinição de senha, caso esse e-mail esteja ligado a uma conta do Peels."
   },
   "Index": {
-    "title": "Encontre um destino para os seus restos de comida, esteja onde estiver",
+    "title": "Encontre um destino para os seus restos de comida",
     "subtitle": "O Peels liga pessoas com restos de comida a quem faz compostagem. É um projeto comunitário, gratuito e sem fins comerciais.",
     "metaDescription": "O Peels liga pessoas com restos de comida a quem faz compostagem. É um projeto comunitário, gratuito e sem fins comerciais.",
     "metaKeywords": "desperdício de alimentos, restos de comida, compostagem, compostagem perto de mim, ponto de entrega para compostagem, entrega de restos de comida",
@@ -227,7 +227,7 @@
       }
     },
     "copyExamples": {
-      "title": "Exemplos de texto",
+      "title": "Exemplos de redação",
       "subtitle": "Fique à vontade para adaptar qualquer uma destas opções às suas necessidades. Elas são apenas pontos de partida, em diferentes tamanhos.",
       "listLabel": "Exemplos de texto para divulgar o Peels",
       "items": {
