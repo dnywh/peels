@@ -123,20 +123,22 @@ export default function Index() {
         </FooterBlock>
       </StaticPageSection>
 
-      <StaticPageSection padding="lg" id="newsletter-section">
-        <HeaderBlock>
-          <h2>{t("newsletter.title")}</h2>
-          <p>{t("newsletter.subtitle")}</p>
-        </HeaderBlock>
-        <NewsletterIssuesList showPastIssues={false} />
-        <FooterBlock>
-          <p>
-            {t.rich("newsletter.footer", {
-              page: (chunks) => <Link href="/newsletter">{chunks}</Link>,
-            })}
-          </p>
-        </FooterBlock>
-      </StaticPageSection>
+      {siteConfig.showNewsletterOnHomepage && (
+        <StaticPageSection padding="lg" id="newsletter-section">
+          <HeaderBlock>
+            <h2>{t("newsletter.title")}</h2>
+            <p>{t("newsletter.subtitle")}</p>
+          </HeaderBlock>
+          <NewsletterIssuesList showPastIssues={false} />
+          <FooterBlock>
+            <p>
+              {t.rich("newsletter.footer", {
+                page: (chunks) => <Link href="/newsletter">{chunks}</Link>,
+              })}
+            </p>
+          </FooterBlock>
+        </StaticPageSection>
+      )}
 
       <StaticPageSection padding="lg" id="faq-section">
         <PeelsFaqJsonLd variant="summary" />
