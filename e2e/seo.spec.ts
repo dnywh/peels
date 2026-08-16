@@ -173,6 +173,7 @@ test("homepage emits summary FAQPage JSON-LD", async ({ page }) => {
       "Can I compost food scraps if I don’t have a garden or compost bin?",
       "Can businesses use Peels to donate food scraps?",
       "I’m not comfortable sharing my address. Can I still participate?",
+      "How can I promote Peels to my community?",
     ])
   );
   expect(questions).not.toContain("Who maintains Peels?");

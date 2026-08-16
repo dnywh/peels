@@ -15,6 +15,7 @@ async function PeelsFaq({ variant = "full" }: PeelsFaqProps) {
   const showAboutFaq = variant !== "community";
   const showExtendedAboutFaq = variant === "about" || variant === "full";
   const showCommunityFaq = variant === "community" || variant === "full";
+  const showPromotionFaq = variant === "summary" || showCommunityFaq;
 
   return (
     <FaqContainer>
@@ -120,20 +121,26 @@ async function PeelsFaq({ variant = "full" }: PeelsFaqProps) {
               ),
             })}
           </FaqDetails>
-          <FaqDetails>
-            <summary>{t("promotion.question")}</summary>
-            {t.rich("promotion.answer", {
-              p: (chunks) => <p>{chunks}</p>,
-              share: (chunks) => (
-                <StrongLink href={siteConfig.links.share}>{chunks}</StrongLink>
-              ),
-              email: (chunks) => (
-                <EncodedEmailLink address={siteConfig.encodedEmail.team}>
-                  {chunks}
-                </EncodedEmailLink>
-              ),
-            })}
-          </FaqDetails>
+        </>
+      ) : null}
+      {showPromotionFaq ? (
+        <FaqDetails>
+          <summary>{t("promotion.question")}</summary>
+          {t.rich("promotion.answer", {
+            p: (chunks) => <p>{chunks}</p>,
+            share: (chunks) => (
+              <StrongLink href={siteConfig.links.share}>{chunks}</StrongLink>
+            ),
+            email: (chunks) => (
+              <EncodedEmailLink address={siteConfig.encodedEmail.team}>
+                {chunks}
+              </EncodedEmailLink>
+            ),
+          })}
+        </FaqDetails>
+      ) : null}
+      {showCommunityFaq ? (
+        <>
           <FaqDetails>
             <summary>{t("government.question")}</summary>
             {t.rich("government.answer", {
