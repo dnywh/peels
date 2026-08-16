@@ -217,6 +217,7 @@ npm run dev
 - We’re slowly moving towards TypeScript for type safety
 - Heavy commenting is encouraged to make the codebase accessible to others
 - Code formatting is handled by Prettier. Please ensure your code is formatted according to `.prettierrc` before submitting a pull request
+- The homepage newsletter section is controlled by `siteConfig.showNewsletterOnHomepage` in `src/config/site.ts`. Turn it on when there is a recent issue to promote and off when the latest issue is no longer timely.
 
 ### Languages and Localised Content
 

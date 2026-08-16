@@ -27,7 +27,7 @@ test("homepage renders static content before deferred chat demo hydrates", async
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(
     page.getByRole("heading", {
-      name: "Find a home for your food scraps, wherever you are",
+      name: "Find a home for your food scraps",
     })
   ).toBeVisible();
 

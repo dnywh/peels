@@ -1,8 +1,9 @@
 export const siteConfig = {
   name: "Peels",
-  description: "Find a home for your food scraps, wherever you are.",
+  description: "Find a home for your food scraps.",
   url: "https://www.peels.org",
   repoUrl: "https://github.com/peels-org/peels",
+  showNewsletterOnHomepage: false,
   links: {
     about: "/",
     newsletter: "/newsletter",

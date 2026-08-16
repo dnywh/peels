@@ -124,7 +124,7 @@
     "forgotPasswordSuccess": "Prüfe deinen Posteingang (und Spam) für einen Link zum Zurücksetzen des Passworts, sofern diese E-Mail-Adresse mit einem Peels-Konto verknüpft ist."
   },
   "Index": {
-    "title": "Finde ein Zuhause für deine Küchenabfälle, wo auch immer du bist",
+    "title": "Finde ein Zuhause für deine Küchenabfälle",
     "subtitle": "Peels verbindet die Menschen mit Lebensmittelkratzern mit denen, die komponieren. Es ist ein kostenloses und nicht-kommerzielles Gemeinschaftsprojekt.",
     "metaDescription": "Peels verbindet Menschen mit Lebensmittelresten mit denjenigen, die kompostieren. Es ist ein kostenloses, nicht-kommerzielles Gemeinschaftsprojekt.",
     "metaKeywords": "Lebensmittelabfall, Essensreste, Kompost, Kompost in meiner Nähe, Kompost-Abgabestelle, Abgabe von Lebensmittelresten",
@@ -227,7 +227,7 @@
       }
     },
     "copyExamples": {
-      "title": "Textbeispiele",
+      "title": "Beispiele für Werbetexte",
       "subtitle": "Du kannst diese Optionen gern an deine Bedürfnisse anpassen. Sie sind einfach als Ausgangspunkte in verschiedenen Längen gedacht.",
       "listLabel": "Textbeispiele zum Teilen von Peels",
       "items": {

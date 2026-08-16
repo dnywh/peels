@@ -39,6 +39,7 @@ const summaryFaqSources = [
   { namespace: "Support.peelsFaq", key: "noGarden" },
   { namespace: "Support.peelsFaq", key: "businesses" },
   { namespace: "Support.peelsFaq", key: "mapPrivacy" },
+  { namespace: "Support.peelsFaq", key: "promotion" },
 ] satisfies FaqMessageSource[];
 
 const aboutFaqSources = [

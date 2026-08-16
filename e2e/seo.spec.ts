@@ -117,12 +117,10 @@ test("homepage exposes canonical social metadata and one primary H1", async ({
 }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
-  await expect(page).toHaveTitle(
-    "Peels: Find a home for your food scraps, wherever you are"
-  );
+  await expect(page).toHaveTitle("Peels: Find a home for your food scraps");
   await expectSharedSocialMetadata(page, "/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText([
-    "Find a home for your food scraps, wherever you are",
+    "Find a home for your food scraps",
   ]);
 
   const emptyLinks = await page.locator("a").evaluateAll((links) =>
@@ -175,6 +173,7 @@ test("homepage emits summary FAQPage JSON-LD", async ({ page }) => {
       "Can I compost food scraps if I don’t have a garden or compost bin?",
       "Can businesses use Peels to donate food scraps?",
       "I’m not comfortable sharing my address. Can I still participate?",
+      "How can I promote Peels to my community?",
     ])
   );
   expect(questions).not.toContain("Who maintains Peels?");

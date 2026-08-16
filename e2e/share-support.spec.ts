@@ -25,7 +25,7 @@ test("share page presents the sharing resources download", async ({ page }) => {
     page.getByRole("heading", { name: "Inside the ZIP" })
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { level: 2, name: "Copy examples" })
+    page.getByRole("heading", { level: 2, name: "Copywriting examples" })
   ).toBeVisible();
   await expect(page.getByText("Shortest", { exact: true })).toBeVisible();
   await expect(
