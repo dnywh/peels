@@ -480,6 +480,7 @@
       "signInForPhotos": "<link>Connectez-vous</link> pour voir les photos de cette personne hôte.",
       "ownerNote": "C’est votre propre annonce{stub, select, true {, marquée comme brouillon} other {}}. {visibility, select, true {Tout va bien !} other {Vous l’avez masquée de la carte, donc vous seul pouvez la voir pour le moment.}}",
       "stubNote": "Ceci est un brouillon créé par l’équipe Peels. Vérifiez bien les informations avant de vous déplacer.",
+      "stubMirroredNote": "Cette annonce reprend des données publiques officielles et n’est pas gérée par un hôte Peels. Les horaires et les articles acceptés peuvent changer. Vérifiez avant de vous déplacer.",
       "stubClaim": "Vous êtes la personne responsable ? <link>Contactez-nous</link> pour revendiquer cette annonce ou demander des modifications.",
       "firstTime": "Première visite ici ? <link>Inscrivez-vous</link>",
       "residentOf": "Habite à {area}",

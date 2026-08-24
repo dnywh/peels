@@ -155,6 +155,15 @@ It is readable for the user themself and for chat participants who need display 
 
 Rows are maintained by database triggers from `public.profiles`.
 
+### Open data feeds
+
+`public.open_data_feeds` and `public.listing_open_data_refs` track mirrored
+official drop-off datasets. They are service-role only. The public catalogue
+exposes only `is_open_data_mirrored` on read models so stub copy can distinguish
+manual stubs from synced listings. Shared feed marks live as one object in
+`listing_avatars`; many listings store that same path in `listings.avatar`. See
+[open-data-listings.md](./open-data-listings.md).
+
 ## Database helpers
 
 Security-definer helper functions live in `private`, not `public`. Public security-definer functions and public definer views should be avoided because they create confusing API surfaces and Supabase dashboard warnings.

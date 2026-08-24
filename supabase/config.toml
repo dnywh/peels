@@ -292,6 +292,10 @@ verify_jwt = true
 enabled = true
 verify_jwt = false
 
+[functions.sync-open-data-feed]
+enabled = true
+verify_jwt = false
+
 [functions.send-email-for-new-feature]
 enabled = true
 verify_jwt = true
