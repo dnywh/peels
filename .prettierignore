@@ -4,6 +4,9 @@ node_modules
 # Testing
 coverage
 
+# Supabase
+supabase/.temp
+
 # Next.js
 .next/
 out/
