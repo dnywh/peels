@@ -536,6 +536,10 @@ const ListingSection = styled.section<{
     color: ${theme.colors.text.ui.primary};
   }
 
+  & p strong {
+    font-weight: 500;
+  }
+
   ${({ $overflowX }) => $overflowX === "visible" && overflowVisibleStyles}
   ${({ $overflowX, $presentation }) =>
     $overflowX === undefined && $presentation === "full" && fullSectionStyles}
