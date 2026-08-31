@@ -480,7 +480,7 @@
       "signInForPhotos": "<link>Inicia sesión</link> para ver las fotos de esta persona anfitriona.",
       "ownerNote": "Este es tu propio anuncio{stub, select, true {, marcado como ficha preliminar} other {}}. {visibility, select, true {¡Se ve bien!} other {Lo ocultaste del mapa, así que solo tú puedes verlo ahora.}}",
       "stubNote": "Esta es una ficha preliminar creada por el equipo de Peels. Revisa la información del anuncio antes de visitar.",
-      "stubMirroredNote": "Este anuncio refleja datos públicos oficiales y no está gestionado por un anfitrión de Peels. Los horarios y los artículos aceptados pueden cambiar. Revísalo antes de visitar.",
+      "stubMirroredNote": "Este anuncio procede de datos públicos oficiales. Los horarios y los artículos aceptados pueden cambiar. Revísalo antes de visitar.",
       "stubClaim": "¿Eres el propietario? <link>Contáctanos</link> para reclamar este anuncio o pedir cambios.",
       "firstTime": "¿Primera vez por aquí? <link>Regístrate</link>",
       "residentOf": "Residente de {area}",

@@ -1,7 +1,6 @@
 import { getListingAvatar } from "@/utils/listingUtils";
 
 import Avatar from "@/components/Avatar";
-import Lozenge from "@/components/Lozenge";
 
 import { css, styled } from "next-yak";
 import { theme } from "@/styles/theme.yak";
@@ -114,10 +113,6 @@ const TitleBlock = styled.div<{ $presentation?: ListingHeaderPresentation }>`
   ${({ $presentation }) => $presentation === "full" && fullTitleBlockStyles}
 `;
 
-const StyledLozenge = styled(Lozenge)`
-  margin-left: -0.025rem;
-`;
-
 function ListingHeader({
   presentation,
   listing,
@@ -185,7 +180,6 @@ function ListingHeader({
             )}
           </p>
         )}
-        {listing?.is_stub && <StyledLozenge>{t("Common.stub")}</StyledLozenge>}
       </TitleBlock>
     </StyledListingHeader>
   );
