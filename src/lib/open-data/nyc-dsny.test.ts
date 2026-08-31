@@ -70,6 +70,7 @@ test("mapNycFeature maps DSNY smart compost bins from the official programme pag
   assert.ok(mapped.acceptedItems.includes("Meat, fish, bones, and dairy"));
   assert.ok(mapped.acceptedItems.includes("Fruits and vegetables"));
   assert.ok(mapped.rejectedItems.includes("Clean paper and cardboard"));
+  assert.equal(mapped.useSourceAvatar, true);
   assert.match(mapped.description, /^\*\*Location:\*\*\nNE Bushwick/);
   assert.match(mapped.description, /\n\*\*Hours:\*\*\n24\/7/);
   assert.match(mapped.description, /\n\*\*Notes:\*\*\nDownload the app/);
@@ -83,6 +84,7 @@ test("mapNycFeature maps community drop-off sites with DSNY community rules", ()
   assert.ok(mapped.acceptedItems.includes("Fruits and vegetables"));
   assert.ok(mapped.rejectedItems.includes("Meat"));
   assert.ok(mapped.rejectedItems.includes("Prepared food"));
+  assert.equal(mapped.useSourceAvatar, false);
   assert.match(
     mapped.description,
     /\n\*\*Notes:\*\*\nNo meat, bones, or dairy\./
