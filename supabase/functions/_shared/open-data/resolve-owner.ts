@@ -16,7 +16,7 @@ export function resolveOpenDataOwnerId(sourceId: string): string | null {
 
 export function resolveOpenDataOwnerIdFromProcessEnv(
   sourceId: string,
-  env: NodeJS.ProcessEnv
+  env: Record<string, string | undefined>
 ): string | null {
   if (sourceId.startsWith("nyc-")) {
     return env.PEELS_OPEN_DATA_OWNER_ID_USA ?? null;
