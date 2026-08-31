@@ -28,13 +28,7 @@ function throwIfSupabaseError(
   }
 }
 
-function resolveOwnerId(sourceId: string): string | null {
-  if (sourceId.startsWith("nyc-")) {
-    return Deno.env.get("PEELS_OPEN_DATA_OWNER_ID_USA") ?? null;
-  }
-
-  return Deno.env.get("PEELS_OPEN_DATA_OWNER_ID") ?? null;
-}
+import { resolveOpenDataOwnerId } from "../_shared/open-data/resolve-owner.ts";
 
 async function fetchRemoteFeatures(
   source: OpenDataSourceRow
@@ -175,7 +169,7 @@ const handler = async (request: Request): Promise<Response> => {
       throw new Error("Missing Supabase environment variables");
     }
 
-    const ownerId = resolveOwnerId(sourceId);
+    const ownerId = resolveOpenDataOwnerId(sourceId);
     if (!ownerId) {
       throw new Error(`Missing owner id env for source ${sourceId}`);
     }

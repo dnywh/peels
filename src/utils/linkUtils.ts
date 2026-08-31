@@ -143,3 +143,11 @@ export function parseInlineText(text: string): ParsedInlinePart[] {
 
   return parts.length > 0 ? parts : parseTextWithLinks(text);
 }
+
+/** Strip **bold** pseudo-markdown for plain-text contexts (SEO, JSON-LD). */
+export function plainTextFromInlineMarkdown(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}

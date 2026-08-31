@@ -13,6 +13,8 @@
     "seed:local-media": "node scripts/seed-local-media.mjs",
     "media:cleanup-orphans": "node scripts/cleanup-orphaned-media.mjs",
     "sync:open-data": "node scripts/sync-open-data-feed.mjs",
+    "sanitize:open-data": "node scripts/sanitize-open-data-file.mjs",
+    "import:open-data": "node scripts/import-open-data-file.mjs",
     "supabase:diff": "supabase db diff",
     "i18n:check": "node scripts/check-i18n-messages.mjs",
     "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
@@ -69,7 +71,8 @@
     "next-yak": "9.4.1",
     "postcss": "^8.5.14",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "xlsx": "^0.18.5"
   },
   "overrides": {
     "react": "19.2.6",
