@@ -56,6 +56,54 @@ async function upsertListing(
   return data as number;
 }
 
+async function reconcileListingAvatar(
+  supabase: SupabaseClient,
+  source: OpenDataSourceRow,
+  mapped: MappedOpenDataListing,
+  listingId: number
+) {
+  if (!source.default_avatar) {
+    return;
+  }
+
+  const expectedAvatar = mapped.useSourceAvatar ? source.default_avatar : null;
+  let query = supabase
+    .from("listings")
+    .update({ avatar: expectedAvatar })
+    .eq("id", listingId);
+
+  if (expectedAvatar === null) {
+    query = query.eq("avatar", source.default_avatar);
+  } else {
+    query = query.is("avatar", null);
+  }
+
+  const { error } = await query;
+
+  if (error) {
+    throw new Error(`Failed to reconcile listing avatar: ${error.message}`);
+  }
+}
+
+async function reconcileListingPhotos(
+  supabase: SupabaseClient,
+  listingId: number,
+  defaultPhotos: string[] | undefined
+) {
+  if (!defaultPhotos || defaultPhotos.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("listings")
+    .update({ photos: defaultPhotos })
+    .eq("id", listingId);
+
+  if (error) {
+    throw new Error(`Failed to reconcile listing photos: ${error.message}`);
+  }
+}
+
 async function reconcileListingMedia(
   supabase: SupabaseClient,
   source: OpenDataSourceRow,
@@ -63,31 +111,8 @@ async function reconcileListingMedia(
   listingId: number,
   defaultPhotos: string[] | undefined
 ) {
-  const updates: {
-    avatar?: string | null;
-    photos?: string[];
-  } = {};
-
-  if (source.default_avatar) {
-    updates.avatar = mapped.useSourceAvatar ? source.default_avatar : null;
-  }
-
-  if (defaultPhotos && defaultPhotos.length > 0) {
-    updates.photos = defaultPhotos;
-  }
-
-  if (Object.keys(updates).length === 0) {
-    return;
-  }
-
-  const { error } = await supabase
-    .from("listings")
-    .update(updates)
-    .eq("id", listingId);
-
-  if (error) {
-    throw new Error(`Failed to reconcile listing media: ${error.message}`);
-  }
+  await reconcileListingAvatar(supabase, source, mapped, listingId);
+  await reconcileListingPhotos(supabase, listingId, defaultPhotos);
 }
 
 export async function runOpenDataFileImport({
