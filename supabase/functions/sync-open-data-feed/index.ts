@@ -2,6 +2,10 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { hashMappedListing } from "../_shared/open-data/hash.ts";
 import {
+  reconcileOpenDataAvatarsInBatch,
+  type OpenDataAvatarIntent,
+} from "../_shared/open-data/reconcile-avatars.ts";
+import {
   mapNycFeature,
   parseNycGeoJson,
 } from "../_shared/open-data/nyc-dsny.ts";
@@ -28,13 +32,7 @@ function throwIfSupabaseError(
   }
 }
 
-function resolveOwnerId(sourceId: string): string | null {
-  if (sourceId.startsWith("nyc-")) {
-    return Deno.env.get("PEELS_OPEN_DATA_OWNER_ID_USA") ?? null;
-  }
-
-  return Deno.env.get("PEELS_OPEN_DATA_OWNER_ID") ?? null;
-}
+import { resolveOpenDataOwnerId } from "../_shared/open-data/resolve-owner.ts";
 
 async function fetchRemoteFeatures(
   source: OpenDataSourceRow
@@ -77,34 +75,6 @@ function mapFeature(
   }
 
   return null;
-}
-
-async function reconcileListingAvatar(
-  supabase: ReturnType<typeof createClient>,
-  source: OpenDataSourceRow,
-  mapped: MappedOpenDataListing,
-  listingId: number
-) {
-  if (!source.default_avatar) {
-    return;
-  }
-
-  const expectedAvatar = mapped.useSourceAvatar ? source.default_avatar : null;
-  const { error: avatarError } = await supabase
-    .from("listings")
-    .update({ avatar: expectedAvatar })
-    .eq("id", listingId)
-    .or(
-      expectedAvatar === null
-        ? `avatar.eq.${source.default_avatar}`
-        : "avatar.is.null"
-    );
-
-  if (avatarError) {
-    throw new Error(
-      `Failed to reconcile listing avatar: ${avatarError.message}`
-    );
-  }
 }
 
 async function upsertListing(
@@ -175,7 +145,7 @@ const handler = async (request: Request): Promise<Response> => {
       throw new Error("Missing Supabase environment variables");
     }
 
-    const ownerId = resolveOwnerId(sourceId);
+    const ownerId = resolveOpenDataOwnerId(sourceId);
     if (!ownerId) {
       throw new Error(`Missing owner id env for source ${sourceId}`);
     }
@@ -239,6 +209,7 @@ const handler = async (request: Request): Promise<Response> => {
     }
 
     const seenExternalIds = new Set<string>();
+    const avatarIntents: OpenDataAvatarIntent[] = [];
 
     for (const feature of features) {
       try {
@@ -280,12 +251,10 @@ const handler = async (request: Request): Promise<Response> => {
             unchangedRefError,
             "Failed to touch unchanged open data ref"
           );
-          await reconcileListingAvatar(
-            supabase,
-            source as OpenDataSourceRow,
-            mapped,
-            existingRef.listing_id
-          );
+          avatarIntents.push({
+            listingId: existingRef.listing_id,
+            useSourceAvatar: mapped.useSourceAvatar,
+          });
           stats.unchanged += 1;
           continue;
         }
@@ -297,12 +266,10 @@ const handler = async (request: Request): Promise<Response> => {
           mapped
         );
 
-        await reconcileListingAvatar(
-          supabase,
-          source as OpenDataSourceRow,
-          mapped,
-          listingId
-        );
+        avatarIntents.push({
+          listingId,
+          useSourceAvatar: mapped.useSourceAvatar,
+        });
 
         const refPayload = {
           source_id: sourceId,
@@ -332,6 +299,12 @@ const handler = async (request: Request): Promise<Response> => {
         stats.errors += 1;
       }
     }
+
+    await reconcileOpenDataAvatarsInBatch(
+      supabase,
+      source as OpenDataSourceRow,
+      avatarIntents
+    );
 
     if (source.default_import_mode === "complete_snapshot") {
       for (const ref of existingRefs ?? []) {

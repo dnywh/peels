@@ -1,5 +1,6 @@
 import { siteConfig } from "../config/site.ts";
 import { countries } from "../data/countries.ts";
+import { plainTextFromInlineMarkdown } from "./linkUtils.ts";
 import { getStoragePublicUrl } from "./storage.ts";
 import { createPeelsMetadata } from "./seo.ts";
 import type { Metadata } from "next";
@@ -427,7 +428,7 @@ export function generateListingDescription(
     shouldOmitListingDescription
       ? null
       : listing.description?.trim()
-        ? listing.description.trim()
+        ? plainTextFromInlineMarkdown(listing.description.trim())
         : null,
     seoCopy.connect({
       name: listingConnectName,

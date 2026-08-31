@@ -175,6 +175,28 @@ test("listing descriptions lead with compost and food-scrap intent", () => {
   assert.match(description, /local community hub/);
 });
 
+test("listing metadata strips inline markdown from stored descriptions", () => {
+  const openDataListing = {
+    ...communityListing,
+    name: "Kirrip Park Reserve",
+    area_name: "South Melbourne",
+    description:
+      "**Address:**\n4 Buckhurst St\n\n**Suburb:**\nSouth Melbourne\n\n**Collection location:**\nCnr of Kerr St and Buckhurst St",
+    is_stub: true,
+    slug: "kirrip-park-reserve",
+  } satisfies Listing;
+
+  const description = generateListingDescription(openDataListing, null);
+
+  assert.doesNotMatch(description, /\*\*/);
+  assert.match(description, /Address: 4 Buckhurst St/);
+  assert.match(description, /Suburb: South Melbourne/);
+  assert.match(
+    description,
+    /Collection location: Cnr of Kerr St and Buckhurst St/
+  );
+});
+
 test("business listing descriptions use neutral compostable-material intent", () => {
   const description = generateListingDescription(businessListing, null);
 

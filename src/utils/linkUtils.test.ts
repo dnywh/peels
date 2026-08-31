@@ -1,7 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseInlineText, parseTextWithLinks } from "./linkUtils.ts";
+import {
+  parseInlineText,
+  parseTextWithLinks,
+  plainTextFromInlineMarkdown,
+} from "./linkUtils.ts";
 
 test("parseTextWithLinks autolinks bare URLs", () => {
   const parts = parseTextWithLinks("see example.com today");
@@ -40,4 +44,12 @@ test("parseInlineText keeps links outside bold segments", () => {
     href: "https://example.com",
     text: "example.com",
   });
+});
+
+test("plainTextFromInlineMarkdown strips bold markers and collapses whitespace", () => {
+  const plain = plainTextFromInlineMarkdown(
+    "**Address:**\n4 Buckhurst St\n\n**Suburb:**\nSouth Melbourne"
+  );
+
+  assert.equal(plain, "Address: 4 Buckhurst St Suburb: South Melbourne");
 });
