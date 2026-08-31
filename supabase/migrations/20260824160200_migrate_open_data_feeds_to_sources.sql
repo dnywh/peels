@@ -45,7 +45,11 @@ begin
 end;
 $$;
 
-create or replace function private.invoke_open_data_sync(p_source_id text)
+-- Postgres cannot rename function parameters with CREATE OR REPLACE; preview
+-- branches that applied the feed-based cron migration still have p_feed_id.
+drop function if exists private.invoke_open_data_sync(text);
+
+create function private.invoke_open_data_sync(p_source_id text)
 returns void
 language plpgsql
 security definer
