@@ -1,6 +1,24 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import type { OpenDataSourceRow } from "./types.ts";
+
+type ListingsAvatarClient = {
+  from(table: "listings"): {
+    update(payload: { avatar: string | null }): {
+      in(
+        column: "id",
+        values: number[]
+      ): {
+        is(
+          column: "avatar",
+          value: null
+        ): Promise<{ error: { message: string } | null }>;
+        eq(
+          column: "avatar",
+          value: string
+        ): Promise<{ error: { message: string } | null }>;
+      };
+    };
+  };
+};
 
 export type OpenDataAvatarIntent = {
   listingId: number;
@@ -51,7 +69,7 @@ function throwIfSupabaseError(
 
 /** Batched avatar reconciliation for API sync runs (one pass per source). */
 export async function reconcileOpenDataAvatarsInBatch(
-  supabase: SupabaseClient,
+  supabase: ListingsAvatarClient,
   source: Pick<OpenDataSourceRow, "default_avatar">,
   intents: OpenDataAvatarIntent[]
 ) {

@@ -3,7 +3,7 @@ export function resolveOpenDataOwnerId(sourceId: string): string | null {
     return Deno.env.get("PEELS_OPEN_DATA_OWNER_ID_USA") ?? null;
   }
 
-  if (sourceId.startsWith("au-") || sourceId.includes("port-phillip")) {
+  if (sourceId.startsWith("au-") || sourceId.startsWith("port-phillip-")) {
     return (
       Deno.env.get("PEELS_OPEN_DATA_OWNER_ID_AU") ??
       Deno.env.get("PEELS_OPEN_DATA_OWNER_ID") ??
@@ -22,7 +22,7 @@ export function resolveOpenDataOwnerIdFromProcessEnv(
     return env.PEELS_OPEN_DATA_OWNER_ID_USA ?? null;
   }
 
-  if (sourceId.startsWith("au-") || sourceId.includes("port-phillip")) {
+  if (sourceId.startsWith("au-") || sourceId.startsWith("port-phillip-")) {
     return (
       env.PEELS_OPEN_DATA_OWNER_ID_AU ?? env.PEELS_OPEN_DATA_OWNER_ID ?? null
     );

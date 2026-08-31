@@ -121,7 +121,7 @@ const { supabaseUrl, serviceRoleKey, isLocal } =
 let ownerId =
   resolveOpenDataOwnerIdFromProcessEnv(sourceId, process.env) ??
   readFunctionsEnvValue(
-    sourceId.includes("port-phillip")
+    sourceId.startsWith("port-phillip-")
       ? "PEELS_OPEN_DATA_OWNER_ID_AU"
       : sourceId.startsWith("nyc-")
         ? "PEELS_OPEN_DATA_OWNER_ID_USA"
