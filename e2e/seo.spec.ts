@@ -6,7 +6,7 @@ const MAP_LISTING_PATH = "/map?listing=demo-marrickville-compost";
 const RESIDENTIAL_LISTING_PATH = "/listings/demo-newtown-worm-farm";
 const SITE_URL = "https://www.peels.org";
 const DEFAULT_OG_IMAGE_PATTERN =
-  /^https:\/\/www\.peels\.org\/opengraph-image\.jpg/;
+  /^https:\/\/www\.peels\.org\/opengraph-image\.png/;
 
 async function getMetaDescription(page: import("@playwright/test").Page) {
   return page.locator('head meta[name="description"]').getAttribute("content");

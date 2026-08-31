@@ -340,7 +340,7 @@ const handler = async (request: Request): Promise<Response> => {
     const syncFinishedAt = new Date().toISOString();
     const syncStatus = stats.errors > 0 ? "completed_with_errors" : "completed";
 
-    await supabase
+    const { error: sourceSyncError } = await supabase
       .from("open_data_sources")
       .update({
         last_sync_at: syncFinishedAt,
@@ -348,6 +348,10 @@ const handler = async (request: Request): Promise<Response> => {
         last_sync_stats: stats,
       })
       .eq("id", sourceId);
+    throwIfSupabaseError(
+      sourceSyncError,
+      `Failed to update sync metadata for ${sourceId}`
+    );
 
     return jsonResponse(
       {

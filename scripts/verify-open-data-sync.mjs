@@ -1,6 +1,7 @@
 #!/usr/bin/env -S node --experimental-strip-types
 
 import { createClient } from "@supabase/supabase-js";
+import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -33,6 +34,35 @@ function readLocalSupabaseEnv() {
   return values;
 }
 
+function readFunctionsEnvValue(name) {
+  const envPath = path.join(repoRoot, "supabase", "functions", ".env");
+
+  try {
+    const contents = readFileSync(envPath, "utf8");
+    for (const line of contents.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) {
+        continue;
+      }
+
+      const separatorIndex = trimmed.indexOf("=");
+      if (separatorIndex === -1) {
+        continue;
+      }
+
+      const key = trimmed.slice(0, separatorIndex).trim();
+      const value = trimmed.slice(separatorIndex + 1).trim();
+      if (key === name && value.length > 0) {
+        return value;
+      }
+    }
+  } catch {
+    // Local functions env is optional until you copy .env.example.
+  }
+
+  return null;
+}
+
 const localEnv = readLocalSupabaseEnv();
 const supabaseUrl =
   process.env.SUPABASE_URL ?? localEnv.API_URL ?? "http://127.0.0.1:54331";
@@ -40,11 +70,18 @@ const serviceRoleKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY ?? localEnv.SERVICE_ROLE_KEY;
 const ownerId =
   process.env.PEELS_OPEN_DATA_OWNER_ID_USA ??
-  "2c9ae20c-2469-4e60-84b3-39268697717c";
+  readFunctionsEnvValue("PEELS_OPEN_DATA_OWNER_ID_USA");
 
 if (!serviceRoleKey) {
   console.error(
     "Missing SUPABASE_SERVICE_ROLE_KEY. Set it in your shell or run `supabase status -o env`."
+  );
+  process.exit(1);
+}
+
+if (!ownerId) {
+  console.error(
+    "Missing PEELS_OPEN_DATA_OWNER_ID_USA. Set it in your shell or supabase/functions/.env."
   );
   process.exit(1);
 }
