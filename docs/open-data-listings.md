@@ -68,12 +68,13 @@ Manual invoke:
 PEELS_OPEN_DATA_SYNC_SECRET=... npm run sync:open-data -- nyc-dsny-food-scrap
 ```
 
-Or:
+Or POST directly (uses `FUNCTIONS_URL` from `supabase status`):
 
 ```bash
-supabase functions invoke sync-open-data-feed \
-  --body '{"source_id":"nyc-dsny-food-scrap"}' \
-  --header "x-peels-webhook-secret: $PEELS_OPEN_DATA_SYNC_SECRET"
+curl -sS -X POST "$(supabase status -o env | rg '^FUNCTIONS_URL=' | cut -d= -f2- | tr -d '\"')/sync-open-data-feed" \
+  -H 'Content-Type: application/json' \
+  -H "x-peels-webhook-secret: $PEELS_OPEN_DATA_SYNC_SECRET" \
+  -d '{"source_id":"nyc-dsny-food-scrap"}'
 ```
 
 Council CSV/XLSX files use the same tables and refs, but a local file importer
@@ -111,13 +112,13 @@ Claiming detaches a listing from automated updates:
 - Mapper: `supabase/functions/_shared/open-data/nyc-dsny.ts`
 - Owner account: Stubs USA (`PEELS_OPEN_DATA_OWNER_ID_USA` in Vault)
 - Listing type: `community`
-- Official URLs: stored in `listings.links` (`website`, smart compost app links)
+- Official URLs: `listings.links` uses the row `website` only
+- About text: labeled Location, Hosted by, Open, Hours, Notes, with a line break after each label
+- Accepted/rejected chips come from DSNY programme copy, not the Open Data dictionary spreadsheet:
+  - Smart Compost bins (`hosted_by` = Department of Sanitation): all food scraps including meat and dairy
+  - Other drop-offs: fruit, veg, eggshells, coffee/tea, bread/rice/pasta, plant waste; no meat, fish, bones, dairy, oil, or prepared food
 
-Accepted/rejected sanitisation:
-
-- DSNY smart compost bins: accept all food scraps including meat and dairy
-- Typical community/GrowNYC sites with meat/dairy notes: reject meat, bones, dairy
-- Ambiguous restrictions stay in the listing description
+  Source: [Food Scrap Drop-Off](https://www.nyc.gov/site/dsny/collection/residents/food-scrap-drop-off.page). Site notes stay in About.
 
 ## NYC Open Data app token
 
@@ -137,10 +138,51 @@ present. Do not commit the token or expose it via `NEXT_PUBLIC_*`.
 | `PEELS_NYC_OPEN_DATA_APP_TOKEN` | optional     | Higher Socrata rate limits            |
 | `PEELS_SUPABASE_PROJECT_URL`    | yes for cron | Used by pg_cron pg_net call           |
 
-Set edge function secrets in the Supabase dashboard under Edge Functions, or in
-`supabase/.env` for local `supabase functions serve`. Set Vault secrets in the
-SQL editor for production cron. See the private Notion ops note linked from the
-open-data wiki.
+Set edge function secrets in the Supabase dashboard for production. For local
+development, put them in `supabase/functions/.env` (loaded by `supabase start`).
+Set Vault secrets in the SQL editor for production cron.
+
+## Local testing (before merge)
+
+Confirm URLs with `npm run supabase:status`. Peels API is `http://127.0.0.1:54331` so it can run beside other local Supabase stacks. Sync uses `FUNCTIONS_URL` from that output. There is no `supabase functions invoke`; use `npm run sync:open-data` or HTTP POST.
+
+| File                      | Purpose                           |
+| ------------------------- | --------------------------------- |
+| `.env.local`              | Next.js only                      |
+| `supabase/functions/.env` | Edge secrets for `supabase start` |
+
+```bash
+npm run supabase:reset
+cp supabase/functions/.env.example supabase/functions/.env
+supabase stop && supabase start
+node scripts/verify-open-data-sync.mjs
+PEELS_OPEN_DATA_SYNC_SECRET=local-dev-open-data-sync npm run sync:open-data -- nyc-dsny-food-scrap
+```
+
+`supabase start` serves functions. Use `functions serve` only for hot reload while editing function code.
+
+### Local avatars
+
+Upload the NYC mark to local Studio Storage under `listing_avatars/stubs/`, then:
+
+```sql
+update public.open_data_sources
+set default_avatar = 'stubs/nyc-dsny-food-scrap.png'
+where id = 'nyc-dsny-food-scrap';
+```
+
+Re-run sync, or backfill the smoke-test listing:
+
+```sql
+update public.listings
+set avatar = 'stubs/nyc-dsny-food-scrap.png'
+where id in (
+  select listing_id from public.listing_open_data_refs
+  where source_id = 'nyc-dsny-food-scrap' and sync_status = 'active'
+);
+```
+
+The smoke test alone leaves `avatar` null.
 
 ## Adding another source
 
@@ -174,11 +216,26 @@ value in `listings.avatar` is the object path, not a public URL. Many listings
 may store the same path. Orphan cleanup keeps the file while any listing still
 points at it.
 
+### Storage path convention
+
+Storage object paths use underscores to match Peels bucket and database naming.
+Source slugs in filenames stay kebab-case, same as `open_data_sources.id`.
+
+| Layer         | Example                         | Convention                  |
+| ------------- | ------------------------------- | --------------------------- |
+| Bucket        | `listing_avatars`               | snake_case                  |
+| Folder prefix | `stubs/`                        | snake_case                  |
+| Filename      | `nyc-dsny-food-scrap.png`       | kebab-case slug             |
+| Full path     | `stubs/nyc-dsny-food-scrap.png` | stored in `listings.avatar` |
+
+TypeScript mapper code lives under `supabase/functions/_shared/open-data/`.
+That is a code path convention only; do not use hyphens in Storage folder names.
+
 ### Wiring
 
 Store the path on `open_data_sources.default_avatar`, for example:
 
-`open-data/nyc-dsny-food-scrap.png`
+`stubs/nyc-dsny-food-scrap.png`
 
 The API sync copies `default_avatar` onto listings during insert and content
 updates. Claimed listings are skipped by sync and keep the host avatar.
@@ -190,11 +247,11 @@ To backfill after upload:
 
 ```sql
 update public.open_data_sources
-set default_avatar = 'open-data/nyc-dsny-food-scrap.png'
+set default_avatar = 'stubs/nyc-dsny-food-scrap.png'
 where id = 'nyc-dsny-food-scrap';
 
 update public.listings
-set avatar = 'open-data/nyc-dsny-food-scrap.png'
+set avatar = 'stubs/nyc-dsny-food-scrap.png'
 where id in (
   select listing_id
   from public.listing_open_data_refs
@@ -206,9 +263,9 @@ where id in (
 ### Upload workflow
 
 1. Export a square JPEG or PNG, same crop style as other council stubs.
-2. In Studio, Storage, `listing_avatars`, upload it under a stable name such as
-   `open-data/nyc-dsny-food-scrap.png`. A dedicated `open-data/` prefix is
-   easier to find than a stub-account UUID folder, but either works.
+2. In Studio, Storage, `listing_avatars`, upload into the `stubs/` folder with
+   a stable filename such as `stubs/nyc-dsny-food-scrap.png`. This prefix
+   groups official source marks separately from per-host avatar uploads.
 3. Copy the object **name/path** (not the public URL) into
    `open_data_sources.default_avatar`, then re-run sync or backfill listings as
    above.
@@ -233,8 +290,9 @@ are ready to drop the shared file.
 Council spreadsheets are `source_type = manual_file`. They share
 `open_data_sources`, `listing_open_data_refs`, and mirrored stub UX, but are
 imported via a local maintainer script with dry-run by default. Original files
-should be archived in a private Supabase Storage bucket (not a git repo). An
-`open_data_imports` audit table is planned in the next PR.
+should be archived in a private Supabase Storage bucket named
+`official_data_imports` (not a git repo). An `open_data_imports` audit table is
+planned in the next PR.
 
 ## Backfill for existing manual stubs (phase 3)
 

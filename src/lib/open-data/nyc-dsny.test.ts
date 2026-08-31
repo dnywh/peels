@@ -58,7 +58,7 @@ test("stableStringify sorts object keys deterministically", () => {
   assert.equal(stableStringify({ b: 1, a: 2 }), '{"a":2,"b":1}');
 });
 
-test("mapNycFeature maps DSNY smart compost bins with broad acceptance", () => {
+test("mapNycFeature maps DSNY smart compost bins from the official programme page", () => {
   const mapped = mapNycFeature(dsnyFeature);
 
   assert.ok(mapped);
@@ -66,19 +66,27 @@ test("mapNycFeature maps DSNY smart compost bins with broad acceptance", () => {
   assert.equal(mapped.areaName, "Brooklyn");
   assert.equal(mapped.countryCode, "US");
   assert.equal(mapped.type, "community");
-  assert.ok(mapped.acceptedItems.includes("Meat and dairy"));
-  assert.ok(
-    mapped.rejectedItems.includes("Leaving food scraps outside the bin")
-  );
-  assert.ok(mapped.links.includes("https://www.nyc.gov/smartcomposting"));
+  assert.deepEqual(mapped.links, ["https://www.nyc.gov/smartcomposting"]);
+  assert.ok(mapped.acceptedItems.includes("Meat, fish, bones, and dairy"));
+  assert.ok(mapped.acceptedItems.includes("Fruits and vegetables"));
+  assert.ok(mapped.rejectedItems.includes("Clean paper and cardboard"));
+  assert.match(mapped.description, /^\*\*Location:\*\*\nNE Bushwick/);
+  assert.match(mapped.description, /\n\*\*Hours:\*\*\n24\/7/);
+  assert.match(mapped.description, /\n\*\*Notes:\*\*\nDownload the app/);
 });
 
-test("mapNycFeature maps community sites with meat and dairy restrictions", () => {
+test("mapNycFeature maps community drop-off sites with DSNY community rules", () => {
   const mapped = mapNycFeature(growNycFeature);
 
   assert.ok(mapped);
+  assert.deepEqual(mapped.links, []);
+  assert.ok(mapped.acceptedItems.includes("Fruits and vegetables"));
   assert.ok(mapped.rejectedItems.includes("Meat"));
-  assert.ok(mapped.rejectedItems.includes("Dairy"));
+  assert.ok(mapped.rejectedItems.includes("Prepared food"));
+  assert.match(
+    mapped.description,
+    /\n\*\*Notes:\*\*\nNo meat, bones, or dairy\./
+  );
 });
 
 test("hashMappedListing stays stable for unchanged mapped payloads", async () => {

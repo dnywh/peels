@@ -10,7 +10,7 @@ import {
   getAnonymousSensitiveListingTeaser,
   getListingDisplayName,
 } from "@/utils/listingUtils";
-import { parseTextWithLinks } from "@/utils/linkUtils";
+import { parseInlineText } from "@/utils/linkUtils";
 import ListingHeader from "@/components/ListingHeader";
 import ListingItemList from "@/components/ListingItemList";
 import ListingPhotoGallery from "@/components/ListingPhotoGallery";
@@ -568,21 +568,62 @@ const ButtonGroup = styled.div`
 `;
 
 // Split by line breaks and render each paragraph with inline link parsing.
+function renderInlineText(line: string, keyPrefix: string) {
+  return parseInlineText(line).map((part, index) => {
+    if (typeof part === "string") {
+      return <Fragment key={`${keyPrefix}-${index}`}>{part}</Fragment>;
+    }
+
+    if (part.type === "bold") {
+      return (
+        <strong key={`${keyPrefix}-${index}`}>
+          {part.parts.map((boldPart, boldIndex) =>
+            typeof boldPart === "string" ? (
+              <Fragment key={`${keyPrefix}-${index}-${boldIndex}`}>
+                {boldPart}
+              </Fragment>
+            ) : (
+              <StrongLink
+                key={`${keyPrefix}-${index}-${boldIndex}`}
+                href={boldPart.href}
+                target="_blank"
+              >
+                {boldPart.text}
+              </StrongLink>
+            )
+          )}
+        </strong>
+      );
+    }
+
+    return (
+      <StrongLink
+        key={`${keyPrefix}-${index}`}
+        href={part.href}
+        target="_blank"
+      >
+        {part.text}
+      </StrongLink>
+    );
+  });
+}
+
 function MultiParagraphCluster({ text }: { text: string }) {
-  const paragraphs = text.split("\n").filter((line) => line.trim() !== "");
+  const paragraphs = text
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
   return (
     <>
       {paragraphs.map((paragraph, index) => (
         <p key={index}>
-          {parseTextWithLinks(paragraph).map((part, i) =>
-            typeof part === "string" ? (
-              part
-            ) : (
-              <StrongLink key={i} href={part.href} target="_blank">
-                {part.text}
-              </StrongLink>
-            )
-          )}
+          {paragraph.split("\n").map((line, lineIndex) => (
+            <Fragment key={lineIndex}>
+              {lineIndex > 0 ? <br /> : null}
+              {renderInlineText(line, `${index}-${lineIndex}`)}
+            </Fragment>
+          ))}
         </p>
       ))}
     </>

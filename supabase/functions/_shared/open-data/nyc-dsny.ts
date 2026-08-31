@@ -1,4 +1,5 @@
 // NYC DSNY food scrap drop-off mapper. See docs/open-data-listings.md.
+// Programme rules: https://www.nyc.gov/site/dsny/collection/residents/food-scrap-drop-off.page
 import type { MappedOpenDataListing } from "./types.ts";
 
 export type NycGeoJsonFeature = {
@@ -15,38 +16,42 @@ export type NycGeoJsonCollection = {
   features: NycGeoJsonFeature[];
 };
 
-const DSNY_SMART_COMPOST_ACCEPTED = [
-  "All food scraps",
-  "Fruit and vegetable scraps",
-  "Meat and dairy",
-  "Coffee grounds and filters",
-  "Tea bags",
+const SMART_COMPOST_ACCEPTED = [
+  "Fruits and vegetables",
   "Eggshells",
-  "Bread and grains",
+  "Coffee grounds and tea bags",
+  "Bread, rice, and pasta",
+  "Meat, fish, bones, and dairy",
+  "Prepared food",
+  "Food-soiled paper",
+  "Greasy uncoated paper plates and pizza boxes",
+  "Houseplants and flowers",
+  "Leaf and yard waste",
 ];
 
-const DSNY_SMART_COMPOST_REJECTED = [
-  "Non-food waste",
-  "Plastic bags",
-  "Leaving food scraps outside the bin",
+const SMART_COMPOST_REJECTED = [
+  "Trash, wrappers, and hygiene products",
+  "Pet waste, medical waste, and diapers",
+  "Metal, glass, plastic, and cartons",
+  "Clean paper and cardboard",
 ];
 
-const COMMUNITY_ACCEPTED = [
-  "Fruit and vegetable scraps",
-  "Coffee grounds and filters",
-  "Tea bags",
+const COMMUNITY_DROP_OFF_ACCEPTED = [
+  "Fruits and vegetables",
   "Eggshells",
-  "Bread and grains",
-  "Houseplant trimmings",
+  "Coffee grounds and tea bags",
+  "Bread, rice, and pasta",
+  "Leaf and yard waste",
+  "Houseplants",
 ];
 
-const COMMUNITY_REJECTED = [
+const COMMUNITY_DROP_OFF_REJECTED = [
   "Meat",
+  "Fish",
   "Bones",
   "Dairy",
-  "Oils and fats",
-  "Plastic bags",
-  "Non-food waste",
+  "Oil and fat",
+  "Prepared food",
 ];
 
 function asString(value: unknown): string | null {
@@ -71,35 +76,16 @@ function normaliseUrl(value: unknown): string | null {
   return `https://${raw}`;
 }
 
-function extractAppUrl(value: unknown): string | null {
-  if (typeof value === "string") {
-    return normaliseUrl(value);
-  }
-
-  if (value && typeof value === "object" && "url" in value) {
-    return normaliseUrl((value as { url?: unknown }).url);
-  }
-
-  return null;
+function isDsnySmartCompost(hostedBy: string | null): boolean {
+  return hostedBy === "Department of Sanitation";
 }
 
-function hasMeatDairyRestriction(notes: string | null): boolean {
-  if (!notes) {
-    return false;
+function labeledBlock(label: string, value: string | null): string | null {
+  if (!value) {
+    return null;
   }
 
-  return /no meat|meat, bones, or dairy|without meat/i.test(notes);
-}
-
-function isDsnySmartCompost(
-  hostedBy: string | null,
-  notes: string | null
-): boolean {
-  if (hostedBy === "Department of Sanitation") {
-    return true;
-  }
-
-  return Boolean(notes && /smartcompost|download the app/i.test(notes));
+  return `**${label}:**\n${value}`;
 }
 
 function buildDescription(parts: Array<string | null>): string {
@@ -107,42 +93,24 @@ function buildDescription(parts: Array<string | null>): string {
 }
 
 function collectLinks(properties: Record<string, unknown>): string[] {
-  const links = new Set<string>();
-
-  for (const value of [
-    normaliseUrl(properties.website),
-    extractAppUrl(properties.app_ios),
-    normaliseUrl(properties.app_android),
-  ]) {
-    if (value) {
-      links.add(value);
-    }
-  }
-
-  return [...links];
+  const website = normaliseUrl(properties.website);
+  return website ? [website] : [];
 }
 
-function resolveAcceptedRejected(
-  hostedBy: string | null,
-  notes: string | null
-): { acceptedItems: string[]; rejectedItems: string[] } {
-  if (isDsnySmartCompost(hostedBy, notes)) {
+function resolveAcceptedRejected(hostedBy: string | null): {
+  acceptedItems: string[];
+  rejectedItems: string[];
+} {
+  if (isDsnySmartCompost(hostedBy)) {
     return {
-      acceptedItems: DSNY_SMART_COMPOST_ACCEPTED,
-      rejectedItems: DSNY_SMART_COMPOST_REJECTED,
-    };
-  }
-
-  if (hasMeatDairyRestriction(notes)) {
-    return {
-      acceptedItems: COMMUNITY_ACCEPTED,
-      rejectedItems: COMMUNITY_REJECTED,
+      acceptedItems: SMART_COMPOST_ACCEPTED,
+      rejectedItems: SMART_COMPOST_REJECTED,
     };
   }
 
   return {
-    acceptedItems: COMMUNITY_ACCEPTED,
-    rejectedItems: COMMUNITY_REJECTED.filter((item) => item !== "Meat"),
+    acceptedItems: COMMUNITY_DROP_OFF_ACCEPTED,
+    rejectedItems: COMMUNITY_DROP_OFF_REJECTED,
   };
 }
 
@@ -190,17 +158,14 @@ export function mapNycFeature(
     return null;
   }
 
-  const { acceptedItems, rejectedItems } = resolveAcceptedRejected(
-    hostedBy,
-    notes
-  );
+  const { acceptedItems, rejectedItems } = resolveAcceptedRejected(hostedBy);
 
   const description = buildDescription([
-    location ? `Location: ${location}` : null,
-    hostedBy ? `Hosted by: ${hostedBy}` : null,
-    openMonths ? `Open: ${openMonths}` : null,
-    hours ? `Hours: ${hours}` : null,
-    notes,
+    labeledBlock("Location", location),
+    labeledBlock("Hosted by", hostedBy),
+    labeledBlock("Open", openMonths),
+    labeledBlock("Hours", hours),
+    labeledBlock("Notes", notes),
   ]);
 
   return {

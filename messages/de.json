@@ -487,6 +487,8 @@
       "localResident": "Lokale Person",
       "communityIn": "Gemeinschaft in {area}",
       "localCommunity": "Lokale Gemeinschaft",
+      "dropOffIn": "Abgabestelle in {area}",
+      "localDropOff": "Lokale Abgabestelle",
       "businessIn": "Unternehmen in {area}",
       "localBusiness": "Lokales Unternehmen",
       "avatarAlt": "Der Avatar für diesen Eintrag",

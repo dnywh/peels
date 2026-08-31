@@ -487,6 +487,8 @@
       "localResident": "Morador(a) local",
       "communityIn": "Comunidade em {area}",
       "localCommunity": "Comunidade local",
+      "dropOffIn": "Ponto de entrega em {area}",
+      "localDropOff": "Ponto de entrega local",
       "businessIn": "Negócio em {area}",
       "localBusiness": "Negócio local",
       "avatarAlt": "O avatar deste anúncio",

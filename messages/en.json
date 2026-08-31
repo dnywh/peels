@@ -487,6 +487,8 @@
       "localResident": "Local resident",
       "communityIn": "Community in {area}",
       "localCommunity": "Local community",
+      "dropOffIn": "Drop-off in {area}",
+      "localDropOff": "Local drop-off",
       "businessIn": "Business in {area}",
       "localBusiness": "Local business",
       "avatarAlt": "The avatar for this listing",
