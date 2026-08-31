@@ -19,6 +19,15 @@ function jsonResponse(body: Record<string, unknown>, status: number) {
   });
 }
 
+function throwIfSupabaseError(
+  error: { message: string } | null,
+  context: string
+) {
+  if (error) {
+    throw new Error(`${context}: ${error.message}`);
+  }
+}
+
 function resolveOwnerId(sourceId: string): string | null {
   if (sourceId.startsWith("nyc-")) {
     return Deno.env.get("PEELS_OPEN_DATA_OWNER_ID_USA") ?? null;
@@ -217,17 +226,21 @@ const handler = async (request: Request): Promise<Response> => {
         const existingRef = refsByExternalId.get(mapped.externalId);
 
         if (existingRef?.sync_status === "claimed") {
-          await supabase
+          const { error: claimedRefError } = await supabase
             .from("listing_open_data_refs")
             .update({ last_seen_at: syncStartedAt })
             .eq("source_id", sourceId)
             .eq("external_id", mapped.externalId);
+          throwIfSupabaseError(
+            claimedRefError,
+            "Failed to touch claimed open data ref"
+          );
           stats.skippedClaimed += 1;
           continue;
         }
 
         if (existingRef && existingRef.content_hash === contentHash) {
-          await supabase
+          const { error: unchangedRefError } = await supabase
             .from("listing_open_data_refs")
             .update({
               last_seen_at: syncStartedAt,
@@ -235,6 +248,10 @@ const handler = async (request: Request): Promise<Response> => {
             })
             .eq("source_id", sourceId)
             .eq("external_id", mapped.externalId);
+          throwIfSupabaseError(
+            unchangedRefError,
+            "Failed to touch unchanged open data ref"
+          );
           stats.unchanged += 1;
           continue;
         }
@@ -297,16 +314,24 @@ const handler = async (request: Request): Promise<Response> => {
           continue;
         }
 
-        await supabase
+        const { error: hideListingError } = await supabase
           .from("listings")
           .update({ visibility: false })
           .eq("id", ref.listing_id);
+        throwIfSupabaseError(
+          hideListingError,
+          `Failed to hide listing ${ref.listing_id}`
+        );
 
-        await supabase
+        const { error: removeRefError } = await supabase
           .from("listing_open_data_refs")
           .update({ sync_status: "removed_from_source" })
           .eq("source_id", sourceId)
           .eq("external_id", ref.external_id);
+        throwIfSupabaseError(
+          removeRefError,
+          `Failed to mark ref ${ref.external_id} removed`
+        );
 
         stats.removed += 1;
       }

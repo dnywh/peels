@@ -1,0 +1,3 @@
+-- Placeholder for Supabase preview branches that applied this version before
+-- default_avatar was folded into 20260824160000_open_data_listings_sync.sql.
+-- Fresh installs already include default_avatar on open_data_sources.

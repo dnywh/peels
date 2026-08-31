@@ -1,16 +1,53 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S node --experimental-strip-types
 
 import { createClient } from "@supabase/supabase-js";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { hashMappedListing } from "../supabase/functions/_shared/open-data/hash.ts";
 import { mapNycFeature } from "../supabase/functions/_shared/open-data/nyc-dsny.ts";
 
-const supabaseUrl = process.env.SUPABASE_URL ?? "http://127.0.0.1:54331";
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  ".."
+);
+
+function readLocalSupabaseEnv() {
+  const result = spawnSync("supabase", ["status", "-o", "env"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  if (result.status !== 0 || !result.stdout) {
+    return {};
+  }
+
+  const values = {};
+  for (const line of result.stdout.split("\n")) {
+    const match = line.match(/^([A-Z0-9_]+)="([^"]*)"$/);
+    if (match) {
+      values[match[1]] = match[2];
+    }
+  }
+
+  return values;
+}
+
+const localEnv = readLocalSupabaseEnv();
+const supabaseUrl =
+  process.env.SUPABASE_URL ?? localEnv.API_URL ?? "http://127.0.0.1:54331";
 const serviceRoleKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ??
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? localEnv.SERVICE_ROLE_KEY;
 const ownerId =
   process.env.PEELS_OPEN_DATA_OWNER_ID_USA ??
   "2c9ae20c-2469-4e60-84b3-39268697717c";
+
+if (!serviceRoleKey) {
+  console.error(
+    "Missing SUPABASE_SERVICE_ROLE_KEY. Set it in your shell or run `supabase status -o env`."
+  );
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
