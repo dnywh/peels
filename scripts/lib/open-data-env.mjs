@@ -8,7 +8,7 @@ export const LOCAL_DEMO_HOST_PROFILE_ID =
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  ".."
+  "../.."
 );
 
 export function readLocalSupabaseEnv() {
