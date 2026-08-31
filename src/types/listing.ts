@@ -75,6 +75,7 @@ export interface Listing {
   country_code: string | null;
   area_name: string | null;
   is_stub: boolean | null;
+  is_open_data_mirrored?: boolean | null;
   homepage_featured?: boolean | null;
   homepage_featured_photo_indexes?: number[] | null;
   owner_has_multiple_non_residential_listings: boolean | null;

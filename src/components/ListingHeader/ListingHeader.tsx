@@ -167,11 +167,13 @@ function ListingHeader({
         )}
         {listing?.type === "community" && (
           <p>
-            {listing?.area_name ? (
-              <>{t("Listings.read.communityIn", { area: listing.area_name })}</>
-            ) : (
-              t("Listings.read.localCommunity")
-            )}
+            {listing?.is_stub
+              ? listing?.area_name
+                ? t("Listings.read.dropOffIn", { area: listing.area_name })
+                : t("Listings.read.localDropOff")
+              : listing?.area_name
+                ? t("Listings.read.communityIn", { area: listing.area_name })
+                : t("Listings.read.localCommunity")}
           </p>
         )}
         {listing?.type === "business" && (

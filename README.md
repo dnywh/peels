@@ -80,14 +80,13 @@ For local-first Supabase development:
 1. Copy `.env.example` to `.env.local`
 2. Run `npm run supabase:start`
 3. Run `npm run supabase:env`
-4. Make sure `.env.local` contains the local URL `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
+4. Make sure `.env.local` contains `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331` (from `npm run supabase:env`)
 5. Copy the local `ANON_KEY` value into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`
 6. Copy the local `SERVICE_ROLE_KEY` value into `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
 
-The repo defaults `NEXT_PUBLIC_SUPABASE_URL` to `http://127.0.0.1:54331` so local development does not need to point at the hosted Peels project. If you already had a `.env.local` from hosted development, update that value manually because copying `.env.example` later may not overwrite your existing file.
-Peels intentionally uses the `54331`-`54334` local port range so it can run alongside other Supabase projects that still use the CLI defaults.
+The repo defaults `NEXT_PUBLIC_SUPABASE_URL` to the local stack so development does not need the hosted Peels project. Peels uses ports `54331`–`54334` so it can run beside other local Supabase projects. If `.env.local` still points at hosted Supabase, update it; copying `.env.example` later may not overwrite an existing file.
 
-If you need to serve [Supabase edge functions](https://github.com/peels-org/peels/blob/main/supabase/functions) locally, copy `supabase/.env.example` to `supabase/.env` and add only the secrets you actually need. Production secrets should remain dashboard-managed for now.
+If you need to serve [Supabase edge functions](https://github.com/peels-org/peels/blob/main/supabase/functions) locally, copy `supabase/functions/.env.example` to `supabase/functions/.env`. That file is loaded by `supabase start`. Use `supabase functions serve` only when you want hot reload while editing function code. Production secrets should remain dashboard-managed for now.
 
 For the fuller operational walkthrough, including GitHub/Vercel dashboard setup and fresh-computer bootstrap, see [docs/supabase-local-first.md](./docs/supabase-local-first.md).
 

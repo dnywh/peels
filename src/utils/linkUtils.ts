@@ -1,6 +1,7 @@
 const URL_REGEX =
   /(?:https?:\/\/)?(?:www\.)?(?![^@]*@[^@]*\.[a-z]{2,})[^\s<>]+\.[a-z]{2,}(?:\/[^\s<>]*)?/gi;
 const EMAIL_REGEX = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+/gi;
+const BOLD_REGEX = /\*\*([^*]+)\*\*/g;
 
 type MatchType = "email" | "url";
 
@@ -17,6 +18,18 @@ export type ParsedTextPart =
       type: "link";
       href: string;
       text: string;
+    };
+
+export type ParsedInlinePart =
+  | string
+  | {
+      type: "link";
+      href: string;
+      text: string;
+    }
+  | {
+      type: "bold";
+      parts: ParsedTextPart[];
     };
 
 export function prettifyLink(link: string) {
@@ -100,4 +113,33 @@ export function parseTextWithLinks(text: string): ParsedTextPart[] {
   }
 
   return parts;
+}
+
+// Supports **bold** markers and autolinked URLs/emails. Bold segments may
+// contain links; those links render inside <strong>.
+export function parseInlineText(text: string): ParsedInlinePart[] {
+  const parts: ParsedInlinePart[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  BOLD_REGEX.lastIndex = 0;
+
+  while ((match = BOLD_REGEX.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(...parseTextWithLinks(text.slice(lastIndex, match.index)));
+    }
+
+    parts.push({
+      type: "bold",
+      parts: parseTextWithLinks(match[1]),
+    });
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(...parseTextWithLinks(text.slice(lastIndex)));
+  }
+
+  return parts.length > 0 ? parts : parseTextWithLinks(text);
 }

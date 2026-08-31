@@ -58,3 +58,13 @@ These instructions apply to the whole repository.
 - When changing database schema, functions, views, policies, triggers, or grants, add a new forward migration instead.
 - If a previous migration introduced the object you need to change, use a new migration with `create or replace`, `alter`, or the appropriate forward-only SQL rather than modifying the old file.
 - If you are unsure whether a migration has already been applied anywhere shared, assume that it has and create a new migration.
+
+## Open data listings
+
+- Official drop-off datasets are mirrored into stub listings via the
+  `sync-open-data-feed` edge function (API sources) or a local file importer
+  (council spreadsheets, planned) and `open_data_sources` /
+  `listing_open_data_refs`. See [docs/open-data-listings.md](docs/open-data-listings.md).
+- Do not query Socrata or council APIs at map-render time.
+- Source secrets belong in Vault / edge function env only. Never commit app tokens
+  or owner profile UUIDs.

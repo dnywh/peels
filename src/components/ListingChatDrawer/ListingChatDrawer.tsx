@@ -104,6 +104,7 @@ export default function ListingChatDrawer({
 
   const visibility = listing.visibility ?? undefined;
   const isStub = listing.is_stub ?? undefined;
+  const isOpenDataMirrored = listing.is_open_data_mirrored ?? false;
 
   const drawerContent = (
     <>
@@ -115,6 +116,7 @@ export default function ListingChatDrawer({
               slug={listing.slug}
               visibility={visibility}
               isStub={isStub}
+              isOpenDataMirrored={isOpenDataMirrored}
             />
           ) : listing.is_stub ? (
             <ListingCta
@@ -122,6 +124,7 @@ export default function ListingChatDrawer({
               slug={listing.slug}
               visibility={visibility}
               isStub={true}
+              isOpenDataMirrored={isOpenDataMirrored}
             />
           ) : (
             <Drawer.Trigger asChild>
@@ -136,6 +139,7 @@ export default function ListingChatDrawer({
             slug={listing.slug}
             visibility={visibility}
             isStub={isStub}
+            isOpenDataMirrored={isOpenDataMirrored}
           />
         )}
       </ListingCtaContainer>

@@ -38,11 +38,13 @@ function ListingCta({
   slug,
   visibility = true,
   isStub = false,
+  isOpenDataMirrored = false,
 }: {
   viewer?: "owner" | "guest" | null;
   slug: string;
   visibility?: boolean;
   isStub?: boolean;
+  isOpenDataMirrored?: boolean;
 }) {
   const t = useTranslations();
 
@@ -70,7 +72,11 @@ function ListingCta({
       <StyledListingCta data-testid="listing-stub-cta">
         <PeelsLogo color="quaternary" />
         <Text>
-          <p>{t("Listings.read.stubNote")}</p>
+          <p>
+            {isOpenDataMirrored
+              ? t("Listings.read.stubMirroredNote")
+              : t("Listings.read.stubNote")}
+          </p>
           <p>
             {t.rich("Listings.read.stubClaim", {
               link: (chunks) => (

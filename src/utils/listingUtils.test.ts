@@ -139,11 +139,11 @@ test("listing metadata uses the listing name with the site title template", () =
   assert.equal(metadata.openGraph?.title, "Neighbourhood compost drop-off");
   assert.match(
     JSON.stringify(metadata.openGraph?.images),
-    /opengraph-image\.jpg/
+    /opengraph-image\.png/
   );
   assert.match(
     JSON.stringify(metadata.twitter?.images),
-    /opengraph-image\.jpg/
+    /opengraph-image\.png/
   );
 });
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { siteConfig } from "../config/site.ts";
 
 const openGraphImage = {
-  url: "/opengraph-image.jpg",
+  url: "/opengraph-image.png",
   width: 1200,
   height: 630,
   alt: siteConfig.description,
