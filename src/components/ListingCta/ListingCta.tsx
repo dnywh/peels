@@ -77,15 +77,17 @@ function ListingCta({
               ? t("Listings.read.stubMirroredNote")
               : t("Listings.read.stubNote")}
           </p>
-          <p>
-            {t.rich("Listings.read.stubClaim", {
-              link: (chunks) => (
-                <EncodedEmailLink address={siteConfig.encodedEmail.team}>
-                  {chunks}
-                </EncodedEmailLink>
-              ),
-            })}
-          </p>
+          {!isOpenDataMirrored && (
+            <p>
+              {t.rich("Listings.read.stubClaim", {
+                link: (chunks) => (
+                  <EncodedEmailLink address={siteConfig.encodedEmail.team}>
+                    {chunks}
+                  </EncodedEmailLink>
+                ),
+              })}
+            </p>
+          )}
         </Text>
       </StyledListingCta>
     );

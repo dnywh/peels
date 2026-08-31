@@ -103,11 +103,14 @@ function labeledBlock(label: string, value: string | null): string | null {
 
 function buildDescription(record: PortPhillipFogoRecord): string {
   const streetParts = [record.streetNumber, record.streetName].filter(Boolean);
-  const streetAddress = streetParts.length > 0 ? streetParts.join(" ") : null;
+  const streetLine = streetParts.length > 0 ? streetParts.join(" ") : null;
+  const address =
+    streetLine && record.suburb
+      ? `${streetLine},\n${record.suburb}`
+      : (streetLine ?? record.suburb);
 
   return [
-    labeledBlock("Address", streetAddress),
-    labeledBlock("Suburb", record.suburb),
+    labeledBlock("Address", address),
     labeledBlock("Collection location", record.collectionLocation),
     labeledBlock(
       "Notes",

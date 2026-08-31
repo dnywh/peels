@@ -74,8 +74,11 @@ test("mapPortPhillipFogoListing builds About blocks and FOGO programme chips", (
   assert.equal(listing.areaName, "Albert Park");
   assert.equal(listing.countryCode, "AU");
   assert.equal(listing.useSourceAvatar, true);
-  assert.match(listing.description, /\*\*Address:\*\*\n9 Little Finlay St/);
-  assert.match(listing.description, /\*\*Suburb:\*\*\nAlbert Park/);
+  assert.match(
+    listing.description,
+    /\*\*Address:\*\*\n9 Little Finlay St,\nAlbert Park/
+  );
+  assert.doesNotMatch(listing.description, /\*\*Suburb:\*\*/);
   assert.match(
     listing.description,
     /\*\*Collection location:\*\*\nMoubray Lane Side/
