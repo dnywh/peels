@@ -19,6 +19,8 @@ export type MappedOpenDataListing = {
   links: string[];
   isStub: boolean;
   visibility: boolean;
+  /** When true, sync applies open_data_sources.default_avatar to this listing. */
+  useSourceAvatar: boolean;
 };
 
 export type OpenDataSourceRow = {

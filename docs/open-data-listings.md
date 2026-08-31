@@ -174,12 +174,13 @@ where id = 'nyc-dsny-food-scrap';
 Re-run sync, or backfill the smoke-test listing:
 
 ```sql
-update public.listings
+update public.listings l
 set avatar = 'stubs/nyc-dsny-food-scrap.png'
-where id in (
-  select listing_id from public.listing_open_data_refs
-  where source_id = 'nyc-dsny-food-scrap' and sync_status = 'active'
-);
+from public.listing_open_data_refs r
+where r.listing_id = l.id
+  and r.source_id = 'nyc-dsny-food-scrap'
+  and r.sync_status = 'active'
+  and l.description like '%**Hosted by:**' || E'\n' || 'Department of Sanitation%';
 ```
 
 The smoke test alone leaves `avatar` null.
@@ -238,7 +239,10 @@ Store the path on `open_data_sources.default_avatar`, for example:
 `stubs/nyc-dsny-food-scrap.png`
 
 The API sync copies `default_avatar` onto listings during insert and content
-updates. Claimed listings are skipped by sync and keep the host avatar.
+updates when the mapper sets `useSourceAvatar: true`. For mixed sources such as
+NYC DSNY, only Smart Compost bins (`hosted_by` = Department of Sanitation) use
+the shared mark; community drop-offs keep a null avatar. Claimed listings are
+skipped by sync and keep the host avatar.
 
 Keep avatar out of `content_hash` so changing a source mark does not rewrite
 descriptions.
@@ -250,14 +254,13 @@ update public.open_data_sources
 set default_avatar = 'stubs/nyc-dsny-food-scrap.png'
 where id = 'nyc-dsny-food-scrap';
 
-update public.listings
+update public.listings l
 set avatar = 'stubs/nyc-dsny-food-scrap.png'
-where id in (
-  select listing_id
-  from public.listing_open_data_refs
-  where source_id = 'nyc-dsny-food-scrap'
-    and sync_status = 'active'
-);
+from public.listing_open_data_refs r
+where r.listing_id = l.id
+  and r.source_id = 'nyc-dsny-food-scrap'
+  and r.sync_status = 'active'
+  and l.description like '%**Hosted by:**' || E'\n' || 'Department of Sanitation%';
 ```
 
 ### Upload workflow

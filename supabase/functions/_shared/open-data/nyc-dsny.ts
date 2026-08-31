@@ -183,6 +183,7 @@ export function mapNycFeature(
     links: collectLinks(properties),
     isStub: true,
     visibility: true,
+    useSourceAvatar: isDsnySmartCompost(hostedBy),
   };
 }
 

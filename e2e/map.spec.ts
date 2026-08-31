@@ -107,6 +107,18 @@ function expectStoredMapViewToMatch(
   expect(actual?.zoom).toBeCloseTo(expected.zoom, 2);
 }
 
+async function waitForMapMarkers(page: Page) {
+  const mapView = page.getByTestId("map-view");
+  await expect(mapView).toHaveAttribute("data-search-context-ready", "true", {
+    timeout: MAP_MARKER_RENDER_TIMEOUT_MS,
+  });
+  await expect
+    .poll(async () => page.getByTestId("map-pin").count(), {
+      timeout: MAP_MARKER_RENDER_TIMEOUT_MS,
+    })
+    .toBeGreaterThan(0);
+}
+
 async function expectMapPinDetailScale(page: Page, expectedScale: number) {
   await expect
     .poll(
@@ -483,174 +495,182 @@ test("map pins minify at country zoom, then grow and animate selection", async (
     }
   });
 
+  await page.route(/api\.maptiler\.com\/geolocation/i, (route) =>
+    route.abort("failed")
+  );
   await seedStoredMapView(page, INNER_WEST_MAP_VIEW);
 
-  await page.goto("/map", { waitUntil: "domcontentloaded" });
+  try {
+    await page.goto("/map", { waitUntil: "domcontentloaded" });
 
-  const mapView = page.getByTestId("map-view");
-  await expect(mapView.locator(".maplibregl-canvas")).toBeVisible({
-    timeout: 10_000,
-  });
+    const mapView = page.getByTestId("map-view");
+    await expect(mapView.locator(".maplibregl-canvas")).toBeVisible({
+      timeout: 10_000,
+    });
+    await waitForMapMarkers(page);
 
-  const firstPin = page.getByTestId("map-pin").first();
-  await expect(firstPin).toBeVisible({
-    timeout: MAP_MARKER_RENDER_TIMEOUT_MS,
-  });
-  await expectMapPinDetailScale(page, 0);
-  await expectMapPinVisualWidth(
-    firstPin.locator('[data-testid="map-pin-compact-dot"]'),
-    10
-  );
-  await expect(
-    firstPin.locator('[data-testid="map-pin-compact-icon"]')
-  ).toHaveCSS("opacity", "0");
-  expect(hydrationErrors).toEqual([]);
+    const firstPin = page.getByTestId("map-pin").first();
+    await expect(firstPin).toBeVisible();
+    await expectMapPinDetailScale(page, 0);
+    await expectMapPinVisualWidth(
+      firstPin.locator('[data-testid="map-pin-compact-dot"]'),
+      10
+    );
+    await expect(
+      firstPin.locator('[data-testid="map-pin-compact-icon"]')
+    ).toHaveCSS("opacity", "0");
+    expect(hydrationErrors).toEqual([]);
 
-  const minifiedTargetMarker = page
-    .getByRole("button", { name: "Map marker" })
-    .last();
-  const minifiedTargetPin = minifiedTargetMarker.getByTestId("map-pin");
-  const minifiedTargetPinHandle = await minifiedTargetPin.elementHandle();
-  expect(minifiedTargetPinHandle).not.toBeNull();
+    const minifiedTargetMarker = page
+      .getByRole("button", { name: "Map marker" })
+      .last();
+    const minifiedTargetPin = minifiedTargetMarker.getByTestId("map-pin");
+    const minifiedTargetPinHandle = await minifiedTargetPin.elementHandle();
+    expect(minifiedTargetPinHandle).not.toBeNull();
 
-  await minifiedTargetPin.click();
-  await expect
-    .poll(
-      async () =>
-        minifiedTargetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("open");
+    await minifiedTargetPin.click();
+    await expect
+      .poll(
+        async () =>
+          minifiedTargetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("open");
 
-  await mapView.click({ position: { x: 20, y: 450 } });
-  await expect
-    .poll(
-      async () =>
-        minifiedTargetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("compact");
+    await mapView.click({ position: { x: 20, y: 450 } });
+    await expect
+      .poll(
+        async () =>
+          minifiedTargetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("compact");
 
-  await minifiedTargetMarker.focus();
-  await page.keyboard.press("Enter");
-  await expect
-    .poll(
-      async () =>
-        minifiedTargetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("open");
+    await minifiedTargetMarker.focus();
+    await page.keyboard.press("Enter");
+    await expect
+      .poll(
+        async () =>
+          minifiedTargetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("open");
 
-  await mapView.click({ position: { x: 20, y: 450 } });
-  await expect
-    .poll(
-      async () =>
-        minifiedTargetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("compact");
+    await mapView.click({ position: { x: 20, y: 450 } });
+    await expect
+      .poll(
+        async () =>
+          minifiedTargetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("compact");
 
-  await minifiedTargetMarker.focus();
-  await page.keyboard.press("Space");
-  await expect
-    .poll(
-      async () =>
-        minifiedTargetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("open");
+    await minifiedTargetMarker.focus();
+    await page.keyboard.press("Space");
+    await expect
+      .poll(
+        async () =>
+          minifiedTargetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("open");
 
-  await mapView.click({ position: { x: 20, y: 450 } });
-  await expect
-    .poll(
-      async () =>
-        minifiedTargetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("compact");
+    await mapView.click({ position: { x: 20, y: 450 } });
+    await expect
+      .poll(
+        async () =>
+          minifiedTargetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("compact");
 
-  await zoomInUntilMapPinsAreDetailed(page);
+    await zoomInUntilMapPinsAreDetailed(page);
 
-  await expectMapPinDetailScale(page, 1);
-  await expectMapPinVisualWidth(
-    firstPin.locator('[data-testid="map-pin-compact-dot"]'),
-    24
-  );
-  await expect(
-    firstPin.locator('[data-testid="map-pin-compact-icon"]')
-  ).toHaveCSS("opacity", "1");
+    await expectMapPinDetailScale(page, 1);
+    await expectMapPinVisualWidth(
+      firstPin.locator('[data-testid="map-pin-compact-dot"]'),
+      24
+    );
+    await expect(
+      firstPin.locator('[data-testid="map-pin-compact-icon"]')
+    ).toHaveCSS("opacity", "1");
 
-  const targetMarker = page.getByRole("button", { name: "Map marker" }).last();
-  const targetPin = targetMarker.getByTestId("map-pin");
-  const targetPinHandle = await targetPin.elementHandle();
-  expect(targetPinHandle).not.toBeNull();
+    const targetMarker = page
+      .getByRole("button", { name: "Map marker" })
+      .last();
+    const targetPin = targetMarker.getByTestId("map-pin");
+    const targetPinHandle = await targetPin.elementHandle();
+    expect(targetPinHandle).not.toBeNull();
 
-  await targetPin.click();
-  await expect
-    .poll(
-      async () =>
-        targetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("open");
-  await expect
-    .poll(
-      async () =>
-        targetPinHandle!.evaluate((element) => {
-          const openLayer = element.querySelector(
-            '[data-testid="map-pin-open-layer"]'
-          );
-          if (!openLayer) return null;
+    await targetPin.click();
+    await expect
+      .poll(
+        async () =>
+          targetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("open");
+    await expect
+      .poll(
+        async () =>
+          targetPinHandle!.evaluate((element) => {
+            const openLayer = element.querySelector(
+              '[data-testid="map-pin-open-layer"]'
+            );
+            if (!openLayer) return null;
 
-          return getComputedStyle(openLayer).visibility;
-        }),
-      { timeout: 5000 }
-    )
-    .toBe("visible");
+            return getComputedStyle(openLayer).visibility;
+          }),
+        { timeout: 5000 }
+      )
+      .toBe("visible");
 
-  const rootWasPreserved = await targetPinHandle!.evaluate(
-    (element) =>
-      element.isConnected &&
-      element.getAttribute("data-map-pin-state") === "open"
-  );
-  expect(rootWasPreserved).toBe(true);
+    const rootWasPreserved = await targetPinHandle!.evaluate(
+      (element) =>
+        element.isConnected &&
+        element.getAttribute("data-map-pin-state") === "open"
+    );
+    expect(rootWasPreserved).toBe(true);
 
-  await mapView.click({ position: { x: 20, y: 450 } });
-  await expect
-    .poll(
-      async () =>
-        targetPinHandle!.evaluate((element) =>
-          element.getAttribute("data-map-pin-state")
-        ),
-      { timeout: 5000 }
-    )
-    .toBe("compact");
-  await expect
-    .poll(
-      async () =>
-        targetPinHandle!.evaluate((element) => {
-          const compactIcon = element.querySelector(
-            '[data-testid="map-pin-compact-icon"]'
-          );
-          if (!compactIcon) return null;
+    await mapView.click({ position: { x: 20, y: 450 } });
+    await expect
+      .poll(
+        async () =>
+          targetPinHandle!.evaluate((element) =>
+            element.getAttribute("data-map-pin-state")
+          ),
+        { timeout: 5000 }
+      )
+      .toBe("compact");
+    await expect
+      .poll(
+        async () =>
+          targetPinHandle!.evaluate((element) => {
+            const compactIcon = element.querySelector(
+              '[data-testid="map-pin-compact-icon"]'
+            );
+            if (!compactIcon) return null;
 
-          return getComputedStyle(compactIcon).opacity;
-        }),
-      { timeout: 5000 }
-    )
-    .toBe("1");
+            return getComputedStyle(compactIcon).opacity;
+          }),
+        { timeout: 5000 }
+      )
+      .toBe("1");
+  } finally {
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+  }
 });

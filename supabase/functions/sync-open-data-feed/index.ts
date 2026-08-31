@@ -79,6 +79,34 @@ function mapFeature(
   return null;
 }
 
+async function reconcileListingAvatar(
+  supabase: ReturnType<typeof createClient>,
+  source: OpenDataSourceRow,
+  mapped: MappedOpenDataListing,
+  listingId: number
+) {
+  if (!source.default_avatar) {
+    return;
+  }
+
+  const expectedAvatar = mapped.useSourceAvatar ? source.default_avatar : null;
+  const { error: avatarError } = await supabase
+    .from("listings")
+    .update({ avatar: expectedAvatar })
+    .eq("id", listingId)
+    .or(
+      expectedAvatar === null
+        ? `avatar.eq.${source.default_avatar}`
+        : "avatar.is.null"
+    );
+
+  if (avatarError) {
+    throw new Error(
+      `Failed to reconcile listing avatar: ${avatarError.message}`
+    );
+  }
+}
+
 async function upsertListing(
   supabase: ReturnType<typeof createClient>,
   ownerId: string,
@@ -252,6 +280,12 @@ const handler = async (request: Request): Promise<Response> => {
             unchangedRefError,
             "Failed to touch unchanged open data ref"
           );
+          await reconcileListingAvatar(
+            supabase,
+            source as OpenDataSourceRow,
+            mapped,
+            existingRef.listing_id
+          );
           stats.unchanged += 1;
           continue;
         }
@@ -263,18 +297,12 @@ const handler = async (request: Request): Promise<Response> => {
           mapped
         );
 
-        if (source.default_avatar) {
-          const { error: avatarError } = await supabase
-            .from("listings")
-            .update({ avatar: source.default_avatar })
-            .eq("id", listingId);
-
-          if (avatarError) {
-            throw new Error(
-              `Failed to set listing avatar: ${avatarError.message}`
-            );
-          }
-        }
+        await reconcileListingAvatar(
+          supabase,
+          source as OpenDataSourceRow,
+          mapped,
+          listingId
+        );
 
         const refPayload = {
           source_id: sourceId,
