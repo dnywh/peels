@@ -21,6 +21,9 @@ peels-org/dist/
 # production
 /build
 
+# council open data sanitised JSON (local scratch; archive originals in Storage)
+data/open-data-sanitized/
+
 # misc
 .DS_Store
 *.pem

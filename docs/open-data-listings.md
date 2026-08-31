@@ -58,7 +58,9 @@ token, local smoke test, and avatar backfill SQL.
 **Cron 504s:** `pg_net` waits up to 120s for the HTTP response. A full NYC pass
 with ~590 rows can take a few minutes, so the invoke may show 504 in edge logs
 even when the run finishes. Check `open_data_sources.last_sync_at` and
-`last_sync_stats` instead of the HTTP status alone.
+`last_sync_stats` instead of the HTTP status alone. Shared source avatars are
+reconciled in one batched pass at the end of each API sync, not per unchanged
+row.
 
 ## Council file sources
 
@@ -70,8 +72,9 @@ scripts, not the edge function.
 3. `npm run import:open-data -- <source-id>` (dry-run)
 4. `npm run import:open-data -- <source-id> --apply`
 
-**Do you need a `data/` folder?** No. Nothing under `data/` belongs in git. The
-sanitize script writes a temporary JSON file (default:
+**Do you need a `data/` folder?** No. Nothing under `data/` belongs in git
+(`data/open-data-sanitized/` is gitignored). The sanitize script writes a
+temporary JSON file (default:
 `data/open-data-sanitized/<source-id>.json`) as a bridge to the import script.
 It creates that path when it runs; you can delete it afterwards or pass a custom
 output path as the third argument to `sanitize:open-data`. The source of truth
