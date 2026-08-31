@@ -274,12 +274,6 @@ const handler = async (request: Request): Promise<Response> => {
             unchangedRefError,
             "Failed to touch unchanged open data ref"
           );
-          await reconcileListingAvatar(
-            supabase,
-            source as OpenDataSourceRow,
-            mapped,
-            existingRef.listing_id
-          );
           stats.unchanged += 1;
           continue;
         }

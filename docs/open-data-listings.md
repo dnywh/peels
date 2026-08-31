@@ -55,6 +55,11 @@ Mapper: `supabase/functions/_shared/open-data/nyc-dsny.ts`. Owner:
 `PEELS_OPEN_DATA_OWNER_ID_USA`. See Notion for cron schedule, Socrata app
 token, local smoke test, and avatar backfill SQL.
 
+**Cron 504s:** `pg_net` waits up to 120s for the HTTP response. A full NYC pass
+with ~590 rows can take a few minutes, so the invoke may show 504 in edge logs
+even when the run finishes. Check `open_data_sources.last_sync_at` and
+`last_sync_stats` instead of the HTTP status alone.
+
 ## Council file sources
 
 `source_type = manual_file`. Same tables and stub UX; imported with maintainer
