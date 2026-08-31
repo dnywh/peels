@@ -8,7 +8,7 @@ import {
 import type {
   ListingOpenDataRefRow,
   MappedOpenDataListing,
-  OpenDataFeedRow,
+  OpenDataSourceRow,
   SyncStats,
 } from "../_shared/open-data/types.ts";
 
@@ -19,8 +19,8 @@ function jsonResponse(body: Record<string, unknown>, status: number) {
   });
 }
 
-function resolveOwnerId(feedId: string): string | null {
-  if (feedId.startsWith("nyc-")) {
+function resolveOwnerId(sourceId: string): string | null {
+  if (sourceId.startsWith("nyc-")) {
     return Deno.env.get("PEELS_OPEN_DATA_OWNER_ID_USA") ?? null;
   }
 
@@ -28,8 +28,12 @@ function resolveOwnerId(feedId: string): string | null {
 }
 
 async function fetchRemoteFeatures(
-  feed: OpenDataFeedRow
+  source: OpenDataSourceRow
 ): Promise<ReturnType<typeof parseNycGeoJson>> {
+  if (!source.api_url) {
+    throw new Error(`Source ${source.id} has no api_url`);
+  }
+
   const headers: Record<string, string> = {
     Accept: "application/json",
   };
@@ -39,27 +43,27 @@ async function fetchRemoteFeatures(
     headers["X-App-Token"] = appToken;
   }
 
-  const response = await fetch(feed.api_url, { headers });
+  const response = await fetch(source.api_url, { headers });
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch open data feed (${response.status} ${response.statusText})`
+      `Failed to fetch open data source (${response.status} ${response.statusText})`
     );
   }
 
   const payload = await response.json();
 
-  if (feed.mapper_id.startsWith("nyc-dsny")) {
+  if (source.mapper_id.startsWith("nyc-dsny")) {
     return parseNycGeoJson(payload);
   }
 
-  throw new Error(`Unsupported mapper_id: ${feed.mapper_id}`);
+  throw new Error(`Unsupported mapper_id: ${source.mapper_id}`);
 }
 
 function mapFeature(
-  feed: OpenDataFeedRow,
+  source: OpenDataSourceRow,
   feature: ReturnType<typeof parseNycGeoJson>[number]
 ): MappedOpenDataListing | null {
-  if (feed.mapper_id.startsWith("nyc-dsny")) {
+  if (source.mapper_id.startsWith("nyc-dsny")) {
     return mapNycFeature(feature);
   }
 
@@ -111,17 +115,21 @@ const handler = async (request: Request): Promise<Response> => {
       return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
-    let payload: { feed_id?: unknown };
+    let payload: { source_id?: unknown; feed_id?: unknown };
     try {
       payload = await request.json();
     } catch (_error) {
       return jsonResponse({ error: "Invalid JSON request body" }, 400);
     }
 
-    const feedId =
-      typeof payload.feed_id === "string" ? payload.feed_id.trim() : "";
-    if (!feedId) {
-      return jsonResponse({ error: "Missing feed_id" }, 400);
+    const sourceId =
+      typeof payload.source_id === "string"
+        ? payload.source_id.trim()
+        : typeof payload.feed_id === "string"
+          ? payload.feed_id.trim()
+          : "";
+    if (!sourceId) {
+      return jsonResponse({ error: "Missing source_id" }, 400);
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -130,9 +138,9 @@ const handler = async (request: Request): Promise<Response> => {
       throw new Error("Missing Supabase environment variables");
     }
 
-    const ownerId = resolveOwnerId(feedId);
+    const ownerId = resolveOwnerId(sourceId);
     if (!ownerId) {
-      throw new Error(`Missing owner id env for feed ${feedId}`);
+      throw new Error(`Missing owner id env for source ${sourceId}`);
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -142,16 +150,25 @@ const handler = async (request: Request): Promise<Response> => {
       },
     });
 
-    const { data: feed, error: feedError } = await supabase
-      .from("open_data_feeds")
+    const { data: source, error: sourceError } = await supabase
+      .from("open_data_sources")
       .select(
-        "id, name, source_name, source_url, api_url, mapper_id, sync_cron, default_avatar"
+        "id, name, source_name, source_url, source_type, api_url, mapper_id, sync_cron, default_avatar, default_import_mode"
       )
-      .eq("id", feedId)
+      .eq("id", sourceId)
       .single();
 
-    if (feedError || !feed) {
-      throw new Error(`Feed not found: ${feedError?.message ?? feedId}`);
+    if (sourceError || !source) {
+      throw new Error(`Source not found: ${sourceError?.message ?? sourceId}`);
+    }
+
+    if (source.source_type !== "api") {
+      return jsonResponse(
+        {
+          error: `Source ${sourceId} uses ${source.source_type}; use the file importer instead`,
+        },
+        400
+      );
     }
 
     const syncStartedAt = new Date().toISOString();
@@ -165,15 +182,15 @@ const handler = async (request: Request): Promise<Response> => {
       errors: 0,
     };
 
-    const features = await fetchRemoteFeatures(feed as OpenDataFeedRow);
+    const features = await fetchRemoteFeatures(source as OpenDataSourceRow);
     stats.fetched = features.length;
 
     const { data: existingRefs, error: refsError } = await supabase
       .from("listing_open_data_refs")
       .select(
-        "feed_id, external_id, listing_id, source_version, content_hash, last_seen_at, sync_status"
+        "source_id, external_id, listing_id, source_version, content_hash, last_seen_at, sync_status"
       )
-      .eq("feed_id", feedId);
+      .eq("source_id", sourceId);
 
     if (refsError) {
       throw new Error(`Failed to load existing refs: ${refsError.message}`);
@@ -188,7 +205,7 @@ const handler = async (request: Request): Promise<Response> => {
 
     for (const feature of features) {
       try {
-        const mapped = mapFeature(feed as OpenDataFeedRow, feature);
+        const mapped = mapFeature(source as OpenDataSourceRow, feature);
         if (!mapped) {
           stats.errors += 1;
           continue;
@@ -203,7 +220,7 @@ const handler = async (request: Request): Promise<Response> => {
           await supabase
             .from("listing_open_data_refs")
             .update({ last_seen_at: syncStartedAt })
-            .eq("feed_id", feedId)
+            .eq("source_id", sourceId)
             .eq("external_id", mapped.externalId);
           stats.skippedClaimed += 1;
           continue;
@@ -216,7 +233,7 @@ const handler = async (request: Request): Promise<Response> => {
               last_seen_at: syncStartedAt,
               source_version: mapped.sourceVersion,
             })
-            .eq("feed_id", feedId)
+            .eq("source_id", sourceId)
             .eq("external_id", mapped.externalId);
           stats.unchanged += 1;
           continue;
@@ -229,10 +246,10 @@ const handler = async (request: Request): Promise<Response> => {
           mapped
         );
 
-        if (feed.default_avatar) {
+        if (source.default_avatar) {
           const { error: avatarError } = await supabase
             .from("listings")
-            .update({ avatar: feed.default_avatar })
+            .update({ avatar: source.default_avatar })
             .eq("id", listingId);
 
           if (avatarError) {
@@ -243,7 +260,7 @@ const handler = async (request: Request): Promise<Response> => {
         }
 
         const refPayload = {
-          feed_id: feedId,
+          source_id: sourceId,
           external_id: mapped.externalId,
           listing_id: listingId,
           source_version: mapped.sourceVersion,
@@ -254,7 +271,7 @@ const handler = async (request: Request): Promise<Response> => {
 
         const { error: refUpsertError } = await supabase
           .from("listing_open_data_refs")
-          .upsert(refPayload, { onConflict: "feed_id,external_id" });
+          .upsert(refPayload, { onConflict: "source_id,external_id" });
 
         if (refUpsertError) {
           throw new Error(`Failed to upsert ref: ${refUpsertError.message}`);
@@ -271,43 +288,45 @@ const handler = async (request: Request): Promise<Response> => {
       }
     }
 
-    for (const ref of existingRefs ?? []) {
-      if (
-        ref.sync_status !== "active" ||
-        seenExternalIds.has(ref.external_id)
-      ) {
-        continue;
+    if (source.default_import_mode === "complete_snapshot") {
+      for (const ref of existingRefs ?? []) {
+        if (
+          ref.sync_status !== "active" ||
+          seenExternalIds.has(ref.external_id)
+        ) {
+          continue;
+        }
+
+        await supabase
+          .from("listings")
+          .update({ visibility: false })
+          .eq("id", ref.listing_id);
+
+        await supabase
+          .from("listing_open_data_refs")
+          .update({ sync_status: "removed_from_source" })
+          .eq("source_id", sourceId)
+          .eq("external_id", ref.external_id);
+
+        stats.removed += 1;
       }
-
-      await supabase
-        .from("listings")
-        .update({ visibility: false })
-        .eq("id", ref.listing_id);
-
-      await supabase
-        .from("listing_open_data_refs")
-        .update({ sync_status: "removed_from_source" })
-        .eq("feed_id", feedId)
-        .eq("external_id", ref.external_id);
-
-      stats.removed += 1;
     }
 
     const syncFinishedAt = new Date().toISOString();
     const syncStatus = stats.errors > 0 ? "completed_with_errors" : "completed";
 
     await supabase
-      .from("open_data_feeds")
+      .from("open_data_sources")
       .update({
         last_sync_at: syncFinishedAt,
         last_sync_status: syncStatus,
         last_sync_stats: stats,
       })
-      .eq("id", feedId);
+      .eq("id", sourceId);
 
     return jsonResponse(
       {
-        feed_id: feedId,
+        source_id: sourceId,
         status: syncStatus,
         stats,
       },

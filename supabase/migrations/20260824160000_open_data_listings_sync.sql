@@ -1,20 +1,30 @@
--- Open data feed registry and mirrored listing refs for scheduled sync jobs.
+-- Open data source registry and mirrored listing refs for scheduled sync jobs.
 
-create table public.open_data_feeds (
+create table public.open_data_sources (
   id text primary key,
   name text not null,
   source_name text not null,
   source_url text not null,
-  api_url text not null,
+  source_type text not null
+    check (source_type in ('api', 'manual_file', 'remote_file')),
+  api_url text,
   mapper_id text not null,
   sync_cron text,
+  default_avatar text,
+  default_import_mode text not null default 'partial_update'
+    check (default_import_mode in ('complete_snapshot', 'partial_update')),
   last_sync_at timestamp with time zone,
   last_sync_status text,
-  last_sync_stats jsonb
+  last_sync_stats jsonb,
+  constraint open_data_sources_api_url_required_for_api
+    check (
+      source_type <> 'api'
+      or (api_url is not null and api_url <> '')
+    )
 );
 
 create table public.listing_open_data_refs (
-  feed_id text not null references public.open_data_feeds (id) on delete cascade,
+  source_id text not null references public.open_data_sources (id) on delete cascade,
   external_id text not null,
   listing_id bigint not null references public.listings (id) on delete cascade,
   source_version text,
@@ -22,24 +32,24 @@ create table public.listing_open_data_refs (
   last_seen_at timestamp with time zone not null default now(),
   sync_status text not null default 'active'
     check (sync_status in ('active', 'removed_from_source', 'claimed')),
-  primary key (feed_id, external_id),
+  primary key (source_id, external_id),
   unique (listing_id)
 );
 
 create index listing_open_data_refs_listing_id_idx
   on public.listing_open_data_refs (listing_id);
 
-create index listing_open_data_refs_feed_active_idx
-  on public.listing_open_data_refs (feed_id, sync_status)
+create index listing_open_data_refs_source_active_idx
+  on public.listing_open_data_refs (source_id, sync_status)
   where sync_status = 'active';
 
-alter table public.open_data_feeds enable row level security;
+alter table public.open_data_sources enable row level security;
 alter table public.listing_open_data_refs enable row level security;
 
-revoke all privileges on table public.open_data_feeds from anon, authenticated, public;
+revoke all privileges on table public.open_data_sources from anon, authenticated, public;
 revoke all privileges on table public.listing_open_data_refs from anon, authenticated, public;
 
-grant select, insert, update, delete on table public.open_data_feeds to service_role;
+grant select, insert, update, delete on table public.open_data_sources to service_role;
 grant select, insert, update, delete on table public.listing_open_data_refs to service_role;
 
 alter table public.public_listings
@@ -313,31 +323,37 @@ create trigger sync_open_data_ref_read_models
   for each row
   execute function private.sync_open_data_ref_read_models();
 
-insert into public.open_data_feeds (
+insert into public.open_data_sources (
   id,
   name,
   source_name,
   source_url,
+  source_type,
   api_url,
   mapper_id,
-  sync_cron
+  sync_cron,
+  default_import_mode
 )
 values (
   'nyc-dsny-food-scrap',
   'NYC food scrap drop-off locations',
   'NYC Open Data / DSNY',
   'https://data.cityofnewyork.us/Environment/Food-Scrap-Drop-Off-Locations-in-NYC/if26-z6xq/about_data',
+  'api',
   'https://data.cityofnewyork.us/api/v3/views/if26-z6xq/query.geojson',
   'nyc-dsny-food-scrap-v1',
-  '0 6 * * 1'
+  '0 6 * * 1',
+  'complete_snapshot'
 )
 on conflict (id) do update set
   name = excluded.name,
   source_name = excluded.source_name,
   source_url = excluded.source_url,
+  source_type = excluded.source_type,
   api_url = excluded.api_url,
   mapper_id = excluded.mapper_id,
-  sync_cron = excluded.sync_cron;
+  sync_cron = excluded.sync_cron,
+  default_import_mode = excluded.default_import_mode;
 
 create or replace function private.upsert_open_data_listing(
   p_listing_id bigint,

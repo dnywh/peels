@@ -1,5 +1,9 @@
 export type OpenDataSyncStatus = "active" | "removed_from_source" | "claimed";
 
+export type OpenDataSourceType = "api" | "manual_file" | "remote_file";
+
+export type OpenDataImportMode = "complete_snapshot" | "partial_update";
+
 export type MappedOpenDataListing = {
   externalId: string;
   sourceVersion: string | null;
@@ -17,19 +21,21 @@ export type MappedOpenDataListing = {
   visibility: boolean;
 };
 
-export type OpenDataFeedRow = {
+export type OpenDataSourceRow = {
   id: string;
   name: string;
   source_name: string;
   source_url: string;
-  api_url: string;
+  source_type: OpenDataSourceType;
+  api_url: string | null;
   mapper_id: string;
   sync_cron: string | null;
   default_avatar: string | null;
+  default_import_mode: OpenDataImportMode;
 };
 
 export type ListingOpenDataRefRow = {
-  feed_id: string;
+  source_id: string;
   external_id: string;
   listing_id: number;
   source_version: string | null;

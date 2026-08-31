@@ -2,7 +2,7 @@
 
 create extension if not exists pg_cron with schema extensions;
 
-create or replace function private.invoke_open_data_sync(p_feed_id text)
+create or replace function private.invoke_open_data_sync(p_source_id text)
 returns void
 language plpgsql
 security definer
@@ -42,7 +42,7 @@ begin
   begin
     perform net.http_post(
       url := rtrim(project_url, '/') || '/functions/v1/sync-open-data-feed',
-      body := jsonb_build_object('feed_id', p_feed_id),
+      body := jsonb_build_object('source_id', p_source_id),
       params := '{}'::jsonb,
       headers := jsonb_build_object(
         'Content-Type', 'application/json',

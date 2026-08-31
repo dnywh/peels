@@ -155,12 +155,12 @@ It is readable for the user themself and for chat participants who need display 
 
 Rows are maintained by database triggers from `public.profiles`.
 
-### Open data feeds
+### Open data sources
 
-`public.open_data_feeds` and `public.listing_open_data_refs` track mirrored
+`public.open_data_sources` and `public.listing_open_data_refs` track mirrored
 official drop-off datasets. They are service-role only. The public catalogue
 exposes only `is_open_data_mirrored` on read models so stub copy can distinguish
-manual stubs from synced listings. Shared feed marks live as one object in
+manual stubs from synced listings. Shared source marks live as one object in
 `listing_avatars`; many listings store that same path in `listings.avatar`. See
 [open-data-listings.md](./open-data-listings.md).
 

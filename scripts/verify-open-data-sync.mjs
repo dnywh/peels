@@ -61,14 +61,14 @@ const { error: refError } = await supabase
   .from("listing_open_data_refs")
   .upsert(
     {
-      feed_id: "nyc-dsny-food-scrap",
+      source_id: "nyc-dsny-food-scrap",
       external_id: mapped.externalId,
       listing_id: listingId,
       source_version: mapped.sourceVersion,
       content_hash: contentHash,
       sync_status: "active",
     },
-    { onConflict: "feed_id,external_id" }
+    { onConflict: "source_id,external_id" }
   );
 
 if (refError) {

@@ -19,7 +19,7 @@ const result = spawnSync(
     "invoke",
     "sync-open-data-feed",
     "--body",
-    JSON.stringify({ feed_id: feedId }),
+    JSON.stringify({ source_id: feedId }),
     "--header",
     `x-peels-webhook-secret: ${syncSecret}`,
   ],
