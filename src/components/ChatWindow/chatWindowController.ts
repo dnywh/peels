@@ -79,6 +79,13 @@ export async function ensureChatThread({
   }>
 > {
   if (!listing.id || !listing.owner_id) {
+    console.error(
+      "Unexpected chat operation error: missing listing identifiers",
+      {
+        hasListingId: Boolean(listing.id),
+        hasListingOwnerId: Boolean(listing.owner_id),
+      }
+    );
     return {
       success: false,
       error: chatErrorCodes.unexpected,
