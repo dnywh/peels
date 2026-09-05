@@ -237,9 +237,6 @@ export default function SignUpForm({
             error: supportFailure ? (
               <SupportErrorMessage
                 message={supportFailure.message}
-                pageUrl={
-                  typeof window === "undefined" ? "" : window.location.href
-                }
                 scope="auth"
                 supportReference={supportFailure.reference}
                 timestamp={supportFailure.timestamp}

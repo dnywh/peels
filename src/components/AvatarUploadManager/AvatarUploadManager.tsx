@@ -105,9 +105,6 @@ function AvatarUploadManager({
             error: feedback.supportReference ? (
               <SupportErrorMessage
                 message={feedback.message}
-                pageUrl={
-                  typeof window === "undefined" ? "" : window.location.href
-                }
                 scope="media"
                 supportReference={feedback.supportReference}
               />
