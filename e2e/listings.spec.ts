@@ -144,6 +144,8 @@ test("unexpected listing errors offer a traceable support email", async ({
 
   const href = await emailLink.getAttribute("href");
   expect(href).not.toBeNull();
+  expect(href).not.toContain("+");
+  expect(href).toContain("%20");
   const emailUrl = new URL(href ?? "");
   expect(emailUrl.protocol).toBe("mailto:");
   expect(emailUrl.searchParams.get("subject")).toBe(
