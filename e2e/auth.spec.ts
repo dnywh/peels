@@ -33,6 +33,23 @@ test("sign-in preserves a safe redirect_to", async ({ page }) => {
   await expect(page).toHaveURL(/\/profile$/);
 });
 
+test("sign-in errors preserve a safe redirect_to for retries", async ({
+  page,
+}) => {
+  const redirectTo = `/chats/${SEEDED_THREAD_ID}`;
+  await page.goto(`/sign-in?redirect_to=${encodeURIComponent(redirectTo)}`);
+  await page.locator("#email").fill(HOST_EMAIL);
+  await page.locator("#password").fill("incorrect-password");
+  await page.getByTestId("sign-in-submit").click();
+
+  await expect(page).toHaveURL(/\/sign-in\?/);
+  const failedUrl = new URL(page.url());
+  expect(failedUrl.searchParams.get("redirect_to")).toBe(redirectTo);
+  await expect(page.locator("aside[role='alert']")).toContainText(
+    "That email address or password isn’t correct."
+  );
+});
+
 test("password reset success page renders for signed-in users", async ({
   page,
 }) => {

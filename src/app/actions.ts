@@ -512,7 +512,18 @@ export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const redirectTo = formData.get("redirect_to") as string;
+  const safeRedirectTo = normaliseNextPath(redirectTo, "/map");
   const supabase = await createClient();
+  const redirectWithError = (message: string, supportReference?: string) => {
+    const searchParams = new URLSearchParams({
+      error: message,
+      redirect_to: safeRedirectTo,
+    });
+    if (supportReference) {
+      searchParams.set("support_reference", supportReference);
+    }
+    return redirect(`/sign-in?${searchParams}`);
+  };
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -527,7 +538,7 @@ export const signInAction = async (formData: FormData) => {
         invalidCredentials: "invalidCredentials",
         rateLimited: "authRateLimited",
       } as const;
-      return encodedRedirect("error", "/sign-in", t(messageKey[kind]));
+      return redirectWithError(t(messageKey[kind]));
     }
 
     const result = createSupportError({
@@ -536,14 +547,13 @@ export const signInAction = async (formData: FormData) => {
       message: t("generic"),
       scope: "auth",
     });
-    const searchParams = new URLSearchParams({
-      error: result.error ?? t("generic"),
-      support_reference: result.data.supportReference,
-    });
-    return redirect(`/sign-in?${searchParams}`);
+    return redirectWithError(
+      result.error ?? t("generic"),
+      result.data.supportReference
+    );
   }
 
-  return redirect(normaliseNextPath(redirectTo, "/map"));
+  return redirect(safeRedirectTo);
 };
 
 // Very similar to the sendPasswordResetEmailAction
