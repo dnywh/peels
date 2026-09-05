@@ -12,7 +12,7 @@ export default defineConfig({
   webServer: shouldStartWebServer
     ? {
         ...sharedWebServer,
-          command: `PEELS_E2E=1 npm run start -- --hostname ${playwrightHost} --port ${playwrightPort}`,
+        command: `PEELS_E2E=1 npm run start -- --hostname ${playwrightHost} --port ${playwrightPort}`,
         reuseExistingServer: false,
       }
     : undefined,
