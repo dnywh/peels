@@ -7,6 +7,7 @@ import { styled } from "next-yak";
 import FormMessage from "@/components/FormMessage";
 import { useTranslations } from "next-intl";
 import type { FormSubmitHandler } from "@/types/events";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 
 const ChatComposerForm = styled.div`
   display: flex;
@@ -50,6 +51,7 @@ type ChatComposerProps = {
   recipientName?: string;
   isDemo?: boolean;
   isSending?: boolean;
+  showSupport?: boolean;
 };
 
 function ChatComposer({
@@ -60,13 +62,24 @@ function ChatComposer({
   recipientName,
   isDemo,
   isSending = false,
+  showSupport = false,
 }: ChatComposerProps) {
   const t = useTranslations();
   const isSendDisabled = !message.trim() || (!isDemo && isSending);
 
   return (
     <ChatComposerForm>
-      {error && <FormMessage message={{ error: error }} />}
+      {error && (
+        <FormMessage
+          message={{
+            error: showSupport ? (
+              <SupportErrorMessage message={error} scope="chat" />
+            ) : (
+              error
+            ),
+          }}
+        />
+      )}
       <ChatComposerInner onSubmit={onSubmit} data-testid="chat-composer">
         <TextareaComponent
           variant="chat"

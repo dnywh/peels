@@ -5,10 +5,12 @@ export type AvatarBucket = "avatars" | "listing_avatars";
 type MediaUploadResponse = {
   filename?: string;
   error?: string;
+  supportReference?: string;
 };
 
-type MediaUploadError = Error & {
+export type MediaUploadError = Error & {
   statusCode?: string;
+  supportReference?: string;
 };
 
 async function uploadMedia({
@@ -45,6 +47,7 @@ async function uploadMedia({
       data.error || "Media upload failed"
     ) as MediaUploadError;
     error.statusCode = String(response.status);
+    error.supportReference = data.supportReference;
     throw error;
   }
 
@@ -78,6 +81,7 @@ async function deleteMedia({
       data.error || "Media deletion failed"
     ) as MediaUploadError;
     error.statusCode = String(response.status);
+    error.supportReference = data.supportReference;
     throw error;
   }
 }

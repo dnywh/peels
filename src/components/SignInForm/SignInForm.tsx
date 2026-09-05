@@ -7,12 +7,14 @@ import FieldHeader from "@/components/FieldHeader";
 import StrongLink from "@/components/StrongLink";
 import FormMessage from "@/components/FormMessage";
 import SubmitButton from "@/components/SubmitButton";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 import { getTranslations } from "next-intl/server";
 
 type SignInFormProps = {
   searchParams?: {
     redirect_to?: string;
     error?: string;
+    support_reference?: string;
     success?: string;
   };
 };
@@ -64,7 +66,20 @@ async function SignInForm({ searchParams }: SignInFormProps) {
       </Field>
 
       {searchParams?.error && (
-        <FormMessage message={{ error: searchParams.error }} />
+        <FormMessage
+          message={{
+            error: searchParams.support_reference ? (
+              <SupportErrorMessage
+                message={searchParams.error}
+                pageUrl="/sign-in"
+                scope="auth"
+                supportReference={searchParams.support_reference}
+              />
+            ) : (
+              searchParams.error
+            ),
+          }}
+        />
       )}
 
       <SubmitButton

@@ -271,7 +271,7 @@ test("guest chats redirect preserves the requested chat path", async ({
 test("sign-up shows client validation feedback before submitting", async ({
   page,
 }) => {
-  await page.goto("/sign-up");
+  await page.goto("/sign-up?e2e_skip_turnstile=1");
 
   await page.locator('input[name="first_name"]').fill("@@");
   await page.locator('input[name="email"]').fill("new-person@example.com");
@@ -289,7 +289,7 @@ test("sign-up shows pending feedback and preserves server errors", async ({
   page,
 }) => {
   await delayServerActionRequests(page);
-  await page.goto("/sign-up");
+  await page.goto("/sign-up?e2e_skip_turnstile=1");
 
   await page.locator('input[name="first_name"]').fill("Avery");
   await page.locator('input[name="email"]').fill(HOST_EMAIL);
@@ -306,4 +306,35 @@ test("sign-up shows pending feedback and preserves server errors", async ({
   await expect(page.getByTestId("sign-up-form")).toContainText(
     /already exists/i
   );
+});
+
+test("unexpected sign-up errors offer a traceable support email", async ({
+  page,
+}) => {
+  await page.setExtraHTTPHeaders({
+    "x-peels-e2e-auth-error": "signup",
+  });
+  await page.goto(
+    "/sign-up?e2e_error=signup&token=test-secret#private-fragment"
+  );
+
+  await page.locator('input[name="first_name"]').fill("Avery");
+  await page
+    .locator('input[name="email"]')
+    .fill(`support-test-${Date.now()}@peels.local`);
+  await page.locator('input[name="password"]').fill(SEEDED_PASSWORD);
+  await page.locator('input[name="legal_agreement"]').check();
+  await page.getByTestId("sign-up-submit").click();
+
+  const alert = page.locator("aside[role='alert']");
+  await expect(alert).toContainText("Sign up failed.");
+  const emailLink = alert.getByRole("link", { name: "email us" });
+  const href = await emailLink.getAttribute("href");
+  const emailUrl = new URL(href ?? "");
+  expect(emailUrl.searchParams.get("body")).toMatch(
+    /Error reference: auth-[0-9a-f-]+/
+  );
+  expect(emailUrl.searchParams.get("body")).toContain("Area: sign-up");
+  expect(emailUrl.searchParams.get("body")).not.toContain("test-secret");
+  expect(emailUrl.searchParams.get("body")).not.toContain("private-fragment");
 });

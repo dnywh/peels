@@ -83,6 +83,37 @@ async function uploadTestListingPhoto(page: Page) {
   });
 }
 
+test("unexpected media errors offer a traceable support email", async ({
+  page,
+}) => {
+  await page.setExtraHTTPHeaders({
+    "x-peels-e2e-media-error": "upload",
+  });
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo: BUSINESS_LISTING_EDIT_PATH,
+  });
+
+  await page.locator("#photo-upload").setInputFiles({
+    buffer: Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+      "base64"
+    ),
+    mimeType: "image/png",
+    name: "support-error.png",
+  });
+
+  const alert = page.locator("aside[role='alert']");
+  await expect(alert).toContainText("error uploading your photos");
+  const emailLink = alert.getByRole("link", { name: "email us" });
+  const href = await emailLink.getAttribute("href");
+  const emailUrl = new URL(href ?? "");
+  expect(emailUrl.searchParams.get("body")).toMatch(
+    /Error reference: media-[0-9a-f-]+/
+  );
+  expect(emailUrl.searchParams.get("body")).toContain("Area: listing media");
+});
+
 test("public listing media URLs still work without exposing bucket listings", async ({
   page,
 }) => {

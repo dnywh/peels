@@ -4,6 +4,7 @@ import RouteBoundaryState from "@/components/RouteBoundaryState/RouteBoundarySta
 import { useTranslations } from "next-intl";
 
 export default function Error({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -16,6 +17,8 @@ export default function Error({
       message={t("Errors.genericLater")}
       onRetry={reset}
       retryLabel={t("Actions.tryAgain")}
+      supportReference={error.digest}
+      supportScope="route"
     />
   );
 }

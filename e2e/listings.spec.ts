@@ -150,12 +150,12 @@ test("unexpected listing errors offer a traceable support email", async ({
   const emailUrl = new URL(href ?? "");
   expect(emailUrl.protocol).toBe("mailto:");
   expect(emailUrl.searchParams.get("subject")).toBe(
-    "Problem creating a Peels listing"
+    "Problem with Peels listing"
   );
   expect(emailUrl.searchParams.get("body")).toMatch(
     /Error reference: listing-[0-9a-f-]+/
   );
-  expect(emailUrl.searchParams.get("body")).toContain("Listing type: business");
+  expect(emailUrl.searchParams.get("body")).toContain("Area: listing");
   expect(emailUrl.searchParams.get("body")).toContain(
     "/profile/listings/new/business"
   );

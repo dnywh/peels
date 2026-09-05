@@ -7,18 +7,21 @@ import { getBaseUrl } from "@/utils/url";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { createSupportError } from "@/lib/supportError";
 
 const getRetryPath = ({
   error,
   locale,
   nextPath,
   success,
+  supportReference,
   type,
 }: {
   error?: string;
   locale: string;
   nextPath: string;
   success?: string;
+  supportReference?: string;
   type: "magiclink" | "signup";
 }) => {
   const searchParams = new URLSearchParams({
@@ -28,6 +31,7 @@ const getRetryPath = ({
   });
   if (error) searchParams.set("error", error);
   if (success) searchParams.set("success", success);
+  if (supportReference) searchParams.set("support_reference", supportReference);
   return `/auth/retry?${searchParams}`;
 };
 
@@ -95,12 +99,18 @@ export async function retryEmailAuthAction(formData: FormData) {
         });
 
   if (error) {
-    console.error(`Error retrying ${type} auth email:`, error.message);
+    const result = createSupportError({
+      context: { operation: `retryEmailAuthAction:${type}` },
+      error,
+      message: t("Errors.generic"),
+      scope: "auth",
+    });
     redirect(
       getRetryPath({
-        error: t("Errors.generic"),
+        error: result.error ?? t("Errors.generic"),
         locale,
         nextPath,
+        supportReference: result.data.supportReference,
         type,
       })
     );

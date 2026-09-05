@@ -7,11 +7,12 @@ import Form from "@/components/Form";
 import Field from "@/components/Field";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 export default async function ForgotPassword(props: {
-  searchParams: Promise<Message>;
+  searchParams: Promise<Message & { support_reference?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const t = await getTranslations();
@@ -47,7 +48,20 @@ export default async function ForgotPassword(props: {
         </Field>
 
         {searchParams.error && (
-          <FormMessage message={{ error: searchParams.error }} />
+          <FormMessage
+            message={{
+              error: searchParams.support_reference ? (
+                <SupportErrorMessage
+                  message={String(searchParams.error)}
+                  pageUrl="/forgot-password"
+                  scope="auth"
+                  supportReference={searchParams.support_reference}
+                />
+              ) : (
+                searchParams.error
+              ),
+            }}
+          />
         )}
         <SubmitButton pendingText={t("Status.emailing")} width="full">
           {t("Actions.emailLink")}

@@ -32,7 +32,7 @@ import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
 import FormMessage from "@/components/FormMessage";
-import EncodedEmailLink from "@/components/EncodedEmailLink";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 import SubmitButton from "@/components/SubmitButton";
 import { useBeforeUnloadWarning } from "@/hooks/useBeforeUnloadWarning";
 import { styled } from "next-yak";
@@ -59,7 +59,7 @@ import type {
   ListingWriteProfile,
 } from "@/types/listing";
 import type { FormSubmitEvent } from "@/types/events";
-import { siteConfig } from "@/config/site";
+import type { SupportErrorData } from "@/types/actionResult";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
@@ -121,7 +121,7 @@ type ListingWriteSavedValues = {
 
 type ListingSupportDetails = {
   pageUrl: string;
-  reference: string;
+  reference?: string;
   timestamp: string;
 };
 
@@ -191,7 +191,9 @@ export default function ListingWrite({
   const submitMutation = useInlineMutation<
     ListingSubmitResult | ListingSubmitFailureData
   >();
-  const deleteMutation = useInlineMutation<DeleteListingResult>();
+  const deleteMutation = useInlineMutation<
+    DeleteListingResult | SupportErrorData
+  >();
 
   useEffect(() => {
     setIsHydrated(true);
@@ -354,32 +356,18 @@ export default function ListingWrite({
           count: errorCount,
         })
       : null);
-  const unexpectedFeedback =
-    feedbackError === t("Errors.unexpected") && supportDetails;
-  const feedbackContent = unexpectedFeedback ? (
-    <>
-      {feedbackMessage}{" "}
-      {t.rich("Errors.unexpectedContact", {
-        contact: (chunks) => (
-          <EncodedEmailLink
-            as="plain"
-            address={siteConfig.encodedEmail.team}
-            body={t("Errors.unexpectedEmailBody", {
-              listingType,
-              pageUrl: unexpectedFeedback.pageUrl,
-              reference: unexpectedFeedback.reference,
-              timestamp: unexpectedFeedback.timestamp,
-            })}
-            subject={t("Errors.unexpectedEmailSubject")}
-          >
-            {chunks}
-          </EncodedEmailLink>
-        ),
-      })}
-    </>
-  ) : (
-    feedbackMessage
-  );
+  const feedbackContent =
+    feedbackMessage && supportDetails ? (
+      <SupportErrorMessage
+        message={feedbackMessage}
+        pageUrl={supportDetails.pageUrl}
+        scope="listing"
+        supportReference={supportDetails.reference}
+        timestamp={supportDetails.timestamp}
+      />
+    ) : (
+      feedbackMessage
+    );
 
   const shouldWarnBeforeUnload = initialListing
     ? hasUnsavedChanges
@@ -417,6 +405,21 @@ export default function ListingWrite({
         fallbackError: t("Errors.generic"),
       }
     );
+
+    if (
+      !result?.success &&
+      (result?.unexpected ||
+        (result?.data && "supportReference" in result.data))
+    ) {
+      setSupportDetails({
+        pageUrl: window.location.href,
+        reference:
+          result.data && "supportReference" in result.data
+            ? result.data.supportReference
+            : undefined,
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     if (
       result?.success &&
@@ -500,15 +503,17 @@ export default function ListingWrite({
       }
     );
 
-    if (!result?.success && result?.error === t("Errors.unexpected")) {
-      const supportReference =
-        result.data &&
-        "supportReference" in result.data &&
-        result.data.supportReference;
-
+    if (
+      !result?.success &&
+      (result?.unexpected ||
+        (result?.data && "supportReference" in result.data))
+    ) {
       setSupportDetails({
-        pageUrl: `${window.location.origin}${window.location.pathname}`,
-        reference: supportReference || `listing-client-${crypto.randomUUID()}`,
+        pageUrl: window.location.href,
+        reference:
+          result.data && "supportReference" in result.data
+            ? result.data.supportReference
+            : undefined,
         timestamp: new Date().toISOString(),
       });
     }

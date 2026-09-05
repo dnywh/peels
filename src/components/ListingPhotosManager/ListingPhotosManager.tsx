@@ -2,7 +2,11 @@
 import { theme } from "@/styles/theme.yak";
 
 import { useRef, useState } from "react";
-import { uploadListingPhoto, deleteListingPhoto } from "@/utils/mediaUtils";
+import {
+  uploadListingPhoto,
+  deleteListingPhoto,
+  type MediaUploadError,
+} from "@/utils/mediaUtils";
 import { normaliseImageFileForUpload } from "@/utils/media/client";
 import { getMediaUploadConfig } from "@/utils/media/policy";
 import Button from "@/components/Button";
@@ -18,6 +22,8 @@ import {
 
 import { styled } from "next-yak";
 import { useTranslations } from "next-intl";
+import FormMessage from "@/components/FormMessage";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 
 const DropzoneContents = styled.div`
   display: flex;
@@ -107,6 +113,10 @@ function ListingPhotosManager({
   const photosRef = useRef(initialPhotos);
   const [isUploading, setIsUploading] = useState(false);
   const [deletingPhoto, setDeletingPhoto] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{
+    message: string;
+    supportReference?: string;
+  } | null>(null);
   const isMutatingPhotos = isUploading || deletingPhoto !== null;
 
   const updatePhotos = (
@@ -120,6 +130,7 @@ function ListingPhotosManager({
 
   const handleDrop = async (acceptedFiles: File[]) => {
     if (isMutatingPhotos) return;
+    setFeedback(null);
 
     console.log("Dropped files:", acceptedFiles);
 
@@ -128,18 +139,21 @@ function ListingPhotosManager({
 
     // Reuse existing photo handling logic
     if (files.length + photosRef.current.length > MAX_PHOTOS) {
-      alert(t("Listings.photos.tooMany", { max: MAX_PHOTOS }));
+      setFeedback({
+        message: t("Listings.photos.tooMany", { max: MAX_PHOTOS }),
+      });
       return;
     }
 
     // Rest of the handlePhotoAdd logic
     const overSizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
     if (overSizedFiles.length > 0) {
-      alert(
-        overSizedFiles.length === 1
-          ? t("Listings.photos.tooLargeOne", { max: MAX_MB })
-          : t("Listings.photos.tooLargeMany", { max: MAX_MB })
-      );
+      setFeedback({
+        message:
+          overSizedFiles.length === 1
+            ? t("Listings.photos.tooLargeOne", { max: MAX_MB })
+            : t("Listings.photos.tooLargeMany", { max: MAX_MB }),
+      });
       return;
     }
 
@@ -160,7 +174,7 @@ function ListingPhotosManager({
       // console.error("Upload error details:", error);
 
       // Handle different error structures from Supabase
-      const uploadError = error as {
+      const uploadError = error as MediaUploadError & {
         statusCode?: string;
         error?: { statusCode?: string };
         message?: string;
@@ -170,15 +184,21 @@ function ListingPhotosManager({
         uploadError?.statusCode === "413" ||
         uploadError?.error?.statusCode === "413"
       ) {
-        alert(
-          files.length === 1
-            ? t("Listings.photos.tooLargeOne", { max: MAX_MB })
-            : t("Listings.photos.tooLargeMany", { max: MAX_MB })
-        );
+        setFeedback({
+          message:
+            files.length === 1
+              ? t("Listings.photos.tooLargeOne", { max: MAX_MB })
+              : t("Listings.photos.tooLargeMany", { max: MAX_MB }),
+        });
       } else if (uploadError?.message?.includes("max_photos")) {
-        alert(t("Listings.photos.tooMany", { max: MAX_PHOTOS }));
+        setFeedback({
+          message: t("Listings.photos.tooMany", { max: MAX_PHOTOS }),
+        });
       } else {
-        alert(t("Errors.photoUploadFailed"));
+        setFeedback({
+          message: t("Errors.photoUploadFailed"),
+          supportReference: uploadError.supportReference,
+        });
       }
     } finally {
       setIsUploading(false);
@@ -187,6 +207,7 @@ function ListingPhotosManager({
 
   const handlePhotoDelete = async (photoToDelete: string) => {
     if (isMutatingPhotos) return;
+    setFeedback(null);
 
     const deletedPhotoIndex = photosRef.current.indexOf(photoToDelete);
     setDeletingPhoto(photoToDelete);
@@ -218,7 +239,11 @@ function ListingPhotosManager({
           ...currentPhotos.slice(restoreIndex),
         ];
       });
-      alert(t("Errors.failedDeletePhoto"));
+      const mediaError = error as MediaUploadError;
+      setFeedback({
+        message: t("Errors.failedDeletePhoto"),
+        supportReference: mediaError.supportReference,
+      });
     } finally {
       setDeletingPhoto(null);
     }
@@ -238,6 +263,24 @@ function ListingPhotosManager({
 
   return (
     <>
+      {feedback && (
+        <FormMessage
+          message={{
+            error: feedback.supportReference ? (
+              <SupportErrorMessage
+                message={feedback.message}
+                pageUrl={
+                  typeof window === "undefined" ? "" : window.location.href
+                }
+                scope="media"
+                supportReference={feedback.supportReference}
+              />
+            ) : (
+              feedback.message
+            ),
+          }}
+        />
+      )}
       <Dropzone onDrop={handleDrop} noClick noKeyboard>
         {({ getRootProps, getInputProps, isDragActive }) => (
           <DropzoneContents {...getRootProps()}>

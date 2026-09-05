@@ -11,6 +11,7 @@ import {
 } from "@/utils/media/policy";
 import { createClient } from "@/utils/supabase/server";
 import { createServiceRoleClient } from "@/utils/supabase/service";
+import { reportSupportError } from "@/lib/supportError";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,19 @@ class RequestBodyTooLargeError extends Error {}
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
+}
+
+function jsonSupportError(error: unknown, operation: string) {
+  const supportReference = reportSupportError({
+    context: { operation },
+    error,
+    scope: "media",
+  });
+
+  return NextResponse.json(
+    { error: "Media operation failed", supportReference },
+    { status: 500 }
+  );
 }
 
 function getStringField(formData: FormData, field: string) {
@@ -358,13 +372,22 @@ export async function POST(request: Request) {
     return jsonError("Unauthorised", 401);
   }
 
+  if (
+    process.env.PEELS_E2E === "1" &&
+    request.headers.get("x-peels-e2e-media-error") === "upload"
+  ) {
+    return jsonSupportError(
+      new Error("Forced unexpected media error for e2e testing"),
+      "uploadMedia"
+    );
+  }
+
   let storageSupabase;
 
   try {
     storageSupabase = createServiceRoleClient();
   } catch (error) {
-    console.error("Media storage is not configured:", error);
-    return jsonError("Media storage is not configured", 500);
+    return jsonSupportError(error, "configureMediaStorage");
   }
 
   let formData: FormData;
@@ -445,8 +468,7 @@ export async function POST(request: Request) {
     });
 
   if (uploadError) {
-    console.error("Media upload failed:", uploadError);
-    return jsonError("Image could not be uploaded", 500);
+    return jsonSupportError(uploadError, "uploadMedia");
   }
 
   uploaded = true;
@@ -570,10 +592,6 @@ export async function POST(request: Request) {
     const maxPendingListingAvatarsError =
       isMaxPendingListingAvatarsError(error);
 
-    if (!maxPhotosError && !maxPendingListingAvatarsError) {
-      console.error("Media record update failed:", error);
-    }
-
     if (uploaded) {
       await removeStorageObject({
         bucket: config.bucket,
@@ -608,7 +626,7 @@ export async function POST(request: Request) {
       return jsonError("max_pending_listing_avatars", 409);
     }
 
-    return jsonError("Image record could not be updated", 500);
+    return jsonSupportError(error, "updateMediaRecord");
   }
 
   return NextResponse.json({
@@ -634,8 +652,7 @@ export async function DELETE(request: Request) {
   try {
     storageSupabase = createServiceRoleClient();
   } catch (error) {
-    console.error("Media storage is not configured:", error);
-    return jsonError("Media storage is not configured", 500);
+    return jsonSupportError(error, "configureMediaStorage");
   }
 
   let payload: DeleteMediaRequest;
@@ -846,8 +863,7 @@ export async function DELETE(request: Request) {
       }
     }
   } catch (error) {
-    console.error("Media deletion failed:", error);
-    return jsonError("Media could not be deleted", 500);
+    return jsonSupportError(error, "deleteMedia");
   }
 
   return NextResponse.json({ success: true });

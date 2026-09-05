@@ -8,6 +8,7 @@ import Label from "@/components/Label";
 import Input from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import InputHint from "@/components/InputHint";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 
 import {
   defaultLocale,
@@ -79,20 +80,42 @@ const nestedFormStyle = {
 } as const;
 
 type FirstNameActionData = {
-  firstName: string;
+  firstName?: string;
+  supportReference?: string;
 };
 
 type EmailActionData = {
-  email: string;
+  email?: string;
+  supportReference?: string;
 };
 
 type NewsletterPreferenceActionData = {
-  newsletterPreference: boolean;
+  newsletterPreference?: boolean;
+  supportReference?: string;
 };
 
 type PreferredLocaleActionData = {
-  preferredLocale: Locale;
+  preferredLocale?: Locale;
+  supportReference?: string;
 };
+
+function AccountActionError({
+  error,
+  supportReference,
+}: {
+  error: string;
+  supportReference?: string;
+}) {
+  return supportReference ? (
+    <SupportErrorMessage
+      message={error}
+      scope="account"
+      supportReference={supportReference}
+    />
+  ) : (
+    error
+  );
+}
 
 type UpdateFirstNameFormAction = (
   previousState: InlineActionResult<FirstNameActionData>,
@@ -219,7 +242,10 @@ function FirstNameEditor({
             variant="error"
             data-testid="profile-account-first-name-message"
           >
-            {state.error}
+            <AccountActionError
+              error={state.error}
+              supportReference={state.data?.supportReference}
+            />
           </InputHint>
         )}
       </Field>
@@ -276,11 +302,16 @@ function EmailEditor({
             state.error ? "error" : state.success ? "success" : "default"
           }
         >
-          {state.error
-            ? state.error
-            : state.success
-              ? t("Profile.account.emailSuccess")
-              : t("Profile.account.emailHint")}
+          {state.error ? (
+            <AccountActionError
+              error={state.error}
+              supportReference={state.data?.supportReference}
+            />
+          ) : state.success ? (
+            t("Profile.account.emailSuccess")
+          ) : (
+            t("Profile.account.emailHint")
+          )}
         </InputHint>
       </Field>
       <ButtonGroup>
@@ -346,11 +377,16 @@ function NewsletterPreferenceEditor({
           variant={state.error ? "error" : "default"}
           data-testid="profile-account-newsletter-message"
         >
-          {state.error
-            ? state.error
-            : currentPreference
-              ? t("Profile.account.newsletterSubscribedHint")
-              : t("Profile.account.newsletterNotSubscribedHint")}
+          {state.error ? (
+            <AccountActionError
+              error={state.error}
+              supportReference={state.data?.supportReference}
+            />
+          ) : currentPreference ? (
+            t("Profile.account.newsletterSubscribedHint")
+          ) : (
+            t("Profile.account.newsletterNotSubscribedHint")
+          )}
         </InputHint>
       </Field>
 
@@ -418,7 +454,14 @@ function PreferredLocaleEditor({
           variant={state.error ? "error" : "default"}
           data-testid="profile-account-language-message"
         >
-          {state.error ? state.error : t("Profile.account.languageHint")}
+          {state.error ? (
+            <AccountActionError
+              error={state.error}
+              supportReference={state.data?.supportReference}
+            />
+          ) : (
+            t("Profile.account.languageHint")
+          )}
         </InputHint>
       </Field>
 

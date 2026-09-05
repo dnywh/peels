@@ -6,10 +6,9 @@ import {
 } from "@/utils/authRedirects";
 import { setUserLocale } from "@/i18n/services/locale";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
-const INVALID_LINK_MESSAGE =
-  "Hmm, that sign-in link is invalid or has expired. Please request a new one.";
 
 const debugAuth = (event: string, data?: Record<string, unknown>) => {
   if (!isAuthDebugEnabled) return;
@@ -17,6 +16,7 @@ const debugAuth = (event: string, data?: Record<string, unknown>) => {
 };
 
 export async function GET(request: Request) {
+  const t = await getTranslations("Errors");
   // Legacy/code-based callback route for auth flows that return `?code=...`.
   // Hash-token flows are finalized by AuthHashCompletion + POST /auth/session.
   // https://supabase.com/docs/guides/auth/server-side/nextjs
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
         nextPath,
       });
       const signInUrl = new URL("/sign-in", origin);
-      signInUrl.searchParams.set("error", INVALID_LINK_MESSAGE);
+      signInUrl.searchParams.set("error", t("authLinkInvalid"));
       signInUrl.searchParams.set("redirect_to", nextPath);
       return NextResponse.redirect(signInUrl);
     }
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
       reason: authErrorDescription,
     });
     const signInUrl = new URL("/sign-in", origin);
-    signInUrl.searchParams.set("error", INVALID_LINK_MESSAGE);
+    signInUrl.searchParams.set("error", t("authLinkInvalid"));
     signInUrl.searchParams.set("redirect_to", nextPath);
     return NextResponse.redirect(signInUrl);
   }

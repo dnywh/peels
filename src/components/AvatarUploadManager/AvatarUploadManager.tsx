@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import AvatarUploadView from "@/components/AvatarUploadView";
-import { uploadAvatar, deleteAvatar, getAvatarUrl } from "@/utils/mediaUtils";
+import {
+  uploadAvatar,
+  deleteAvatar,
+  getAvatarUrl,
+  type MediaUploadError,
+} from "@/utils/mediaUtils";
 import { normaliseImageFileForUpload } from "@/utils/media/client";
 import { useTranslations } from "next-intl";
 import type { AvatarBucket } from "@/utils/mediaUtils";
+import FormMessage from "@/components/FormMessage";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 
 const MAX_MB = 10;
 const MAX_FILE_SIZE = MAX_MB * 1024 * 1024; // 10MB in bytes
@@ -29,6 +36,10 @@ function AvatarUploadManager({
 }: AvatarUploadManagerProps) {
   const t = useTranslations();
   const [avatar, setAvatar] = useState(initialAvatar || "");
+  const [feedback, setFeedback] = useState<{
+    message: string;
+    supportReference?: string;
+  } | null>(null);
   const overSizedFileAlertSingular = t("Listings.photos.tooLargeOne", {
     max: MAX_MB,
   });
@@ -38,9 +49,10 @@ function AvatarUploadManager({
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFeedback(null);
       // Check total file size
       if (file.size > MAX_FILE_SIZE) {
-        alert(overSizedFileAlertSingular);
+        setFeedback({ message: overSizedFileAlertSingular });
         return;
       }
 
@@ -54,12 +66,15 @@ function AvatarUploadManager({
         );
         setAvatar(filename);
         onAvatarChange?.(filename);
-      } catch (error: any) {
-        // console.error("Error handling avatar:", error);
-        if (error?.statusCode === "413" || error?.error?.statusCode === "413") {
-          alert(overSizedFileAlertSingular);
+      } catch (error) {
+        const mediaError = error as MediaUploadError;
+        if (mediaError.statusCode === "413") {
+          setFeedback({ message: overSizedFileAlertSingular });
         } else {
-          alert(t("Errors.avatarUploadFailed"));
+          setFeedback({
+            message: t("Errors.avatarUploadFailed"),
+            supportReference: mediaError.supportReference,
+          });
         }
       }
     }
@@ -67,26 +82,51 @@ function AvatarUploadManager({
 
   const handleAvatarDelete = async () => {
     if (avatar) {
+      setFeedback(null);
       try {
         await deleteAvatar(avatar, bucket, entityId);
         setAvatar("");
         onAvatarChange?.("");
       } catch (error) {
-        console.error("Error deleting avatar:", error);
+        const mediaError = error as MediaUploadError;
+        setFeedback({
+          message: t("Errors.failedDeletePhoto"),
+          supportReference: mediaError.supportReference,
+        });
       }
     }
   };
 
   return (
-    <AvatarUploadView
-      avatar={avatar}
-      onChange={handleAvatarChange}
-      onDelete={handleAvatarDelete}
-      getAvatarUrl={(filename) => getAvatarUrl(filename, bucket)}
-      bucket={bucket}
-      inputHintShown={inputHintShown}
-      listingType={listingType}
-    />
+    <>
+      {feedback && (
+        <FormMessage
+          message={{
+            error: feedback.supportReference ? (
+              <SupportErrorMessage
+                message={feedback.message}
+                pageUrl={
+                  typeof window === "undefined" ? "" : window.location.href
+                }
+                scope="media"
+                supportReference={feedback.supportReference}
+              />
+            ) : (
+              feedback.message
+            ),
+          }}
+        />
+      )}
+      <AvatarUploadView
+        avatar={avatar}
+        onChange={handleAvatarChange}
+        onDelete={handleAvatarDelete}
+        getAvatarUrl={(filename) => getAvatarUrl(filename, bucket)}
+        bucket={bucket}
+        inputHintShown={inputHintShown}
+        listingType={listingType}
+      />
+    </>
   );
 }
 

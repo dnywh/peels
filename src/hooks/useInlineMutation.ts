@@ -11,7 +11,7 @@ export function getInitialInlineActionResult<T>(): InlineActionResult<T> {
 }
 
 type InlineMutationOptions = {
-  fallbackError?: string;
+  fallbackError: string;
 };
 
 export function useInlineMutation<T>() {
@@ -28,7 +28,7 @@ export function useInlineMutation<T>() {
   const run = useCallback(
     async (
       mutation: () => Promise<InlineActionResult<T>>,
-      options: InlineMutationOptions = {}
+      options: InlineMutationOptions
     ) => {
       if (isPendingRef.current) {
         return null;
@@ -43,11 +43,11 @@ export function useInlineMutation<T>() {
         setResult(nextResult);
         return nextResult;
       } catch (error) {
+        console.error("Unexpected inline mutation error:", error);
         const fallbackResult: InlineActionResult<T> = {
           success: false,
-          error:
-            options.fallbackError ||
-            (error instanceof Error ? error.message : "Something went wrong."),
+          error: options.fallbackError,
+          unexpected: true,
         };
 
         setResult(fallbackResult);

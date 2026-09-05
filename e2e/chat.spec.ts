@@ -176,7 +176,17 @@ test("chat send failures preserve the draft and show inline feedback", async ({
   await page.getByTestId("chat-composer-send").click();
 
   await expect(composerInput).toHaveValue(failedMessage);
-  await expect(page.getByText("Synthetic chat failure")).toBeVisible();
+  const alert = page.locator("aside[role='alert']");
+  await expect(alert).toContainText(
+    "Something went wrong. Please try again later."
+  );
+  const emailLink = alert.getByRole("link", { name: "email us" });
+  const href = await emailLink.getAttribute("href");
+  const emailUrl = new URL(href ?? "");
+  expect(emailUrl.searchParams.get("body")).toContain("Area: chat");
+  expect(emailUrl.searchParams.get("body")).not.toContain(
+    "Synthetic chat failure"
+  );
 });
 
 test("chat preserves unsent drafts when switching threads", async ({
