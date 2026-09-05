@@ -23,6 +23,7 @@ import type { InlineActionResult } from "@/types/actionResult";
 import type {
   DeleteListingResult,
   ListingDraftInput,
+  ListingSubmitFailureData,
   ListingSubmitResult,
   ListingType,
 } from "@/types/listing";
@@ -1072,7 +1073,9 @@ export async function fetchListingsInView(
 
 export const createOrUpdateListingAction = async (
   listingData: ListingDraftInput
-): Promise<InlineActionResult<ListingSubmitResult>> => {
+): Promise<
+  InlineActionResult<ListingSubmitResult | ListingSubmitFailureData>
+> => {
   const t = await getTranslations("Errors");
   const supabase = await createClient();
   const {
@@ -1205,7 +1208,15 @@ export const createOrUpdateListingAction = async (
       type: listingData.type as ListingType,
     });
   } catch (error) {
-    console.error("Unexpected error in createOrUpdateListingAction:", error);
-    return actionError(t("unexpected"));
+    const supportReference = `listing-${crypto.randomUUID()}`;
+    console.error("Unexpected error in createOrUpdateListingAction:", {
+      error,
+      supportReference,
+    });
+    return {
+      success: false,
+      error: t("unexpected"),
+      data: { supportReference },
+    };
   }
 };

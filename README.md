@@ -86,6 +86,9 @@ For local-first Supabase development:
 
 The repo defaults `NEXT_PUBLIC_SUPABASE_URL` to the local stack so development does not need the hosted Peels project. Peels uses ports `54331`–`54334` so it can run beside other local Supabase projects. If `.env.local` still points at hosted Supabase, update it; copying `.env.example` later may not overwrite an existing file.
 
+Keep the local URL, anon key, and service-role key together. Never reuse the
+hosted secret key for local development.
+
 If you need to serve [Supabase edge functions](https://github.com/peels-org/peels/blob/main/supabase/functions) locally, copy `supabase/functions/.env.example` to `supabase/functions/.env`. That file is loaded by `supabase start`. Use `supabase functions serve` only when you want hot reload while editing function code. Production secrets should remain dashboard-managed for now.
 
 For the fuller operational walkthrough, including GitHub/Vercel dashboard setup and fresh-computer bootstrap, see [docs/supabase-local-first.md](./docs/supabase-local-first.md).

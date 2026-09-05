@@ -32,6 +32,7 @@ import InputHint from "@/components/InputHint";
 import Fieldset from "@/components/Fieldset";
 import Lozenge from "@/components/Lozenge";
 import FormMessage from "@/components/FormMessage";
+import EncodedEmailLink from "@/components/EncodedEmailLink";
 import SubmitButton from "@/components/SubmitButton";
 import { useBeforeUnloadWarning } from "@/hooks/useBeforeUnloadWarning";
 import { styled } from "next-yak";
@@ -58,6 +59,7 @@ import type {
   ListingWriteProfile,
 } from "@/types/listing";
 import type { FormSubmitEvent } from "@/types/events";
+import { siteConfig } from "@/config/site";
 
 const DESCRIPTION_MAX_CHARACTERS = 640;
 
@@ -115,6 +117,12 @@ type ListingWriteSavedValues = {
   photos: string[];
   rejectedItems: string[];
   visibility: boolean;
+};
+
+type ListingSupportDetails = {
+  pageUrl: string;
+  reference: string;
+  timestamp: string;
 };
 
 function normalizeTextList(items: string[] | null | undefined) {
@@ -226,6 +234,8 @@ export default function ListingWrite({
   );
   const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
   const [hasInteractedWithForm, setHasInteractedWithForm] = useState(false);
+  const [supportDetails, setSupportDetails] =
+    useState<ListingSupportDetails | null>(null);
   const markFormInteracted = useCallback(() => {
     setHasInteractedWithForm(true);
   }, []);
@@ -344,6 +354,31 @@ export default function ListingWrite({
           count: errorCount,
         })
       : null);
+  const unexpectedFeedback =
+    feedbackError === t("Errors.unexpected") && supportDetails;
+  const feedbackContent = unexpectedFeedback ? (
+    <>
+      {feedbackMessage}{" "}
+      {t.rich("Errors.unexpectedContact", {
+        contact: (chunks) => (
+          <EncodedEmailLink
+            address={siteConfig.encodedEmail.team}
+            body={t("Errors.unexpectedEmailBody", {
+              listingType,
+              pageUrl: unexpectedFeedback.pageUrl,
+              reference: unexpectedFeedback.reference,
+              timestamp: unexpectedFeedback.timestamp,
+            })}
+            subject={t("Errors.unexpectedEmailSubject")}
+          >
+            {chunks}
+          </EncodedEmailLink>
+        ),
+      })}
+    </>
+  ) : (
+    feedbackMessage
+  );
 
   const shouldWarnBeforeUnload = initialListing
     ? hasUnsavedChanges
@@ -369,6 +404,7 @@ export default function ListingWrite({
     }
 
     setErrors({});
+    setSupportDetails(null);
     submitMutation.reset();
 
     const result = await deleteMutation.run(
@@ -399,6 +435,7 @@ export default function ListingWrite({
     }
 
     setErrors({});
+    setSupportDetails(null);
     submitMutation.reset();
     deleteMutation.reset();
 
@@ -462,7 +499,25 @@ export default function ListingWrite({
       }
     );
 
-    if (!result?.success && result?.data && "errors" in result.data) {
+    if (!result?.success && result?.error === t("Errors.unexpected")) {
+      const supportReference =
+        result.data &&
+        "supportReference" in result.data &&
+        result.data.supportReference;
+
+      setSupportDetails({
+        pageUrl: window.location.href,
+        reference: supportReference || `listing-client-${crypto.randomUUID()}`,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    if (
+      !result?.success &&
+      result?.data &&
+      "errors" in result.data &&
+      result.data.errors
+    ) {
       setErrors(result.data.errors);
     }
 
@@ -841,7 +896,7 @@ export default function ListingWrite({
         </DisabledFieldset>
       </Form>
 
-      {feedbackMessage && <FormMessage message={{ error: feedbackMessage }} />}
+      {feedbackContent && <FormMessage message={{ error: feedbackContent }} />}
 
       {initialListing && (
         <AdditionalSettings>

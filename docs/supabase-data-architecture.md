@@ -256,8 +256,9 @@ Then run the Storage API cleanup script in dry-run mode:
 npm run media:cleanup-orphans
 ```
 
-For hosted environments, pass the project URL and service-role key explicitly
-and include `--allow-remote`. Deletion requires both `--delete-orphans` and
+For hosted environments, pass the project URL and server-only key explicitly
+and include `--allow-remote`. The newer `sb_secret_...` key is preferred; keep
+the existing `SUPABASE_SERVICE_ROLE_KEY` variable name. Deletion requires both `--delete-orphans` and
 `--confirm-delete-orphans`, plus an explicit `--before` cutoff; this keeps the
 default path inspect-only and protects in-flight uploads whose database
 references have not been written yet.
