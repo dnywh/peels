@@ -362,6 +362,7 @@ export default function ListingWrite({
       {t.rich("Errors.unexpectedContact", {
         contact: (chunks) => (
           <EncodedEmailLink
+            as="plain"
             address={siteConfig.encodedEmail.team}
             body={t("Errors.unexpectedEmailBody", {
               listingType,
