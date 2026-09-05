@@ -110,13 +110,15 @@ export default function SignUpForm({
     const shouldSkipTurnstile =
       isForcedE2eError || searchParams.get("e2e_skip_turnstile") === "1";
 
-    if (!shouldSkipTurnstile) {
-      try {
-        tokenToUse = await turnstile.requestToken();
-      } catch {
+    try {
+      tokenToUse = await turnstile.requestToken();
+    } catch {
+      if (!shouldSkipTurnstile) {
         return;
       }
-    } else {
+    }
+
+    if (!tokenToUse && shouldSkipTurnstile) {
       formData.append("e2e_skip_turnstile", "1");
     }
 
