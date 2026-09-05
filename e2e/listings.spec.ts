@@ -122,7 +122,8 @@ test("unexpected listing errors offer a traceable support email", async ({
   });
   await signIn(page, {
     email: HOST_EMAIL,
-    redirectTo: "/profile/listings/new/business",
+    redirectTo:
+      "/profile/listings/new/business?token=test-secret#private-fragment",
   });
   await mockMapTilerGeocoding(page);
 
@@ -158,6 +159,8 @@ test("unexpected listing errors offer a traceable support email", async ({
   expect(emailUrl.searchParams.get("body")).toContain(
     "/profile/listings/new/business"
   );
+  expect(emailUrl.searchParams.get("body")).not.toContain("test-secret");
+  expect(emailUrl.searchParams.get("body")).not.toContain("private-fragment");
 });
 
 test("listing location search picks a geocoding result", async ({ page }) => {

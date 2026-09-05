@@ -507,7 +507,7 @@ export default function ListingWrite({
         result.data.supportReference;
 
       setSupportDetails({
-        pageUrl: window.location.href,
+        pageUrl: `${window.location.origin}${window.location.pathname}`,
         reference: supportReference || `listing-client-${crypto.randomUUID()}`,
         timestamp: new Date().toISOString(),
       });
