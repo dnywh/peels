@@ -88,9 +88,11 @@ Then make sure `.env.local` has:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<paste the ANON_KEY value here>
+SUPABASE_SERVICE_ROLE_KEY=<paste the SERVICE_ROLE_KEY value here>
 ```
 
-Do not mix the hosted project URL with the local anon key. That combination fails with `Invalid API key`.
+Use all three values printed by `npm run supabase:env`. Do not mix local and
+hosted URLs or keys.
 
 Finally:
 
@@ -108,6 +110,7 @@ Use this shape in `.env.local` before `npm run test:e2e:prod`:
 NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<paste the ANON_KEY value from npm run supabase:env>
+SUPABASE_SERVICE_ROLE_KEY=<paste the SERVICE_ROLE_KEY value from npm run supabase:env>
 ```
 
 Recommended sequence:
@@ -116,7 +119,7 @@ Recommended sequence:
 2. Run `npm run supabase:reset`
 3. Run `npm run seed:local-media`
 4. Run `npm run supabase:env`
-5. Paste the printed `ANON_KEY` into `.env.local`
+5. Paste the printed `ANON_KEY` and `SERVICE_ROLE_KEY` into `.env.local`
 6. Run `npm run test:e2e` or `npm run test:e2e:prod`
 
 If `.env.local` still points at `https://mfnaqdyunuafbwukbbyr.supabase.co`, the smoke suite will not see the seeded local listings, demo accounts, or demo chat thread.

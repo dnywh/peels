@@ -13,6 +13,9 @@ export default defineConfig({
     ? {
         ...sharedWebServer,
         command: `npm run start -- --hostname ${playwrightHost} --port ${playwrightPort}`,
+        env: {
+          PEELS_E2E: "1",
+        },
         reuseExistingServer: false,
       }
     : undefined,

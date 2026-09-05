@@ -45,7 +45,8 @@ export type ListingSubmitResult = {
 };
 
 export type ListingSubmitFailureData = {
-  errors: ListingWriteFieldErrors;
+  errors?: ListingWriteFieldErrors;
+  supportReference?: string;
 };
 
 export type DeleteListingResult = {

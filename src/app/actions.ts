@@ -23,6 +23,7 @@ import type { InlineActionResult } from "@/types/actionResult";
 import type {
   DeleteListingResult,
   ListingDraftInput,
+  ListingSubmitFailureData,
   ListingSubmitResult,
   ListingType,
 } from "@/types/listing";
@@ -319,6 +320,23 @@ function actionSuccess<T>(data?: T): InlineActionResult<T> {
   }
 
   return { success: true, error: null, data };
+}
+
+function listingUnexpectedError(
+  t: Awaited<ReturnType<typeof getTranslations>>,
+  error: unknown
+): InlineActionResult<ListingSubmitFailureData> {
+  const supportReference = `listing-${crypto.randomUUID()}`;
+  console.error("Unexpected error in createOrUpdateListingAction:", {
+    error,
+    supportReference,
+  });
+
+  return {
+    success: false,
+    error: t("unexpected"),
+    data: { supportReference },
+  };
 }
 
 export const signUpAction = async (formData: FormData, request?: Request) => {
@@ -1072,7 +1090,9 @@ export async function fetchListingsInView(
 
 export const createOrUpdateListingAction = async (
   listingData: ListingDraftInput
-): Promise<InlineActionResult<ListingSubmitResult>> => {
+): Promise<
+  InlineActionResult<ListingSubmitResult | ListingSubmitFailureData>
+> => {
   const t = await getTranslations("Errors");
   const supabase = await createClient();
   const {
@@ -1083,11 +1103,21 @@ export const createOrUpdateListingAction = async (
     console.log("Server action: Creating/updating listing");
 
     if (
+      process.env.PEELS_E2E === "1" &&
+      (await headers()).get("x-peels-e2e-listing-error") === "unexpected"
+    ) {
+      throw new Error("Forced unexpected listing error for local e2e testing");
+    }
+
+    if (
       listingData.type !== "business" &&
       listingData.type !== "community" &&
       listingData.type !== "residential"
     ) {
-      return actionError(t("unexpected"));
+      return listingUnexpectedError(t, {
+        listingType: listingData.type,
+        reason: "invalid_listing_type",
+      });
     }
 
     // Check name validation
@@ -1205,7 +1235,6 @@ export const createOrUpdateListingAction = async (
       type: listingData.type as ListingType,
     });
   } catch (error) {
-    console.error("Unexpected error in createOrUpdateListingAction:", error);
-    return actionError(t("unexpected"));
+    return listingUnexpectedError(t, error);
   }
 };

@@ -114,6 +114,55 @@ test("new listing form shows validation feedback when location is missing", asyn
   ).toBeVisible();
 });
 
+test("unexpected listing errors offer a traceable support email", async ({
+  page,
+}) => {
+  await page.setExtraHTTPHeaders({
+    "x-peels-e2e-listing-error": "unexpected",
+  });
+  await signIn(page, {
+    email: HOST_EMAIL,
+    redirectTo:
+      "/profile/listings/new/business?token=test-secret#private-fragment",
+  });
+  await mockMapTilerGeocoding(page);
+
+  await page.locator("#name").fill("Temporary support email test");
+  await page
+    .locator("#description")
+    .fill("A test-only description for the support email flow.");
+  await page.locator("#country").selectOption("AU");
+  const searchInput = page.getByTestId("listing-location-search-input");
+  await searchInput.fill("Newtown");
+  await page.getByRole("option", { name: /Newtown/ }).click();
+  await page.locator('input[name="legal_agreement"]').check();
+  await page.getByTestId("listing-write-submit").click();
+
+  const alert = page.locator("aside[role='alert']");
+  await expect(alert).toContainText("An unexpected error occurred.");
+  const emailLink = alert.getByRole("link", { name: "email us" });
+  await expect(emailLink).toBeVisible();
+
+  const href = await emailLink.getAttribute("href");
+  expect(href).not.toBeNull();
+  expect(href).not.toContain("+");
+  expect(href).toContain("%20");
+  const emailUrl = new URL(href ?? "");
+  expect(emailUrl.protocol).toBe("mailto:");
+  expect(emailUrl.searchParams.get("subject")).toBe(
+    "Problem creating a Peels listing"
+  );
+  expect(emailUrl.searchParams.get("body")).toMatch(
+    /Error reference: listing-[0-9a-f-]+/
+  );
+  expect(emailUrl.searchParams.get("body")).toContain("Listing type: business");
+  expect(emailUrl.searchParams.get("body")).toContain(
+    "/profile/listings/new/business"
+  );
+  expect(emailUrl.searchParams.get("body")).not.toContain("test-secret");
+  expect(emailUrl.searchParams.get("body")).not.toContain("private-fragment");
+});
+
 test("listing location search picks a geocoding result", async ({ page }) => {
   await signIn(page, {
     email: HOST_EMAIL,
