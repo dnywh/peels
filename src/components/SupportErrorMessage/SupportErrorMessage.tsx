@@ -22,10 +22,17 @@ export default function SupportErrorMessage({
   timestamp,
 }: SupportErrorMessageProps) {
   const t = useTranslations("Errors");
-  const [details, setDetails] = useState({
-    pageUrl: pageUrl ? sanitiseSupportPageUrl(pageUrl) : "",
-    timestamp: timestamp ?? "",
-  });
+  const [details, setDetails] = useState<{
+    pageUrl: string;
+    timestamp: string;
+  } | null>(
+    pageUrl && timestamp
+      ? {
+          pageUrl: sanitiseSupportPageUrl(pageUrl),
+          timestamp,
+        }
+      : null
+  );
 
   useEffect(() => {
     setDetails({
@@ -43,21 +50,24 @@ export default function SupportErrorMessage({
     <>
       {message.endsWith(".") ? message : `${message}.`}{" "}
       {t.rich("supportContact", {
-        contact: (chunks) => (
-          <EncodedEmailLink
-            as="plain"
-            address={siteConfig.encodedEmail.team}
-            body={t(bodyKey, {
-              area,
-              pageUrl: details.pageUrl,
-              reference: supportReference ?? "",
-              timestamp: details.timestamp,
-            })}
-            subject={t("supportEmailSubject", { area })}
-          >
-            {chunks}
-          </EncodedEmailLink>
-        ),
+        contact: (chunks) =>
+          details ? (
+            <EncodedEmailLink
+              as="plain"
+              address={siteConfig.encodedEmail.team}
+              body={t(bodyKey, {
+                area,
+                pageUrl: details.pageUrl,
+                reference: supportReference ?? "",
+                timestamp: details.timestamp,
+              })}
+              subject={t("supportEmailSubject", { area })}
+            >
+              {chunks}
+            </EncodedEmailLink>
+          ) : (
+            chunks
+          ),
       })}
     </>
   );
