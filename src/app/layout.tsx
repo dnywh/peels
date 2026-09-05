@@ -100,9 +100,11 @@ export default async function RootLayout({
         <JsonLd data={organizationJsonLd} />
         <JsonLd data={websiteJsonLd} />
         {inlineFontFaces ? <style>{inlineFontFaces}</style> : null}
-        <AuthHashCompletion />
-        <AttributionCapture />
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <AuthHashCompletion />
+          <AttributionCapture />
+          {children}
+        </NextIntlClientProvider>
         <Analytics />
         <SpeedInsights />
       </body>

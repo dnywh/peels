@@ -69,6 +69,30 @@ test("profile account actions show pending feedback and update the read view", a
   await page.getByRole("button", { name: /cancel|abbrechen/i }).click();
 });
 
+test("unexpected profile errors offer a traceable support email", async ({
+  page,
+}) => {
+  await page.setExtraHTTPHeaders({
+    "x-peels-e2e-account-error": "profile",
+  });
+  await signIn(page, { email: HOST_EMAIL, redirectTo: "/profile" });
+
+  await page.getByTestId("profile-account-first-name-edit").click();
+  await page
+    .getByTestId("profile-account-first-name-input")
+    .fill("Support Test");
+  await page.getByTestId("profile-account-first-name-submit").click();
+
+  const feedback = page.getByTestId("profile-account-first-name-message");
+  await expect(feedback).toContainText("couldn’t update your first name");
+  const emailLink = feedback.getByRole("link", { name: "email us" });
+  const href = await emailLink.getAttribute("href");
+  const emailUrl = new URL(href ?? "");
+  expect(emailUrl.searchParams.get("body")).toMatch(
+    /Error reference: account-[0-9a-f-]+/
+  );
+});
+
 test("profile email edit shows pending and inline error feedback", async ({
   page,
 }) => {

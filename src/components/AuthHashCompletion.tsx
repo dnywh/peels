@@ -6,9 +6,7 @@ import {
   isSupportedEmailAuthType,
   normaliseNextPath,
 } from "@/utils/authRedirects";
-
-const INVALID_LINK_MESSAGE =
-  "Hmm, that sign-in link is invalid or has expired. Please request a new one.";
+import { useTranslations } from "next-intl";
 
 const isAuthDebugEnabled = process.env.NEXT_PUBLIC_AUTH_DEBUG === "true";
 
@@ -17,14 +15,16 @@ const debugAuth = (event: string, data?: Record<string, unknown>) => {
   console.log("[auth-hash-completion]", event, data ?? {});
 };
 
-const redirectToSignIn = (nextPath: string) => {
+const redirectToSignIn = (nextPath: string, errorMessage: string) => {
   const signInUrl = new URL("/sign-in", window.location.origin);
-  signInUrl.searchParams.set("error", INVALID_LINK_MESSAGE);
+  signInUrl.searchParams.set("error", errorMessage);
   signInUrl.searchParams.set("redirect_to", nextPath);
   window.location.assign(signInUrl.toString());
 };
 
 export default function AuthHashCompletion() {
+  const t = useTranslations("Errors");
+
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const hash = window.location.hash;
@@ -118,7 +118,7 @@ export default function AuthHashCompletion() {
         "",
         `${window.location.pathname}${window.location.search}`
       );
-      redirectToSignIn(nextPath);
+      redirectToSignIn(nextPath, t("authLinkInvalid"));
       return;
     }
 
@@ -181,7 +181,7 @@ export default function AuthHashCompletion() {
             type,
             nextPath: typedNextPath,
           });
-          redirectToSignIn(typedNextPath);
+          redirectToSignIn(typedNextPath, t("authLinkInvalid"));
           return;
         }
 
@@ -197,12 +197,12 @@ export default function AuthHashCompletion() {
           nextPath: typedNextPath,
           reason: error instanceof Error ? error.message : "unknown",
         });
-        redirectToSignIn(typedNextPath);
+        redirectToSignIn(typedNextPath, t("authLinkInvalid"));
       }
     };
 
     void finalizeSessionFromHash();
-  }, []);
+  }, [t]);
 
   return null;
 }

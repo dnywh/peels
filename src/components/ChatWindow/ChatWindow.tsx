@@ -10,6 +10,7 @@ import ChatMessage from "@/components/ChatMessage";
 import ChatComposer from "@/components/ChatComposer";
 import ChatHeader from "@/components/ChatHeader";
 import {
+  chatErrorCodes,
   ensureChatThread,
   getThreadMessages,
   markChatThreadRead,
@@ -296,18 +297,15 @@ const ChatWindow = memo(function ChatWindow({
       return null;
     }
 
-    if (errorMessage.includes("violates row-level security policy")) {
-      if (
-        errorMessage.includes("chat_threads") ||
-        errorMessage.includes('"chat_threads"')
-      ) {
-        return t("Errors.tooManyThreads");
-      }
+    if (errorMessage === chatErrorCodes.rateLimitedThreads) {
+      return t("Errors.tooManyThreads");
+    }
 
+    if (errorMessage === chatErrorCodes.rateLimitedMessages) {
       return t("Errors.tooManyMessages");
     }
 
-    return errorMessage;
+    return t("Errors.genericLater");
   }
 
   const clearPendingDraftWrite = useCallback(() => {
@@ -684,6 +682,11 @@ const ChatWindow = memo(function ChatWindow({
         handleMessageChange={handleMessageChange}
         recipientName={otherPersonName}
         error={resolveChatErrorMessage(sendMutation.result.error)}
+        showSupport={
+          Boolean(sendMutation.result.error) &&
+          sendMutation.result.error !== chatErrorCodes.rateLimitedThreads &&
+          sendMutation.result.error !== chatErrorCodes.rateLimitedMessages
+        }
         isDemo={isDemo}
         isSending={sendMutation.isPending}
       />

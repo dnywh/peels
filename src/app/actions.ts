@@ -2,6 +2,11 @@
 
 import { isDisposableSignupEmail } from "@/lib/emailValidation";
 import {
+  classifySignInError,
+  isAccountExistsError,
+  isAuthHookTimeout,
+} from "@/lib/authError";
+import {
   validateFirstName,
   validateName,
   type FirstNameErrorCode,
@@ -19,7 +24,11 @@ import { getUserLocale, setUserLocale } from "@/i18n/services/locale";
 import { normaliseNextPath, resolveAuthLocale } from "@/utils/authRedirects";
 import { isMissingPreferredLocaleColumn } from "@/utils/postgrest";
 import { normaliseLocale, type Locale } from "@/i18n/config";
-import type { InlineActionResult } from "@/types/actionResult";
+import type {
+  InlineActionResult,
+  SupportErrorData,
+} from "@/types/actionResult";
+import { createSupportError } from "@/lib/supportError";
 import type {
   DeleteListingResult,
   ListingDraftInput,
@@ -55,19 +64,23 @@ function translateFirstNameFieldError(
 }
 
 type UpdateFirstNameActionData = {
-  firstName: string;
+  firstName?: string;
+  supportReference?: string;
 };
 
 type SendEmailChangeActionData = {
-  email: string;
+  email?: string;
+  supportReference?: string;
 };
 
 type UpdateNewsletterPreferenceActionData = {
-  newsletterPreference: boolean;
+  newsletterPreference?: boolean;
+  supportReference?: string;
 };
 
 type UpdatePreferredLocaleActionData = {
-  preferredLocale: Locale;
+  preferredLocale?: Locale;
+  supportReference?: string;
 };
 
 type SetDisplayLocaleActionData = {
@@ -326,17 +339,12 @@ function listingUnexpectedError(
   t: Awaited<ReturnType<typeof getTranslations>>,
   error: unknown
 ): InlineActionResult<ListingSubmitFailureData> {
-  const supportReference = `listing-${crypto.randomUUID()}`;
-  console.error("Unexpected error in createOrUpdateListingAction:", {
+  return createSupportError({
+    context: { operation: "createOrUpdateListingAction" },
     error,
-    supportReference,
+    message: t("unexpected"),
+    scope: "listing",
   });
-
-  return {
-    success: false,
-    error: t("unexpected"),
-    data: { supportReference },
-  };
 }
 
 export const signUpAction = async (formData: FormData, request?: Request) => {
@@ -407,6 +415,8 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
 
   const captchaToken = formData.get("captcha_token")?.toString();
   const turnstileEnabled = isTurnstileEnabled();
+  const shouldSkipTurnstile =
+    process.env.PEELS_E2E === "1" && formData.get("e2e_skip_turnstile") === "1";
 
   if (!email || !password || !first_name) {
     redirectUrl.searchParams.append("error", t("missingSignUpFields"));
@@ -418,13 +428,25 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
     return redirect(redirectUrl.toString());
   }
 
-  if (turnstileEnabled && !captchaToken) {
+  if (
+    process.env.PEELS_E2E === "1" &&
+    headersList.get("x-peels-e2e-auth-error") === "signup"
+  ) {
+    return createSupportError({
+      context: { operation: "signUpAction" },
+      error: new Error("Forced unexpected sign-up error for e2e testing"),
+      message: t("signUpFailed"),
+      scope: "auth",
+    });
+  }
+
+  if (turnstileEnabled && !shouldSkipTurnstile && !captchaToken) {
     redirectUrl.searchParams.append("error", t("verificationChallenge"));
     return redirect(redirectUrl.toString());
   }
 
   // Validate Turnstile token server-side if enabled with environment variable
-  if (turnstileEnabled && captchaToken) {
+  if (turnstileEnabled && !shouldSkipTurnstile && captchaToken) {
     const validationResult = await validateTurnstileToken(captchaToken);
     if (!validationResult.success) {
       redirectUrl.searchParams.append(
@@ -458,46 +480,26 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
   });
 
   if (error || !user) {
-    // Temporary check and special handling for Supabase hook timeout errors
-    // See https://github.com/peels-org/peels/issues/3
-    const hookTimeoutPatterns = [
-      "Error running hook URI",
-      "Failed to reach hook within maximum time",
-    ];
-    const errorMessage = error?.message ?? "";
-    const lowerCaseErrorMessage = errorMessage.toLowerCase();
-    const isHookTimeout = hookTimeoutPatterns.some((pattern) =>
-      errorMessage.includes(pattern)
-    );
-    if (isHookTimeout) {
-      redirectUrl.searchParams.append("error", t("generic"));
-      return redirect(redirectUrl.toString());
+    if (isAuthHookTimeout(error ?? {})) {
+      return createSupportError({
+        context: { operation: "signUpAction" },
+        error: error ?? new Error("No user returned from sign up"),
+        message: t("generic"),
+        scope: "auth",
+      });
     }
 
-    const accountExistsPatterns = [
-      "already registered",
-      "already exists",
-      "User already registered",
-    ];
-    const accountExists = accountExistsPatterns.some((pattern) =>
-      lowerCaseErrorMessage.includes(pattern.toLowerCase())
-    );
-    if (accountExists) {
+    if (isAccountExistsError(error ?? {})) {
       redirectUrl.searchParams.append("error", t("accountExists"));
       return redirect(redirectUrl.toString());
     }
 
-    // Back to general error catching
-    console.error(
-      error
-        ? `${error.code ?? "unknown"} ${error.message ?? "Unknown sign-up error"}`
-        : "No user returned from sign up"
-    );
-    redirectUrl.searchParams.append(
-      "error",
-      error?.message || t("signUpFailed")
-    );
-    return redirect(redirectUrl.toString());
+    return createSupportError({
+      context: { operation: "signUpAction" },
+      error: error ?? new Error("No user returned from sign up"),
+      message: t("signUpFailed"),
+      scope: "auth",
+    });
   }
 
   // Success state
@@ -506,10 +508,22 @@ export const signUpAction = async (formData: FormData, request?: Request) => {
 };
 
 export const signInAction = async (formData: FormData) => {
+  const t = await getTranslations("Errors");
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const redirectTo = formData.get("redirect_to") as string;
+  const safeRedirectTo = normaliseNextPath(redirectTo, "/map");
   const supabase = await createClient();
+  const redirectWithError = (message: string, supportReference?: string) => {
+    const searchParams = new URLSearchParams({
+      error: message,
+      redirect_to: safeRedirectTo,
+    });
+    if (supportReference) {
+      searchParams.set("support_reference", supportReference);
+    }
+    return redirect(`/sign-in?${searchParams}`);
+  };
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -517,10 +531,29 @@ export const signInAction = async (formData: FormData) => {
   });
 
   if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+    const kind = classifySignInError(error);
+    if (kind) {
+      const messageKey = {
+        emailNotConfirmed: "emailNotConfirmed",
+        invalidCredentials: "invalidCredentials",
+        rateLimited: "authRateLimited",
+      } as const;
+      return redirectWithError(t(messageKey[kind]));
+    }
+
+    const result = createSupportError({
+      context: { operation: "signInAction" },
+      error,
+      message: t("generic"),
+      scope: "auth",
+    });
+    return redirectWithError(
+      result.error ?? t("generic"),
+      result.data.supportReference
+    );
   }
 
-  return redirect(normaliseNextPath(redirectTo, "/map"));
+  return redirect(safeRedirectTo);
 };
 
 // Very similar to the sendPasswordResetEmailAction
@@ -543,8 +576,17 @@ export const forgotPasswordAction = async (formData: FormData) => {
   });
 
   if (error) {
-    console.error(error.message);
-    return encodedRedirect("error", "/forgot-password", t("generic"));
+    const result = createSupportError({
+      context: { operation: "forgotPasswordAction" },
+      error,
+      message: t("generic"),
+      scope: "auth",
+    });
+    const searchParams = new URLSearchParams({
+      error: result.error ?? t("generic"),
+      support_reference: result.data.supportReference,
+    });
+    return redirect(`/forgot-password?${searchParams}`);
   }
 
   if (callbackUrl) {
@@ -589,6 +631,18 @@ export async function updateFirstNameAction(
     );
   }
 
+  if (
+    process.env.PEELS_E2E === "1" &&
+    (await headers()).get("x-peels-e2e-account-error") === "profile"
+  ) {
+    return createSupportError({
+      context: { operation: "updateFirstNameAction" },
+      error: new Error("Forced unexpected profile error for e2e testing"),
+      message: t("updateFirstNameFailed"),
+      scope: "account",
+    });
+  }
+
   const { error } = await supabase
     .from("profiles")
     .update({
@@ -597,11 +651,15 @@ export async function updateFirstNameAction(
     .eq("id", user?.id);
 
   if (error) {
-    console.error("Error updating first name:", error);
     if (error.code === "23514" || /first name/i.test(error.message ?? "")) {
       return actionError<UpdateFirstNameActionData>(t("firstNameNotAllowed"));
     }
-    return actionError<UpdateFirstNameActionData>(t("updateFirstNameFailed"));
+    return createSupportError({
+      context: { operation: "updateFirstNameAction" },
+      error,
+      message: t("updateFirstNameFailed"),
+      scope: "account",
+    });
   }
 
   revalidatePath("/profile");
@@ -654,8 +712,12 @@ export async function sendEmailChangeEmailAction(
   );
 
   if (error) {
-    console.error("Error sending email change email:", error);
-    return actionError<SendEmailChangeActionData>(t("updateEmailFailed"));
+    return createSupportError({
+      context: { operation: "sendEmailChangeEmailAction" },
+      error,
+      message: t("updateEmailFailed"),
+      scope: "account",
+    });
   }
 
   return actionSuccess<SendEmailChangeActionData>({ email: nextEmail });
@@ -695,10 +757,12 @@ export async function updateNewsletterPreferenceAction(
     .eq("id", user?.id);
 
   if (error) {
-    console.error("Error updating newsletter preference:", error);
-    return actionError<UpdateNewsletterPreferenceActionData>(
-      t("updateNewsletterFailed")
-    );
+    return createSupportError({
+      context: { operation: "updateNewsletterPreferenceAction" },
+      error,
+      message: t("updateNewsletterFailed"),
+      scope: "account",
+    });
   }
 
   revalidatePath("/profile");
@@ -780,7 +844,12 @@ export async function updatePreferredLocaleAction(
   }
 
   if (!profileUpdated && !authUpdated) {
-    return actionError<UpdatePreferredLocaleActionData>(t("genericLater"));
+    return createSupportError({
+      context: { operation: "updatePreferredLocaleAction" },
+      error: { authError, profileError },
+      message: t("genericLater"),
+      scope: "account",
+    });
   }
 
   await setUserLocale(nextLocale);
@@ -899,7 +968,7 @@ export const signOutAction = async () => {
 
 export const deleteListingAction = async (
   slug: string
-): Promise<InlineActionResult<DeleteListingResult>> => {
+): Promise<InlineActionResult<DeleteListingResult | SupportErrorData>> => {
   const t = await getTranslations();
   // Check if user is logged in first
   const supabase = await createClient();
@@ -918,8 +987,12 @@ export const deleteListingAction = async (
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Missing Supabase client env vars for listing deletion.");
-    return actionError(t("Errors.generic"));
+    return createSupportError({
+      context: { operation: "deleteListingAction" },
+      error: new Error("Missing Supabase client env vars"),
+      message: t("Errors.failedDeleteListing"),
+      scope: "listing",
+    });
   }
 
   // Then continue with the delete listing
@@ -947,6 +1020,14 @@ export const deleteListingAction = async (
             ? data.message
             : t("Errors.failedDeleteListing");
       console.error("Error deleting listing:", errorMessage);
+      if (response.status >= 500) {
+        return createSupportError({
+          context: { operation: "deleteListingAction" },
+          error: { errorMessage, status: response.status },
+          message: t("Errors.failedDeleteListing"),
+          scope: "listing",
+        });
+      }
       return actionError(t("Errors.failedDeleteListing"));
     }
 
@@ -965,8 +1046,12 @@ export const deleteListingAction = async (
       redirectTo: `/profile/?message=${encodeURIComponent(message)}`,
     });
   } catch (error) {
-    console.error("Error deleting listing:", error);
-    return actionError(t("Errors.generic"));
+    return createSupportError({
+      context: { operation: "deleteListingAction" },
+      error,
+      message: t("Errors.failedDeleteListing"),
+      scope: "listing",
+    });
   }
 };
 
@@ -991,9 +1076,17 @@ export const deleteAccountAction = async () => {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Missing Supabase client env vars for account deletion.");
+    const result = createSupportError({
+      context: { operation: "deleteAccountAction" },
+      error: new Error("Missing Supabase client env vars"),
+      message: t("deleteAccountFailed"),
+      scope: "account",
+    });
     return redirect(
-      `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`
+      `/profile?${new URLSearchParams({
+        error: result.error ?? t("deleteAccountFailed"),
+        support_reference: result.data.supportReference,
+      })}`
     );
   }
 
@@ -1013,15 +1106,31 @@ export const deleteAccountAction = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Delete account failed:", data);
-      redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
+      const result = createSupportError({
+        context: { operation: "deleteAccountAction" },
+        error: { data, status: response.status },
+        message: t("deleteAccountFailed"),
+        scope: "account",
+      });
+      redirectPath = `/profile?${new URLSearchParams({
+        error: result.error ?? t("deleteAccountFailed"),
+        support_reference: result.data.supportReference,
+      })}`;
     } else {
       shouldSignOut = true;
       redirectPath = `/sign-in?success=${encodeURIComponent(t("accountDeleted"))}`;
     }
   } catch (error) {
-    console.error("Delete account error:", error);
-    redirectPath = `/profile?error=${encodeURIComponent(t("deleteAccountFailed"))}`;
+    const result = createSupportError({
+      context: { operation: "deleteAccountAction" },
+      error,
+      message: t("deleteAccountFailed"),
+      scope: "account",
+    });
+    redirectPath = `/profile?${new URLSearchParams({
+      error: result.error ?? t("deleteAccountFailed"),
+      support_reference: result.data.supportReference,
+    })}`;
   } finally {
     if (shouldSignOut) {
       await supabase.auth.signOut();
@@ -1170,8 +1279,12 @@ export const createOrUpdateListingAction = async (
           userId: user.id,
         });
       } catch (error) {
-        console.error("Error updating listing:", error);
-        return actionError(t("savePhotosFailed"));
+        return createSupportError({
+          context: { operation: "updateListingMediaReferences" },
+          error,
+          message: t("savePhotosFailed"),
+          scope: "listing",
+        });
       }
     } else {
       const { data: createdListing, error } = await supabase
@@ -1192,7 +1305,12 @@ export const createOrUpdateListingAction = async (
           return actionError(t("duplicateListing"));
         }
 
-        return actionError(t("genericLater"));
+        return createSupportError({
+          context: { operation: "createListing" },
+          error,
+          message: t("genericLater"),
+          scope: "listing",
+        });
       }
 
       try {
@@ -1203,12 +1321,16 @@ export const createOrUpdateListingAction = async (
           userId: user.id,
         });
       } catch (error) {
-        console.error("Error updating media references:", error);
         await deleteCreatedListing({
           listingId: createdListing.id,
           userId: user.id,
         });
-        return actionError(t("savePhotosFailed"));
+        return createSupportError({
+          context: { operation: "attachPendingListingMedia" },
+          error,
+          message: t("savePhotosFailed"),
+          scope: "listing",
+        });
       }
 
       data = createdListing;
@@ -1224,7 +1346,10 @@ export const createOrUpdateListingAction = async (
     revalidatePath("/profile/listings");
 
     if (!data?.slug || !data?.id) {
-      return actionError(t("genericLater"));
+      return listingUnexpectedError(t, {
+        data,
+        reason: "missing_listing_identity",
+      });
     }
 
     return actionSuccess({

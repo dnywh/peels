@@ -9,6 +9,25 @@ import type {
 
 type BrowserSupabaseClient = ReturnType<typeof createClient>;
 
+export const chatErrorCodes = {
+  rateLimitedMessages: "chat-rate-limited-messages",
+  rateLimitedThreads: "chat-rate-limited-threads",
+  unexpected: "chat-unexpected",
+} as const;
+
+function normaliseChatError(error: { message?: string } | null) {
+  const message = error?.message ?? "";
+
+  if (message.includes("violates row-level security policy")) {
+    return message.includes("chat_threads")
+      ? chatErrorCodes.rateLimitedThreads
+      : chatErrorCodes.rateLimitedMessages;
+  }
+
+  console.error("Unexpected chat operation error:", error);
+  return chatErrorCodes.unexpected;
+}
+
 export function getThreadMessages(
   existingThread?: {
     messages?: ChatMessageRecord[] | null;
@@ -34,7 +53,7 @@ export async function loadThreadMessages({
   if (error) {
     return {
       success: false,
-      error: error.message,
+      error: normaliseChatError(error),
     };
   }
 
@@ -60,9 +79,16 @@ export async function ensureChatThread({
   }>
 > {
   if (!listing.id || !listing.owner_id) {
+    console.error(
+      "Unexpected chat operation error: missing listing identifiers",
+      {
+        hasListingId: Boolean(listing.id),
+        hasListingOwnerId: Boolean(listing.owner_id),
+      }
+    );
     return {
       success: false,
-      error: "Missing listing details for chat.",
+      error: chatErrorCodes.unexpected,
     };
   }
 
@@ -79,7 +105,7 @@ export async function ensureChatThread({
   if (error) {
     return {
       success: false,
-      error: error.message,
+      error: normaliseChatError(error),
     };
   }
 
@@ -125,7 +151,7 @@ export async function ensureChatThread({
   if (createError) {
     return {
       success: false,
-      error: createError.message,
+      error: normaliseChatError(createError),
     };
   }
 
@@ -145,7 +171,7 @@ export async function ensureChatThread({
     if (existingThreadError || !existingThread?.id) {
       return {
         success: false,
-        error: existingThreadError?.message ?? "Unable to create chat thread.",
+        error: normaliseChatError(existingThreadError),
       };
     }
 
@@ -186,7 +212,7 @@ export async function sendChatMessage({
   if (error || !data) {
     return {
       success: false,
-      error: error?.message ?? "Unable to send message.",
+      error: normaliseChatError(error),
     };
   }
 
@@ -236,7 +262,7 @@ export async function markChatThreadRead({
   if (error) {
     return {
       success: false,
-      error: error.message,
+      error: normaliseChatError(error),
     };
   }
 

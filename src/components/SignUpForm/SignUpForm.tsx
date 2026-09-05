@@ -8,7 +8,6 @@ import { signUpAction } from "@/app/actions";
 import Button from "@/components/Button";
 import CheckboxCluster from "@/components/CheckboxCluster";
 import CheckboxRow from "@/components/CheckboxRow";
-import EncodedEmailLink from "@/components/EncodedEmailLink";
 import Field from "@/components/Field";
 import Form from "@/components/Form";
 import FormMessage from "@/components/FormMessage";
@@ -16,8 +15,8 @@ import Input from "@/components/Input";
 import InputHint from "@/components/InputHint";
 import Label from "@/components/Label";
 import LegalAgreement from "@/components/LegalAgreement";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 import { useTurnstileToken } from "@/components/SignUpForm/useTurnstileToken";
-import { siteConfig } from "@/config/site";
 import { FIELD_CONFIGS, validateFirstName } from "@/lib/formValidation";
 import type { FormSubmitEvent } from "@/types/events";
 import { getStoredAttributionParams } from "@/utils/attributionUtils";
@@ -40,6 +39,11 @@ export default function SignUpForm({
   const timeoutMessage = t("Auth.turnstile.timeout");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstNameError, setFirstNameError] = useState<string | null>(null);
+  const [supportFailure, setSupportFailure] = useState<{
+    message: string;
+    reference: string;
+    timestamp: string;
+  } | null>(null);
   const turnstileEnabled = isTurnstileEnabled();
   const failedMessage = useCallback(
     (code: string) => t("Auth.turnstile.failed", { code }),
@@ -68,6 +72,7 @@ export default function SignUpForm({
     }
 
     setFirstNameError(null);
+    setSupportFailure(null);
     turnstile.resetError();
 
     const formData = new FormData(event.currentTarget);
@@ -100,11 +105,21 @@ export default function SignUpForm({
     }
 
     let tokenToUse: string | undefined;
+    const searchParams = new URLSearchParams(window.location.search);
+    const isForcedE2eError = searchParams.get("e2e_error") === "signup";
+    const shouldSkipTurnstile =
+      isForcedE2eError || searchParams.get("e2e_skip_turnstile") === "1";
 
     try {
       tokenToUse = await turnstile.requestToken();
     } catch {
-      return;
+      if (!shouldSkipTurnstile) {
+        return;
+      }
+    }
+
+    if (!tokenToUse && shouldSkipTurnstile) {
+      formData.append("e2e_skip_turnstile", "1");
     }
 
     setIsSubmitting(true);
@@ -119,7 +134,20 @@ export default function SignUpForm({
         if (value && typeof value === "string") formData.append(key, value);
       });
 
-      await signUpAction(formData);
+      const result = await signUpAction(formData);
+      if (
+        result &&
+        !result.success &&
+        result.error &&
+        result.data?.supportReference
+      ) {
+        setSupportFailure({
+          message: result.error,
+          reference: result.data.supportReference,
+          timestamp: new Date().toISOString(),
+        });
+        setIsSubmitting(false);
+      }
     } catch (error) {
       console.error("Sign up error:", error);
       setIsSubmitting(false);
@@ -205,21 +233,23 @@ export default function SignUpForm({
         </Field>
       )}
 
-      {(error || hasFieldErrors) && (
+      {(error || supportFailure || hasFieldErrors) && (
         <FormMessage
           message={{
-            error: error
-              ? t.rich("Auth.signUp.errorWithSupport", {
-                  error: error.endsWith(".") ? error : `${error}.`,
-                  link: (chunks) => (
-                    <EncodedEmailLink address={siteConfig.encodedEmail.team}>
-                      {chunks}
-                    </EncodedEmailLink>
-                  ),
-                })
-              : hasFieldErrors
-                ? t("Errors.validationSummary", { count: fieldErrorCount })
-                : t("Errors.generic"),
+            error: supportFailure ? (
+              <SupportErrorMessage
+                message={supportFailure.message}
+                scope="auth"
+                supportReference={supportFailure.reference}
+                timestamp={supportFailure.timestamp}
+              />
+            ) : error ? (
+              error
+            ) : hasFieldErrors ? (
+              t("Errors.validationSummary", { count: fieldErrorCount })
+            ) : (
+              t("Errors.generic")
+            ),
           }}
         />
       )}

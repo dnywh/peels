@@ -10,6 +10,7 @@ import {
 } from "@/lib/formValidation";
 import type { Dispatch, SetStateAction } from "react";
 import type { InlineActionResult } from "@/types/actionResult";
+import type { SupportErrorData } from "@/types/actionResult";
 import type {
   DeleteListingResult,
   Listing,
@@ -216,6 +217,6 @@ export async function submitListingDelete({
   slug,
 }: {
   slug: string;
-}): Promise<InlineActionResult<DeleteListingResult>> {
+}): Promise<InlineActionResult<DeleteListingResult | SupportErrorData>> {
   return deleteListingAction(slug);
 }

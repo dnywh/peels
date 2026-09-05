@@ -6,6 +6,7 @@ import FormMessage from "@/components/FormMessage";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
 import SubmitButton from "@/components/SubmitButton";
+import SupportErrorMessage from "@/components/SupportErrorMessage";
 import {
   getLocaleFromSearchParams,
   normaliseNextPath,
@@ -45,6 +46,7 @@ export default async function RetryEmailAuthPage({
   const locale = getLocaleFromSearchParams(params);
   const error = firstValue(params.error);
   const success = firstValue(params.success);
+  const supportReference = firstValue(params.support_reference);
   const t = await getTranslations();
 
   if (type === "invite") {
@@ -116,7 +118,25 @@ export default async function RetryEmailAuthPage({
           />
         </Field>
         {(error || success) && (
-          <FormMessage message={success ? { success } : { error }} />
+          <FormMessage
+            message={
+              success
+                ? { success }
+                : {
+                    error:
+                      error && supportReference ? (
+                        <SupportErrorMessage
+                          message={error}
+                          pageUrl="/auth/retry"
+                          scope="auth"
+                          supportReference={supportReference}
+                        />
+                      ) : (
+                        error
+                      ),
+                  }
+            }
+          />
         )}
         <SubmitButton
           pendingText={t("Status.emailing")}
