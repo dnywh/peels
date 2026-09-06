@@ -39,7 +39,7 @@ export const DUPLICATE_MARKER_CLICK_SUPPRESSION_MS = 100;
 type MapMarkerKeyboardActivationOptions = {
   markerRef: RefObject<MarkerInstance | null>;
   markerLabel: string;
-  onActivate: () => void;
+  onActivate: (timeStamp: number) => void;
 };
 
 export function useMapMarkerKeyboardActivation({
@@ -58,8 +58,7 @@ export function useMapMarkerKeyboardActivation({
     markerElement.setAttribute("aria-label", markerLabel);
 
     const activateFromKeyboard = (event: KeyboardEvent) => {
-      onActivate();
-      void event;
+      onActivate(event.timeStamp);
     };
 
     const handleMarkerKeyDown = (event: KeyboardEvent) => {
@@ -118,8 +117,8 @@ export function ListingMapPinMarker({
   useMapMarkerKeyboardActivation({
     markerRef,
     markerLabel,
-    onActivate: () => {
-      lastKeyboardActivationRef.current = performance.now();
+    onActivate: (timeStamp) => {
+      lastKeyboardActivationRef.current = timeStamp;
       onMarkerClick(listing);
     },
   });

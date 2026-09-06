@@ -112,8 +112,8 @@ function MirroredClusterPinMarker({
   useMapMarkerKeyboardActivation({
     markerRef,
     markerLabel,
-    onActivate: () => {
-      lastKeyboardActivationRef.current = performance.now();
+    onActivate: (timeStamp) => {
+      lastKeyboardActivationRef.current = timeStamp;
       onActivate();
     },
   });
