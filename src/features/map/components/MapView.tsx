@@ -491,12 +491,23 @@ export default function MapView({
     [applyMapPinZoomVariables]
   );
 
+  const syncClusterViewport = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    const center = map.getCenter();
+    setClusterViewport(
+      resolveClusterViewport(center.lng, center.lat, map.getZoom())
+    );
+  }, []);
+
   const syncCurrentMapState = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return null;
 
     applyMapPinZoomVariables(map.getZoom());
     syncZoomControlState(map.getZoom());
+    syncClusterViewport();
     const bounds = map.getBounds();
     emitBoundsChange(bounds);
     syncSearchContext(bounds);
@@ -505,6 +516,7 @@ export default function MapView({
   }, [
     applyMapPinZoomVariables,
     emitBoundsChange,
+    syncClusterViewport,
     syncSearchContext,
     syncZoomControlState,
   ]);
@@ -600,14 +612,6 @@ export default function MapView({
     (event: ViewStateChangeEvent) => {
       scheduleMapPinZoomUpdate(event.viewState.zoom);
       syncZoomControlState(event.viewState.zoom);
-
-      setClusterViewport(
-        resolveClusterViewport(
-          event.viewState.longitude,
-          event.viewState.latitude,
-          event.viewState.zoom
-        )
-      );
     },
     [scheduleMapPinZoomUpdate, syncZoomControlState]
   );
@@ -618,6 +622,7 @@ export default function MapView({
       if (!map) return;
 
       scheduleStoredMapViewSave();
+      syncClusterViewport();
       const bounds = map.getBounds();
       emitBoundsChange(bounds);
       syncSearchContext(bounds);
@@ -627,6 +632,7 @@ export default function MapView({
       emitBoundsChange,
       handleMapMoveEnd,
       scheduleStoredMapViewSave,
+      syncClusterViewport,
       syncSearchContext,
     ]
   );

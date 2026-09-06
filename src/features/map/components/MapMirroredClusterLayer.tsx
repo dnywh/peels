@@ -1,16 +1,23 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import Supercluster from "supercluster";
-import { Marker, type MarkerEvent } from "react-map-gl/maplibre";
+import {
+  Marker,
+  type MarkerEvent,
+  type MarkerInstance,
+} from "react-map-gl/maplibre";
 import type { FeatureCollection, Point } from "geojson";
 
 import MapPin from "@/components/MapPin";
 import type { ListingCoordinates, ListingMarker } from "@/types/listing";
 
 import ClusterPinEnter, { ClusterPinEnterProvider } from "./ClusterPinEnter";
-import { ListingMapPinMarker } from "./MapPinLayer";
+import {
+  ListingMapPinMarker,
+  useMapMarkerKeyboardActivation,
+} from "./MapPinLayer";
 
 type MapMirroredClusterLayerProps = {
   geoJson: FeatureCollection<Point>;
@@ -81,6 +88,54 @@ function resolveVisibleMirroredPins(
   return visiblePins;
 }
 
+function MirroredClusterPinMarker({
+  pinKey,
+  longitude,
+  latitude,
+  markerLabel,
+  onActivate,
+}: {
+  pinKey: string;
+  longitude: number;
+  latitude: number;
+  markerLabel: string;
+  onActivate: () => void;
+}) {
+  const markerRef = useRef<MarkerInstance | null>(null);
+
+  useMapMarkerKeyboardActivation({
+    markerRef,
+    markerLabel,
+    onActivate,
+  });
+
+  const handlePinClick = (event: ReactMouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    event.nativeEvent.stopPropagation();
+    onActivate();
+  };
+
+  const handleMarkerClick = (event: MarkerEvent<globalThis.MouseEvent>) => {
+    event.originalEvent.stopPropagation();
+    onActivate();
+  };
+
+  return (
+    <Marker
+      ref={markerRef}
+      longitude={longitude}
+      latitude={latitude}
+      anchor="center"
+      onClick={handleMarkerClick}
+    >
+      <ClusterPinEnter>
+        <MapPin markerId={pinKey} type="community" onClick={handlePinClick} />
+      </ClusterPinEnter>
+    </Marker>
+  );
+}
+
 export default function MapMirroredClusterLayer({
   geoJson,
   listingsById,
@@ -125,44 +180,21 @@ export default function MapMirroredClusterLayer({
     <ClusterPinEnterProvider>
       {visiblePins.map((pin) => {
         if (pin.isCluster && pin.clusterId !== undefined) {
-          const activateCluster = () => {
-            onClusterClick(
-              pin.longitude,
-              pin.latitude,
-              clusterIndex.getClusterExpansionZoom(pin.clusterId!)
-            );
-          };
-
-          const handlePinClick = (event: ReactMouseEvent<HTMLDivElement>) => {
-            event.preventDefault();
-            event.stopPropagation();
-            event.nativeEvent.stopPropagation();
-            activateCluster();
-          };
-
-          const handleMarkerClick = (
-            event: MarkerEvent<globalThis.MouseEvent>
-          ) => {
-            event.originalEvent.stopPropagation();
-            activateCluster();
-          };
-
           return (
-            <Marker
+            <MirroredClusterPinMarker
               key={pin.key}
+              pinKey={pin.key}
               longitude={pin.longitude}
               latitude={pin.latitude}
-              anchor="center"
-              onClick={handleMarkerClick}
-            >
-              <ClusterPinEnter>
-                <MapPin
-                  markerId={pin.key}
-                  type="community"
-                  onClick={handlePinClick}
-                />
-              </ClusterPinEnter>
-            </Marker>
+              markerLabel={markerLabel}
+              onActivate={() => {
+                onClusterClick(
+                  pin.longitude,
+                  pin.latitude,
+                  clusterIndex.getClusterExpansionZoom(pin.clusterId!)
+                );
+              }}
+            />
           );
         }
 

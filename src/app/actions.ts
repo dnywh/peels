@@ -1160,6 +1160,42 @@ async function withRetry<T>(
   }
 }
 
+async function enrichListingMarkersWithMirroredFlag(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  markers: ListingMarker[]
+): Promise<ListingMarker[]> {
+  const ids = markers.map((marker) => marker.id);
+  const { data, error } = await supabase
+    .from("public_listings")
+    .select("id, is_open_data_mirrored")
+    .in("id", ids);
+
+  if (error || !data) {
+    console.error(
+      "Failed to enrich listing markers with mirrored flag:",
+      error
+    );
+    return markers;
+  }
+
+  const mirroredById = new Map(
+    data.map((row) => [row.id, row.is_open_data_mirrored === true])
+  );
+
+  return markers.map((listing) => ({
+    ...listing,
+    is_open_data_mirrored: mirroredById.get(listing.id) ?? false,
+  }));
+}
+
+function rpcResultIncludesMirroredFlag(
+  rows: Record<string, unknown>[]
+): boolean {
+  if (rows.length === 0) return true;
+
+  return Object.prototype.hasOwnProperty.call(rows[0], "is_open_data_mirrored");
+}
+
 export async function fetchListingsInView(
   south: number,
   west: number,
@@ -1188,7 +1224,14 @@ export async function fetchListingsInView(
       return [];
     }
 
-    return ((data || []) as ListingMarker[]).map((listing) => ({
+    const rawRows = (data || []) as Record<string, unknown>[];
+    let markers = rawRows as ListingMarker[];
+
+    if (!rpcResultIncludesMirroredFlag(rawRows) && markers.length > 0) {
+      markers = await enrichListingMarkersWithMirroredFlag(supabase, markers);
+    }
+
+    return markers.map((listing) => ({
       ...listing,
       is_open_data_mirrored: listing.is_open_data_mirrored ?? false,
     }));

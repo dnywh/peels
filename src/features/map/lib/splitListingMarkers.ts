@@ -2,20 +2,7 @@ import type { Feature, FeatureCollection, Point } from "geojson";
 
 import type { ListingMarker } from "@/types/listing";
 
-function hasValidMarkerCoordinates(
-  listing: ListingMarker
-): listing is ListingMarker & {
-  coordinates: { latitude: number; longitude: number };
-} {
-  const coordinates = listing.coordinates;
-  return Boolean(
-    coordinates &&
-    typeof coordinates.latitude === "number" &&
-    typeof coordinates.longitude === "number" &&
-    Number.isFinite(coordinates.latitude) &&
-    Number.isFinite(coordinates.longitude)
-  );
-}
+import { hasValidCoordinates } from "./mapUtils.ts";
 
 export type SplitListingMarkersResult = {
   organic: ListingMarker[];
@@ -29,7 +16,7 @@ export function splitListingMarkers(
   const mirrored: ListingMarker[] = [];
 
   for (const listing of listings) {
-    if (!hasValidMarkerCoordinates(listing)) continue;
+    if (!hasValidCoordinates(listing)) continue;
 
     if (listing.is_open_data_mirrored) {
       mirrored.push(listing);
@@ -47,7 +34,7 @@ export function mirroredListingsToGeoJson(
   const features: Feature<Point>[] = [];
 
   for (const listing of listings) {
-    if (!hasValidMarkerCoordinates(listing)) continue;
+    if (!hasValidCoordinates(listing)) continue;
 
     const coordinates = listing.coordinates!;
     features.push({
