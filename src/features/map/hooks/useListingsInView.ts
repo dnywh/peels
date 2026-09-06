@@ -89,7 +89,10 @@ export function useListingsInView(): UseListingsInViewResult {
         for (const marker of (response ?? []) as ListingMarker[]) {
           if (seen.has(marker.id)) continue;
           seen.add(marker.id);
-          merged.push(marker);
+          merged.push({
+            ...marker,
+            is_open_data_mirrored: marker.is_open_data_mirrored ?? false,
+          });
         }
       }
 

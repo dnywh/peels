@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, type RefObject, useEffect } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import {
   Marker,
@@ -11,6 +11,7 @@ import {
 import MapPin from "@/components/MapPin";
 import type { ListingCoordinates, ListingMarker } from "@/types/listing";
 
+import ClusterPinEnter from "./ClusterPinEnter";
 import { hasValidCoordinates } from "../lib/mapUtils";
 
 type MapPinLayerProps = {
@@ -26,27 +27,26 @@ type ListingMapPinMarkerProps = {
   isSelected: boolean;
   markerLabel: string;
   onMarkerClick: MapPinLayerProps["onMarkerClick"];
+  withClusterEnterAnimation?: boolean;
 };
 
 const KEYBOARD_ACTIVATION_KEYS = new Set(["Enter", " "]);
 // React handles pointer clicks on the inner 44px hit target, while MapLibre
 // also reports marker clicks from its own element. Suppress only same-tick
 // duplicate events without blocking deliberate follow-up activations.
-const DUPLICATE_MARKER_CLICK_SUPPRESSION_MS = 100;
+export const DUPLICATE_MARKER_CLICK_SUPPRESSION_MS = 100;
 
-function ListingMapPinMarker({
-  listing,
-  coords,
-  isSelected,
+type MapMarkerKeyboardActivationOptions = {
+  markerRef: RefObject<MarkerInstance | null>;
+  markerLabel: string;
+  onActivate: (timeStamp: number) => void;
+};
+
+export function useMapMarkerKeyboardActivation({
+  markerRef,
   markerLabel,
-  onMarkerClick,
-}: ListingMapPinMarkerProps) {
-  const markerRef = useRef<MarkerInstance | null>(null);
-  const lastPinPointerClickRef = useRef<{
-    listingId: ListingMarker["id"];
-    timeStamp: number;
-  } | null>(null);
-  const lastKeyboardActivationRef = useRef<number | null>(null);
+  onActivate,
+}: MapMarkerKeyboardActivationOptions) {
   const isSpaceActivationPendingRef = useRef(false);
 
   useEffect(() => {
@@ -58,8 +58,7 @@ function ListingMapPinMarker({
     markerElement.setAttribute("aria-label", markerLabel);
 
     const activateFromKeyboard = (event: KeyboardEvent) => {
-      lastKeyboardActivationRef.current = event.timeStamp;
-      onMarkerClick(listing);
+      onActivate(event.timeStamp);
     };
 
     const handleMarkerKeyDown = (event: KeyboardEvent) => {
@@ -97,7 +96,32 @@ function ListingMapPinMarker({
       markerElement.removeEventListener("keydown", handleMarkerKeyDown);
       markerElement.removeEventListener("keyup", handleMarkerKeyUp);
     };
-  }, [listing, markerLabel, onMarkerClick]);
+  }, [markerLabel, markerRef, onActivate]);
+}
+
+export function ListingMapPinMarker({
+  listing,
+  coords,
+  isSelected,
+  markerLabel,
+  onMarkerClick,
+  withClusterEnterAnimation = false,
+}: ListingMapPinMarkerProps) {
+  const markerRef = useRef<MarkerInstance | null>(null);
+  const lastPinPointerClickRef = useRef<{
+    listingId: ListingMarker["id"];
+    timeStamp: number;
+  } | null>(null);
+  const lastKeyboardActivationRef = useRef<number | null>(null);
+
+  useMapMarkerKeyboardActivation({
+    markerRef,
+    markerLabel,
+    onActivate: (timeStamp) => {
+      lastKeyboardActivationRef.current = timeStamp;
+      onMarkerClick(listing);
+    },
+  });
 
   const handlePinClick = (event: ReactMouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -142,12 +166,23 @@ function ListingMapPinMarker({
       onClick={handleMarkerClick}
       style={{ zIndex: isSelected ? 1 : 0 }}
     >
-      <MapPin
-        markerId={listing.id}
-        onClick={handlePinClick}
-        selected={isSelected}
-        type={listing.type ?? undefined}
-      />
+      {withClusterEnterAnimation ? (
+        <ClusterPinEnter>
+          <MapPin
+            markerId={listing.id}
+            onClick={handlePinClick}
+            selected={isSelected}
+            type={listing.type ?? undefined}
+          />
+        </ClusterPinEnter>
+      ) : (
+        <MapPin
+          markerId={listing.id}
+          onClick={handlePinClick}
+          selected={isSelected}
+          type={listing.type ?? undefined}
+        />
+      )}
     </Marker>
   );
 }

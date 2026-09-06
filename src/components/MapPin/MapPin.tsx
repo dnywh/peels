@@ -151,7 +151,7 @@ const CompactPinHitTarget = styled.div`
 
 const CompactPinInner = styled.div<{ $type?: string }>`
   box-shadow:
-    0 0 0 2.5px ${theme.colors.marker.border},
+    0 0 0 var(--map-pin-border-width, 2.5px) ${theme.colors.marker.border},
     0 3px 14px rgba(0, 0, 0, 0.22),
     0 0 4px rgba(0, 0, 0, 0.22);
   width: 24px;
@@ -164,6 +164,7 @@ const CompactPinInner = styled.div<{ $type?: string }>`
   pointer-events: none;
   transform: scale(var(--map-pin-compact-scale, 1));
   transform-origin: center;
+  transition: box-shadow 180ms ease;
 
   ${({ $type }) => $type === "residential" && residentialPinStyles}
   ${({ $type }) => $type === "community" && communityPinStyles}

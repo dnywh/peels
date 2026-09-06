@@ -14,11 +14,11 @@ import MapListingDrawerPanel from "./MapListingDrawerPanel";
 import MapSidebar from "./MapSidebar";
 import { useMapListingUrl } from "../hooks/useMapListingUrl";
 import { useIpInitialLocation } from "../hooks/useIpInitialLocation";
-import type { InitialMapCoordinates } from "../lib/mapInitialView";
 import {
   MAP_DRAWER_SNAP_POINTS,
   useMapDrawerState,
 } from "../hooks/useMapDrawerState";
+import type { InitialMapCoordinates } from "../lib/mapInitialView";
 
 type MapPageClientProps = {
   user: User | null;

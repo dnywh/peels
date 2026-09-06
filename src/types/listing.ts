@@ -114,6 +114,7 @@ export type ListingMarker = {
   slug: string;
   type: ListingType | null;
   coordinates: ListingCoordinates | null;
+  is_open_data_mirrored: boolean;
 };
 
 /**
