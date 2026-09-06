@@ -21,8 +21,16 @@ import Button from "@/components/Button";
 import type { ListingMarker, SelectedListing } from "@/types/listing";
 
 import MapPinLayer from "./MapPinLayer";
+import MapMirroredClusterLayer from "./MapMirroredClusterLayer";
 import MapSearch, { type MapSearchContext } from "./MapSearch";
 import MapControls from "./MapControls";
+import {
+  excludeListingById,
+  findListingMarkerById,
+  mirroredListingsToGeoJson,
+  resolveOrganicPinListings,
+  splitListingMarkers,
+} from "../lib/splitListingMarkers";
 import {
   MAP_MAX_ZOOM,
   ZOOM_LEVEL_DEFAULT,
@@ -111,6 +119,8 @@ const PIN_DETAIL_MIN_ZOOM = 7.25;
 const PIN_DETAIL_MAX_ZOOM = 8.25;
 const PIN_ICON_MIN_ZOOM = 7.75;
 const PIN_HALO_MIN_ZOOM = 8;
+const PIN_BORDER_WIDTH_WITH_ICON = 2.5;
+const PIN_BORDER_WIDTH_DOT_ONLY = 5;
 const PIN_HALO_MIN_SCALE = 0.18;
 const PIN_HALO_FULL_ZOOM = MAP_MAX_ZOOM;
 const PIN_HALO_GROWTH_EXPONENT = 2.2;
@@ -123,6 +133,7 @@ type MapPinZoomStyle = CSSProperties & {
   "--map-pin-icon-opacity": string;
   "--map-pin-icon-scale": string;
   "--map-pin-halo-scale": string;
+  "--map-pin-border-width": string;
 };
 
 const UserLocationDot = styled.div`
@@ -160,6 +171,8 @@ function resolveMapPinZoomVariables(zoom: number): MapPinZoomStyle {
   const iconOpacity = zoom >= PIN_ICON_MIN_ZOOM ? 1 : 0;
   const iconScale = zoom >= PIN_ICON_MIN_ZOOM ? 0.5 + detailScale * 0.5 : 0;
   const compactScale = (10 + 14 * detailScale) / 24;
+  const borderWidth =
+    iconOpacity >= 1 ? PIN_BORDER_WIDTH_WITH_ICON : PIN_BORDER_WIDTH_DOT_ONLY;
 
   return {
     "--map-pin-compact-scale": compactScale.toFixed(3),
@@ -167,6 +180,7 @@ function resolveMapPinZoomVariables(zoom: number): MapPinZoomStyle {
     "--map-pin-icon-opacity": iconOpacity.toFixed(3),
     "--map-pin-icon-scale": iconScale.toFixed(3),
     "--map-pin-halo-scale": haloScale.toFixed(3),
+    "--map-pin-border-width": `${borderWidth}px`,
   };
 }
 
@@ -225,6 +239,22 @@ function resolveInitialSearchContext(
       initialCoordinates.zoom
     )
   );
+}
+
+function resolveClusterViewport(
+  longitude: number,
+  latitude: number,
+  zoom: number
+): {
+  zoom: number;
+  bounds: [number, number, number, number];
+} {
+  const box = approximateBoundsFromViewState(longitude, latitude, zoom);
+
+  return {
+    zoom,
+    bounds: [box.getWest(), box.getSouth(), box.getEast(), box.getNorth()],
+  };
 }
 
 function resolveInitialViewState(
@@ -305,6 +335,56 @@ export default function MapView({
   }
 
   const { listings, isFetching, requestBounds } = useListingsInView();
+  const productionSplit = useMemo(
+    () => splitListingMarkers(listings),
+    [listings]
+  );
+  const selectedMirroredListing = useMemo(
+    () => findListingMarkerById(listings, selectedListingId),
+    [listings, selectedListingId]
+  );
+  const selectedMirroredListingId =
+    selectedMirroredListing?.is_open_data_mirrored === true
+      ? selectedMirroredListing.id
+      : null;
+  const organicPinListings = useMemo(
+    () =>
+      resolveOrganicPinListings(
+        productionSplit.organic,
+        selectedMirroredListing,
+        selectedMirroredListingId
+      ),
+    [
+      productionSplit.organic,
+      selectedMirroredListing,
+      selectedMirroredListingId,
+    ]
+  );
+  const mirroredListingsById = useMemo(
+    () =>
+      new globalThis.Map<number, ListingMarker>(
+        productionSplit.mirrored.map((listing) => [listing.id, listing])
+      ),
+    [productionSplit.mirrored]
+  );
+  const mirroredGeoJson = useMemo(
+    () =>
+      mirroredListingsToGeoJson(
+        excludeListingById(productionSplit.mirrored, selectedMirroredListingId)
+      ),
+    [productionSplit.mirrored, selectedMirroredListingId]
+  );
+  const showMirroredClusterLayer = mirroredGeoJson.features.length > 0;
+  const [clusterViewport, setClusterViewport] = useState<{
+    zoom: number;
+    bounds: [number, number, number, number];
+  } | null>(() =>
+    resolveClusterViewport(
+      initialViewState.longitude,
+      initialViewState.latitude,
+      initialViewState.zoom
+    )
+  );
 
   const {
     isSelectedInView,
@@ -361,7 +441,9 @@ export default function MapView({
       previousVariables["--map-pin-icon-scale"] ===
         variables["--map-pin-icon-scale"] &&
       previousVariables["--map-pin-halo-scale"] ===
-        variables["--map-pin-halo-scale"]
+        variables["--map-pin-halo-scale"] &&
+      previousVariables["--map-pin-border-width"] ===
+        variables["--map-pin-border-width"]
     ) {
       return;
     }
@@ -386,6 +468,10 @@ export default function MapView({
     container.style.setProperty(
       "--map-pin-halo-scale",
       variables["--map-pin-halo-scale"]
+    );
+    container.style.setProperty(
+      "--map-pin-border-width",
+      variables["--map-pin-border-width"]
     );
   }, []);
 
@@ -500,10 +586,28 @@ export default function MapView({
     };
   }, []);
 
+  const handleMirroredClusterClick = useCallback(
+    (longitude: number, latitude: number, expansionZoom: number) => {
+      mapRef.current?.getMap().easeTo({
+        center: [longitude, latitude],
+        zoom: Math.min(expansionZoom, MAP_MAX_ZOOM),
+      });
+    },
+    []
+  );
+
   const handleMove = useCallback(
     (event: ViewStateChangeEvent) => {
       scheduleMapPinZoomUpdate(event.viewState.zoom);
       syncZoomControlState(event.viewState.zoom);
+
+      setClusterViewport(
+        resolveClusterViewport(
+          event.viewState.longitude,
+          event.viewState.latitude,
+          event.viewState.zoom
+        )
+      );
     },
     [scheduleMapPinZoomUpdate, syncZoomControlState]
   );
@@ -624,8 +728,21 @@ export default function MapView({
               }
             />
 
+            {showMirroredClusterLayer && clusterViewport ? (
+              <MapMirroredClusterLayer
+                geoJson={mirroredGeoJson}
+                listingsById={mirroredListingsById}
+                bounds={clusterViewport.bounds}
+                zoom={clusterViewport.zoom}
+                selectedListingId={selectedListingId}
+                excludedListingId={selectedMirroredListingId}
+                markerLabel={t("markerLabel")}
+                onClusterClick={handleMirroredClusterClick}
+                onMarkerClick={onMarkerClick}
+              />
+            ) : null}
             <MapPinLayer
-              listings={listings}
+              listings={organicPinListings}
               markerLabel={t("markerLabel")}
               selectedListingId={selectedListingId}
               onMarkerClick={onMarkerClick}

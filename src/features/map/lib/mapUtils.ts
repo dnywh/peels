@@ -20,7 +20,10 @@ const GLOBAL_LONGITUDE_SLICES = [-180, -60, 60, 180] as const;
 
 export const ZOOM_LEVEL_DEFAULT = 11;
 export const ZOOM_LEVEL_SELECTED = 14;
-export const MAP_MAX_ZOOM = 15;
+/** Highest zoom the Protomaps vector tile source actually serves. */
+export const MAP_TILE_MAX_ZOOM = 15;
+/** Interactive map zoom cap; levels above MAP_TILE_MAX_ZOOM overzoom tiles. */
+export const MAP_MAX_ZOOM = 17;
 
 // Durations (ms) for the different fly-to flows
 export const FLY_DURATION = {

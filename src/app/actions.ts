@@ -32,6 +32,7 @@ import { createSupportError } from "@/lib/supportError";
 import type {
   DeleteListingResult,
   ListingDraftInput,
+  ListingMarker,
   ListingSubmitFailureData,
   ListingSubmitResult,
   ListingType,
@@ -1187,7 +1188,10 @@ export async function fetchListingsInView(
       return [];
     }
 
-    return data || [];
+    return ((data || []) as ListingMarker[]).map((listing) => ({
+      ...listing,
+      is_open_data_mirrored: listing.is_open_data_mirrored ?? false,
+    }));
   } catch (error) {
     console.error("Fatal error in fetchListingsInView:", {
       error,

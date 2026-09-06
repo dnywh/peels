@@ -1,6 +1,6 @@
 import { layers, namedFlavor } from "@protomaps/basemaps";
 
-import { MAP_MAX_ZOOM } from "./mapUtils";
+import { MAP_TILE_MAX_ZOOM } from "./mapUtils";
 
 type ProtomapsFlavorName = "light" | "dark";
 
@@ -44,7 +44,7 @@ export function createProtomapsStyle({
     sources: {
       protomaps: {
         type: "vector" as const,
-        maxzoom: MAP_MAX_ZOOM,
+        maxzoom: MAP_TILE_MAX_ZOOM,
         tiles: [tileUrl],
         attribution:
           '<a href="https://protomaps.com" target="_blank" rel="noopener noreferrer">Protomaps</a> • <a href="https://osm.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',

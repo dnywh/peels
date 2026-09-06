@@ -11,6 +11,7 @@ import {
 import MapPin from "@/components/MapPin";
 import type { ListingCoordinates, ListingMarker } from "@/types/listing";
 
+import ClusterPinEnter from "./ClusterPinEnter";
 import { hasValidCoordinates } from "../lib/mapUtils";
 
 type MapPinLayerProps = {
@@ -26,6 +27,7 @@ type ListingMapPinMarkerProps = {
   isSelected: boolean;
   markerLabel: string;
   onMarkerClick: MapPinLayerProps["onMarkerClick"];
+  withClusterEnterAnimation?: boolean;
 };
 
 const KEYBOARD_ACTIVATION_KEYS = new Set(["Enter", " "]);
@@ -34,12 +36,13 @@ const KEYBOARD_ACTIVATION_KEYS = new Set(["Enter", " "]);
 // duplicate events without blocking deliberate follow-up activations.
 const DUPLICATE_MARKER_CLICK_SUPPRESSION_MS = 100;
 
-function ListingMapPinMarker({
+export function ListingMapPinMarker({
   listing,
   coords,
   isSelected,
   markerLabel,
   onMarkerClick,
+  withClusterEnterAnimation = false,
 }: ListingMapPinMarkerProps) {
   const markerRef = useRef<MarkerInstance | null>(null);
   const lastPinPointerClickRef = useRef<{
@@ -142,12 +145,23 @@ function ListingMapPinMarker({
       onClick={handleMarkerClick}
       style={{ zIndex: isSelected ? 1 : 0 }}
     >
-      <MapPin
-        markerId={listing.id}
-        onClick={handlePinClick}
-        selected={isSelected}
-        type={listing.type ?? undefined}
-      />
+      {withClusterEnterAnimation ? (
+        <ClusterPinEnter>
+          <MapPin
+            markerId={listing.id}
+            onClick={handlePinClick}
+            selected={isSelected}
+            type={listing.type ?? undefined}
+          />
+        </ClusterPinEnter>
+      ) : (
+        <MapPin
+          markerId={listing.id}
+          onClick={handlePinClick}
+          selected={isSelected}
+          type={listing.type ?? undefined}
+        />
+      )}
     </Marker>
   );
 }
