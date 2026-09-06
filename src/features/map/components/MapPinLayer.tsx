@@ -34,7 +34,7 @@ const KEYBOARD_ACTIVATION_KEYS = new Set(["Enter", " "]);
 // React handles pointer clicks on the inner 44px hit target, while MapLibre
 // also reports marker clicks from its own element. Suppress only same-tick
 // duplicate events without blocking deliberate follow-up activations.
-const DUPLICATE_MARKER_CLICK_SUPPRESSION_MS = 100;
+export const DUPLICATE_MARKER_CLICK_SUPPRESSION_MS = 100;
 
 type MapMarkerKeyboardActivationOptions = {
   markerRef: RefObject<MarkerInstance | null>;

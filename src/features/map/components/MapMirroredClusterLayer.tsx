@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type RefObject } from "react";
+import { useMemo, useRef } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import Supercluster from "supercluster";
 import {
@@ -15,6 +15,7 @@ import type { ListingCoordinates, ListingMarker } from "@/types/listing";
 
 import ClusterPinEnter, { ClusterPinEnterProvider } from "./ClusterPinEnter";
 import {
+  DUPLICATE_MARKER_CLICK_SUPPRESSION_MS,
   ListingMapPinMarker,
   useMapMarkerKeyboardActivation,
 } from "./MapPinLayer";
@@ -102,22 +103,52 @@ function MirroredClusterPinMarker({
   onActivate: () => void;
 }) {
   const markerRef = useRef<MarkerInstance | null>(null);
+  const lastPinPointerClickRef = useRef<{
+    pinKey: string;
+    timeStamp: number;
+  } | null>(null);
+  const lastKeyboardActivationRef = useRef<number | null>(null);
 
   useMapMarkerKeyboardActivation({
     markerRef,
     markerLabel,
-    onActivate,
+    onActivate: () => {
+      lastKeyboardActivationRef.current = performance.now();
+      onActivate();
+    },
   });
 
   const handlePinClick = (event: ReactMouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     event.nativeEvent.stopPropagation();
+    lastPinPointerClickRef.current = {
+      pinKey,
+      timeStamp: event.timeStamp,
+    };
     onActivate();
   };
 
   const handleMarkerClick = (event: MarkerEvent<globalThis.MouseEvent>) => {
     event.originalEvent.stopPropagation();
+    const lastPinPointerClick = lastPinPointerClickRef.current;
+    if (
+      lastPinPointerClick?.pinKey === pinKey &&
+      Math.abs(lastPinPointerClick.timeStamp - event.originalEvent.timeStamp) <
+        DUPLICATE_MARKER_CLICK_SUPPRESSION_MS
+    ) {
+      return;
+    }
+
+    const lastKeyboardActivation = lastKeyboardActivationRef.current;
+    if (
+      lastKeyboardActivation !== null &&
+      Math.abs(lastKeyboardActivation - event.originalEvent.timeStamp) <
+        DUPLICATE_MARKER_CLICK_SUPPRESSION_MS
+    ) {
+      return;
+    }
+
     onActivate();
   };
 

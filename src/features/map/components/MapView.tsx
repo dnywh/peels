@@ -241,6 +241,24 @@ function resolveInitialSearchContext(
   );
 }
 
+function resolveClusterViewportFromBounds(
+  bounds: LngLatBounds,
+  zoom: number
+): {
+  zoom: number;
+  bounds: [number, number, number, number];
+} {
+  return {
+    zoom,
+    bounds: [
+      bounds.getWest(),
+      bounds.getSouth(),
+      bounds.getEast(),
+      bounds.getNorth(),
+    ],
+  };
+}
+
 function resolveClusterViewport(
   longitude: number,
   latitude: number,
@@ -495,9 +513,8 @@ export default function MapView({
     const map = mapRef.current?.getMap();
     if (!map) return;
 
-    const center = map.getCenter();
     setClusterViewport(
-      resolveClusterViewport(center.lng, center.lat, map.getZoom())
+      resolveClusterViewportFromBounds(map.getBounds(), map.getZoom())
     );
   }, []);
 
